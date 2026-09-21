@@ -8,7 +8,7 @@ category: physical-ai
 tags: [autonomous-driving, neural-networks]
 author: "FluxScope"
 image:
-  src: /images/regenerative-braking.png
+  src: /images/physical-ai.png
   width: 1200
   height: 630
   alt: "Illustration of autonomous vehicle neural paths"

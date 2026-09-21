@@ -8,7 +8,7 @@ category: physical-ai
 tags: [autonomous-driving, neural-networks]
 author: "FluxScope"
 image:
-  src: /images/regenerative-braking.png
+  src: /images/physical-ai.png
   width: 1200
   height: 630
   alt: "차량 센서와 신경망 주행 궤적을 표현한 일러스트"

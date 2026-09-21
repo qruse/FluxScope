@@ -8,7 +8,7 @@ category: physical-ai
 tags: [robotics, foundation-models]
 author: "FluxScope"
 image:
-  src: /images/regenerative-braking.png
+  src: /images/physical-ai.png
   width: 1200
   height: 630
   alt: "로봇 액추에이터와 신경망 제어 흐름을 표현한 그래픽"

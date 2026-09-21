@@ -8,7 +8,7 @@ category: other-ai
 tags: [speech, audio-multimodal]
 author: "FluxScope"
 image:
-  src: /images/soil-moisture.png
+  src: /images/other-ai.png
   width: 1200
   height: 630
   alt: "실시간 음성 오디오 파형과 신경망 상호작용 일러스트"

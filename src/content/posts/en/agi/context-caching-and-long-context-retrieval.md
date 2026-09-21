@@ -8,7 +8,7 @@ category: agi
 tags: [caching, context-window]
 author: "FluxScope"
 image:
-  src: /images/og-default.png
+  src: /images/agi.png
   width: 1200
   height: 630
   alt: "Illustration representing deep cached layers"

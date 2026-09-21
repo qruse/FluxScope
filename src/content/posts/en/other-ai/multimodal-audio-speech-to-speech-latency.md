@@ -8,7 +8,7 @@ category: other-ai
 tags: [speech, audio-multimodal]
 author: "FluxScope"
 image:
-  src: /images/soil-moisture.png
+  src: /images/other-ai.png
   width: 1200
   height: 630
   alt: "Illustration of real-time audio waveform and neural communication"

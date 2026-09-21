@@ -7,7 +7,7 @@ category: physical-ai
 tags: [electric vehicles, braking]
 author: "FluxScope"
 image:
-  src: /images/regenerative-braking.png
+  src: /images/physical-ai.png
   width: 1200
   height: 630
   alt: "Abstract orange wheel and energy path illustration"

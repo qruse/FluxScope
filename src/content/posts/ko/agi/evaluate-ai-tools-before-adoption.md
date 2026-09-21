@@ -8,7 +8,7 @@ category: agi
 tags: [evaluation, workflow]
 author: "FluxScope"
 image:
-  src: /images/ai-evaluation.png
+  src: /images/agi.png
   width: 1200
   height: 630
   alt: "측정 가능한 AI 워크플로우를 표현한 동심원 추상 일러스트"

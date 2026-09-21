@@ -7,7 +7,7 @@ category: agi
 tags: [evaluation, workflow]
 author: "FluxScope"
 image:
-  src: /images/ai-evaluation.png
+  src: /images/agi.png
   width: 1200
   height: 630
   alt: "Abstract concentric circles representing a measured AI workflow"

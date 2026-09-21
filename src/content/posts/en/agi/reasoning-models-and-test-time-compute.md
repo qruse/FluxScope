@@ -8,7 +8,7 @@ category: agi
 tags: [reasoning, test-time-compute]
 author: "FluxScope"
 image:
-  src: /images/ai-evaluation.png
+  src: /images/agi.png
   width: 1200
   height: 630
   alt: "Illustration representing abstract reasoning chains"

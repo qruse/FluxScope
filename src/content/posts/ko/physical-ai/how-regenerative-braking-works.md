@@ -8,7 +8,7 @@ category: physical-ai
 tags: [electric vehicles, braking]
 author: "FluxScope"
 image:
-  src: /images/regenerative-braking.png
+  src: /images/physical-ai.png
   width: 1200
   height: 630
   alt: "주황색 휠과 에너지 흐름을 형상화한 추상 일러스트"

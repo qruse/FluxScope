@@ -8,7 +8,7 @@ category: other-ai
 tags: [on-device, quantization]
 author: "FluxScope"
 image:
-  src: /images/soil-moisture.png
+  src: /images/other-ai.png
   width: 1200
   height: 630
   alt: "엣지 하드웨어 칩셋과 컴팩트 신경망을 형상화한 그래픽"

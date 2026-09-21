@@ -7,7 +7,7 @@ category: other-ai
 tags: [irrigation, sensors]
 author: "FluxScope"
 image:
-  src: /images/soil-moisture.png
+  src: /images/other-ai.png
   width: 1200
   height: 630
   alt: "Abstract green soil layers and sensor measurement illustration"

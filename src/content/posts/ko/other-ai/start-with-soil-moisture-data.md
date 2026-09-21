@@ -8,7 +8,7 @@ category: other-ai
 tags: [irrigation, sensors]
 author: "FluxScope"
 image:
-  src: /images/soil-moisture.png
+  src: /images/other-ai.png
   width: 1200
   height: 630
   alt: "녹색 토양 지층과 센서 계측을 형상화한 추상 일러스트"
