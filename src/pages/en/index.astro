@@ -40,7 +40,6 @@ const subPosts = allEnPosts.filter((p) => p.id !== headPost.id).slice(0, 2);
             <div>
               <div class="section-kicker">0{index + 1} / TOPIC</div>
               <h2>{category.name}</h2>
-              <p>{category.description}</p>
             </div>
             <a class="quiet-link" href={categoryPath(categoryKey, 'en')}>
               View all ↗

@@ -39,8 +39,7 @@ const subPosts = allKoPosts.filter((p) => p.id !== headPost.id).slice(0, 2);
           <div class="section-head">
             <div>
               <div class="section-kicker">0{index + 1} / TOPIC</div>
-              <h2>{category.nameKo} ({category.name})</h2>
-              <p>{category.descriptionKo}</p>
+              <h2>{category.nameKo}</h2>
             </div>
             <a class="quiet-link" href={categoryPath(categoryKey, 'ko')}>
               전체보기 ↗
