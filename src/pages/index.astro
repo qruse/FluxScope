@@ -2,48 +2,61 @@
 import { getCollection } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import PostCard from '../components/PostCard.astro';
-import { categories, categoryPath, publishedPosts, withBase } from '../lib/site';
+import { categories, categoryPath, publishedPosts } from '../lib/site';
 
-const posts = publishedPosts(await getCollection('posts'), 'ko');
+const allKoPosts = publishedPosts(await getCollection('posts'), 'ko');
+
+// AGI 헤드 포스트 하나 크게 (AGI 글 우선)
+const headPost = allKoPosts.find((p) => p.data.category === 'agi') || allKoPosts[0];
+
+// 우측 서브 포스트 1, 2 (헤드 포스트 제외한 글들)
+const subPosts = allKoPosts.filter((p) => p.id !== headPost.id).slice(0, 2);
 ---
 <BaseLayout lang="ko">
-  <section class="hero">
+  <!-- 1. 리드 섹션: AGI 헤드 포스트 크게 + 우측 서브 포스트 1, 2 -->
+  <section class="lead-section">
     <div class="shell">
-      <div class="hero-grid">
-        <div>
-          <div class="section-kicker">독립 기술 블로그 · 001호</div>
-          <h1>변화의 본질을,<br /><em>정확하게.</em></h1>
+      <div class="lead-grid">
+        <div class="head-post">
+          <PostCard post={headPost} featured={true} />
         </div>
-        <div>
-          <p class="hero-intro">인공지능과 최신 기술의 흐름을 짚어냅니다. 근거 중심의 분석으로 과장 없이 유용한 핵심만을 전합니다.</p>
-          <a class="hero-action" href="#latest">최신 아티클 살펴보기 <span aria-hidden="true">↘</span></a>
+        <div class="sub-posts">
+          {subPosts.map((post) => (
+            <PostCard post={post} compact={true} />
+          ))}
         </div>
       </div>
-      <div class="hero-index"><span>근거 중심 · 독자 우선</span><strong>RESEARCH-LED · ARTIFICIAL INTELLIGENCE</strong></div>
     </div>
   </section>
 
-  <section class="section" id="latest">
-    <div class="shell">
-      <div class="section-head">
-        <div><div class="section-kicker">추천 아티클</div><h2>최신 글</h2></div>
-        <a class="quiet-link" href={withBase('/rss.xml')}>RSS 구독 ↗</a>
-      </div>
-      <div class="post-grid">{posts.slice(0, 6).map((post) => <PostCard post={post} />)}</div>
-    </div>
-  </section>
-
-  <section class="topics">
-    <div class="shell">
-      <div class="section-head"><div><div class="section-kicker">핵심 주제</div><h2>주제별 탐색</h2></div></div>
-      <div class="topic-grid">
-        {Object.entries(categories).map(([slug, category], index) => (
-          <a class="topic" href={categoryPath(slug as keyof typeof categories, 'ko')}>
-            <div class="topic-top"><span>0{index + 1} / TOPIC</span><span aria-hidden="true">↗</span></div>
-            <div><h3>{category.nameKo} ({category.name})</h3><p>{category.descriptionKo}</p></div>
-          </a>
-        ))}
-      </div>
-    </div>
-  </section>
+  <!-- 2. 각 주제별 포스트 가로로 넘기는 스타일 -->
+  {Object.entries(categories).map(([slug, category], index) => {
+    const categoryKey = slug as keyof typeof categories;
+    const categoryPosts = allKoPosts.filter((post) => post.data.category === categoryKey);
+    return (
+      <section class="topic-scroll-section">
+        <div class="shell">
+          <div class="section-head">
+            <div>
+              <div class="section-kicker">0{index + 1} / TOPIC</div>
+              <h2>{category.nameKo} ({category.name})</h2>
+              <p>{category.descriptionKo}</p>
+            </div>
+            <a class="quiet-link" href={categoryPath(categoryKey, 'ko')}>
+              전체보기 ↗
+            </a>
+          </div>
+          <div class="horizontal-scroll-container">
+            <div class="horizontal-scroll-track">
+              {categoryPosts.map((post) => (
+                <div class="scroll-item">
+                  <PostCard post={post} />
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+    );
+  })}
 </BaseLayout>

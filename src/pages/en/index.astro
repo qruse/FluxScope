@@ -2,48 +2,61 @@
 import { getCollection } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import PostCard from '../../components/PostCard.astro';
-import { categories, categoryPath, publishedPosts, withBase } from '../../lib/site';
+import { categories, categoryPath, publishedPosts } from '../../lib/site';
 
-const posts = publishedPosts(await getCollection('posts'), 'en');
+const allEnPosts = publishedPosts(await getCollection('posts'), 'en');
+
+// AGI head post large
+const headPost = allEnPosts.find((p) => p.data.category === 'agi') || allEnPosts[0];
+
+// Sub posts 1 and 2 on the right
+const subPosts = allEnPosts.filter((p) => p.id !== headPost.id).slice(0, 2);
 ---
 <BaseLayout lang="en">
-  <section class="hero">
+  <!-- 1. Lead Section: AGI Head Post Large + 2 Sub Posts on Right -->
+  <section class="lead-section">
     <div class="shell">
-      <div class="hero-grid">
-        <div>
-          <div class="section-kicker">Independent technology notes · Issue 001</div>
-          <h1>Change,<br /><em>in focus.</em></h1>
+      <div class="lead-grid">
+        <div class="head-post">
+          <PostCard post={headPost} featured={true} />
         </div>
-        <div>
-          <p class="hero-intro">A clearer view of AI and modern technology. We follow the evidence, explain what is changing, and make the useful part easy to find.</p>
-          <a class="hero-action" href="#latest">Explore the latest stories <span aria-hidden="true">↘</span></a>
+        <div class="sub-posts">
+          {subPosts.map((post) => (
+            <PostCard post={post} compact={true} />
+          ))}
         </div>
       </div>
-      <div class="hero-index"><span>Research-led · Reader-first</span><strong>AI / TECHNOLOGY / ANALYSIS</strong></div>
     </div>
   </section>
 
-  <section class="section" id="latest">
-    <div class="shell">
-      <div class="section-head">
-        <div><div class="section-kicker">The reading list</div><h2>Latest articles</h2></div>
-        <a class="quiet-link" href={withBase('/rss.xml')}>Subscribe via RSS ↗</a>
-      </div>
-      <div class="post-grid">{posts.slice(0, 6).map((post) => <PostCard post={post} />)}</div>
-    </div>
-  </section>
-
-  <section class="topics">
-    <div class="shell">
-      <div class="section-head"><div><div class="section-kicker">Explore</div><h2>Topics</h2></div></div>
-      <div class="topic-grid">
-        {Object.entries(categories).map(([slug, category], index) => (
-          <a class="topic" href={categoryPath(slug as keyof typeof categories, 'en')}>
-            <div class="topic-top"><span>0{index + 1} / TOPIC</span><span aria-hidden="true">↗</span></div>
-            <div><h3>{category.name}</h3><p>{category.description}</p></div>
-          </a>
-        ))}
-      </div>
-    </div>
-  </section>
+  <!-- 2. Topic Horizontal Scroll Slider -->
+  {Object.entries(categories).map(([slug, category], index) => {
+    const categoryKey = slug as keyof typeof categories;
+    const categoryPosts = allEnPosts.filter((post) => post.data.category === categoryKey);
+    return (
+      <section class="topic-scroll-section">
+        <div class="shell">
+          <div class="section-head">
+            <div>
+              <div class="section-kicker">0{index + 1} / TOPIC</div>
+              <h2>{category.name}</h2>
+              <p>{category.description}</p>
+            </div>
+            <a class="quiet-link" href={categoryPath(categoryKey, 'en')}>
+              View all ↗
+            </a>
+          </div>
+          <div class="horizontal-scroll-container">
+            <div class="horizontal-scroll-track">
+              {categoryPosts.map((post) => (
+                <div class="scroll-item">
+                  <PostCard post={post} />
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+    );
+  })}
 </BaseLayout>

@@ -3,14 +3,14 @@ import type { Post } from '../lib/site';
 import { categories, postPath } from '../lib/site';
 import { formatDate } from '../i18n/ui';
 
-interface Props { post: Post; featured?: boolean }
-const { post, featured = false } = Astro.props;
+interface Props { post: Post; featured?: boolean; compact?: boolean; }
+const { post, featured = false, compact = false } = Astro.props;
 const category = categories[post.data.category];
 const isKo = post.data.lang === 'ko';
 const categoryName = isKo ? category.nameKo : category.name;
 const readMoreText = isKo ? '글 읽기' : 'Read article';
 ---
-<article class:list={['post-card', { featured }]}>
+<article class:list={['post-card', { featured, compact }]}>
   <a class="card-link" href={postPath(post)} aria-label={`${readMoreText}: ${post.data.title}`}>
     <div class:list={['card-art', `art-${category.accent}`]} aria-hidden="true">
       <span class="art-index">{post.data.category === 'agi' ? '01' : post.data.category === 'physical-ai' ? '02' : '03'}</span>
