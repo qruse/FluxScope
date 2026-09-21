@@ -8,11 +8,11 @@ export const site = {
 };
 
 export const categories = {
-  llm: {
-    name: 'LLM',
-    nameKo: 'LLM',
-    description: 'Large language models, reasoning, and practical prompts & workflows.',
-    descriptionKo: '거대 언어 모델, 추론 아키텍처, 프롬프트 엔지니어링 및 실무 워크플로우.',
+  agi: {
+    name: 'AGI',
+    nameKo: 'AGI',
+    description: 'Artificial General Intelligence, reasoning models, and frontier capabilities.',
+    descriptionKo: '범용 인공지능(AGI), 고도화된 추론 모델 및 프론티어 AI 연구 동향.',
     accent: 'violet',
   },
   'physical-ai': {

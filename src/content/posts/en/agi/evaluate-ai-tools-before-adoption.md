@@ -3,7 +3,7 @@ title: "How to evaluate an AI tool before adopting it"
 description: "A practical starting framework for testing an AI tool against a real task, recording failures, and deciding when human review is needed."
 publishedAt: 2026-09-21
 updatedAt: 2026-09-21
-category: llm
+category: agi
 tags: [evaluation, workflow]
 author: "FluxScope"
 image:
