@@ -54,7 +54,6 @@ const enUrl = withBase(enPath);
 const homeUrl = withBase(currentLang === 'en' ? '/en/' : '/');
 const aiUrl = withBase(currentLang === 'en' ? '/en/ai/' : '/ai/');
 const searchUrl = withBase(currentLang === 'en' ? '/en/search/' : '/search/');
-const aboutUrl = withBase(currentLang === 'en' ? '/en/about/' : '/about/');
 ---
 <!doctype html>
 <html lang={currentLang}>
@@ -129,7 +128,6 @@ const aboutUrl = withBase(currentLang === 'en' ? '/en/about/' : '/about/');
           <p>{t('footer.motto')}</p>
         </div>
         <div class="footer-links">
-          <a href={aboutUrl}>{t('footer.about')}</a>
           <a href={withBase('/rss.xml')}>{t('footer.rss')}</a>
           <a href={searchUrl}>{t('footer.search')}</a>
         </div>
