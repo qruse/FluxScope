@@ -1,6 +1,7 @@
 ---
 import '../styles/global.css';
 import { site, withBase } from '../lib/site';
+import { getLangFromUrl, useTranslations, type Lang } from '../i18n/ui';
 
 interface Props {
   title?: string;
@@ -11,24 +12,52 @@ interface Props {
   publishedAt?: Date;
   updatedAt?: Date;
   jsonLd?: Record<string, unknown> | Record<string, unknown>[];
+  lang?: Lang;
 }
 
 const {
-  title = site.name,
-  description = site.description,
   image = '/images/og-default.png',
   imageAlt = 'FluxScope wordmark beside concentric focus rings',
   type = 'website',
   publishedAt,
   updatedAt,
   jsonLd,
+  lang,
 } = Astro.props;
+
+const currentLang: Lang = lang || getLangFromUrl(Astro.url);
+const t = useTranslations(currentLang);
+
+const title = Astro.props.title || (currentLang === 'ko' ? t('site.title') : site.name);
+const description = Astro.props.description || (currentLang === 'ko' ? t('site.description') : site.description);
+
 const canonical = new URL(Astro.url.pathname, Astro.site);
 const imageUrl = new URL(withBase(image), Astro.site);
 const fullTitle = title === site.name ? title : `${title} | ${site.name}`;
+
+// Language switcher link resolution
+const pathname = Astro.url.pathname.replace(/\/$/, '') || '/';
+let koPath = '/';
+let enPath = '/en/';
+
+if (currentLang === 'en') {
+  enPath = pathname === '/en' ? '/en/' : `${pathname}/`;
+  const stripped = pathname.replace(/^\/en/, '');
+  koPath = stripped ? `${stripped}/` : '/';
+} else {
+  koPath = pathname === '/' ? '/' : `${pathname}/`;
+  enPath = pathname === '/' ? '/en/' : `/en${pathname}/`;
+}
+
+const koUrl = withBase(koPath);
+const enUrl = withBase(enPath);
+const homeUrl = withBase(currentLang === 'en' ? '/en/' : '/');
+const aiUrl = withBase(currentLang === 'en' ? '/en/ai/' : '/ai/');
+const searchUrl = withBase(currentLang === 'en' ? '/en/search/' : '/search/');
+const aboutUrl = withBase(currentLang === 'en' ? '/en/about/' : '/about/');
 ---
 <!doctype html>
-<html lang={site.language}>
+<html lang={currentLang}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -37,6 +66,9 @@ const fullTitle = title === site.name ? title : `${title} | ${site.name}`;
     <title>{fullTitle}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical.href} />
+    <link rel="alternate" hreflang="ko" href={new URL(koUrl, Astro.site).href} />
+    <link rel="alternate" hreflang="en" href={new URL(enUrl, Astro.site).href} />
+    <link rel="alternate" hreflang="x-default" href={new URL(withBase('/'), Astro.site).href} />
     <link rel="icon" href={withBase('/favicon.svg')} type="image/svg+xml" />
     <link rel="alternate" type="application/rss+xml" title={`${site.name} RSS`} href={withBase('/rss.xml')} />
     <link rel="sitemap" href={withBase('/sitemap-index.xml')} />
@@ -67,17 +99,20 @@ const fullTitle = title === site.name ? title : `${title} | ${site.name}`;
     <a class="skip-link" href="#content">Skip to content</a>
     <header class="site-header">
       <div class="shell header-inner">
-        <a class="brand" href={withBase('/')} aria-label={`${site.name} home`}>
+        <a class="brand" href={homeUrl} aria-label={`${site.name} home`}>
           <span class="brand-mark" aria-hidden="true"><span></span></span>
           <span>Flux<span class="brand-accent">Scope</span></span>
         </a>
         <nav class="main-nav" aria-label="Main navigation">
-          <a href={withBase('/ai/')}>AI</a>
-          <a href={withBase('/cars/')}>Cars</a>
-          <a href={withBase('/smartfarm/')}>Smart Farm</a>
+          <a href={aiUrl}>{t('nav.ai')}</a>
         </nav>
         <div class="header-actions">
-          <a class="icon-link" href={withBase('/search/')} aria-label="Search articles" title="Search">
+          <div class="lang-switcher" aria-label="Language selection">
+            <a href={koUrl} class:list={[{ active: currentLang === 'ko' }]} hreflang="ko">KO</a>
+            <span class="lang-divider" aria-hidden="true">/</span>
+            <a href={enUrl} class:list={[{ active: currentLang === 'en' }]} hreflang="en">EN</a>
+          </div>
+          <a class="icon-link" href={searchUrl} aria-label={t('nav.search')} title={t('nav.search')}>
             <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.6"></circle><path d="m16 16 5 5"></path></svg>
           </a>
           <button class="theme-toggle" type="button" aria-label="Toggle color theme" title="Toggle color theme">
@@ -90,13 +125,13 @@ const fullTitle = title === site.name ? title : `${title} | ${site.name}`;
     <footer class="site-footer">
       <div class="shell footer-grid">
         <div>
-          <a class="footer-brand" href={withBase('/')}>{site.name}<span class="brand-dot">.</span></a>
-          <p>Practical ideas, carefully sourced.</p>
+          <a class="footer-brand" href={homeUrl}>{site.name}<span class="brand-dot">.</span></a>
+          <p>{t('footer.motto')}</p>
         </div>
         <div class="footer-links">
-          <a href={withBase('/about/')}>About & editorial policy</a>
-          <a href={withBase('/rss.xml')}>RSS feed</a>
-          <a href={withBase('/search/')}>Search</a>
+          <a href={aboutUrl}>{t('footer.about')}</a>
+          <a href={withBase('/rss.xml')}>{t('footer.rss')}</a>
+          <a href={searchUrl}>{t('footer.search')}</a>
         </div>
         <p class="footer-copy">© {new Date().getFullYear()} {site.name}</p>
       </div>
@@ -111,3 +146,4 @@ const fullTitle = title === site.name ? title : `${title} | ${site.name}`;
     </script>
   </body>
 </html>
+

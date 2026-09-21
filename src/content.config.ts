@@ -20,6 +20,7 @@ const posts = defineCollection({
       alt: z.string().min(5),
     }),
     draft: z.boolean(),
+    lang: z.enum(['ko', 'en']).default('en'),
   }).refine((post) => post.updatedAt >= post.publishedAt, {
     message: 'updatedAt must be on or after publishedAt',
     path: ['updatedAt'],

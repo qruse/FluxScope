@@ -1,12 +1,12 @@
 ---
 import { getCollection, render } from 'astro:content';
-import BaseLayout from '../../layouts/BaseLayout.astro';
-import PostCard from '../../components/PostCard.astro';
-import { categories, categoryPath, getPostSlug, postPath, publishedPosts, site, tagPath, withBase, type Post } from '../../lib/site';
-import { formatDate } from '../../i18n/ui';
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import PostCard from '../../../components/PostCard.astro';
+import { categories, categoryPath, getPostSlug, postPath, publishedPosts, site, tagPath, withBase, type Post } from '../../../lib/site';
+import { formatDate } from '../../../i18n/ui';
 
 export async function getStaticPaths() {
-  const posts = publishedPosts(await getCollection('posts'), 'ko');
+  const posts = publishedPosts(await getCollection('posts'), 'en');
   return posts.map((post) => {
     const slug = getPostSlug(post);
     return { params: { category: post.data.category, slug }, props: { post, allPosts: posts } };
@@ -30,29 +30,29 @@ const jsonLd = [
     image: imageUrl, datePublished: post.data.publishedAt.toISOString(), dateModified: post.data.updatedAt.toISOString(),
     author: { '@type': 'Organization', name: post.data.author },
     publisher: { '@type': 'Organization', name: site.name },
-    articleSection: category.nameKo, keywords: post.data.tags.join(', '),
+    articleSection: category.name, keywords: post.data.tags.join(', '),
   },
   {
     '@context': 'https://schema.org', '@type': 'BreadcrumbList',
     itemListElement: [
-      { '@type': 'ListItem', position: 1, name: '홈', item: new URL(withBase('/'), Astro.site).href },
-      { '@type': 'ListItem', position: 2, name: category.nameKo, item: new URL(categoryPath(post.data.category, 'ko'), Astro.site).href },
+      { '@type': 'ListItem', position: 1, name: 'Home', item: new URL(withBase('/en/'), Astro.site).href },
+      { '@type': 'ListItem', position: 2, name: category.name, item: new URL(categoryPath(post.data.category, 'en'), Astro.site).href },
       { '@type': 'ListItem', position: 3, name: post.data.title, item: url },
     ],
   },
 ];
 ---
-<BaseLayout lang="ko" title={post.data.seoTitle || post.data.title} description={post.data.description} image={post.data.image.src} imageAlt={post.data.image.alt} type="article" publishedAt={post.data.publishedAt} updatedAt={post.data.updatedAt} jsonLd={jsonLd}>
+<BaseLayout lang="en" title={post.data.seoTitle || post.data.title} description={post.data.description} image={post.data.image.src} imageAlt={post.data.image.alt} type="article" publishedAt={post.data.publishedAt} updatedAt={post.data.updatedAt} jsonLd={jsonLd}>
   <article data-pagefind-body>
     <header class="article-header article-shell">
-      <nav class="breadcrumbs" aria-label="Breadcrumb"><a href={withBase('/')}>홈</a><span>/</span><a href={categoryPath(post.data.category, 'ko')}>{category.nameKo}</a><span>/</span><span aria-current="page">기사</span></nav>
+      <nav class="breadcrumbs" aria-label="Breadcrumb"><a href={withBase('/en/')}>Home</a><span>/</span><a href={categoryPath(post.data.category, 'en')}>{category.name}</a><span>/</span><span aria-current="page">Article</span></nav>
       <h1>{post.data.title}</h1>
       <p class="article-dek">{post.data.description}</p>
-      <div class="article-meta"><span>작성자: <strong>{post.data.author}</strong></span><span>발행일: <time datetime={post.data.publishedAt.toISOString()}>{formatDate(post.data.publishedAt, 'ko')}</time></span><span>수정일: <time datetime={post.data.updatedAt.toISOString()}>{formatDate(post.data.updatedAt, 'ko')}</time></span></div>
+      <div class="article-meta"><span>By <strong>{post.data.author}</strong></span><span>Published <time datetime={post.data.publishedAt.toISOString()}>{formatDate(post.data.publishedAt, 'en')}</time></span><span>Updated <time datetime={post.data.updatedAt.toISOString()}>{formatDate(post.data.updatedAt, 'en')}</time></span></div>
     </header>
     <div class="article-shell"><img class="article-visual" src={withBase(post.data.image.src)} width={post.data.image.width} height={post.data.image.height} alt={post.data.image.alt} decoding="async" /></div>
     <div class="article-body article-shell"><Content /></div>
-    <div class="article-end article-shell"><div class="tag-list">{post.data.tags.map((tag) => <a href={tagPath(tag, 'ko')}>#{tag}</a>)}</div></div>
+    <div class="article-end article-shell"><div class="tag-list">{post.data.tags.map((tag) => <a href={tagPath(tag, 'en')}>#{tag}</a>)}</div></div>
   </article>
-  {related.length > 0 && <section class="related"><div class="shell"><div class="section-head"><div><div class="section-kicker">더 읽어보기</div><h2>관련 아티클</h2></div></div><div class="post-grid">{related.map((item) => <PostCard post={item} />)}</div></div></section>}
+  {related.length > 0 && <section class="related"><div class="shell"><div class="section-head"><div><div class="section-kicker">Keep exploring</div><h2>Related reading</h2></div></div><div class="post-grid">{related.map((item) => <PostCard post={item} />)}</div></div></section>}
 </BaseLayout>

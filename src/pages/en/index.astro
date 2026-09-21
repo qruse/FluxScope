@@ -1,0 +1,49 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PostCard from '../../components/PostCard.astro';
+import { categories, categoryPath, publishedPosts, withBase } from '../../lib/site';
+
+const posts = publishedPosts(await getCollection('posts'), 'en');
+---
+<BaseLayout lang="en">
+  <section class="hero">
+    <div class="shell">
+      <div class="hero-grid">
+        <div>
+          <div class="section-kicker">Independent technology notes · Issue 001</div>
+          <h1>Change,<br /><em>in focus.</em></h1>
+        </div>
+        <div>
+          <p class="hero-intro">A clearer view of AI and modern technology. We follow the evidence, explain what is changing, and make the useful part easy to find.</p>
+          <a class="hero-action" href="#latest">Explore the latest stories <span aria-hidden="true">↘</span></a>
+        </div>
+      </div>
+      <div class="hero-index"><span>Research-led · Reader-first</span><strong>AI / TECHNOLOGY / ANALYSIS</strong></div>
+    </div>
+  </section>
+
+  <section class="section" id="latest">
+    <div class="shell">
+      <div class="section-head">
+        <div><div class="section-kicker">The reading list</div><h2>Latest articles</h2></div>
+        <a class="quiet-link" href={withBase('/rss.xml')}>Subscribe via RSS ↗</a>
+      </div>
+      <div class="post-grid">{posts.slice(0, 6).map((post) => <PostCard post={post} />)}</div>
+    </div>
+  </section>
+
+  <section class="topics">
+    <div class="shell">
+      <div class="section-head"><div><div class="section-kicker">Explore</div><h2>Topics</h2></div></div>
+      <div class="topic-grid">
+        {Object.entries(categories).map(([slug, category], index) => (
+          <a class="topic" href={categoryPath(slug as keyof typeof categories, 'en')}>
+            <div class="topic-top"><span>0{index + 1} / TOPIC</span><span aria-hidden="true">↗</span></div>
+            <div><h3>{category.name}</h3><p>{category.description}</p></div>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+</BaseLayout>

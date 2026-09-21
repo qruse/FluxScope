@@ -12,6 +12,7 @@ image:
   height: 630
   alt: "Abstract concentric circles representing a measured AI workflow"
 draft: false
+lang: en
 ---
 
 ## The short answer

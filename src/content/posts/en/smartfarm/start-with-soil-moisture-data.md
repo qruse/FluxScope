@@ -12,6 +12,7 @@ image:
   height: 630
   alt: "Abstract green soil layers and sensor measurement illustration"
 draft: false
+lang: en
 ---
 
 ## The short answer

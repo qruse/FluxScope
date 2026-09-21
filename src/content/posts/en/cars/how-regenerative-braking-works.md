@@ -12,6 +12,7 @@ image:
   height: 630
   alt: "Abstract orange wheel and energy path illustration"
 draft: false
+lang: en
 ---
 
 ## The short answer

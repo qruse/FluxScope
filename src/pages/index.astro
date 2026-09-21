@@ -4,30 +4,30 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import PostCard from '../components/PostCard.astro';
 import { categories, categoryPath, publishedPosts, withBase } from '../lib/site';
 
-const posts = publishedPosts(await getCollection('posts'));
+const posts = publishedPosts(await getCollection('posts'), 'ko');
 ---
-<BaseLayout>
+<BaseLayout lang="ko">
   <section class="hero">
     <div class="shell">
       <div class="hero-grid">
         <div>
-          <div class="section-kicker">Independent technology notes · Issue 001</div>
-          <h1>Change,<br /><em>in focus.</em></h1>
+          <div class="section-kicker">독립 기술 블로그 · 001호</div>
+          <h1>변화의 본질을,<br /><em>정확하게.</em></h1>
         </div>
         <div>
-          <p class="hero-intro">A clearer view of AI, cars, and smart farming. We follow the evidence, explain what is changing, and make the useful part easy to find.</p>
-          <a class="hero-action" href="#latest">Explore the latest stories <span aria-hidden="true">↘</span></a>
+          <p class="hero-intro">인공지능과 최신 기술의 흐름을 짚어냅니다. 근거 중심의 분석으로 과장 없이 유용한 핵심만을 전합니다.</p>
+          <a class="hero-action" href="#latest">최신 아티클 살펴보기 <span aria-hidden="true">↘</span></a>
         </div>
       </div>
-      <div class="hero-index"><span>Research-led · Reader-first</span><strong>AI / CARS / FARM</strong></div>
+      <div class="hero-index"><span>근거 중심 · 독자 우선</span><strong>RESEARCH-LED · ARTIFICIAL INTELLIGENCE</strong></div>
     </div>
   </section>
 
   <section class="section" id="latest">
     <div class="shell">
       <div class="section-head">
-        <div><div class="section-kicker">The reading list</div><h2>Latest articles</h2></div>
-        <a class="quiet-link" href={withBase('/rss.xml')}>Subscribe via RSS ↗</a>
+        <div><div class="section-kicker">추천 아티클</div><h2>최신 글</h2></div>
+        <a class="quiet-link" href={withBase('/rss.xml')}>RSS 구독 ↗</a>
       </div>
       <div class="post-grid">{posts.slice(0, 6).map((post) => <PostCard post={post} />)}</div>
     </div>
@@ -35,12 +35,12 @@ const posts = publishedPosts(await getCollection('posts'));
 
   <section class="topics">
     <div class="shell">
-      <div class="section-head"><div><div class="section-kicker">Three perspectives</div><h2>Explore by topic</h2></div></div>
+      <div class="section-head"><div><div class="section-kicker">핵심 주제</div><h2>주제별 탐색</h2></div></div>
       <div class="topic-grid">
         {Object.entries(categories).map(([slug, category], index) => (
-          <a class="topic" href={categoryPath(slug as keyof typeof categories)}>
+          <a class="topic" href={categoryPath(slug as keyof typeof categories, 'ko')}>
             <div class="topic-top"><span>0{index + 1} / TOPIC</span><span aria-hidden="true">↗</span></div>
-            <div><h3>{category.name}</h3><p>{category.description}</p></div>
+            <div><h3>{category.nameKo} ({category.name})</h3><p>{category.descriptionKo}</p></div>
           </a>
         ))}
       </div>

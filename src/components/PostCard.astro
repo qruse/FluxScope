@@ -1,23 +1,27 @@
 ---
 import type { Post } from '../lib/site';
-import { categories, dateLabel, postPath } from '../lib/site';
+import { categories, postPath } from '../lib/site';
+import { formatDate } from '../i18n/ui';
 
 interface Props { post: Post; featured?: boolean }
 const { post, featured = false } = Astro.props;
 const category = categories[post.data.category];
+const isKo = post.data.lang === 'ko';
+const categoryName = isKo ? category.nameKo : category.name;
+const readMoreText = isKo ? '글 읽기' : 'Read article';
 ---
 <article class:list={['post-card', { featured }]}>
-  <a class="card-link" href={postPath(post)} aria-label={`Read ${post.data.title}`}>
+  <a class="card-link" href={postPath(post)} aria-label={`${readMoreText}: ${post.data.title}`}>
     <div class:list={['card-art', `art-${category.accent}`]} aria-hidden="true">
       <span class="art-index">{post.data.category === 'ai' ? '01' : post.data.category === 'cars' ? '02' : '03'}</span>
       <span class="art-shape"></span>
-      <span class="art-label">{category.name}</span>
+      <span class="art-label">{categoryName}</span>
     </div>
     <div class="card-copy">
-      <div class="eyebrow"><span class="category-pip"></span>{category.name}<span class="eyebrow-sep">/</span><time datetime={post.data.publishedAt.toISOString()}>{dateLabel(post.data.publishedAt)}</time></div>
+      <div class="eyebrow"><span class="category-pip"></span>{categoryName}<span class="eyebrow-sep">/</span><time datetime={post.data.publishedAt.toISOString()}>{formatDate(post.data.publishedAt, post.data.lang)}</time></div>
       <h3>{post.data.title}</h3>
       <p>{post.data.description}</p>
-      <span class="read-link">Read article <span aria-hidden="true">↗</span></span>
+      <span class="read-link">{readMoreText} <span aria-hidden="true">↗</span></span>
     </div>
   </a>
 </article>

@@ -3,20 +3,36 @@ import mdx from '@astrojs/mdx';
 import sitemap from '@astrojs/sitemap';
 import tailwindcss from '@tailwindcss/vite';
 
-// Set SITE_URL to the stable production domain in Cloudflare Pages.
-if (process.env.CF_PAGES && !process.env.SITE_URL) {
-  throw new Error('Set SITE_URL to the stable production URL in Cloudflare Pages environment variables.');
-}
-const site = process.env.SITE_URL || 'http://localhost:4321';
-const siteUrl = new URL(site);
-if (siteUrl.pathname !== '/' || (process.env.CF_PAGES && siteUrl.protocol !== 'https:')) {
-  throw new Error('SITE_URL must be an HTTPS origin without a path, such as https://example.pages.dev');
+let site = process.env.SITE_URL;
+let base = process.env.BASE_PATH || '/';
+
+if (!site) {
+  if (process.env.CF_PAGES) {
+    throw new Error('Set SITE_URL to the stable production URL in Cloudflare Pages environment variables.');
+  } else if (process.env.GITHUB_PAGES && process.env.GITHUB_REPOSITORY) {
+    const [owner, repo] = process.env.GITHUB_REPOSITORY.split('/');
+    site = `https://${owner}.github.io`;
+    if (!process.env.CUSTOM_DOMAIN) {
+      base = `/${repo}/`;
+    }
+  } else {
+    site = 'http://localhost:4321';
+  }
 }
 
 export default defineConfig({
   site,
+  base,
   output: 'static',
   trailingSlash: 'always',
+  i18n: {
+    defaultLocale: 'ko',
+    locales: ['ko', 'en'],
+    routing: {
+      prefixDefaultLocale: false,
+      redirectToDefaultLocale: false,
+    },
+  },
   integrations: [mdx(), sitemap()],
   vite: { plugins: [tailwindcss()] },
 });

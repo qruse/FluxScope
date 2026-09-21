@@ -1,10 +1,10 @@
 ---
-import BaseLayout from '../layouts/BaseLayout.astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
 ---
-<BaseLayout lang="ko" title="검색" description="FluxScope의 아티클 및 기술 분석 자료를 검색하세요.">
-  <header class="page-top"><div class="shell"><div class="section-kicker">기사 검색</div><h1>검색<span class="brand-dot">.</span></h1><p>아티클 아카이브를 검색합니다. 브라우저 내에서 즉시 색인 및 검색이 실행됩니다.</p></div></header>
+<BaseLayout lang="en" title="Search" description="Search all FluxScope articles on AI and emerging technology.">
+  <header class="page-top"><div class="shell"><div class="section-kicker">Find a story</div><h1>Search<span class="brand-dot">.</span></h1><p>Search the article archive. The index is stored with the site and runs in your browser.</p></div></header>
   <section class="listing"><div class="shell">
-    <div class="search-box"><label class="sr-only" for="search-input">기사 검색</label><input id="search-input" class="search-input" type="search" placeholder="“평가”, “워크플로우”, “데이터” 검색..." autocomplete="off" /><p id="search-status" class="search-status" role="status">검색어를 입력하면 실시간으로 결과가 표시됩니다.</p></div>
+    <div class="search-box"><label class="sr-only" for="search-input">Search articles</label><input id="search-input" class="search-input" type="search" placeholder="Try “risk”, “evaluation”, or “workflow”" autocomplete="off" /><p id="search-status" class="search-status" role="status">Start typing to search articles.</p></div>
     <ul id="search-results" class="search-results"></ul>
   </div></section>
   <script>
@@ -19,10 +19,10 @@ import BaseLayout from '../layouts/BaseLayout.astro';
       const current = ++requestId;
       if (!query) {
         if (list) list.replaceChildren();
-        if (status) status.textContent = '검색어를 입력하면 실시간으로 결과가 표시됩니다.';
+        if (status) status.textContent = 'Start typing to search articles.';
         return;
       }
-      if (status) status.textContent = '검색 중…';
+      if (status) status.textContent = 'Searching…';
       timer = setTimeout(async () => {
         try {
           const bundle = `${import.meta.env.BASE_URL}pagefind/pagefind.js`;
@@ -40,9 +40,9 @@ import BaseLayout from '../layouts/BaseLayout.astro';
             li.append(link, excerpt);
             return li;
           }));
-          status.textContent = `${search.results.length}개의 결과를 찾았습니다.`;
+          status.textContent = `${search.results.length} result${search.results.length === 1 ? '' : 's'} found.`;
         } catch (_) {
-          if (status) status.textContent = '검색 기능은 프로덕션 빌드(npm run build) 후에 활성화됩니다.';
+          if (status) status.textContent = 'Search is available after a production build. Run npm run build, then npm run preview.';
         }
       }, 180);
     });

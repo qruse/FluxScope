@@ -10,9 +10,9 @@ export function getStaticPaths() {
 
 const { category } = Astro.props;
 const info = categories[category as Category];
-const posts = publishedPosts(await getCollection('posts')).filter((post) => post.data.category === category);
+const posts = publishedPosts(await getCollection('posts'), 'ko').filter((post) => post.data.category === category);
 ---
-<BaseLayout title={info.name} description={info.description}>
-  <header class="page-top"><div class="shell"><div class="section-kicker">Topic / {info.name}</div><h1>{info.name}<span class="brand-dot">.</span></h1><p>{info.description}</p></div></header>
-  <section class="listing"><div class="shell"><div class="post-grid">{posts.map((post) => <PostCard post={post} />)}</div>{posts.length === 0 && <p class="empty-state">Articles are on the way.</p>}</div></section>
+<BaseLayout lang="ko" title={`${info.nameKo} (${info.name})`} description={info.descriptionKo}>
+  <header class="page-top"><div class="shell"><div class="section-kicker">주제 탐색 / {info.name}</div><h1>{info.nameKo}<span class="brand-dot">.</span></h1><p>{info.descriptionKo}</p></div></header>
+  <section class="listing"><div class="shell"><div class="post-grid">{posts.map((post) => <PostCard post={post} />)}</div>{posts.length === 0 && <p class="empty-state">해당 카테고리의 새로운 글이 준비 중입니다.</p>}</div></section>
 </BaseLayout>
