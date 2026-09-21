@@ -75,16 +75,9 @@ img { max-width: 100%; height: auto; }
 .post-card { min-width: 0; border: 1px solid var(--line); background: var(--surface); transition: transform .15s ease, border-color .15s ease; }
 .post-card:hover { transform: translateY(-3px); border-color: var(--accent); }
 .card-link { display: block; height: 100%; }
-.card-art { height: 175px; position: relative; overflow: hidden; background: #26373b; color: #e5eacb; }
-.art-orange { background: #e5c7ab; color: #4a3024; }
-.art-green { background: #bfd4b0; color: #1d443b; }
-.card-art::before, .card-art::after { content: ''; position: absolute; border: 1px solid currentColor; opacity: .48; border-radius: 50%; width: 230px; height: 230px; right: -30px; top: 40px; }
-.card-art::after { width: 350px; height: 350px; right: -90px; top: -20px; opacity: .28; }
-.art-index { position: absolute; left: 1.25rem; top: 1rem; font-size: .68rem; letter-spacing: .1em; font-weight: 800; }
-.art-label { position: absolute; left: 1.25rem; bottom: 1rem; font-family: Georgia, serif; font-size: 2.8rem; font-style: italic; letter-spacing: -.06em; line-height: 1; }
-.art-shape { position: absolute; width: 95px; height: 95px; border: 2px solid currentColor; border-radius: 50%; right: 14%; top: 18%; opacity: .75; }
-.art-orange .art-shape { width: 180px; height: 45px; border-radius: 50%; transform: rotate(-28deg); top: 45%; right: 8%; }
-.art-green .art-shape { border-radius: 0 100% 0 100%; transform: rotate(30deg); }
+.card-media { position: relative; overflow: hidden; background: var(--soft); aspect-ratio: 16 / 9; border-bottom: 1px solid var(--line); }
+.card-visual { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform .25s ease; }
+.post-card:hover .card-visual { transform: scale(1.03); }
 .card-copy { padding: 1.55rem 1.45rem 1.65rem; }
 .eyebrow { display: flex; align-items: center; gap: .5rem; font-size: .65rem; font-weight: 800; letter-spacing: .085em; text-transform: uppercase; color: var(--muted); }
 .category-pip { width: 7px; height: 7px; border-radius: 50%; background: var(--accent); }
@@ -101,7 +94,7 @@ img { max-width: 100%; height: auto; }
 .head-post { display: flex; flex-direction: column; }
 .head-post .post-card { height: 100%; display: flex; flex-direction: column; }
 .head-post .card-link { display: flex; flex-direction: column; height: 100%; }
-.head-post .card-art { height: 260px; }
+.head-post .card-media { aspect-ratio: 16 / 9; width: 100%; }
 .head-post .card-copy { flex: 1; display: flex; flex-direction: column; justify-content: space-between; padding: 2rem 1.8rem; }
 .head-post .card-copy h3 { font-size: clamp(1.6rem, 2.4vw, 2.2rem); margin: 0.9rem 0 0.8rem; line-height: 1.2; letter-spacing: -.05em; }
 .head-post .card-copy p { font-size: 1rem; line-height: 1.7; color: var(--muted); }
@@ -109,8 +102,7 @@ img { max-width: 100%; height: auto; }
 .sub-posts { display: flex; flex-direction: column; gap: 1.3rem; justify-content: space-between; }
 .sub-posts .post-card { flex: 1; min-height: 0; }
 .sub-posts .card-link { display: flex; height: 100%; }
-.sub-posts .card-art { width: 160px; height: 100%; min-height: 140px; flex-shrink: 0; }
-.sub-posts .art-label { font-size: 1.8rem; }
+.sub-posts .card-media { width: 175px; height: 100%; min-height: 140px; flex-shrink: 0; border-bottom: 0; border-right: 1px solid var(--line); }
 .sub-posts .card-copy { flex: 1; padding: 1.2rem 1.4rem; display: flex; flex-direction: column; justify-content: space-between; }
 .sub-posts .card-copy h3 { font-size: clamp(1.05rem, 1.35vw, 1.22rem); margin: 0.45rem 0 0.35rem; line-height: 1.3; }
 .sub-posts .card-copy p { font-size: 0.85rem; line-height: 1.55; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
@@ -450,7 +442,7 @@ html[data-theme="dark"] .astro-code span {
   .brand { font-size: 1.08rem; }
   .main-nav { justify-content: space-between; gap: .6rem; font-size: .72rem; }
   .sub-posts .card-link { flex-direction: column; }
-  .sub-posts .card-art { width: 100%; height: 130px; }
+  .sub-posts .card-media { width: 100%; height: 140px; border-right: 0; border-bottom: 1px solid var(--line); }
   .scroll-item { flex: 0 0 84vw; }
   .section, .topics, .lead-section, .topic-scroll-section { padding-block: 2.2rem; }
   .section-head { align-items: start; }
