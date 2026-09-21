@@ -1,0 +1,113 @@
+---
+import '../styles/global.css';
+import { site, withBase } from '../lib/site';
+
+interface Props {
+  title?: string;
+  description?: string;
+  image?: string;
+  imageAlt?: string;
+  type?: 'website' | 'article';
+  publishedAt?: Date;
+  updatedAt?: Date;
+  jsonLd?: Record<string, unknown> | Record<string, unknown>[];
+}
+
+const {
+  title = site.name,
+  description = site.description,
+  image = '/images/og-default.png',
+  imageAlt = 'Signal & Field editorial graphic',
+  type = 'website',
+  publishedAt,
+  updatedAt,
+  jsonLd,
+} = Astro.props;
+const canonical = new URL(Astro.url.pathname, Astro.site);
+const imageUrl = new URL(withBase(image), Astro.site);
+const fullTitle = title === site.name ? title : `${title} | ${site.name}`;
+---
+<!doctype html>
+<html lang={site.language}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#f6f5f1" />
+    <meta name="color-scheme" content="light dark" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical.href} />
+    <link rel="icon" href={withBase('/favicon.svg')} type="image/svg+xml" />
+    <link rel="alternate" type="application/rss+xml" title={`${site.name} RSS`} href={withBase('/rss.xml')} />
+    <link rel="sitemap" href={withBase('/sitemap-index.xml')} />
+    <meta property="og:type" content={type} />
+    <meta property="og:site_name" content={site.name} />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical.href} />
+    <meta property="og:image" content={imageUrl.href} />
+    <meta property="og:image:alt" content={imageAlt} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={fullTitle} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={imageUrl.href} />
+    {publishedAt && <meta property="article:published_time" content={publishedAt.toISOString()} />}
+    {updatedAt && <meta property="article:modified_time" content={updatedAt.toISOString()} />}
+    {jsonLd && <script type="application/ld+json" set:html={JSON.stringify(jsonLd).replace(/</g, '\\u003c')} />}
+    <script is:inline>
+      try {
+        const saved = localStorage.getItem('theme');
+        document.documentElement.dataset.theme = saved || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+      } catch (_) {}
+    </script>
+  </head>
+  <body>
+    <a class="skip-link" href="#content">Skip to content</a>
+    <header class="site-header">
+      <div class="shell header-inner">
+        <a class="brand" href={withBase('/')} aria-label={`${site.name} home`}>
+          <span class="brand-mark" aria-hidden="true"><span></span><span></span><span></span></span>
+          <span>Signal <span class="brand-amp">&</span> Field</span>
+        </a>
+        <nav class="main-nav" aria-label="Main navigation">
+          <a href={withBase('/ai/')}>AI</a>
+          <a href={withBase('/cars/')}>Cars</a>
+          <a href={withBase('/smartfarm/')}>Smart Farm</a>
+        </nav>
+        <div class="header-actions">
+          <a class="icon-link" href={withBase('/search/')} aria-label="Search articles" title="Search">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.6"></circle><path d="m16 16 5 5"></path></svg>
+          </a>
+          <button class="theme-toggle" type="button" aria-label="Toggle color theme" title="Toggle color theme">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.2 15.2A8.8 8.8 0 0 1 8.8 3.8 8.8 8.8 0 1 0 20.2 15.2Z"></path></svg>
+          </button>
+        </div>
+      </div>
+    </header>
+    <main id="content"><slot /></main>
+    <footer class="site-footer">
+      <div class="shell footer-grid">
+        <div>
+          <a class="footer-brand" href={withBase('/')}>Signal & Field<span class="brand-dot">.</span></a>
+          <p>Practical ideas, carefully sourced.</p>
+        </div>
+        <div class="footer-links">
+          <a href={withBase('/about/')}>About & editorial policy</a>
+          <a href={withBase('/rss.xml')}>RSS feed</a>
+          <a href={withBase('/search/')}>Search</a>
+        </div>
+        <p class="footer-copy">© {new Date().getFullYear()} Signal & Field</p>
+      </div>
+    </footer>
+    <script>
+      const button = document.querySelector<HTMLButtonElement>('.theme-toggle');
+      button?.addEventListener('click', () => {
+        const next = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
+        document.documentElement.dataset.theme = next;
+        try { localStorage.setItem('theme', next); } catch (_) {}
+      });
+    </script>
+  </body>
+</html>

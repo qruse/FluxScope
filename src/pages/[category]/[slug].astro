@@ -1,0 +1,57 @@
+---
+import { getCollection, render } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PostCard from '../../components/PostCard.astro';
+import { categories, categoryPath, dateLabel, postPath, publishedPosts, tagPath, withBase, type Post } from '../../lib/site';
+
+export async function getStaticPaths() {
+  const posts = publishedPosts(await getCollection('posts'));
+  return posts.map((post) => {
+    const [category, slug] = post.id.split('/');
+    if (!slug || category !== post.data.category) throw new Error(`Post path/category mismatch: ${post.id}`);
+    return { params: { category, slug }, props: { post, allPosts: posts } };
+  });
+}
+
+const { post, allPosts } = Astro.props as { post: Post; allPosts: Post[] };
+const { Content } = await render(post);
+const category = categories[post.data.category];
+const url = new URL(postPath(post), Astro.site).href;
+const imageUrl = new URL(withBase(post.data.image.src), Astro.site).href;
+const related = allPosts.filter((candidate) => candidate.id !== post.id).sort((a, b) => {
+  const score = (candidate: Post) => Number(candidate.data.category === post.data.category) * 2 + candidate.data.tags.filter((tag) => post.data.tags.includes(tag)).length;
+  return score(b) - score(a);
+}).slice(0, 2);
+const jsonLd = [
+  {
+    '@context': 'https://schema.org', '@type': 'Article',
+    headline: post.data.title, description: post.data.description, mainEntityOfPage: url,
+    image: imageUrl, datePublished: post.data.publishedAt.toISOString(), dateModified: post.data.updatedAt.toISOString(),
+    author: { '@type': 'Organization', name: post.data.author },
+    publisher: { '@type': 'Organization', name: 'Signal & Field' },
+    articleSection: category.name, keywords: post.data.tags.join(', '),
+  },
+  {
+    '@context': 'https://schema.org', '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: new URL(withBase('/'), Astro.site).href },
+      { '@type': 'ListItem', position: 2, name: category.name, item: new URL(categoryPath(post.data.category), Astro.site).href },
+      { '@type': 'ListItem', position: 3, name: post.data.title, item: url },
+    ],
+  },
+];
+---
+<BaseLayout title={post.data.seoTitle || post.data.title} description={post.data.description} image={post.data.image.src} imageAlt={post.data.image.alt} type="article" publishedAt={post.data.publishedAt} updatedAt={post.data.updatedAt} jsonLd={jsonLd}>
+  <article data-pagefind-body>
+    <header class="article-header article-shell">
+      <nav class="breadcrumbs" aria-label="Breadcrumb"><a href={withBase('/')}>Home</a><span>/</span><a href={categoryPath(post.data.category)}>{category.name}</a><span>/</span><span aria-current="page">Article</span></nav>
+      <h1>{post.data.title}</h1>
+      <p class="article-dek">{post.data.description}</p>
+      <div class="article-meta"><span>By <strong>{post.data.author}</strong></span><span>Published <time datetime={post.data.publishedAt.toISOString()}>{dateLabel(post.data.publishedAt)}</time></span><span>Updated <time datetime={post.data.updatedAt.toISOString()}>{dateLabel(post.data.updatedAt)}</time></span></div>
+    </header>
+    <div class="article-shell"><img class="article-visual" src={withBase(post.data.image.src)} width={post.data.image.width} height={post.data.image.height} alt={post.data.image.alt} decoding="async" /></div>
+    <div class="article-body article-shell"><Content /></div>
+    <div class="article-end article-shell"><div class="tag-list">{post.data.tags.map((tag) => <a href={tagPath(tag)}>#{tag}</a>)}</div></div>
+  </article>
+  {related.length > 0 && <section class="related"><div class="shell"><div class="section-head"><div><div class="section-kicker">Keep exploring</div><h2>Related reading</h2></div></div><div class="post-grid">{related.map((item) => <PostCard post={item} />)}</div></div></section>}
+</BaseLayout>
