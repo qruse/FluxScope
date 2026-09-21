@@ -4,7 +4,7 @@ seoTitle: "AI 도구 도입 전 실전 평가 및 검증 가이드"
 description: "실제 업무 시나리오 기반의 테스트, 실패 사례 기록, 그리고 인간 검토(Human-in-the-loop) 시점을 정의하는 실전 프레임워크."
 publishedAt: 2026-09-21
 updatedAt: 2026-09-21
-category: ai
+category: llm
 tags: [evaluation, workflow]
 author: "FluxScope"
 image:

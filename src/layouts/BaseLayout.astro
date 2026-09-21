@@ -52,7 +52,9 @@ if (currentLang === 'en') {
 const koUrl = withBase(koPath);
 const enUrl = withBase(enPath);
 const homeUrl = withBase(currentLang === 'en' ? '/en/' : '/');
-const aiUrl = withBase(currentLang === 'en' ? '/en/ai/' : '/ai/');
+const llmUrl = withBase(currentLang === 'en' ? '/en/llm/' : '/llm/');
+const physicalAiUrl = withBase(currentLang === 'en' ? '/en/physical-ai/' : '/physical-ai/');
+const otherAiUrl = withBase(currentLang === 'en' ? '/en/other-ai/' : '/other-ai/');
 const searchUrl = withBase(currentLang === 'en' ? '/en/search/' : '/search/');
 ---
 <!doctype html>
@@ -103,7 +105,9 @@ const searchUrl = withBase(currentLang === 'en' ? '/en/search/' : '/search/');
           <span>Flux<span class="brand-accent">Scope</span></span>
         </a>
         <nav class="main-nav" aria-label="Main navigation">
-          <a href={aiUrl}>{t('nav.ai')}</a>
+          <a href={llmUrl}>{t('nav.llm')}</a>
+          <a href={physicalAiUrl}>{t('nav.physical_ai')}</a>
+          <a href={otherAiUrl}>{t('nav.other_ai')}</a>
         </nav>
         <div class="header-actions">
           <div class="lang-switcher" aria-label="Language selection">

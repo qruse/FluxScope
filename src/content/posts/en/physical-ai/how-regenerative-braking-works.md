@@ -3,7 +3,7 @@ title: "Regenerative braking: what it does and what it cannot do"
 description: "A plain-language explanation of how electric cars recover energy while slowing down, and why friction brakes still matter."
 publishedAt: 2026-09-20
 updatedAt: 2026-09-21
-category: cars
+category: physical-ai
 tags: [electric vehicles, braking]
 author: "FluxScope"
 image:

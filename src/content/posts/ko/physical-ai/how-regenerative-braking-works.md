@@ -4,7 +4,7 @@ seoTitle: "전기차 회생 제동의 원리와 마찰 브레이크의 필요성
 description: "전기차가 감속할 때 운동 에너지를 배터리로 회수하는 메커니즘과 여전히 기계식 마찰 브레이크가 필수적인 이유를 쉽게 설명합니다."
 publishedAt: 2026-09-20
 updatedAt: 2026-09-21
-category: cars
+category: physical-ai
 tags: [electric vehicles, braking]
 author: "FluxScope"
 image:

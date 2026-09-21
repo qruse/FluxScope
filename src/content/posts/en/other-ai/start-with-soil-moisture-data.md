@@ -3,7 +3,7 @@ title: "Smart irrigation starts with trustworthy soil data"
 description: "Before automating irrigation, choose a useful sensor location, understand what the reading means, and compare it with conditions in the field."
 publishedAt: 2026-09-19
 updatedAt: 2026-09-21
-category: smartfarm
+category: other-ai
 tags: [irrigation, sensors]
 author: "FluxScope"
 image:
@@ -36,7 +36,7 @@ The [University of Minnesota Extension guide to soil moisture sensors](https://e
 | Rain and irrigation events | Explains sudden changes |
 | Field observation | Checks whether the data is plausible |
 
-The goal is a repeatable decision process. An alert, dashboard, or AI forecast cannot repair a poorly placed sensor or missing context. The same discipline of defining a task and measuring failures appears in our [AI tool evaluation guide](/ai/evaluate-ai-tools-before-adoption/).
+The goal is a repeatable decision process. An alert, dashboard, or AI forecast cannot repair a poorly placed sensor or missing context. The same discipline of defining a task and measuring failures appears in our [AI tool evaluation guide](/en/llm/evaluate-ai-tools-before-adoption/).
 
 ## FAQ
 

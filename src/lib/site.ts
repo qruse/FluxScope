@@ -8,25 +8,25 @@ export const site = {
 };
 
 export const categories = {
-  ai: {
-    name: 'AI',
-    nameKo: '인공지능',
-    description: 'Tools, research, and careful analysis of what AI can actually do.',
-    descriptionKo: '인공지능 도구, 연구 동향, 그리고 AI가 실제로 할 수 있는 것에 대한 깊이 있는 분석.',
+  llm: {
+    name: 'LLM',
+    nameKo: 'LLM',
+    description: 'Large language models, reasoning, and practical prompts & workflows.',
+    descriptionKo: '거대 언어 모델, 추론 아키텍처, 프롬프트 엔지니어링 및 실무 워크플로우.',
     accent: 'violet',
   },
-  cars: {
-    name: 'Cars',
-    nameKo: '모빌리티',
-    description: 'The technology and decisions shaping modern mobility.',
-    descriptionKo: '미래 모빌리티와 전기차 기술 동향.',
+  'physical-ai': {
+    name: 'Physical AI',
+    nameKo: '피지컬 AI',
+    description: 'Embodied AI, robotics, autonomous mobility, and physical interaction.',
+    descriptionKo: '로보틱스, 자율주행, 임베디드 및 물리적 세계와 상호작용하는 체화된 인공지능.',
     accent: 'orange',
   },
-  smartfarm: {
-    name: 'Smart Farm',
-    nameKo: '스마트팜',
-    description: 'Practical data and technology for more informed growing.',
-    descriptionKo: '스마트 농업 및 데이터 기반 농업 기술.',
+  'other-ai': {
+    name: 'Other AI',
+    nameKo: '기타 AI',
+    description: 'Vision, audio, multimodal models, and specialized AI architectures.',
+    descriptionKo: '컴퓨터 비전, 음성, 멀티모달 및 다양한 특화 인공지능 기술 동향.',
     accent: 'green',
   },
 } as const;

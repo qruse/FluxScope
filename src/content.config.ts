@@ -10,7 +10,7 @@ const posts = defineCollection({
     description: z.string().min(50).max(180),
     publishedAt: z.coerce.date(),
     updatedAt: z.coerce.date(),
-    category: z.enum(['ai', 'cars', 'smartfarm']),
+    category: z.enum(['llm', 'physical-ai', 'other-ai']),
     tags: z.array(z.string().min(2)).min(1),
     author: z.string().min(2),
     image: z.object({

@@ -4,7 +4,7 @@ seoTitle: "스마트팜 관수 제어를 위한 토양 센서 설치 및 데이�
 description: "관수를 무작정 자동화하기 전에 센서의 적절한 매설 깊이, 데이터의 물리적 의미 파악, 그리고 실제 현장과의 대조가 필수적인 이유."
 publishedAt: 2026-09-19
 updatedAt: 2026-09-21
-category: smartfarm
+category: other-ai
 tags: [irrigation, sensors]
 author: "FluxScope"
 image:
