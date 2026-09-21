@@ -33,6 +33,15 @@ export default defineConfig({
       redirectToDefaultLocale: false,
     },
   },
+  markdown: {
+    shikiConfig: {
+      themes: {
+        light: 'github-light',
+        dark: 'github-dark-dimmed',
+      },
+      wrap: true,
+    },
+  },
   integrations: [mdx(), sitemap()],
   vite: { plugins: [tailwindcss()] },
 });
