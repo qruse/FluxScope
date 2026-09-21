@@ -1,9 +1,9 @@
 import type { CollectionEntry } from 'astro:content';
 
 export const site = {
-  name: 'Signal & Field',
-  description: 'Clear, sourced notes on artificial intelligence, cars, and smart farming.',
-  author: 'Signal & Field',
+  name: 'FluxScope',
+  description: 'Clear, sourced explanations of AI, cars, and smart farming in a changing world.',
+  author: 'FluxScope',
   language: 'en',
 };
 

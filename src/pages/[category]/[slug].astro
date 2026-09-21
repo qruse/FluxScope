@@ -2,7 +2,7 @@
 import { getCollection, render } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import PostCard from '../../components/PostCard.astro';
-import { categories, categoryPath, dateLabel, postPath, publishedPosts, tagPath, withBase, type Post } from '../../lib/site';
+import { categories, categoryPath, dateLabel, postPath, publishedPosts, site, tagPath, withBase, type Post } from '../../lib/site';
 
 export async function getStaticPaths() {
   const posts = publishedPosts(await getCollection('posts'));
@@ -28,7 +28,7 @@ const jsonLd = [
     headline: post.data.title, description: post.data.description, mainEntityOfPage: url,
     image: imageUrl, datePublished: post.data.publishedAt.toISOString(), dateModified: post.data.updatedAt.toISOString(),
     author: { '@type': 'Organization', name: post.data.author },
-    publisher: { '@type': 'Organization', name: 'Signal & Field' },
+    publisher: { '@type': 'Organization', name: site.name },
     articleSection: category.name, keywords: post.data.tags.join(', '),
   },
   {

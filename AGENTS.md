@@ -1,4 +1,4 @@
-# Agent instructions for Signal & Field
+# Agent instructions for FluxScope
 
 - Work in English for repository files and article drafts. The site is an Astro + TypeScript static blog; do not add a backend, database, CMS, OpenAI API integration, or extra framework without a concrete requirement.
 - Keep the smallest maintainable change. Use `src/content/posts/<category>/<english-slug>.md` or `.mdx` for articles. Valid categories: `ai`, `cars`, `smartfarm`.

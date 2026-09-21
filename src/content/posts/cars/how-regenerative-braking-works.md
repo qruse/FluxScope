@@ -5,7 +5,7 @@ publishedAt: 2026-09-20
 updatedAt: 2026-09-21
 category: cars
 tags: [electric vehicles, braking]
-author: "Signal & Field"
+author: "FluxScope"
 image:
   src: /images/regenerative-braking.png
   width: 1200

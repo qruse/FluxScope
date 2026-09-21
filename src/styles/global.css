@@ -39,11 +39,9 @@ img { max-width: 100%; height: auto; }
 .site-header { border-bottom: 1px solid var(--line); background: var(--bg); }
 .header-inner { min-height: 78px; display: flex; align-items: center; gap: 2.2rem; }
 .brand { display: inline-flex; align-items: center; gap: .8rem; font-weight: 800; font-size: 1.22rem; letter-spacing: -.055em; white-space: nowrap; }
-.brand-amp { color: var(--accent); }
-.brand-mark { width: 27px; height: 27px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 3px; transform: rotate(-10deg); }
-.brand-mark span { display: block; border-radius: 1px; background: var(--accent); }
-.brand-mark span:nth-child(2) { transform: translateY(5px); }
-.brand-mark span:nth-child(3) { transform: translateY(-3px); }
+.brand-accent { color: var(--accent); }
+.brand-mark { position: relative; flex: none; width: 27px; height: 27px; border: 2px solid var(--accent); border-radius: 50%; background: linear-gradient(var(--accent), var(--accent)) center / 2px 100% no-repeat, linear-gradient(var(--accent), var(--accent)) center / 100% 2px no-repeat; }
+.brand-mark span { position: absolute; left: 50%; top: 50%; width: 7px; height: 7px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 0 3px var(--bg); transform: translate(-50%, -50%); }
 .main-nav { margin-left: auto; display: flex; align-items: center; gap: 2rem; font-size: .8rem; font-weight: 750; letter-spacing: .025em; }
 .main-nav a:hover, .footer-links a:hover { color: var(--accent); }
 .header-actions { display: flex; align-items: center; gap: .55rem; margin-left: 1rem; }

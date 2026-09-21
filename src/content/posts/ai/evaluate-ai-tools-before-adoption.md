@@ -5,7 +5,7 @@ publishedAt: 2026-09-21
 updatedAt: 2026-09-21
 category: ai
 tags: [evaluation, workflow]
-author: "Signal & Field"
+author: "FluxScope"
 image:
   src: /images/ai-evaluation.png
   width: 1200

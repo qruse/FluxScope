@@ -5,7 +5,7 @@ publishedAt: 2026-09-19
 updatedAt: 2026-09-21
 category: smartfarm
 tags: [irrigation, sensors]
-author: "Signal & Field"
+author: "FluxScope"
 image:
   src: /images/soil-moisture.png
   width: 1200
