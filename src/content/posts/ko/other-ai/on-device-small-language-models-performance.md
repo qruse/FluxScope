@@ -1,6 +1,6 @@
 ---
-title: "손안의 스마트폰에서 sLM 굴리기: 4-bit 양자화와 NPU의 처절한 VRAM 다이어트"
-seoTitle: "스마트폰 sLM 구동을 위한 4-bit 양자화와 NPU 메모리 다이어트"
+title: "온디바이스 sLM과 스마트폰 NPU: 4-bit 양자화와 처절한 VRAM 다이어트"
+seoTitle: "온디바이스 sLM과 스마트폰 NPU: 4-bit 양자화 메모리 최적화"
 description: "클라우드 API 청구서 무서워서 스마트폰 NPU에 3B 모델 욱여넣으려다 1.8GB 메모리 폭발하고 손난로 쓰로틀링과 맞닥뜨린 온디바이스 실전 생존기"
 publishedAt: 2026-09-20
 updatedAt: 2026-09-21

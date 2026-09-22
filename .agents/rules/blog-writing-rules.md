@@ -21,7 +21,9 @@ See `AGENTS.md` and `GEMINI.md` at the project root for the full guidelines.
 - **Tone (냉소적·유머러스한 실무 엔지니어 스타일)**:
   - Korean: 개조식(Itemized bullet format) + 음슴체 (`~함`, `~임`, `~봄`, `~필수`, `~안 됨`, `~행`). 겉만 번지르르한 마케팅/벤치마크 헛소리를 꿰뚫어 보는 쌉싸름한 냉소와 뼈 때리는 블랙 유머 장착. 단, 핵심 수치와 기술 메커니즘은 칼같이 정확하게 제공.
   - English: Wry, cynical executive engineering memo. Punctures Silicon Valley hype with dry deadpan realism and witty field takeaways. Zero fluff, zero academic lecturing.
-  - **Titles & Descriptions (제목과 요약문 규격)**: 교과서식/학술 논문투 제목(~의 원리와 실무, ~의 상관관계 분석, ~하는 방법) 절대 금지. 마케팅 환상을 박살 내고 실무 엔지니어의 씁쓸한 현실과 블랙 유머를 제목과 `description`, `3줄 요약`에서부터 직관적으로 드러내야 함. 요약문 끝 마침표(`.`) 절대 금지.
+  - **Titles & Descriptions (제목과 요약문 규격)**:
+    - **핵심 키워드 전진 배치 필수**: 글의 핵심 기술 키워드가 **제목의 맨 처음 또는 극초반에 먼저 딱 나오고 시작해야 함** (`[핵심 키워드]: [마케팅 허상 폭로 / 냉소적 실무 진실]` 구조 권장).
+    - 교과서식/학술 논문투 제목(~의 원리와 실무, ~의 상관관계 분석, ~하는 방법) 절대 금지. 마케팅 환상을 박살 내고 실무 엔지니어의 씁쓸한 현실과 블랙 유머를 제목과 `description`, `3줄 요약`에서부터 직관적으로 드러내야 함. 요약문 끝 마침표(`.`) 절대 금지.
 - **Punctuation**: NO trailing periods (`.`) on bullet points or memo sentences.
 - **Structure**:
   1. Top (Fixed): `## 3줄 요약` / `## 3-Line TL;DR` (3 bullet points).

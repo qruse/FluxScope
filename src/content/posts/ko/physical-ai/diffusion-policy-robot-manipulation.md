@@ -1,6 +1,6 @@
 ---
-title: "로봇 팔의 헛손질 멈추기: Diffusion Policy가 평균값 참사를 해결한 원리"
-seoTitle: "로봇 헛손질 멈추는 Diffusion Policy와 50Hz 실시간 제어"
+title: "Diffusion Policy와 로봇 조작: 헛손질과 평균값 참사를 끝장내는 원리"
+seoTitle: "Diffusion Policy와 로봇 조작: 50Hz 실시간 제어와 다중 모드 궤적"
 description: "장애물 앞에서 좌우 고민하다 정중앙에 처박히는 고전 모방 학습의 저주를 깨부수고 50Hz 제어 루프로 매끄러운 궤적 뽑아내는 비결"
 publishedAt: 2026-09-20
 updatedAt: 2026-09-22

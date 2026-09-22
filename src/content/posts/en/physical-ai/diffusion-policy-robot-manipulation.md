@@ -1,6 +1,6 @@
 ---
-title: "Stopping Robot Hesitation: Why Diffusion Policy Kills the Multimodal Average Trap"
-seoTitle: "Why Diffusion Policy Fixes Robot Hesitation and Enables 50Hz Control"
+title: "Diffusion Policy in Robotics: Why It Kills the Multimodal Average Trap"
+seoTitle: "Diffusion Policy in Robotics: Eliminating Action Hesitation at 50Hz"
 description: "How replacing naive mean-squared regression with noise-denoising score matching keeps robotic arms from freezing between two valid trajectories at 50Hz"
 publishedAt: 2026-09-20
 updatedAt: 2026-09-22

@@ -1,6 +1,6 @@
 ---
-title: "Cramming sLMs into Smartphones: 4-Bit Quantization and the Brutal VRAM Diet"
-seoTitle: "Running sLMs on Smartphones: 4-Bit Quantization and NPU Memory Limits"
+title: "On-Device sLMs on Smartphones: 4-Bit Quantization and the Brutal VRAM Diet"
+seoTitle: "On-Device sLMs: 4-Bit Quantization and Mobile NPU Memory Limits"
 description: "Escaping thousand-dollar monthly cloud API bills by squeezing 3B models onto edge NPUs without melting the battery or triggering the OS memory reaper"
 publishedAt: 2026-09-20
 updatedAt: 2026-09-21

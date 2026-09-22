@@ -1,6 +1,6 @@
 ---
-title: "One-Pedal Passenger Nausea: The Unforgiving Physics of EV Regenerative Torque"
-seoTitle: "One-Pedal Motion Sickness: EV Regenerative Torque and Jerk Dynamics"
+title: "EV Regenerative Braking & One-Pedal Driving: The Physics of Passenger Nausea"
+seoTitle: "EV Regenerative Braking and One-Pedal Driving: Torque and Motion Sickness"
 description: "Why abrupt deceleration jerk profiles and unrefined hydraulic friction brake blending turn enthusiastic one-pedal EV driving into a family motion sickness nightmare"
 publishedAt: 2026-09-22
 updatedAt: 2026-09-22

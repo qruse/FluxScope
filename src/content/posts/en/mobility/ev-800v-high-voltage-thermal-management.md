@@ -1,6 +1,6 @@
 ---
-title: "The 18-Minute Fast-Charging Illusion: 800V EV Architectures and the SiC Cost Trap"
-seoTitle: "The 18-Minute Fast-Charging Myth: 800V EV Architecture and SiC Thermal Realities"
+title: "800V EV Fast-Charging: The 18-Minute Illusion and the SiC Cost Trap"
+seoTitle: "800V EV Fast-Charging: 18-Minute Charging Illusion and SiC Cost Limits"
 description: "Why glossy ultra-fast charging marketing dies in freezing highway blizzards while astronomical silicon carbide wafer costs blow up OEM hardware budgets"
 publishedAt: 2026-09-22
 updatedAt: 2026-09-22

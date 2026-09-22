@@ -74,7 +74,8 @@ Every post must adhere to this exact structural hierarchy:
 ### Korean (한국어):
 - **개조식(Itemized Bullet Format) + 음슴체 종결 필수**: 만연체 금지, 모든 항목은 `~함`, `~임`, `~봄`, `~필수`, `~안 됨`, `~행` 등으로 압축 종결.
 - **제목 및 요약문 어조 규격 (Title & Description Style)**:
-  - **제목**: 교과서식/학술 논문투(예: `~의 원리와 실무 분석`, `~의 상관관계 분석`, `~하는 방법`) 철저히 금지. 마케팅 허상을 직격하고 씁쓸한 실무 현실이나 엔지니어의 블랙 유머를 제목에서부터 바로 체감할 수 있게 작성 (예: `18분 초고속 충전 쇼의 진실: 800V 배터리와 SiC 인버터의 원가·발열 대참사`, `1Hz의 새빨간 거짓말: 120Hz LTPO 디스플레이 마케팅과 배터리 절감의 추악한 진실`).
+  - **핵심 키워드 전진 배치 필수 (Front-Loading Core Keywords)**: 검색 및 독자 인지성을 위해 글의 핵심 기술 키워드(예: `800V 배터리`, `SDV 조널 아키텍처`, `Diffusion Policy`, `120Hz LTPO 디스플레이`, `스마트폰 3nm AP`, `폴더블폰 물방울 힌지` 등)가 **제목의 맨 처음 또는 극초반에 명확히 먼저 딱 나오고 시작해야 함**. 수식어나 부연 설명 뒤로 핵심 키워드가 밀려나는 구조 철저히 금지. 권장 패턴: `[핵심 키워드]: [마케팅 허상 폭로 및 엔지니어 블랙 유머]` 형태.
+  - **제목 어조**: 교과서식/학술 논문투(예: `~의 원리와 실무 분석`, `~의 상관관계 분석`, `~하는 방법`) 철저히 금지. 핵심 키워드를 선두에 박고 뒤이어 마케팅 허상을 직격하는 씁쓸한 실무 현실이나 엔지니어의 블랙 유머를 제목에서부터 바로 체감할 수 있게 작성 (예: `800V 배터리와 초고속 충전 쇼의 진실: SiC 인버터의 원가·발열 대참사`, `120Hz LTPO 디스플레이와 1Hz의 거짓말: 가변 주사율 마케팅과 배터리 절감의 추악한 진실`).
   - **요약문 (`description` & `## 3줄 요약`)**: 점잖은 사전식 개요 서술을 금지하고, 독자가 피식 웃으며 공감할 수 있는 뼈 때리는 팩트 폭격과 씁쓸한 엔지니어링 현실을 위트 있게 압축 요약. 문장 끝 마침표(`.`) 절대 금지.
 - **냉소적 위트와 블랙 유머 (Cynical Wit & Humor)**:
   - 겉만 번지르르한 벤치마크 점수나 마케팅 쇼 뒤에 숨겨진 추악한 진실(새벽 온콜 호출, 불타는 클라우드 청구서, if-else 누더기 코드)을 씁쓸하고 유머러스하게 비틀기.
@@ -84,7 +85,7 @@ Every post must adhere to this exact structural hierarchy:
 
 ### English (영어):
 - **Wry, Cynical Executive Field-Note Memo**: Fast, punchy, dark-humored insider engineering memo.
-- **Title & Summary Tone**: Pithy, biting headlines and summaries that immediately puncture Silicon Valley hype (e.g., `The 18-Minute Fast-Charging Illusion: 800V EV Architectures and the SiC Cost Trap`, `The 1Hz Display Fairy Tale: LTPO Refresh Rate Marketing vs. Battery Reality`). Never use dry textbook paper titles.
+- **Title & Summary Tone (Front-loaded Keywords)**: Place the core technical keyword at the very beginning of the headline, followed by a biting, cynical hype-puncturing hook (e.g., `800V EV Fast-Charging: The 18-Minute Illusion and the SiC Cost Trap`, `120Hz LTPO Mobile Displays: The 1Hz Idle Fairy Tale vs. Battery Reality`). Never bury keywords behind vague intro clauses or use dry textbook paper titles.
 - Punctures corporate marketing hype with deadpan, cynical technical realism ("looks revolutionary in investor slide decks until it burns $40k of cloud compute on a date parsing bug at 3 AM").
 - Match the brisk tempo, sharp wit, and cynical realism of the Korean 음슴체 version.
 - Zero generic introductory fluff, zero dry textbook lecturing.

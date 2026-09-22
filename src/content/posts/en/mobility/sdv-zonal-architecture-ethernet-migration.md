@@ -1,6 +1,6 @@
 ---
-title: "The SDV Zonal Architecture Mirage: Consolidating 100 ECUs into Supplier Turf Wars"
-seoTitle: "SDV Zonal Architecture Realities: Consolidating 100 ECUs into Ethernet"
+title: "SDV Zonal Architecture Migration: Consolidating 100 ECUs into Supplier Turf Wars"
+seoTitle: "SDV Zonal Architecture Migration: Consolidating 100 ECUs into Ethernet"
 description: "Scrapping 50kg of copper wiring for automotive gigabit ethernet sounds elegant until proprietary Tier-1 black-box binaries drop critical CAN frames"
 publishedAt: 2026-09-22
 updatedAt: 2026-09-22
