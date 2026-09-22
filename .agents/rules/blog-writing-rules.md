@@ -19,5 +19,7 @@ See `AGENTS.md` and `GEMINI.md` at the project root for the full guidelines.
   3. Bottom (Fixed): `## Q&A 또 궁금한 것은?` / `## Q&A (Field Notes)`.
   4. Footer: NO trailing `---` or review date footers at the end.
 - **Tags**: 5 to 15 lowercase `kebab-case` tags.
-- **Thumbnails**: Minimalist Swiss graphic design style, no cheesy AI-generated art.
+- **Images (2 Types)**:
+  - Type 1 (Sourced Research): Official papers/benchmarks with source citation.
+  - Type 2 (Directly Generated): NO generic AI art. Must be hand-drawn sketch schematics (XKCD/Excalidraw style), algorithm pipeline schematics, or programmatic code-generated charts via `scripts/visuals/cli.py` or `scripts.visuals.charts`.
 - **Verification**: Must pass `npm run check` with 0 errors and 0 broken links.

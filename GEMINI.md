@@ -74,14 +74,36 @@ Every post must adhere to this exact structural hierarchy:
 
 ---
 
-## 5. Thumbnail & Visual Asset Guidelines (썸네일/이미지 규칙)
+## 5. Image Classification & Visual Assets Policy (이미지 2대 유형 및 시각화 규칙)
 
-- **NO Cheesy AI Art**: Never use glossy, bloated, stereotypical AI-generated illustrations, 3D floating glowing orbs, or DALL-E style fluff ("너무 AI 티나는 이미지 금지").
-- **Design Philosophy**: Minimalist Swiss graphic design style, technical blueprint, typography-focused, or sharp vector icon graphics matching FluxScope's monochrome/dark-mode palette.
-- **Image Specifications**:
-  - File format: WebP or optimized SVG/PNG under `public/images/posts/`.
-  - Dimensions: 1200 x 630 px (standard OG aspect ratio).
-  - Every image referenced in markdown or frontmatter must have accurate alt text, width, and height.
+All images in articles must strictly belong to one of two categories. Meaningless, glossy, generic AI-generated illustrations (3D floating orbs, cyberpunk neon fluff, DALL-E style art) are strictly forbidden ("AI 티나는 일러스트 금지").
+
+### ① Type 1: Sourced Research Images (자료 조사 이미지)
+- **Definition**: Primary figures, architectural diagrams, model cards, benchmark plots, or system schematics directly extracted from official papers (arXiv), documentation, or authoritative vendor announcements.
+- **Rules**:
+  - Must provide clear source attribution in the caption or immediately following bullet point (e.g., `*출처: DeepSeek-V3 Technical Report*`).
+  - Optimize format (WebP or PNG) under `public/images/posts/<category>/`.
+  - Always specify descriptive `alt`, `width`, and `height`.
+
+### ② Type 2: Programmatic & Sketch Visuals (직접 생성 도식·그래프 이미지)
+- **Definition**: Explanatory visuals created specifically for the post to illustrate architectures, algorithmic flows, or performance comparisons.
+- **Allowed Forms**:
+  - **Hand-drawn Sketch Schematics (사람이 그린 듯한 스케치 도식)**: Excalidraw/XKCD rough sketch style block diagrams and pipeline flows.
+  - **Algorithm & Pipeline Schematics (알고리즘 도식화)**: Clear stage-by-stage block flows with input/output badges.
+  - **Programmatic Code-Generated Charts (직접 코딩으로 만든 그래프)**: Precision benchmark comparisons, latency/throughput curves, scaling laws.
+- **Modular Generation Toolkit (`scripts/visuals/`)**:
+  - To eliminate graph creation time, agents must use the pre-configured visual generator CLI or Python module (`scripts.visuals.charts`) matching FluxScope's exact color palette:
+  ```bash
+  # 1. Bar comparison chart (latency, throughput, memory)
+  python scripts/visuals/cli.py bar --labels "FP16,INT8,FP4" --values "184,105,62" --unit "ms" --title "Inference Latency" --output public/images/posts/<category>/<slug>-latency.png
+
+  # 2. Trend & scaling curve (context scaling, loss curves)
+  python scripts/visuals/cli.py trend --x "1k,2k,4k,8k" --series "Unoptimized:1.8,3.6,7.2,14.4;Cached:0.3,0.3,0.4,0.6" --title "KV Cache Footprint" --output public/images/posts/<category>/<slug>-scaling.png
+
+  # 3. Hand-drawn sketch pipeline (algorithm dataflow, system architecture)
+  python scripts/visuals/cli.py pipeline --steps "Sensors:Raw frames:INPUT;Perception:Occupancy grid:STAGE 1;Planning:MCTS:STAGE 2;Control:CAN bus:ACTUATION" --title "E2E Decision Loop" --output public/images/posts/<category>/<slug>-pipeline.png
+  ```
+  - Or import `from scripts.visuals.charts import plot_bar_comparison, plot_line_trend, plot_sketch_pipeline` for customized charts.
 
 ---
 
