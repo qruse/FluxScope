@@ -4,7 +4,7 @@ description: "A plain-language explanation of how electric cars recover energy w
 publishedAt: 2026-09-20
 updatedAt: 2026-09-21
 category: physical-ai
-tags: [electric vehicles, braking]
+tags: [electric-vehicles, braking, energy-recovery, powertrain, battery, automotive-physics]
 author: "FluxScope"
 image:
   src: /images/physical-ai.png

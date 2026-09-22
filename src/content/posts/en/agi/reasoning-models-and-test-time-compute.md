@@ -5,7 +5,7 @@ description: "How allocating dynamic compute during inference enables complex ma
 publishedAt: 2026-09-21
 updatedAt: 2026-09-21
 category: agi
-tags: [reasoning, test-time-compute]
+tags: [reasoning, test-time-compute, system-2, chain-of-thought, mcts, model-architecture]
 author: "FluxScope"
 image:
   src: /images/agi.png

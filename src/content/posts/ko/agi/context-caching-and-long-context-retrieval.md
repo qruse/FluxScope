@@ -5,7 +5,7 @@ description: "방대한 문서와 코드베이스를 LLM에 한 번에 주입할
 publishedAt: 2026-09-20
 updatedAt: 2026-09-21
 category: agi
-tags: [caching, context-window]
+tags: [caching, context-window, kv-cache, prompt-engineering, cost-optimization, llm-serving]
 author: "FluxScope"
 image:
   src: /images/agi.png

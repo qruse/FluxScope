@@ -4,7 +4,7 @@ description: "A practical starting framework for testing an AI tool against a re
 publishedAt: 2026-09-21
 updatedAt: 2026-09-21
 category: agi
-tags: [evaluation, workflow]
+tags: [evaluation, workflow, llm-ops, benchmarking, hitl, quality-assurance]
 author: "FluxScope"
 image:
   src: /images/agi.png

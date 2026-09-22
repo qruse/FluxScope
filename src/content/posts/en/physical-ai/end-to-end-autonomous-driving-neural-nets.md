@@ -5,7 +5,7 @@ description: "Unifying perception, prediction, and motion planning into a single
 publishedAt: 2026-09-19
 updatedAt: 2026-09-21
 category: physical-ai
-tags: [autonomous-driving, neural-networks]
+tags: [autonomous-driving, neural-networks, end-to-end, sensor-fusion, path-planning, perception]
 author: "FluxScope"
 image:
   src: /images/physical-ai.png

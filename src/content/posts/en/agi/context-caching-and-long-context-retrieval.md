@@ -5,7 +5,7 @@ description: "How preserving KV caches for repeated document prefixes dramatical
 publishedAt: 2026-09-20
 updatedAt: 2026-09-21
 category: agi
-tags: [caching, context-window]
+tags: [caching, context-window, kv-cache, prompt-engineering, cost-optimization, llm-serving]
 author: "FluxScope"
 image:
   src: /images/agi.png

@@ -11,7 +11,7 @@ const posts = defineCollection({
     publishedAt: z.coerce.date(),
     updatedAt: z.coerce.date(),
     category: z.enum(['agi', 'physical-ai', 'other-ai']),
-    tags: z.array(z.string().min(2)).min(1),
+    tags: z.array(z.string().min(2)).min(5).max(15),
     author: z.string().min(2),
     image: z.object({
       src: z.string().startsWith('/'),

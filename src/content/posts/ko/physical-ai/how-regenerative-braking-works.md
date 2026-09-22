@@ -5,7 +5,7 @@ description: "전기차가 감속할 때 운동 에너지를 배터리로 회수
 publishedAt: 2026-09-20
 updatedAt: 2026-09-21
 category: physical-ai
-tags: [electric vehicles, braking]
+tags: [electric-vehicles, braking, energy-recovery, powertrain, battery, automotive-physics]
 author: "FluxScope"
 image:
   src: /images/physical-ai.png

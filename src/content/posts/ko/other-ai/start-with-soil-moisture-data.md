@@ -5,7 +5,7 @@ description: "관수를 무작정 자동화하기 전에 센서의 적절한 매
 publishedAt: 2026-09-19
 updatedAt: 2026-09-21
 category: other-ai
-tags: [irrigation, sensors]
+tags: [irrigation, sensors, smart-farm, iot, telemetry, precision-agriculture]
 author: "FluxScope"
 image:
   src: /images/other-ai.png

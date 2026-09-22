@@ -5,7 +5,7 @@ description: "How bypassing conventional ASR-LLM-TTS cascaded pipelines achieves
 publishedAt: 2026-09-18
 updatedAt: 2026-09-21
 category: other-ai
-tags: [speech, audio-multimodal]
+tags: [speech, audio-multimodal, low-latency, streaming-audio, voice-ai, conversational-ai]
 author: "FluxScope"
 image:
   src: /images/other-ai.png

@@ -5,7 +5,7 @@ description: "실제 업무 시나리오 기반의 테스트, 실패 사례 기�
 publishedAt: 2026-09-21
 updatedAt: 2026-09-21
 category: agi
-tags: [evaluation, workflow]
+tags: [evaluation, workflow, llm-ops, benchmarking, hitl, quality-assurance]
 author: "FluxScope"
 image:
   src: /images/agi.png

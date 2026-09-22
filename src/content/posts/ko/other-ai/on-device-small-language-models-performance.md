@@ -5,7 +5,7 @@ description: "4-bit 양자화와 신경망 가속기(NPU)를 활용하여 클라
 publishedAt: 2026-09-20
 updatedAt: 2026-09-21
 category: other-ai
-tags: [on-device, quantization]
+tags: [on-device, quantization, small-language-models, edge-ai, npu, mobile-optimization]
 author: "FluxScope"
 image:
   src: /images/other-ai.png

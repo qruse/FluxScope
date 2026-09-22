@@ -5,7 +5,7 @@ description: "인지, 예측, 경로 계획의 파편화된 파이프라인을 �
 publishedAt: 2026-09-19
 updatedAt: 2026-09-21
 category: physical-ai
-tags: [autonomous-driving, neural-networks]
+tags: [autonomous-driving, neural-networks, end-to-end, sensor-fusion, path-planning, perception]
 author: "FluxScope"
 image:
   src: /images/physical-ai.png

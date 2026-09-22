@@ -5,7 +5,7 @@ description: "How multimodal neural networks translate raw visual camera streams
 publishedAt: 2026-09-20
 updatedAt: 2026-09-21
 category: physical-ai
-tags: [robotics, foundation-models]
+tags: [robotics, foundation-models, humanoid, vla, embodied-ai, computer-vision]
 author: "FluxScope"
 image:
   src: /images/physical-ai.png

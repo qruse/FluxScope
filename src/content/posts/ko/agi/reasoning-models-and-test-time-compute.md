@@ -5,7 +5,7 @@ description: "토큰 생성 단계에서 추론 시간을 동적으로 할당하
 publishedAt: 2026-09-21
 updatedAt: 2026-09-21
 category: agi
-tags: [reasoning, test-time-compute]
+tags: [reasoning, test-time-compute, system-2, chain-of-thought, mcts, model-architecture]
 author: "FluxScope"
 image:
   src: /images/agi.png

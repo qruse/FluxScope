@@ -5,7 +5,7 @@ description: "카메라 시각 입력과 자연어 명령을 로봇 관절의 �
 publishedAt: 2026-09-20
 updatedAt: 2026-09-21
 category: physical-ai
-tags: [robotics, foundation-models]
+tags: [robotics, foundation-models, humanoid, vla, embodied-ai, computer-vision]
 author: "FluxScope"
 image:
   src: /images/physical-ai.png

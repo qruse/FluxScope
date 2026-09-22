@@ -11,6 +11,6 @@
   - **No Trailing Periods**: Never put a trailing period (`.`) at the end of bullet points or memo sentences.
   - **English**: Corresponding executive field-note memo style with active verbs and bullet points (also omitting trailing periods on bullets).
 - Before writing a factual article, inspect current primary sources. Prefer official announcements, documentation, model cards, research papers, public data, and firsthand observations. Link sources near the claims they support. Note uncertainty and practical limits. Never invent test results, quotes, dates, or citations.
-- Fill every required frontmatter field. Use accurate `publishedAt` and `updatedAt` dates, descriptive image alt text, and image dimensions. Keep `draft: true` until content has been reviewed for accuracy and image rights.
+- Fill every required frontmatter field. Use accurate `publishedAt` and `updatedAt` dates, descriptive image alt text, and image dimensions. **Tags rule**: Must provide between 5 and 15 relevant tags (`5 <= tags.length <= 15`). Keep `draft: true` until content has been reviewed for accuracy and image rights.
 - Do not automatically publish a draft from a scheduled task unless the task explicitly authorizes publication. A scheduled task may research, draft, and run checks without an external AI API.
 - Run `npm run check` for code or content changes. On Windows in restricted environments, set `ASTRO_TELEMETRY_DISABLED=1` for the command if Astro cannot write its telemetry settings.
