@@ -80,8 +80,14 @@ All images in articles must strictly belong to one of two categories. Meaningles
 
 ### ① Type 1: Sourced Research Images (자료 조사 이미지)
 - **Definition**: Primary figures, architectural diagrams, model cards, benchmark plots, or system schematics directly extracted from official papers (arXiv), documentation, or authoritative vendor announcements.
-- **Rules**:
-  - Must provide clear source attribution in the caption or immediately following bullet point (e.g., `*출처: DeepSeek-V3 Technical Report*`).
+- **Mandatory Attribution Format (출처 표기 표준 규격)**:
+  - Immediately below the image tag, an italicized source link MUST be placed in this exact format:
+    - **Korean**: `*출처: [기관/저자명](공식URL) — 논문 또는 기술 리포트 제목*`
+    - **English**: `*Source: [Author/Org](OfficialURL) — Paper or Technical Report Title*`
+  - Example: `*출처: [Columbia AI Robotics Lab](https://diffusion-policy.cs.columbia.edu/) — Diffusion Policy Technical Report*`
+- **Technical In-text Citations**:
+  - All empirical figures, benchmarks, or architectures must have inline markdown links to official primary sources: `...벤치마크 달성 ([arXiv:2303.04137](https://arxiv.org/abs/2303.04137))`
+- **Optimization Rules**:
   - Optimize format (WebP or PNG) under `public/images/posts/<category>/`.
   - Always specify descriptive `alt`, `width`, and `height`.
 

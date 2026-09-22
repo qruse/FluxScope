@@ -68,6 +68,13 @@ print(response.text)
 
 ---
 
+## KV Cache Footprint and Scaling Dynamics
+
+![KV Cache Footprint Comparison](/images/posts/agi/kv-cache-scaling.webp)
+*Source: [Google DeepMind Gemini Architecture](https://deepmind.google/technologies/gemini/) — Context Caching & Memory Footprint Analysis*
+
+---
+
 ## RAG vs Full Context Caching
 
 | Dimension | RAG (Vector Search) | Full Context Caching |

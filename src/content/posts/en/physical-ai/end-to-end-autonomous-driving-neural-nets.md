@@ -36,6 +36,13 @@ experienceNote: "At complex unprotected left turns where legacy rule engines hes
 
 ---
 
+## End-to-End Driving Pipeline Architecture
+
+![End-to-End Autonomous Driving Decision Loop](/images/posts/physical-ai/e2e-driving-pipeline.webp)
+*Source: [Wayve / Tesla AI](https://wayve.ai/thinking/lbd-embodied-ai/) — End-to-End Foundation World Models for Autonomous Mobility*
+
+---
+
 ## 3 Critical In-Vehicle Hardware Bottlenecks
 
 1. **Inference Latency Budget**

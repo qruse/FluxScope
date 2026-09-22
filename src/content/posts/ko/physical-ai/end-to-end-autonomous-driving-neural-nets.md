@@ -36,6 +36,13 @@ experienceNote: "비보호 좌회전 복잡 구간에서 규칙 기반 시스템
 
 ---
 
+## 엔드투엔드 주행 파이프라인 아키텍처
+
+![End-to-End Autonomous Driving Decision Loop](/images/posts/physical-ai/e2e-driving-pipeline.webp)
+*출처: [Wayve / Tesla AI](https://wayve.ai/thinking/lbd-embodied-ai/) — End-to-End Foundation World Models for Autonomous Mobility*
+
+---
+
 ## E2E 실차 배포 시 3대 하드웨어 병목
 
 1. **지연 시간(Inference Latency) 예산**

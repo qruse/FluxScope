@@ -68,6 +68,13 @@ print(response.text)
 
 ---
 
+## KV 캐시 메모리 풋프린트와 확장성
+
+![KV Cache Footprint Comparison](/images/posts/agi/kv-cache-scaling.webp)
+*출처: [Google DeepMind Gemini Architecture](https://deepmind.google/technologies/gemini/) — Context Caching & Memory Footprint Analysis*
+
+---
+
 ## RAG vs Full Context Caching 비교
 
 | 비교 항목 | RAG (검색 기반 증강) | Context Caching (문맥 캐싱) |

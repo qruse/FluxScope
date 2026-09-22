@@ -20,6 +20,8 @@ if (!site) {
   }
 }
 
+import { rehypeOptimizeImages } from './src/lib/rehype-optimize-images.mjs';
+
 export default defineConfig({
   site,
   base,
@@ -34,6 +36,7 @@ export default defineConfig({
     },
   },
   markdown: {
+    rehypePlugins: [rehypeOptimizeImages],
     shikiConfig: {
       themes: {
         light: 'github-light',
@@ -42,6 +45,6 @@ export default defineConfig({
       wrap: true,
     },
   },
-  integrations: [mdx(), sitemap()],
+  integrations: [mdx({ rehypePlugins: [rehypeOptimizeImages] }), sitemap()],
   vite: { plugins: [tailwindcss()] },
 });

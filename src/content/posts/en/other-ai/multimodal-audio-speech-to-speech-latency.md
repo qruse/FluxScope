@@ -36,6 +36,13 @@ experienceNote: "Cascaded STT-LLM-TTS pipelines hit an irreducible 1.8-second la
 
 ---
 
+## Turnaround Latency Benchmark Comparison
+
+![Speech-to-Speech Latency Comparison](/images/posts/other-ai/speech-latency-comparison.webp)
+*Source: [Kyutai Moshi / OpenAI](https://kyutai.org/moshi.pdf) — Real-Time Full-Duplex Speech-to-Speech Multimodal Benchmark*
+
+---
+
 ## 3 Engineering Pillars of Sub-300ms Conversational AI
 
 1. **Neural Audio Codec Compression**

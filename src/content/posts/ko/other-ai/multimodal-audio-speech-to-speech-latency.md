@@ -36,6 +36,13 @@ experienceNote: "기존 STT-LLM-TTS 조합은 아무리 튜닝해도 1.8초 밑�
 
 ---
 
+## 대화 지연 시간 벤치마크 비교
+
+![Speech-to-Speech Latency Comparison](/images/posts/other-ai/speech-latency-comparison.webp)
+*출처: [Kyutai Moshi / OpenAI](https://kyutai.org/moshi.pdf) — Real-Time Full-Duplex Speech-to-Speech Multimodal Benchmark*
+
+---
+
 ## 실시간 300ms 방어벽을 깨기 위한 3대 엔지니어링 기법
 
 1. **뉴럴 오디오 코덱(Neural Audio Codec)**
