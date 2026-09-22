@@ -10,10 +10,13 @@ This file contains the authoritative, non-negotiable guidelines for all AI agent
 - **Language Pairing (다국어 쌍 작성)**: Every article must be published in both Korean and English simultaneously:
   - Korean path: `src/content/posts/ko/<category>/<slug>.md`
   - English path: `src/content/posts/en/<category>/<slug>.md`
-- **Strict Categories (카테고리 3종)**:
-  - `agi`: AGI, frontier models, reasoning architectures, prompt engineering, LLM-ops, evaluation.
-  - `physical-ai`: Autonomous driving, robotics, humanoid, VLA foundation models, EV powertrain, real-world physics.
-  - `other-ai`: On-device AI, small language models, edge compute, speech/audio multimodality, smart agriculture, IoT telemetry.
+- **Category Hierarchy (대분류-중분류 체계)**:
+  - **대분류 1. AI**:
+    - `agi`: AGI, frontier models, reasoning architectures, prompt engineering, LLM-ops, evaluation.
+    - `physical-ai`: Autonomous driving, robotics, humanoid, VLA foundation models, real-world physics.
+    - `other-ai`: On-device AI, small language models, edge compute, speech/audio multimodality, smart agriculture, IoT telemetry.
+  - **대분류 2. 자동차(모빌리티) (`mobility`)**: EV powertrain, 800V architecture, battery thermal management, SDV zonal architecture, regenerative braking, automotive ethernet.
+  - **대분류 3. IT 제품 (`it-devices`)**: Flagship smartphones (Galaxy, iPhone), AP silicon throttling, vapor chamber cooling, foldable hinges, UTG, mobile LTPO displays.
 - **Minimal Maintainable Diffs**: Make the smallest, cleanest maintainable change.
 
 ---

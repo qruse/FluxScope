@@ -55,6 +55,9 @@ const homeUrl = withBase(currentLang === 'en' ? '/en/' : '/');
 const agiUrl = withBase(currentLang === 'en' ? '/en/agi/' : '/agi/');
 const physicalAiUrl = withBase(currentLang === 'en' ? '/en/physical-ai/' : '/physical-ai/');
 const otherAiUrl = withBase(currentLang === 'en' ? '/en/other-ai/' : '/other-ai/');
+const aiUrl = withBase(currentLang === 'en' ? '/en/ai/' : '/ai/');
+const mobilityUrl = withBase(currentLang === 'en' ? '/en/mobility/' : '/mobility/');
+const itDevicesUrl = withBase(currentLang === 'en' ? '/en/it-devices/' : '/it-devices/');
 const searchUrl = withBase(currentLang === 'en' ? '/en/search/' : '/search/');
 ---
 <!doctype html>
@@ -130,9 +133,33 @@ const searchUrl = withBase(currentLang === 'en' ? '/en/search/' : '/search/');
           <span>Flux<span class="brand-accent">Scope</span></span>
         </a>
         <nav class="main-nav" aria-label="Main navigation">
-          <a href={agiUrl}>{t('nav.agi')}</a>
-          <a href={physicalAiUrl}>{t('nav.physical_ai')}</a>
-          <a href={otherAiUrl}>{t('nav.other_ai')}</a>
+          <div class="nav-item-dropdown">
+            <a href={aiUrl} class="nav-link-major nav-dropdown-trigger">
+              <span>{t('nav.ai')}</span>
+              <svg class="dropdown-chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg>
+            </a>
+            <div class="dropdown-menu" role="menu">
+              <a href={agiUrl} class="dropdown-item" role="menuitem">
+                <span class="dropdown-pip pip-violet" aria-hidden="true"></span>
+                <span>{t('nav.agi')}</span>
+              </a>
+              <a href={physicalAiUrl} class="dropdown-item" role="menuitem">
+                <span class="dropdown-pip pip-orange" aria-hidden="true"></span>
+                <span>{t('nav.physical_ai')}</span>
+              </a>
+              <a href={otherAiUrl} class="dropdown-item" role="menuitem">
+                <span class="dropdown-pip pip-green" aria-hidden="true"></span>
+                <span>{t('nav.other_ai')}</span>
+              </a>
+              <div class="dropdown-divider" role="separator" aria-hidden="true"></div>
+              <a href={aiUrl} class="dropdown-item dropdown-all" role="menuitem">
+                <span>{t('nav.ai_all')}</span>
+                <span class="arrow" aria-hidden="true">→</span>
+              </a>
+            </div>
+          </div>
+          <a href={mobilityUrl} class="nav-link-major">{t('nav.mobility')}</a>
+          <a href={itDevicesUrl} class="nav-link-major">{t('nav.it_devices')}</a>
         </nav>
         <div class="header-actions">
           <div class="lang-switcher" aria-label="Language selection">
