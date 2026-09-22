@@ -7,6 +7,12 @@ always_on: true
 
 See `AGENTS.md` and `GEMINI.md` at the project root for the full guidelines.
 
+- **Core Concept & Editorial Identity (블로그 핵심 컨셉과 정체성)**:
+  - **관심 분야 탐구 & 기록**: 작성자가 관심 있는 기술(AI, 모빌리티/EV, 플래그십 IT 기기)의 최신 소식과 이슈를 직접 찾아보고 조사하여 블로그로 정리함.
+  - **이중 목적 ("나도 보고, 사람들도 볼 수 있게")**:
+    1. **나를 위한 실무 아카이브**: 내가 언제든 다시 찾아볼 수 있는 고밀도 스펙, 시스템 내부 원리, 시행착오 및 실패 포인트 정리.
+    2. **독자들을 위한 고밀도 공유**: 다른 엔지니어와 독자들도 마케팅 거품 없이 진짜 실무적 본질을 명확히 파악할 수 있도록 제공.
+  - 뻔한 보도자료 요약이나 피상적 소개글 절대 금지. "내가 직접 써먹고 다시 보려고 정리한 필드 노트" 수준의 깊이 유지.
 - **Language**: Always write pairs in Korean (`ko/<category>/<slug>.md`) and English (`en/<category>/<slug>.md`).
 - **Category Hierarchy (대분류-중분류 체계)**:
   - **대분류 1. AI**: `agi`, `physical-ai`, `other-ai`

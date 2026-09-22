@@ -3,7 +3,7 @@ import { defaultLang, type Lang } from '../i18n/ui';
 
 export const site = {
   name: 'FluxScope',
-  description: 'AI와 변화하는 기술의 본질을 짚어내는 독립 기술 블로그.',
+  description: 'AI, 모빌리티, IT 기기 등 관심 분야의 기술적 본질과 최신 소식을 파헤쳐 나도 두고두고 찾아보고 함께 나누는 독립 기술 블로그.',
   author: 'FluxScope',
 };
 

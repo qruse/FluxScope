@@ -10,7 +10,7 @@ export const defaultLang: Lang = 'ko';
 export const ui = {
   ko: {
     'site.title': 'FluxScope - 기술과 변화를 읽는 시선',
-    'site.description': '인공지능(AI)과 최신 기술 동향을 객관적인 데이터와 명확한 시선으로 분석합니다.',
+    'site.description': '관심 있는 AI, 모빌리티, 최신 IT 기기 소식을 파고들어 나도 다시 보고 독자도 함께 보는 독립 기술 블로그.',
     'nav.home': '홈',
     'nav.ai': 'AI',
     'nav.ai_all': 'AI 전체보기',
@@ -23,7 +23,7 @@ export const ui = {
     'nav.search': '검색',
     'hero.kicker': '독립 기술 블로그 · 001호',
     'hero.title': '변화의 본질을,\n정확하게.',
-    'hero.intro': 'AI와 최신 기술의 흐름을 짚어냅니다. 근거 중심의 분석으로 과장 없이 유용한 핵심만을 전합니다.',
+    'hero.intro': '관심 있는 기술의 최신 소식을 파헤쳐 정리합니다. 내가 언제든 다시 찾아보고, 독자도 함께 유용한 인사이트를 얻을 수 있도록 마케팅 거품 없이 전달합니다.',
     'hero.action': '최신 글 살펴보기',
     'hero.tagline': '근거 중심 · 독자 우선',
     'latest.kicker': '추천 아티클',
@@ -53,7 +53,7 @@ export const ui = {
   },
   en: {
     'site.title': 'FluxScope - Technology and Change in Focus',
-    'site.description': 'Clear, sourced explanations of AI and emerging technologies in a changing world.',
+    'site.description': 'Curating and investigating AI, mobility, and consumer hardware — practical notes for personal reference and public insight.',
     'nav.home': 'Home',
     'nav.ai': 'AI',
     'nav.ai_all': 'All AI',
@@ -66,7 +66,7 @@ export const ui = {
     'nav.search': 'Search',
     'hero.kicker': 'Independent technology notes · Issue 001',
     'hero.title': 'Change,\nin focus.',
-    'hero.intro': 'A clearer view of AI and modern technology. We follow the evidence, explain what is changing, and make the useful part easy to find.',
+    'hero.intro': 'Investigating tech breakthroughs across AI, mobility, and IT hardware. Field notes documented for personal reference and shared with practitioners cutting through marketing noise.',
     'hero.action': 'Explore latest stories',
     'hero.tagline': 'Research-led · Reader-first',
     'latest.kicker': 'The reading list',

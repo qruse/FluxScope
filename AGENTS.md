@@ -4,8 +4,14 @@ This file contains the authoritative, non-negotiable guidelines for all AI agent
 
 ---
 
-## 1. Project & Architecture Principles (프로젝트 기본 원칙)
+## 1. Project & Architecture Principles (프로젝트 기본 원칙 및 블로그 컨셉)
 
+- **Core Concept & Identity (블로그 핵심 컨셉과 정체성)**:
+  - **관심 분야 탐색 & 능동적 정리**: 작성자가 평소 관심 있는 기술 분야(AI, 전기차/모빌리티, 플래그십 IT 기기 등)의 최신 뉴스, 연구, 제품 소식을 깊이 파헤치고 찾아보는 과정에서 작성됨.
+  - **이중 목적 ("나도 보고, 사람들도 볼 수 있게")**:
+    1. **나를 위한 실무 아카이브**: 마케팅 거품을 걷어내고 정밀한 하드웨어 수치, 시스템 내부 구조, 실패 시나리오, 엣지 케이스를 압축 정리하여 작성자 본인이 두고두고 다시 찾아볼 수 있는 실전 기술 노트 역할을 함.
+    2. **동료 엔지니어/독자를 위한 고밀도 공유**: 같은 주제에 관심을 가진 다른 개발자와 테크 매니아들도 함께 읽고 뻔한 마케팅 쇼에 속지 않고 진짜 기술적 본질을 얻어갈 수 있도록 공유함.
+  - 따라서 단순 기사 번역이나 피상적인 홍보성 소개글은 절대 지양하며, "내가 직접 납득하고 써먹으려고 파고든 진짜 엔지니어의 필드 노트" 수준의 정보 밀도를 유지해야 함.
 - **Static Architecture**: FluxScope is an Astro + TypeScript static site. Never add a backend, database, CMS, OpenAI API runtime call, or unnecessary external frameworks.
 - **Language Pairing (다국어 쌍 작성)**: Every article must be published in both Korean and English simultaneously:
   - Korean path: `src/content/posts/ko/<category>/<slug>.md`
