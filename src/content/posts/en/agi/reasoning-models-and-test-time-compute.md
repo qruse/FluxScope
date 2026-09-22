@@ -16,12 +16,44 @@ draft: false
 lang: en
 ---
 
-## The short answer
+## 3-Line TL;DR
 
-While traditional language models rely on rapid intuitive pattern matching (System 1), modern reasoning architectures allocate dynamic computation at inference time to deliberate and verify steps before answering (System 2). This test-time scaling unlocks new frontiers in symbolic logic, math, and complex code generation.
+- Conventional LLMs use System 1 (Fast, intuitive pattern-matching); reasoning models operate on **System 2 (Slow, deliberate verification)**.
+- With pretraining data scaling hitting diminishing returns, the industry has pivoted to scaling **Test-time Compute** (thinking longer at inference).
+- Essential for eliminating hallucinations in complex math, formal logic proofs, and codebase refactoring.
 
-## Key pillars of test-time scaling
+---
 
-1. **Hidden deliberate thinking:** Exploring hypotheses and generating self-critiques before committing to output tokens.
-2. **Search over reasoning paths:** Evaluating multiple paths to determine mathematically or factually superior solutions.
-3. **Backtracking and self-correction:** Reversing incorrect intermediate premises when a logical dead-end is detected.
+## 3 Core Mechanisms of Test-Time Scaling
+
+1. **Hidden Chain-of-Thought (CoT)**
+   - Before emitting tokens to the user, the model formulates hypotheses and stress-tests its own reasoning internally.
+   - Triggers automated backtracking whenever an intermediate step leads to a logical contradiction.
+
+2. **Tree Search & Process Reward Models (PRM)**
+   - Employs search algorithms (similar to Monte Carlo Tree Search in AlphaGo) to prioritize promising solution branches.
+   - Evaluates step-by-step correctness rather than scoring only the final output.
+
+3. **Inference Compute Proportionality**
+   - Trivial queries (simple lookups, basic grammar) resolve in <100 tokens with zero latency penalty.
+   - Difficult problems scale internal tokens into the thousands, dramatically increasing accuracy.
+
+---
+
+## Traditional LLMs vs Reasoning Models
+
+| Dimension | General-Purpose LLMs (e.g. GPT-4o) | Reasoning Architectures (o1 / o3 / R1) |
+| :--- | :--- | :--- |
+| **Cognitive Mode** | Intuitive pattern matching (System 1) | Deliberate verification & backtracking (System 2) |
+| **Time to First Token (TTFT)** | 0.2–0.5s (near-instant) | 5–30s (internal thinking phase) |
+| **Ideal Workload** | Translation, drafting, summaries, chat | Mathematical proofs, vulnerability audits, hard bugs |
+| **Cost Profile** | Predictable per-token cost | Higher cost per query due to hidden reasoning tokens |
+
+---
+
+## Production Deployment Rule
+- Never attach reasoning models to simple customer FAQs or general chat—users will bounce on high latency and costs.
+- Deploy exclusively where **factual precision is non-negotiable**: automated unit test synthesis, architecture audits, and critical data analysis.
+
+---
+*Reviewed against production reasoning model benchmarks as of September 2026.*

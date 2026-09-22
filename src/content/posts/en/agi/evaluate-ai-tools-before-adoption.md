@@ -15,41 +15,60 @@ draft: false
 lang: en
 ---
 
-## The short answer
+## 3-Line TL;DR
 
-Start with one real task, define what a good result looks like, and test the tool on a small set of examples that includes difficult cases. Record both useful outputs and failures. Keep a person responsible for decisions where errors have meaningful consequences.
+- Ignore flashy vendor demos; isolate **exactly one real-world production task** to evaluate.
+- Stress-test with 30 deliberate edge cases and traps, not just clean happy-path inputs.
+- Enforce a strict Human-in-the-loop (HITL) gate for any high-blast-radius output.
 
-This is a working method, not a score that proves a system is safe or suitable everywhere. The [NIST AI Risk Management Framework](https://airc.nist.gov/airmf-resources/airmf/5-sec-core/) describes risk management as an ongoing cycle of governing, mapping, measuring, and managing. A one-time demo cannot cover that cycle.
+---
 
-## What to test first
+## 5-Step Evaluation Checklist
 
-1. **Define the job.** Write down the users, the input the tool will see, and the output they need. “Summarize our support tickets with links to evidence” is more testable than “make support faster.”
-2. **Choose representative examples.** Include normal requests, ambiguous ones, missing information, and cases where the right answer is “I do not know.”
-3. **Set review criteria.** Check factual support, completeness, clarity, time saved, and the cost of correcting errors. The criteria should reflect the specific job.
-4. **Capture failures.** Keep the prompt, source material, output, expected behavior, and reviewer notes. Retest after changing the prompt, model, or workflow.
-5. **Decide the review point.** Specify which outputs can be used directly and which must be checked by a person before they reach anyone else.
+1. **Scope the Exact Task**
+   - ❌ "Make support faster" (untestable fluff).
+   - ⭕ "Ingest ticket, output 3-bullet summary with verified source links and action items" (testable spec).
+   - Document inputs, schema output, and target operator on a 1-page spec.
 
-NIST's framework explicitly calls for context-specific measurement and for documenting methods and metrics. This makes the test set and review criteria part of the product decision, rather than an afterthought.
+2. **Assemble 30 Edge Cases (Deliberately Broken)**
+   - 10 standard inputs: typical daily incoming traffic.
+   - 10 ambiguous/incomplete inputs: verify if the model asks for missing context.
+   - 10 adversarial/trap inputs: cases where the only acceptable answer is "I don't know / Cannot answer."
+   - Public benchmarks (MMLU, etc.) don't reflect internal domain logic or security constraints.
 
-| Question | Evidence to keep |
-| --- | --- |
-| Does it complete the task? | Task examples and reviewer judgments |
-| Where does it fail? | Failed inputs and corrected outputs |
-| Is it worth using? | Time saved and correction effort |
-| Who remains accountable? | Review and escalation rules |
+3. **Set Quantitative Evaluation Metrics**
+   - **Factual grounding**: hallucination rate against internal source docs.
+   - **End-to-end latency**: total time from draft generation to human sign-off.
+   - **Remediation cost**: developer/reviewer hours required to fix model mistakes.
 
-## FAQ
+4. **Archive Failures for Regression Passes**
+   - Save input prompt, ground-truth context, wrong model output, and reviewer notes in an eval sheet.
+   - Rerun the exact test set whenever prompt templates, context windows, or models are bumped.
 
-### Is a public benchmark enough?
+5. **Draw the Human-in-the-Loop Boundary**
+   - Explicitly gate which outputs can ship straight to users vs. which require manual sign-off.
+   - Treat [NIST AI RMF](https://airc.nist.gov/airmf-resources/airmf/5-sec-core/) (Govern, Map, Measure, Manage) as a standing operational pipeline, not a one-off audit.
 
-No. A benchmark can be useful background, but it may not represent your inputs, users, or acceptable error rate. Test the actual workflow as well.
+---
 
-### How often should the test be repeated?
+## Metric Comparison
 
-Repeat it when the tool, prompt, data, or task changes, and review failures during normal use. NIST describes measurement and risk management as continuing activities throughout the AI system lifecycle.
+| Evaluation Dimension | Recommended Metric | Risky / Vanity Metric |
+| :--- | :--- | :--- |
+| **Accuracy** | Document-grounded factual precision (%) | Raw public benchmark leaderboard rank |
+| **Efficiency** | Total cycle time (draft + human review) | Raw token throughput or output length |
+| **Safety** | Time to detect & remediate errors | Unrealistic assumption of 0% error rate |
 
-## Sources
+---
 
-- [NIST AI Risk Management Framework — Core](https://airc.nist.gov/airmf-resources/airmf/5-sec-core/), especially the Map, Measure, and Manage functions.
+## FAQ (Field Notes)
 
-*Last reviewed: September 21, 2026.*
+- **Q: Can we just pick the #1 model on the LMSYS / MMLU leaderboard?**
+  - No. Public benchmarks test generic world knowledge, not internal company schemas or proprietary workflows.
+- **Q: How many test cases do we need for an initial pilot?**
+  - Do not start with hundreds. 20–30 high-signal edge cases catch 80% of failure modes much faster.
+- **Q: When should tests be rerun?**
+  - Mandatory after any prompt modification, model parameter update, or schema shift.
+
+---
+*Reviewed against production LLM evaluation standards as of September 2026.*
