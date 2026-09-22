@@ -24,6 +24,7 @@ See `AGENTS.md` and `GEMINI.md` at the project root for the full guidelines.
   - **Titles & Descriptions (제목과 요약문 규격)**:
     - **핵심 키워드 전진 배치 필수**: 글의 핵심 기술 키워드가 **제목의 맨 처음 또는 극초반에 먼저 딱 나오고 시작해야 함** (`[핵심 키워드]: [마케팅 허상 폭로 / 냉소적 실무 진실]` 구조 권장).
     - 교과서식/학술 논문투 제목(~의 원리와 실무, ~의 상관관계 분석, ~하는 방법) 절대 금지. 마케팅 환상을 박살 내고 실무 엔지니어의 씁쓸한 현실과 블랙 유머를 제목과 `description`, `3줄 요약`에서부터 직관적으로 드러내야 함. 요약문 끝 마침표(`.`) 절대 금지.
+  - **Zero Profanity (비속어/욕설 절대 금지)**: 롱런을 위해 저급한 비속어, 욕설, 과도한 저질 은어(예: `돈지랄`, `개판`, `존나`, `병신`, `아가리`, `호구`, `쥐어패다/후드려패다`, `사기단`, `끔살/총살` 등) 일체 금지. 유머는 비속어가 아닌 지적인 냉소와 실무 비유(원가 폭탄, 온콜 호출, 누더기 코드 등)로 구현.
 - **Punctuation**: NO trailing periods (`.`) on bullet points or memo sentences.
 - **Structure**:
   1. Top (Fixed): `## 3줄 요약` / `## 3-Line TL;DR` (3 bullet points).

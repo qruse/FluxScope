@@ -130,6 +130,17 @@ for (const file of files) {
     errors.push(`${relPath}: Explicit mention of 'Reddit' is prohibited. Use neutral phrasing such as '실무 엔지니어 커뮤니티' or 'Developer Community'.`);
   }
 
+  // 2-2. Zero Profanity Check: Vulgar slang & profanity strictly forbidden
+  const FORBIDDEN_VULGAR_TERMS = [
+    '돈지랄', '지랄', '존나', '병신', '아가리', '호구', '새끼', 
+    '후드려', '쥐어패', '끔살', '총살', '사기단', '개판'
+  ];
+  for (const term of FORBIDDEN_VULGAR_TERMS) {
+    if (raw.includes(term)) {
+      errors.push(`${relPath}: Forbidden vulgar term detected: "${term}". Please refine into professional cynical engineering tone.`);
+    }
+  }
+
   // 3. Tags Count Validation (5 <= tags <= 15)
   const tags = frontmatter.tags;
   if (!Array.isArray(tags) || tags.length < 5 || tags.length > 15) {
