@@ -8,10 +8,10 @@ category: mobility
 tags: [regenerative-braking, one-pedal-driving, ev-dynamics, brake-blending, torque-control, chassis-control]
 author: "FluxScope"
 image:
-  src: /images/regenerative-braking.png
+  src: /images/posts/mobility/one-pedal-blending-sequence.webp
   width: 1200
   height: 630
-  alt: "전기차 회생제동 에너지 흐름 및 감속 토크 제어 다이어그램"
+  alt: "원페달 드라이빙 회생제동-마찰제동 토크 블렌딩 제어 시퀀스"
 draft: false
 lang: ko
 ---
@@ -36,6 +36,9 @@ lang: ko
 ---
 
 ## 동승자 멀미를 유발하는 3대 감속 토크 복병
+
+![감속 구간별 저크(Jerk) 변화율 및 제동 프로파일 비교](/images/posts/mobility/one-pedal-jerk-profile.webp)
+*출처: [FluxScope Dynamics] — 회생제동-마찰제동 전환 구간 저크(Jerk) 변화율 및 제동 곡선*
 
 1. **가속도 변화율(Jerk) 필터링 실패**
    - 인간의 전정기관은 일정한 감속도($-0.2G$)에는 적응하지만, 감속도가 급격히 변하는 변화율($dG/dt$)에는 즉각 구토 신호를 보냄

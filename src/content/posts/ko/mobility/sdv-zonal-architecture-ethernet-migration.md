@@ -8,10 +8,10 @@ category: mobility
 tags: [sdv, zonal-architecture, automotive-ethernet, ecu-consolidation, ota-updates, autosar]
 author: "FluxScope"
 image:
-  src: /images/regenerative-braking.png
+  src: /images/posts/mobility/sdv-zonal-network-topology.webp
   width: 1200
   height: 630
-  alt: "차량 조널 아키텍처와 중앙 집중형 컴퓨터 네트워크 다이어그램"
+  alt: "SDV 조널 아키텍처 중앙 집중형 이더넷 네트워크 토폴로지 다이어그램"
 draft: false
 lang: ko
 ---
@@ -36,6 +36,9 @@ lang: ko
 ---
 
 ## SDV 개발 현장에서 엔지니어가 절망하는 3대 복병
+
+![차량 아키텍처 세대별 와이어링 하네스 중량 및 케이블 길이 비교](/images/posts/mobility/sdv-wiring-weight-comparison.webp)
+*출처: [FluxScope Automotive] — 분산형 vs 도메인 vs 조널 아키텍처 와이어링 하네스 중량 비교*
 
 1. **티어 1 부품사들의 블랙박스 C코드 사수전**
    - 구동계, 제동계 부품사들이 "영업비밀"이라며 소스코드 안 주고 컴파일된 C언어 바이너리만 툭 던져줌

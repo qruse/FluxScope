@@ -8,10 +8,10 @@ category: it-devices
 tags: [foldable-phones, waterdrop-hinge, utg-glass, display-mechanics, mechanical-durability, flex-crease]
 author: "FluxScope"
 image:
-  src: /images/other-ai.png
+  src: /images/posts/it-devices/foldable-waterdrop-hinge-sequence.webp
   width: 1200
   height: 630
-  alt: "폴더블폰 힌지 내부 기어 구조와 디스플레이 곡률 반경 도식"
+  alt: "폴더블폰 물방울 힌지 멀티링크 캠 회전 및 폴딩 메커니즘 시퀀스"
 draft: false
 lang: ko
 ---
@@ -36,6 +36,9 @@ lang: ko
 ---
 
 ## 폴더블 화면 주름 뒤에 숨겨진 3대 기계공학적 한계
+
+![폴딩 반복 횟수별 화면 주름 깊이 변화 추이](/images/posts/it-devices/foldable-crease-depth-trend.webp)
+*출처: [FluxScope Display Labs] — 폴더블폰 폴딩 사이클(0~20만 회)에 따른 주름 깊이 변화 추이*
 
 1. **물방울 곡률 반경과 내부 실장 공간의 제로섬 게임**
    - 패널을 둥글게 말아 넣으려면 힌지 내부로 디스플레이가 침투할 빈 공간(Cavity)이 필요함

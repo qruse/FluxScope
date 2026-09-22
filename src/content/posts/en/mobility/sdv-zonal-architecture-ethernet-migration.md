@@ -8,10 +8,10 @@ category: mobility
 tags: [sdv, zonal-architecture, automotive-ethernet, ecu-consolidation, ota-updates, autosar]
 author: "FluxScope"
 image:
-  src: /images/regenerative-braking.png
+  src: /images/posts/mobility/sdv-zonal-network-topology.webp
   width: 1200
   height: 630
-  alt: "Zonal E/E architecture and centralized automotive compute network diagram"
+  alt: "SDV Zonal Architecture Centralized Ethernet Network Topology Diagram"
 draft: false
 lang: en
 ---
@@ -36,6 +36,9 @@ lang: en
 ---
 
 ## 3 Engineering Obstacles Terrorizing SDV Development
+
+![Wiring Harness Weight and Cable Length by Architecture Generation](/images/posts/mobility/sdv-wiring-weight-comparison.webp)
+*Source: [FluxScope Automotive] — Distributed vs Domain vs Zonal Architecture Harness Weight Comparison*
 
 1. **The Tier-1 Supplier Black-Box Turf War**
    - Traditional braking and transmission suppliers guard their proprietary C firmware like state secrets, handing automakers precompiled binary blobs

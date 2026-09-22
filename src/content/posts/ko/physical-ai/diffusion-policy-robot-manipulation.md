@@ -8,10 +8,10 @@ category: physical-ai
 tags: [diffusion-policy, robotics, visuomotor-control, dexterous-manipulation, embodied-ai, imitation-learning]
 author: "FluxScope"
 image:
-  src: /images/physical-ai.png
+  src: /images/posts/physical-ai/diffusion-policy-control-loop.webp
   width: 1200
   height: 630
-  alt: "로봇 매니퓰레이션 신경망과 궤적 생성 시각화"
+  alt: "디퓨전 정책 기반 로봇 실시간 폐루프 제어 파이프라인 아키텍처"
 draft: false
 lang: ko
 ---

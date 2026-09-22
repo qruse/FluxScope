@@ -8,10 +8,10 @@ category: mobility
 tags: [regenerative-braking, one-pedal-driving, ev-dynamics, brake-blending, torque-control, chassis-control]
 author: "FluxScope"
 image:
-  src: /images/regenerative-braking.png
+  src: /images/posts/mobility/one-pedal-blending-sequence.webp
   width: 1200
   height: 630
-  alt: "Illustration of electric vehicle regenerative energy flow and deceleration torque mapping"
+  alt: "One-Pedal Driving Regenerative-Friction Torque Blending Sequence Architecture"
 draft: false
 lang: en
 ---
@@ -36,6 +36,9 @@ lang: en
 ---
 
 ## 3 Torque Bottlenecks Responsible for EV Motion Sickness
+
+![Deceleration Jerk Profile and Braking Smoothness Comparison](/images/posts/mobility/one-pedal-jerk-profile.webp)
+*Source: [FluxScope Dynamics] — Regen-to-Friction Handover Jerk Profile and Deceleration Curve*
 
 1. **Failure to Filter the Deceleration Jerk Gradient**
    - The inner ear easily adapts to a continuous $-0.2G$ stop, but sharp changes in deceleration rate ($dG/dt$) trigger immediate nausea

@@ -23,14 +23,26 @@ function parseFrontmatter(content) {
   const rawYaml = match[1];
   const body = content.slice(match[0].length);
 
-  // Simple key-value / array parser for our standard frontmatter
+  // Simple YAML parser supporting scalars, arrays, and nested objects
   const data = {};
   const lines = rawYaml.split(/\r?\n/);
   let currentKey = null;
   let inArray = false;
+  let inObject = false;
 
   for (const line of lines) {
     if (line.trim().startsWith('#')) continue;
+
+    // Indented sub-properties under an object like image:
+    const subKvMatch = line.match(/^\s{2,}([a-zA-Z0-9_]+):\s*(.*)$/);
+    if (inObject && subKvMatch) {
+      const subKey = subKvMatch[1];
+      const subVal = subKvMatch[2].trim().replace(/^["']|["']$/g, '');
+      data[currentKey] = data[currentKey] || {};
+      data[currentKey][subKey] = subVal;
+      continue;
+    }
+
     const arrayItemMatch = line.match(/^\s*-\s+(.*)$/);
     if (inArray && arrayItemMatch) {
       data[currentKey] = data[currentKey] || [];
@@ -44,16 +56,25 @@ function parseFrontmatter(content) {
       const val = kvMatch[2].trim();
       if (val.startsWith('[') && val.endsWith(']')) {
         inArray = false;
+        inObject = false;
         data[currentKey] = val
           .slice(1, -1)
           .split(',')
           .map((s) => s.trim().replace(/^["']|["']$/g, ''))
           .filter(Boolean);
       } else if (val === '') {
-        inArray = true;
-        data[currentKey] = [];
+        if (currentKey === 'image') {
+          inObject = true;
+          inArray = false;
+          data[currentKey] = {};
+        } else {
+          inArray = true;
+          inObject = false;
+          data[currentKey] = [];
+        }
       } else {
         inArray = false;
+        inObject = false;
         data[currentKey] = val.replace(/^["']|["']$/g, '');
       }
     }
@@ -165,7 +186,7 @@ for (const file of files) {
     errors.push(`${relPath}: Trailing horizontal rule ('---') at end of article is forbidden.`);
   }
 
-  // 6. Static Image Optimization Audit
+  // 6. Static Image Optimization Audit & Count
   const imageSources = [];
   if (frontmatter.image && frontmatter.image.src) {
     imageSources.push(frontmatter.image.src);
@@ -175,10 +196,35 @@ for (const file of files) {
     imageSources.push(match[1]);
   }
 
+  // 6-1. Prohibit Generic Reused Placeholder Thumbnails
+  const FORBIDDEN_PLACEHOLDER_IMAGES = [
+    '/images/agi.png',
+    '/images/other-ai.png',
+    '/images/physical-ai.png',
+    '/images/regenerative-braking.png',
+    '/images/posts/thumbnail.png'
+  ];
+  if (frontmatter.image && FORBIDDEN_PLACEHOLDER_IMAGES.includes(frontmatter.image.src)) {
+    errors.push(
+      `${relPath}: [THUMBNAIL RULE FAIL] Generic placeholder image "${frontmatter.image.src}" is forbidden. Must use a representative technical image specific to this article.`
+    );
+  }
+
+  // 6-2. Minimum 2 Distinct Technical Images per Post
+  const uniqueImages = new Set(imageSources);
+  if (uniqueImages.size < 2) {
+    errors.push(
+      `${relPath}: [IMAGE RULE FAIL] Article must contain at least 2 distinct technical images (found ${uniqueImages.size}). Frontmatter thumbnail must be representative and body must contain additional technical visuals.`
+    );
+  }
+
+  // 6-3. Image File Existence & Size Cap Audit (<= 500KB)
   for (const imgSrc of imageSources) {
     const cleanPath = imgSrc.startsWith('/') ? imgSrc.slice(1) : imgSrc;
     const localImgPath = path.resolve('public', cleanPath);
-    if (fs.existsSync(localImgPath)) {
+    if (!fs.existsSync(localImgPath)) {
+      errors.push(`${relPath}: Image file does not exist on disk: "${cleanPath}".`);
+    } else {
       const stats = fs.statSync(localImgPath);
       const sizeKB = Math.round(stats.size / 1024);
       if (sizeKB > 500) {

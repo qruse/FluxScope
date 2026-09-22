@@ -8,10 +8,10 @@ category: agi
 tags: [evaluation, workflow, llm-ops, benchmarking, hitl, quality-assurance]
 author: "FluxScope"
 image:
-  src: /images/agi.png
+  src: /images/posts/agi/ai-eval-protocol-pipeline.webp
   width: 1200
   height: 630
-  alt: "측정 가능한 AI 워크플로우를 표현한 동심원 추상 일러스트"
+  alt: "AI 도구 도입 전 사내 엣지 케이스 자체 평가 파이프라인 아키텍처"
 draft: false
 lang: ko
 experienceNote: "벤더사 MMLU 90점 모델 도입했다가 사내 세무 규정 엣지 케이스 30개 중 14개 오답 내는 것 보고 즉시 벤치마크 맹신 접고 자체 테스트셋 구축함"
@@ -49,6 +49,13 @@ experienceNote: "벤더사 MMLU 90점 모델 도입했다가 사내 세무 규�
 5. **사고 시 치명적 리스크가 걸린 작업엔 무조건 사람 검토(HITL) 걸기**
    - 사내 직원용 식단표 요약 같은 건 모델 혼자 놀게 둬도 됨
    - 법률 계약서, 세무 보고서, 환불 승인 버튼은 모델 출력 뒤에 인간 승인 도장 찍는 [NIST AI RMF](https://airc.nist.gov/airmf-resources/airmf/5-sec-core/) 방화벽 안 치면 사고 즉시 전원 징계위원회 회부됨
+
+---
+
+## 평가 방식별 정확도 및 비용 비교
+
+![평가 방식별 정확도 및 소요 비용 비교](/images/posts/agi/ai-eval-accuracy-comparison.webp)
+*출처: [FluxScope Research] — AI 도구 평가 방식별 정확도 및 비용 비교 분석*
 
 ---
 

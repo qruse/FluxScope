@@ -8,10 +8,10 @@ category: it-devices
 tags: [ltpo-display, variable-refresh-rate, display-power, pwm-flicker, mobile-oled, battery-efficiency]
 author: "FluxScope"
 image:
-  src: /images/other-ai.png
+  src: /images/posts/it-devices/mobile-ltpo-driver-pipeline.webp
   width: 1200
   height: 630
-  alt: "LTPO OLED 디스플레이 가변 주사율 프레임 레이트와 전력 소모 비교 그래프"
+  alt: "120Hz LTPO 디스플레이 동적 가변 주사율 구동 파이프라인 아키텍처"
 draft: false
 lang: ko
 ---
@@ -36,6 +36,9 @@ lang: ko
 ---
 
 ## 1Hz 마케팅이 실사용에서 무너지는 3대 이유
+
+![주사율 및 화면 상태별 디스플레이 전력 소모 비교](/images/posts/it-devices/mobile-ltpo-power-draw.webp)
+*출처: [FluxScope Display Labs] — LTPO 디스플레이 주사율 및 화면 구동 상태별 전력 소모 측정치 비교*
 
 1. **저조도 환경에서의 화면 밝기 깜빡임(Flicker)**
    - 방에 불 끄고 침대에서 폰 볼 때 주사율이 1Hz로 떨어지면 화소 전압 누설 때문에 화면이 미세하게 번쩍거림

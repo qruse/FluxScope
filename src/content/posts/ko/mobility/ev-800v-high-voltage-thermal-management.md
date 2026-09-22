@@ -8,10 +8,10 @@ category: mobility
 tags: [ev-powertrain, 800v-architecture, sic-inverter, thermal-management, fast-charging, battery-engineering]
 author: "FluxScope"
 image:
-  src: /images/regenerative-braking.png
+  src: /images/posts/mobility/ev-800v-charging-pipeline.webp
   width: 1200
   height: 630
-  alt: "전기차 고전압 배터리와 전력 인버터 열관리 구조도"
+  alt: "800V 전기차 급속 충전 및 SiC 전력 분배 파이프라인 아키텍처"
 draft: false
 lang: ko
 ---
@@ -36,6 +36,9 @@ lang: ko
 ---
 
 ## 350kW 충전기 꽂았을 때 일어나는 3대 물리적 재앙
+
+![배터리 SOC 구간별 급속 충전 전력 및 발열 프로파일](/images/posts/mobility/ev-800v-thermal-charging-curve.webp)
+*출처: [FluxScope Engineering] — 800V 전기차 배터리 SOC별 충전 전력 및 셀 온도 변화 곡선*
 
 1. **줄열($I^2R$)과의 목숨 건 냉각 사투**
    - 전압을 두 배 올려 전류($I$)를 절반으로 깎았다고 좋아했더니, 충전소 출력이 350kW로 치솟으면서 발열량이 다시 원점으로 회귀함

@@ -8,10 +8,10 @@ category: mobility
 tags: [ev-powertrain, 800v-architecture, sic-inverter, thermal-management, fast-charging, battery-engineering]
 author: "FluxScope"
 image:
-  src: /images/regenerative-braking.png
+  src: /images/posts/mobility/ev-800v-charging-pipeline.webp
   width: 1200
   height: 630
-  alt: "Illustration of high voltage electric vehicle powertrain and inverter cooling"
+  alt: "800V EV Fast-Charging and SiC Power Distribution Pipeline Architecture"
 draft: false
 lang: en
 ---
@@ -36,6 +36,9 @@ lang: en
 ---
 
 ## 3 Engineering Headaches Behind 350kW Fast Charging
+
+![Battery SOC vs Fast-Charging Power and Temperature Curve](/images/posts/mobility/ev-800v-thermal-charging-curve.webp)
+*Source: [FluxScope Engineering] — 800V EV Battery SOC vs Charging Power and Cell Temperature Curve*
 
 1. **The Brutal Joule Heating ($I^2R$) Revenge**
    - Halving current ($I$) by doubling voltage looked great on paper until charger stations pushed nominal output past 350kW, dragging $I^2R$ thermal dissipation right back into crisis

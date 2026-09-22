@@ -8,10 +8,10 @@ category: agi
 tags: [evaluation, workflow, llm-ops, benchmarking, hitl, quality-assurance]
 author: "FluxScope"
 image:
-  src: /images/agi.png
+  src: /images/posts/agi/ai-eval-protocol-pipeline.webp
   width: 1200
   height: 630
-  alt: "Abstract concentric circles representing a measured AI workflow"
+  alt: "AI Tool Evaluation Protocol Pipeline Architecture"
 draft: false
 lang: en
 experienceNote: "A top-ranked MMLU model failed 14 out of 30 proprietary tax edge cases in our staging trials, proving that public leaderboards cannot substitute for custom task-level evaluation"
@@ -49,6 +49,13 @@ experienceNote: "A top-ranked MMLU model failed 14 out of 30 proprietary tax edg
 5. **Erect Firewalls Around Career-Ending Blast Radii**
    - Automated draft summaries for company lunch menus can run wild and unsupervised
    - Customer-facing legal agreements, tax filings, and refund authorizations require mandatory human sign-off per [NIST AI RMF](https://airc.nist.gov/airmf-resources/airmf/5-sec-core/) standards if you prefer staying employed
+
+---
+
+## Evaluation Method Accuracy and Cost Comparison
+
+![Evaluation Method Accuracy and Cost Comparison](/images/posts/agi/ai-eval-accuracy-comparison.webp)
+*Source: [FluxScope Research] — AI Evaluation Methodology Accuracy vs Cost Analysis*
 
 ---
 

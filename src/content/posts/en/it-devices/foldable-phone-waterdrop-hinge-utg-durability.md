@@ -8,10 +8,10 @@ category: it-devices
 tags: [foldable-phones, waterdrop-hinge, utg-glass, display-mechanics, mechanical-durability, flex-crease]
 author: "FluxScope"
 image:
-  src: /images/other-ai.png
+  src: /images/posts/it-devices/foldable-waterdrop-hinge-sequence.webp
   width: 1200
   height: 630
-  alt: "Cross-section schematic of foldable phone waterdrop hinge gear mechanism and display curvature"
+  alt: "Foldable Waterdrop Hinge Multi-Link Cam Folding Sequence Architecture Diagram"
 draft: false
 lang: en
 ---
@@ -36,6 +36,9 @@ lang: en
 ---
 
 ## 3 Mechanical Walls Frustrating Foldable Hardware Designers
+
+![Screen Crease Depth Trend across Folding Cycles](/images/posts/it-devices/foldable-crease-depth-trend.webp)
+*Source: [FluxScope Display Labs] — Foldable Screen Crease Depth Trend across 200k Folding Cycles*
 
 1. **The Teardrop Cavity vs Battery Volume Zero-Sum Game**
    - Allowing the display to curl inward like a water droplet requires excavating a hollow cavity inside the chassis frame

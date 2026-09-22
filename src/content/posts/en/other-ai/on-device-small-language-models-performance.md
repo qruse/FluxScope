@@ -8,10 +8,10 @@ category: other-ai
 tags: [on-device, quantization, small-language-models, edge-ai, npu, mobile-optimization]
 author: "FluxScope"
 image:
-  src: /images/other-ai.png
+  src: /images/posts/other-ai/on-device-slm-system-architecture.webp
   width: 1200
   height: 630
-  alt: "Illustration of compact on-device neural acceleration"
+  alt: "On-Device SLM System Architecture Diagram"
 draft: false
 lang: en
 experienceNote: "Embedding a 3B parameter model quantized to 4-bit AWQ into our mobile text assistant kept offline turnaround under 110ms, but continuous 3-minute inference triggered severe thermal throttling"
@@ -47,6 +47,9 @@ experienceNote: "Embedding a 3B parameter model quantized to 4-bit AWQ into our 
 1. **Activation-Aware Quantization (AWQ over Crude RTN)**
    - Rounding weights to 4-bit naively (RTN) mangles sentence syntax until the model speaks gibberish
    - AWQ shields the top 1% salient activation outliers, shrinking memory to 1.8GB while keeping the model literate
+
+![Quantization Format VRAM Footprint and Latency Comparison](/images/posts/other-ai/on-device-vram-quantization.webp)
+*Source: [FluxScope Research] — On-Device Quantization VRAM Footprint vs Inference Latency Benchmark*
 2. **Dodging the Mobile OS Memory Reaper (OOM Killer)**
    - Smartphone RAM is shared with camera sensors and social feeds; expand the KV cache beyond 2,048 tokens and iOS executes your process
    - Enforce a strict sliding window attention buffer to hold memory footprint under 2GB at all times

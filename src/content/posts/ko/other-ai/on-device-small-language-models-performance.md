@@ -8,10 +8,10 @@ category: other-ai
 tags: [on-device, quantization, small-language-models, edge-ai, npu, mobile-optimization]
 author: "FluxScope"
 image:
-  src: /images/other-ai.png
+  src: /images/posts/other-ai/on-device-slm-system-architecture.webp
   width: 1200
   height: 630
-  alt: "엣지 하드웨어 칩셋과 컴팩트 신경망을 형상화한 그래픽"
+  alt: "온디바이스 SLM 추론 엔진 시스템 아키텍처 다이어그램"
 draft: false
 lang: ko
 experienceNote: "모바일 앱에 3B 모델을 4-bit AWQ로 올려 오프라인 텍스트 교정 기능을 넣었더니 사용자 지연은 110ms로 훌륭했으나, 연속 3분 실행 시 스마트폰 쓰로틀링 걸리며 발열이 심해 쿨다운 로직을 추가함"
@@ -47,6 +47,9 @@ experienceNote: "모바일 앱에 3B 모델을 4-bit AWQ로 올려 오프라인 
 1. **단순무식 절삭(RTN) 버리고 이상치 살리는 AWQ 양자화**
    - 가중치를 4-bit로 대충 반올림(RTN)했다간 모델이 한국어를 외계어로 뱉는 기적을 보게 됨
    - 핵심 활성화 가중치 1%를 보호하는 AWQ 기법 써야 1.8GB 다이어트하면서도 문맥을 유지함
+
+![양자화 포맷별 VRAM 점유율 및 지연시간 비교](/images/posts/other-ai/on-device-vram-quantization.webp)
+*출처: [FluxScope Research] — 온디바이스 양자화 포맷별 VRAM 점유율 및 추론 지연시간 벤치마크*
 2. **OS 메모리 강제 관리자(OOM Killer) 눈치 보기**
    - 폰 메모리는 혼자 쓰는 게 아님. KV 캐시를 2,048 토큰 이상으로 욕심부렸다간 사용자가 인스타 켜는 순간 앱 증발함
    - 슬라이딩 윈도우 걸어서 VRAM 한도를 2GB 언더로 칼같이 묶어둬야 앱이 살아남음

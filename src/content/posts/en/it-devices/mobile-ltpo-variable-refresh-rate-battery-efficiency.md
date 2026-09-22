@@ -8,10 +8,10 @@ category: it-devices
 tags: [ltpo-display, variable-refresh-rate, display-power, pwm-flicker, mobile-oled, battery-efficiency]
 author: "FluxScope"
 image:
-  src: /images/other-ai.png
+  src: /images/posts/it-devices/mobile-ltpo-driver-pipeline.webp
   width: 1200
   height: 630
-  alt: "Graph comparing LTPO OLED variable refresh rate frame rates and active display power consumption"
+  alt: "Mobile 120Hz LTPO Dynamic Variable Refresh Rate Driver Pipeline Architecture Diagram"
 draft: false
 lang: en
 ---
@@ -36,6 +36,9 @@ lang: en
 ---
 
 ## 3 Reasons Why the 1Hz Battery Miracle Disappears in Reality
+
+![Display Power Draw Comparison across Refresh Rates and States](/images/posts/it-devices/mobile-ltpo-power-draw.webp)
+*Source: [FluxScope Display Labs] — LTPO Display Power Consumption by Refresh Rate State*
 
 1. **Low-Brightness PWM Flicker and Luminance Drift**
    - At 1Hz, the time interval between refresh voltage pulses stretches to a full 1,000 milliseconds, causing OLED organic emission layers to drift in luminance

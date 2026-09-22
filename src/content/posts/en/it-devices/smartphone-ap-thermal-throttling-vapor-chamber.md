@@ -8,10 +8,10 @@ category: it-devices
 tags: [smartphones, ap-silicon, thermal-throttling, vapor-chamber, mobile-hardware, soc-cooling]
 author: "FluxScope"
 image:
-  src: /images/other-ai.png
+  src: /images/posts/it-devices/smartphone-ap-thermal-loop.webp
   width: 1200
   height: 630
-  alt: "Internal smartphone AP silicon and vapor chamber cooling structure diagram"
+  alt: "Smartphone 3nm AP Vapor Chamber Phase-Change Cooling Loop Architecture Diagram"
 draft: false
 lang: en
 ---
@@ -36,6 +36,9 @@ lang: en
 ---
 
 ## 3 Thermodynamic Walls Crushing Ultra-Thin Vapor Chambers
+
+![Sustained Workload AP Clock Stability and Throttling Curve](/images/posts/it-devices/smartphone-throttling-stability.webp)
+*Source: [FluxScope Hardware] — Smartphone 3nm AP 20-Minute Stress Test Clock Stability and Throttling Curve*
 
 1. **Working Fluid Choking in a 0.35mm Cavity**
    - Vapor chambers rely on vacuum phase transitions where deionized water evaporates at the AP die and condenses along sintered copper mesh wicks

@@ -157,8 +157,14 @@ All images in articles must strictly belong to one of the **5 approved types**. 
   - Whenever importing external screenshots or raw figures, agents MUST run the image optimizer to auto-resample (Lanczos) and compress:
   ```bash
   python scripts/optimize_images.py public/images/posts/<category>/<image-file> --webp
-  ```
   - **Payload Target**: Each image must be under **250KB** (hard cap: 500KB). Images exceeding 500KB will trigger an immediate CI error in `scripts/check-eeat.mjs`.
+
+### ⑦ Image Count & Representative Thumbnail Policy (최소 2장 이상 및 대표 이미지 썸네일 규격)
+- **최소 수량 원칙 (Minimum 2 Images Rule)**: 모든 아티클은 반드시 **최소 2장 이상의 기술 시각 자료(Technical Visuals)**를 포함해야 함 (`images.length >= 2`).
+- **대표 썸네일 선정 의무 (Representative Thumbnail Selection)**:
+  - 아티클에 포함된 이미지 중 해당 글의 핵심 기술 주제나 시스템 메커니즘을 가장 직관적이고 적절하게 대변하는 대표 도식(시스템 아키텍처 다이어그램, 알고리즘 파이프라인, 핵심 벤치마크 차트 등)을 **반드시 프런트매터 썸네일(`image.src`)로 지정**해야 함.
+  - 무성의한 범용 플레이스홀더 이미지(예: `/images/other-ai.png`, `/images/regenerative-braking.png` 등)를 여러 글에서 중복 재사용하는 행위는 엄격히 금지함.
+  - 썸네일로 지정된 대표 이미지 외에도 본문 전반에 최소 1장 이상의 상세 도식/차트/스케치를 추가 배치하여 독자의 기술적 이해도를 극대화해야 함.
 
 ---
 

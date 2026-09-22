@@ -8,10 +8,10 @@ category: physical-ai
 tags: [diffusion-policy, robotics, visuomotor-control, dexterous-manipulation, embodied-ai, imitation-learning]
 author: "FluxScope"
 image:
-  src: /images/physical-ai.png
+  src: /images/posts/physical-ai/diffusion-policy-control-loop.webp
   width: 1200
   height: 630
-  alt: "Visualization of robotic manipulation neural network and trajectory generation"
+  alt: "Diffusion Policy Closed-Loop Visuomotor Control Pipeline Architecture"
 draft: false
 lang: en
 ---

@@ -8,10 +8,10 @@ category: it-devices
 tags: [smartphones, ap-silicon, thermal-throttling, vapor-chamber, mobile-hardware, soc-cooling]
 author: "FluxScope"
 image:
-  src: /images/other-ai.png
+  src: /images/posts/it-devices/smartphone-ap-thermal-loop.webp
   width: 1200
   height: 630
-  alt: "스마트폰 내부 AP 칩셋과 베이퍼 챔버 방열 구조 그래픽"
+  alt: "스마트폰 3nm AP 베이퍼 챔버 상변화 방열 냉각 루프 다이어그램"
 draft: false
 lang: ko
 ---
@@ -36,6 +36,9 @@ lang: ko
 ---
 
 ## 초박형 베이퍼 챔버(VC)가 부딪힌 3대 열역학적 벽
+
+![지속 부하 시 AP 클럭 유지력 및 프레임 안정성 비교](/images/posts/it-devices/smartphone-throttling-stability.webp)
+*출처: [FluxScope Hardware] — 스마트폰 3nm AP 20분 부하 테스트 클럭 유지력 및 쓰로틀링 곡선*
 
 1. **0.3mm 두께 속에서 일어나는 작동유체 기화/응축 억제 현상**
    - 베이퍼 챔버는 내부 진공 상태에서 물이 기화해 열을 퍼뜨리고 다시 액화되어 모세관 현상(메쉬 윅)으로 돌아오는 순환 구조임
