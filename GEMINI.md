@@ -1,6 +1,6 @@
-# FluxScope Blog Writing & Development Rules (AGENTS.md)
+# FluxScope Blog Writing & Development Rules (GEMINI.md)
 
-This file contains the authoritative, non-negotiable guidelines for all AI agents writing articles, modifying content, or developing features for **FluxScope**. Every AI agent MUST read, understand, and strictly adhere to these rules before drafting or editing posts.
+This file mirrors `AGENTS.md` and contains the authoritative, non-negotiable guidelines for all AI agents writing articles, modifying content, or developing features for **FluxScope**. Every AI agent MUST read, understand, and strictly adhere to these rules before drafting or editing posts.
 
 ---
 
