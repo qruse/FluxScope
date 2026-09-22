@@ -1,7 +1,7 @@
 ---
-title: "Smartphone 3nm AP Thermal Throttling and Vapor Chamber Physical Limits"
-seoTitle: "Smartphone 3nm AP Thermal Throttling and Vapor Chamber Limits"
-description: "Behind single-run Geekbench marketing slides lies severe 5-minute sustained throttling and the harsh thermodynamic limits of 0.3mm passive vapor chambers."
+title: "The Single-Run Benchmark Lie: 3nm Flagship APs and the 5-Minute Throttling Wall"
+seoTitle: "3nm Smartphone AP Thermal Throttling and Vapor Chamber Realities"
+description: "Why keynote benchmark numbers mean nothing once sustained 12-watt gaming loads overwhelm wafer-thin 0.3mm vapor chambers and cut frame rates in half"
 publishedAt: 2026-09-22
 updatedAt: 2026-09-22
 category: it-devices

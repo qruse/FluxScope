@@ -1,7 +1,7 @@
 ---
-title: "로봇 조작을 혁신하는 디퓨전 정책(Diffusion Policy): 멀티모달 행동 학습의 원리"
-seoTitle: "로봇 매니퓰레이션을 위한 Diffusion Policy 원리와 실시간 제어"
-description: "기존 모방 학습의 다중 모드 붕괴를 극복하고 로봇의 정밀한 손동작과 궤적 생성을 가능하게 만든 디퓨전 정책(Diffusion Policy)의 수학적 원리와 실무 배포 전략."
+title: "로봇 팔의 헛손질 멈추기: Diffusion Policy가 평균값 참사를 해결한 원리"
+seoTitle: "로봇 헛손질 멈추는 Diffusion Policy와 50Hz 실시간 제어"
+description: "장애물 앞에서 좌우 고민하다 정중앙에 처박히는 고전 모방 학습의 저주를 깨부수고 50Hz 제어 루프로 매끄러운 궤적 뽑아내는 비결"
 publishedAt: 2026-09-20
 updatedAt: 2026-09-22
 category: physical-ai

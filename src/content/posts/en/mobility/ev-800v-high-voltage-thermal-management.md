@@ -1,7 +1,7 @@
 ---
-title: "800V High-Voltage EV Architectures and SiC Inverter Thermal Management Limits"
-seoTitle: "800V EV Architecture and Silicon Carbide Thermal Engineering"
-description: "Behind glossy 18-minute fast-charging commercials lies winter battery preconditioning power drains, astronomical SiC silicon costs, and extreme thermal cooling limits."
+title: "The 18-Minute Fast-Charging Illusion: 800V EV Architectures and the SiC Cost Trap"
+seoTitle: "The 18-Minute Fast-Charging Myth: 800V EV Architecture and SiC Thermal Realities"
+description: "Why glossy ultra-fast charging marketing dies in freezing highway blizzards while astronomical silicon carbide wafer costs blow up OEM hardware budgets"
 publishedAt: 2026-09-22
 updatedAt: 2026-09-22
 category: mobility

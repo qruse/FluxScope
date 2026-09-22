@@ -1,7 +1,7 @@
 ---
-title: "스마트폰 LTPO 120Hz 가변 주사율 패널의 저주파 플리커와 배터리 절감율의 진실"
-seoTitle: "LTPO OLED 120Hz 가변 주사율 원리와 배터리 절감 효과 분석"
-description: "1Hz까지 내려가 배터리를 획기적으로 아껴준다는 LTPO 마케팅의 이면에 존재하는 실사용 주사율 고정 현상과 저조도 PWM 플리커 눈 피로의 진실."
+title: "1Hz의 새빨간 거짓말: 120Hz LTPO 디스플레이 마케팅과 배터리 절감의 추악한 진실"
+seoTitle: "1Hz의 거짓말: 120Hz LTPO 디스플레이 마케팅과 배터리 절감의 진실"
+description: "화면 멈추면 1Hz로 내려가서 배터리 아껴준다더니 실사용에선 GPU 합성 때문에 30~60Hz로 상시 대기하고 저조도에선 눈 시린 PWM 플리커만 덤으로 얻음"
 publishedAt: 2026-09-22
 updatedAt: 2026-09-22
 category: it-devices

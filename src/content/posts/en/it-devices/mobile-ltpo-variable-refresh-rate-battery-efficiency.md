@@ -1,7 +1,7 @@
 ---
-title: "Mobile LTPO 120Hz Variable Refresh Rate Dynamics and Real-World Battery Realities"
-seoTitle: "LTPO OLED 120Hz Refresh Rate and Real Battery Life Analysis"
-description: "How 1Hz ultra-low idle marketing narratives fall apart under real-world ambient lighting constraints, GPU compositor redraws, and low-brightness PWM flicker."
+title: "The 1Hz Display Fairy Tale: LTPO Refresh Rate Marketing vs. Battery Reality"
+seoTitle: "The 1Hz Myth: LTPO OLED Variable Refresh Rate vs. Real Battery Life"
+description: "Why smartphone panels almost never hit their advertised 1Hz idle states in the real world and instead punish sensitive eyes with nasty low-light PWM flickering"
 publishedAt: 2026-09-22
 updatedAt: 2026-09-22
 category: it-devices

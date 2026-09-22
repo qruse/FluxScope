@@ -1,7 +1,7 @@
 ---
-title: "On-device small language models (sLM): quantization and hardware limits"
-seoTitle: "Performance and Limits of On-Device Small Language Models"
-description: "How 4-bit quantization and modern NPUs enable offline, low-latency intelligence on smartphones, alongside their practical reasoning boundaries."
+title: "Cramming sLMs into Smartphones: 4-Bit Quantization and the Brutal VRAM Diet"
+seoTitle: "Running sLMs on Smartphones: 4-Bit Quantization and NPU Memory Limits"
+description: "Escaping thousand-dollar monthly cloud API bills by squeezing 3B models onto edge NPUs without melting the battery or triggering the OS memory reaper"
 publishedAt: 2026-09-20
 updatedAt: 2026-09-21
 category: other-ai

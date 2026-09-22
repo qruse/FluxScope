@@ -1,6 +1,7 @@
 ---
-title: "How to evaluate an AI tool before adopting it"
-description: "A cynical field guide to seeing through vendor benchmark marketing, stress-testing models with 30 proprietary landmines, and avoiding 3 AM production disasters."
+title: "How to Stress-Test Vendor AI Hype Before It Burns Your Cloud Budget at 3 AM"
+seoTitle: "How to Stress-Test Vendor AI Hype and Avoid Production Disasters"
+description: "Puncturing glossy 90% benchmark slide decks with 30 proprietary edge-case landmines before your team gets locked into an unmaintainable vendor nightmare"
 publishedAt: 2026-09-21
 updatedAt: 2026-09-22
 category: agi

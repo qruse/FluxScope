@@ -1,7 +1,7 @@
 ---
-title: "Diffusion Policy for Robotic Manipulation: Mathematical Foundations of Multimodal Action Learning"
-seoTitle: "Diffusion Policy in Robot Manipulation: Architecture and Real-Time Control"
-description: "How Diffusion Policy eliminates multimodal action collapse in imitation learning to enable dexterous trajectory generation and 50Hz closed-loop control."
+title: "Stopping Robot Hesitation: Why Diffusion Policy Kills the Multimodal Average Trap"
+seoTitle: "Why Diffusion Policy Fixes Robot Hesitation and Enables 50Hz Control"
+description: "How replacing naive mean-squared regression with noise-denoising score matching keeps robotic arms from freezing between two valid trajectories at 50Hz"
 publishedAt: 2026-09-20
 updatedAt: 2026-09-22
 category: physical-ai

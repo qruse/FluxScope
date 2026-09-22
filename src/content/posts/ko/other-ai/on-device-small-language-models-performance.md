@@ -1,7 +1,7 @@
 ---
-title: "스마트폰과 엣지 기기에서 구동되는 온디바이스 소형 모델(sLM)의 한계와 실무"
-seoTitle: "온디바이스 소형 언어 모델(sLM)의 양자화 기법과 실무 성능 분석"
-description: "4-bit 양자화와 신경망 가속기(NPU)를 활용하여 클라우드 서버 없이 로컬 환경에서 구동하는 소형 모델의 실제 성능과 메모리 제약."
+title: "손안의 스마트폰에서 sLM 굴리기: 4-bit 양자화와 NPU의 처절한 VRAM 다이어트"
+seoTitle: "스마트폰 sLM 구동을 위한 4-bit 양자화와 NPU 메모리 다이어트"
+description: "클라우드 API 청구서 무서워서 스마트폰 NPU에 3B 모델 욱여넣으려다 1.8GB 메모리 폭발하고 손난로 쓰로틀링과 맞닥뜨린 온디바이스 실전 생존기"
 publishedAt: 2026-09-20
 updatedAt: 2026-09-21
 category: other-ai

@@ -73,6 +73,9 @@ Every post must adhere to this exact structural hierarchy:
 
 ### Korean (한국어):
 - **개조식(Itemized Bullet Format) + 음슴체 종결 필수**: 만연체 금지, 모든 항목은 `~함`, `~임`, `~봄`, `~필수`, `~안 됨`, `~행` 등으로 압축 종결.
+- **제목 및 요약문 어조 규격 (Title & Description Style)**:
+  - **제목**: 교과서식/학술 논문투(예: `~의 원리와 실무 분석`, `~의 상관관계 분석`, `~하는 방법`) 철저히 금지. 마케팅 허상을 직격하고 씁쓸한 실무 현실이나 엔지니어의 블랙 유머를 제목에서부터 바로 체감할 수 있게 작성 (예: `18분 초고속 충전 쇼의 진실: 800V 배터리와 SiC 인버터의 원가·발열 대참사`, `1Hz의 새빨간 거짓말: 120Hz LTPO 디스플레이 마케팅과 배터리 절감의 추악한 진실`).
+  - **요약문 (`description` & `## 3줄 요약`)**: 점잖은 사전식 개요 서술을 금지하고, 독자가 피식 웃으며 공감할 수 있는 뼈 때리는 팩트 폭격과 씁쓸한 엔지니어링 현실을 위트 있게 압축 요약. 문장 끝 마침표(`.`) 절대 금지.
 - **냉소적 위트와 블랙 유머 (Cynical Wit & Humor)**:
   - 겉만 번지르르한 벤치마크 점수나 마케팅 쇼 뒤에 숨겨진 추악한 진실(새벽 온콜 호출, 불타는 클라우드 청구서, if-else 누더기 코드)을 씁쓸하고 유머러스하게 비틀기.
   - "이론상 인공일반지능(AGI)이라 부르지만 실상은 수만 줄의 하드코딩 예외 처리", "투자용 데모 영상 믿고 배포했다간 새벽에 사직서 쓰게 됨" 등 실무 공감대 저격 비유 적극 사용.
@@ -81,6 +84,7 @@ Every post must adhere to this exact structural hierarchy:
 
 ### English (영어):
 - **Wry, Cynical Executive Field-Note Memo**: Fast, punchy, dark-humored insider engineering memo.
+- **Title & Summary Tone**: Pithy, biting headlines and summaries that immediately puncture Silicon Valley hype (e.g., `The 18-Minute Fast-Charging Illusion: 800V EV Architectures and the SiC Cost Trap`, `The 1Hz Display Fairy Tale: LTPO Refresh Rate Marketing vs. Battery Reality`). Never use dry textbook paper titles.
 - Punctures corporate marketing hype with deadpan, cynical technical realism ("looks revolutionary in investor slide decks until it burns $40k of cloud compute on a date parsing bug at 3 AM").
 - Match the brisk tempo, sharp wit, and cynical realism of the Korean 음슴체 version.
 - Zero generic introductory fluff, zero dry textbook lecturing.

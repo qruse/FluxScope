@@ -1,7 +1,7 @@
 ---
-title: "소프트웨어 정의 차량(SDV)의 조널 아키텍처 전환과 차량용 이더넷 통신의 실무 고충"
-seoTitle: "SDV 조널 아키텍처와 차량용 이더넷 전환의 엔지니어링 실무"
-description: "수백 개로 흩어진 레거시 CAN 버스 ECU를 4대 구역 제어기로 통폐합할 때 터져 나오는 도메인 동기화 지연과 AUTOSAR 레거시의 처절한 사투."
+title: "SDV 조널 아키텍처 대통합: 100개 CAN ECU를 통폐합하다 벌어지는 부품사 진흙탕 싸움"
+seoTitle: "SDV 조널 아키텍처와 100개 ECU 통폐합의 처절한 엔지니어링 실무"
+description: "구렁이 같은 배선 걷어내고 이더넷 깔았더니 협력사들의 폐쇄형 C 바이너리 코드와 TSN 패킷 드랍이 엔지니어 멘탈을 털어먹는 과정"
 publishedAt: 2026-09-22
 updatedAt: 2026-09-22
 category: mobility
