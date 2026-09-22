@@ -36,6 +36,12 @@ experienceNote: "모바일 앱에 3B 모델을 4-bit AWQ로 올려 오프라인 
 
 ---
 
+## 온디바이스 SLM 추론 엔진 시스템 아키텍처
+
+![온디바이스 SLM 추론 엔진 시스템 아키텍처 다이어그램](/images/posts/other-ai/on-device-slm-system-architecture.webp)
+
+---
+
 ## 온디바이스 배포 3대 병목 극복 전략
 
 1. **양자화 손실 최소화 (AWQ vs RTN)**

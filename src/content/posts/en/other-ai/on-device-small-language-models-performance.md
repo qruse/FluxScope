@@ -36,6 +36,12 @@ experienceNote: "Embedding a 3B parameter model quantized to 4-bit AWQ into our 
 
 ---
 
+## On-Device SLM System Architecture
+
+![On-Device SLM System Architecture Diagram](/images/posts/other-ai/on-device-slm-system-architecture.webp)
+
+---
+
 ## 3 Engineering Tactics for Mobile Production
 
 1. **Activation-Aware Quantization (AWQ over RTN)**

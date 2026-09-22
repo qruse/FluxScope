@@ -39,6 +39,9 @@ experienceNote: "대규모 SQL 생성 작업에 추론 모델을 투입했더니
    - 질문이 쉬우면(단순 번역 등) 100토큰 내로 즉시 출력함
    - 문제 꼬여있으면 내부적으로 수천 토큰씩 연산 돌리면서 정답률을 끌어올림
 
+![OpenAI o1 Test-Time Compute 스케일링 법칙 그래프](/images/posts/agi/test-time-compute-scaling-sourced.webp)
+*출처: [OpenAI](https://openai.com/index/learning-to-reason-with-llms/) — Learning to reason with LLMs (o1 Test-Time Compute Scaling)*
+
 ---
 
 ## 전통적 LLM vs 추론 전용 모델 비교

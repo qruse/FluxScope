@@ -19,10 +19,13 @@ See `AGENTS.md` and `GEMINI.md` at the project root for the full guidelines.
   3. Pre-Q&A (Fixed): `## 커뮤니티 반응` / `## Community Reactions` (Summarize real developer discussions/gotchas from forums like Reddit r/MachineLearning, but NEVER use the name 'Reddit' in heading or body; frame neutrally as "실무 엔지니어 커뮤니티" / "Developer Community").
   4. Bottom (Fixed): `## Q&A 또 궁금한 것은?` / `## Q&A (Field Notes)`.
   5. Footer: NO trailing `---` or review date footers at the end.
-- **Images (2 Types & Sourcing Standards)**:
-  - Type 1 (Sourced Research): Must place citation below image: `*출처: [출처명](URL) — 논문/리포트명*` (EN: `*Source: [Author/Org](URL) — Title*`).
-  - Type 2 (Directly Generated): NO generic AI art. Must be hand-drawn sketch schematics (XKCD/Excalidraw style), algorithm pipeline schematics, or programmatic code-generated charts via `scripts/visuals/cli.py`.
-  - Static & Auto-Resolution: 100% static assets. Max width 1600px (Lanczos downscaling). Run `python scripts/optimize_images.py <path> --webp` for any external image. Payload must be under 250KB (hard limit: 500KB).
+- **Images (5 Distinct Types & Standards)**:
+  - Type 1 (Sourced Research): Sourced from papers/reports with mandatory citation: `*출처: [출처명](URL) — 논문/리포트명*` (EN: `*Source: [Author/Org](URL) — Title*`).
+  - Type 2 (AI Hand-Drawn Sketch): Generated via AI prompt for whiteboard/felt-pen rough sketch explanatory drawings (zero glossy AI 3D art).
+  - Type 3 (AI PPT System Diagram): Generated via AI prompt for clean 2D vector technical conference slide block architecture schematics.
+  - Type 4 (Code-Generated Algorithm Pipeline): Generated via `scripts/visuals/cli.py pipeline` with explicit step badges.
+  - Type 5 (Code-Generated Benchmark Chart): Generated via `scripts/visuals/cli.py bar` or `trend` matching site palette.
+  - Static & Auto-Resolution: 100% static assets under `public/images/posts/<category>/`. Max width 1600px, payload under 250KB (hard cap 500KB). All 5 types do not need to appear in every article.
 - **E-E-A-T & Mandatory Experience Comment**:
   - AI MUST ask the user for a 1–2 sentence firsthand experience comment before drafting. Never draft/publish without it.
   - Frontmatter must include `experienceNote: string` (min 15 chars), rendered in `.experience-callout`.

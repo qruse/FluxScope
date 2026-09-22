@@ -82,11 +82,11 @@ Every post must adhere to this exact structural hierarchy:
 
 ---
 
-## 5. Image Classification & Visual Assets Policy (이미지 2대 유형 및 시각화 규칙)
+## 5. Image Classification & Visual Assets Policy (이미지 5대 유형 및 시각화 규칙)
 
-All images in articles must strictly belong to one of two categories. Meaningless, glossy, generic AI-generated illustrations (3D floating orbs, cyberpunk neon fluff, DALL-E style art) are strictly forbidden ("AI 티나는 일러스트 금지").
+All images in articles must strictly belong to one of the **5 approved types**. Meaningless, glossy, generic AI-generated illustrations (3D floating orbs, cyberpunk neon fluff, DALL-E style abstract art) are strictly forbidden ("AI 티나는 일러스트 금지"). Every article does not need to include all 5 types; agents should select the most appropriate visual type(s) based on the technical narrative:
 
-### ① Type 1: Sourced Research Images (자료 조사 이미지)
+### ① Type 1: Sourced Research Images (가져온 이미지 / 자료 조사 이미지)
 - **Definition**: Primary figures, architectural diagrams, model cards, benchmark plots, or system schematics directly extracted from official papers (arXiv), documentation, or authoritative vendor announcements.
 - **Mandatory Attribution Format (출처 표기 표준 규격)**:
   - Immediately below the image tag, an italicized source link MUST be placed in this exact format:
@@ -95,31 +95,35 @@ All images in articles must strictly belong to one of two categories. Meaningles
   - Example: `*출처: [Columbia AI Robotics Lab](https://diffusion-policy.cs.columbia.edu/) — Diffusion Policy Technical Report*`
 - **Technical In-text Citations**:
   - All empirical figures, benchmarks, or architectures must have inline markdown links to official primary sources: `...벤치마크 달성 ([arXiv:2303.04137](https://arxiv.org/abs/2303.04137))`
-- **Optimization Rules**:
-  - Optimize format (WebP or PNG) under `public/images/posts/<category>/`.
-  - Always specify descriptive `alt`, `width`, and `height`.
 
-### ② Type 2: Programmatic & Sketch Visuals (직접 생성 도식·그래프 이미지)
-- **Definition**: Explanatory visuals created specifically for the post to illustrate architectures, algorithmic flows, or performance comparisons.
-- **Allowed Forms**:
-  - **Hand-drawn Sketch Schematics (사람이 그린 듯한 스케치 도식)**: Excalidraw/XKCD rough sketch style block diagrams and pipeline flows.
-  - **Algorithm & Pipeline Schematics (알고리즘 도식화)**: Clear stage-by-stage block flows with input/output badges.
-  - **Programmatic Code-Generated Charts (직접 코딩으로 만든 그래프)**: Precision benchmark comparisons, latency/throughput curves, scaling laws.
-- **Modular Generation Toolkit (`scripts/visuals/`)**:
-  - To eliminate graph creation time, agents must use the pre-configured visual generator CLI or Python module (`scripts.visuals.charts`) matching FluxScope's exact color palette:
+### ② Type 2: AI-Generated Hand-Drawn Sketch (사람이 직접 그린 듯한 스케치 설명 이미지)
+- **Definition**: Explanatory visuals generated via image AI designed to look like rough, human hand-drawn sketches (whiteboard marker sketches, notebook pen drawings, Excalidraw / XKCD informal diagrams).
+- **Prompting Guideline**: Prompt the image generator with keywords such as *"rough hand-drawn whiteboard sketch on a clean matte white background, ink pen line art, minimalist technical diagram, felt-tip marker annotations, engineer handwritten notes style, zero 3D rendering, zero glossy neon lighting"*.
+- **Use Case**: Conceptualizing high-level intuitive metaphors, physical robot manipulation concepts, or user-facing decision workflows without intimidating technical jargon.
+
+### ③ Type 3: AI-Generated PPT-Style System Architecture (PPT 스타일 시스템 전반 설명 도식)
+- **Definition**: Professional system architecture diagrams reminiscent of modern tech conference keynote slides or enterprise solution blueprints (clean vector 2D flat design, crisp rectangles, subtle drop shadows, clean modern typography, clear module hierarchy).
+- **Prompting Guideline**: Prompt the image generator with keywords such as *"professional technical presentation slide diagram, modern minimalist 2D flat architecture schematic, clean organized component boxes, subtle monochrome and blue accents, high-contrast dark or light tech slide layout, crisp vector diagram, zero photorealism, zero 3D spheres"*.
+- **Use Case**: Multi-layered hardware/software stacks, distributed telemetry pipelines, end-to-end SoC and NPU subsystem mapping.
+
+### ④ Type 4: Code-Generated Algorithm Pipeline (코드로 생성한 알고리즘 설명 도식)
+- **Definition**: Programmatic, stage-by-stage block flows with explicit input/output badges, state transitions, and decision nodes generated deterministically via code.
+- **Generation Toolkit**: Generated using `scripts/visuals/cli.py pipeline` or Python matplotlib/PIL:
   ```bash
-  # 1. Bar comparison chart (latency, throughput, memory)
-  python scripts/visuals/cli.py bar --labels "FP16,INT8,FP4" --values "184,105,62" --unit "ms" --title "Inference Latency" --output public/images/posts/<category>/<slug>-latency.png
-
-  # 2. Trend & scaling curve (context scaling, loss curves)
-  python scripts/visuals/cli.py trend --x "1k,2k,4k,8k" --series "Unoptimized:1.8,3.6,7.2,14.4;Cached:0.3,0.3,0.4,0.6" --title "KV Cache Footprint" --output public/images/posts/<category>/<slug>-scaling.png
-
-  # 3. Hand-drawn sketch pipeline (algorithm dataflow, system architecture)
   python scripts/visuals/cli.py pipeline --steps "Sensors:Raw frames:INPUT;Perception:Occupancy grid:STAGE 1;Planning:MCTS:STAGE 2;Control:CAN bus:ACTUATION" --title "E2E Decision Loop" --output public/images/posts/<category>/<slug>-pipeline.png
   ```
-  - Or import `from scripts.visuals.charts import plot_bar_comparison, plot_line_trend, plot_sketch_pipeline` for customized charts.
+- **Use Case**: Sequential mathematical algorithms, data processing pipelines, closed-loop feedback controllers.
 
-### ③ Static Preservation & Auto-Resolution Scaling Policy (정적 유지 및 자동 해상도 최적화)
+### ⑤ Type 5: Code-Generated Benchmark & Metric Charts (코드로 생성한 그래프 이미지 도식)
+- **Definition**: Precision data visualizations showing quantitative empirical benchmarks, inference latency, memory scaling curves, or throughput comparisons.
+- **Generation Toolkit**: Generated using `scripts/visuals/cli.py bar` or `scripts/visuals/cli.py trend` matching FluxScope's color palette:
+  ```bash
+  python scripts/visuals/cli.py bar --labels "FP16,INT8,FP4" --values "184,105,62" --unit "ms" --title "Inference Latency" --output public/images/posts/<category>/<slug>-latency.png
+  python scripts/visuals/cli.py trend --x "1k,2k,4k,8k" --series "Unoptimized:1.8,3.6,7.2,14.4;Cached:0.3,0.3,0.4,0.6" --title "KV Cache Footprint" --output public/images/posts/<category>/<slug>-scaling.png
+  ```
+- **Use Case**: Quantitative ablation studies, VRAM scaling laws, token throughput vs. batch size.
+
+### ⑥ Static Preservation & Auto-Resolution Scaling Policy (정적 유지 및 자동 해상도 최적화)
 - **100% Static Files**: All graphics must be saved as static image assets under `public/images/posts/<category>/`. Never add client-side dynamic chart rendering scripts or live runtime APIs.
 - **Resolution Cap (800px ~ 1600px)**:
   - Article content column width is ~760px–860px (max 1200px for hero containers).

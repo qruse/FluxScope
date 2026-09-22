@@ -34,6 +34,8 @@ experienceNote: "원격 조종(Teleoperation) 데이터 500회 수집해서 VLA 
 | **제어 파이프라인** | 인지(비전) $\to$ 3D 점군 생성 $\to$ 역기구학 연산 $\to$ PID 모터 | 카메라 토큰 + 텍스트 토큰 $\to$ 트랜스포머 $\to$ 관절 각도 토큰 |
 | **환경 변화 적응** | 조명, 배경 천 색상 조금만 바뀌어도 좌표 오류 발생 | 의미론적(Semantic) 공간 이해력으로 조명 변화에 상대적 강건 |
 
+![VLA 로봇 조작 개념 화이트보드 스케치](/images/posts/physical-ai/vla-concept-hand-sketch.webp)
+
 ---
 
 ## VLA 상용화를 가로막는 3대 물리 제약

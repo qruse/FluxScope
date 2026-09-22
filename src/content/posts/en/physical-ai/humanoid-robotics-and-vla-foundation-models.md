@@ -34,6 +34,8 @@ experienceNote: "Fine-tuning an open VLA policy on 500 teleoperated demonstratio
 | **Control Pipeline** | Vision $\to$ Depth Meshing $\to$ Inverse Kinematics $\to$ PID Loop | Camera tokens + Text tokens $\to$ Transformer $\to$ Action tokens |
 | **Environmental Drift** | Fragile to minor shifts in background lighting or tablecloth texture | Semantic understanding grants robust physical transfer |
 
+![Whiteboard sketch of Vision-Language-Action robotics foundation model](/images/posts/physical-ai/vla-concept-hand-sketch.webp)
+
 ---
 
 ## 3 Critical Real-World Deployment Bottlenecks

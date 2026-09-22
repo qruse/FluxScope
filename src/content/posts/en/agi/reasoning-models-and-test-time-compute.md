@@ -39,6 +39,9 @@ experienceNote: "Deploying reasoning models to automated SQL synthesis boosted m
    - Trivial queries (simple lookups, basic grammar) resolve in <100 tokens with zero latency penalty
    - Difficult problems scale internal tokens into the thousands, dramatically increasing accuracy
 
+![OpenAI o1 Test-Time Compute Scaling Law Plot](/images/posts/agi/test-time-compute-scaling-sourced.webp)
+*Source: [OpenAI](https://openai.com/index/learning-to-reason-with-llms/) — Learning to reason with LLMs (o1 Test-Time Compute Scaling)*
+
 ---
 
 ## Traditional LLMs vs Reasoning Models
