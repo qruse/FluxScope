@@ -4,10 +4,12 @@ Provides modular functions to rapidly produce technical figures matching
 FluxScope's minimalist Swiss engineering style or hand-drawn sketch aesthetic.
 """
 
+import io
 from pathlib import Path
 from typing import Any, Literal
 import matplotlib.pyplot as plt
 import numpy as np
+from PIL import Image
 
 from scripts.visuals.theme import apply_theme, get_series_colors, get_theme
 
@@ -16,6 +18,26 @@ def _ensure_parent(output_path: str | Path) -> Path:
     p = Path(output_path)
     p.parent.mkdir(parents=True, exist_ok=True)
     return p
+
+
+def _save_and_optimize(fig: plt.Figure, output_path: Path):
+    """Save matplotlib figure, downscale if >1600px with Lanczos, and compress via WebP/PNG."""
+    buf = io.BytesIO()
+    fig.savefig(buf, format="png", facecolor=fig.get_facecolor(), edgecolor="none")
+    buf.seek(0)
+
+    with Image.open(buf) as img:
+        target_w, target_h = img.size
+        # Auto-clamp to max 1600px width (optimal 2x Retina bounds)
+        if target_w > 1600:
+            target_h = max(1, int(target_h * (1600 / target_w)))
+            img = img.resize((1600, target_h), Image.Resampling.LANCZOS)
+
+        output_path.parent.mkdir(parents=True, exist_ok=True)
+        if output_path.suffix.lower() == ".webp":
+            img.save(output_path, format="WEBP", quality=88, method=6)
+        else:
+            img.save(output_path, format="PNG", optimize=True)
 
 
 def plot_bar_comparison(
@@ -104,7 +126,7 @@ def plot_bar_comparison(
         ax.set_ylim(0, y_max)
 
         plt.subplots_adjust(top=0.78, bottom=0.15, left=0.08, right=0.95)
-        plt.savefig(p, facecolor=fig.get_facecolor(), edgecolor="none")
+        _save_and_optimize(fig, p)
         plt.close(fig)
 
     return p
@@ -165,7 +187,7 @@ def plot_line_trend(
             text.set_color(t["ink"])
 
         plt.subplots_adjust(top=0.78, bottom=0.15, left=0.08, right=0.95)
-        plt.savefig(p, facecolor=fig.get_facecolor(), edgecolor="none")
+        _save_and_optimize(fig, p)
         plt.close(fig)
 
     return p
@@ -274,7 +296,7 @@ def plot_sketch_pipeline(
         ax.set_ylim(0, 1)
 
         plt.subplots_adjust(top=0.78, bottom=0.1, left=0.05, right=0.95)
-        plt.savefig(p, facecolor=fig.get_facecolor(), edgecolor="none")
+        _save_and_optimize(fig, p)
         plt.close(fig)
 
     return p

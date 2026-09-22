@@ -105,6 +105,19 @@ All images in articles must strictly belong to one of two categories. Meaningles
   ```
   - Or import `from scripts.visuals.charts import plot_bar_comparison, plot_line_trend, plot_sketch_pipeline` for customized charts.
 
+### ③ Static Preservation & Auto-Resolution Scaling Policy (정적 유지 및 자동 해상도 최적화)
+- **100% Static Files**: All graphics must be saved as static image assets under `public/images/posts/<category>/`. Never add client-side dynamic chart rendering scripts or live runtime APIs.
+- **Resolution Cap (800px ~ 1600px)**:
+  - Article content column width is ~760px–860px (max 1200px for hero containers).
+  - Maximum image width is strictly capped at **1600px** (sharp 2x Retina display without 4K payload bloat).
+  - Minimum width recommended is **800px** to avoid pixelation on high-DPI screens.
+- **Auto-Optimization Requirement**:
+  - Whenever importing external screenshots or raw figures, agents MUST run the image optimizer to auto-resample (Lanczos) and compress:
+  ```bash
+  python scripts/optimize_images.py public/images/posts/<category>/<image-file> --webp
+  ```
+  - **Payload Target**: Each image must be under **250KB** (hard cap: 500KB). Images exceeding 500KB will trigger an immediate CI error in `scripts/check-eeat.mjs`.
+
 ---
 
 ## 6. Tags Policy (태그 규칙)

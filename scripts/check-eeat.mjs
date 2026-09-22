@@ -134,6 +134,30 @@ for (const file of files) {
   if (trimmedBody.endsWith('---')) {
     errors.push(`${relPath}: Trailing horizontal rule ('---') at end of article is forbidden.`);
   }
+
+  // 6. Static Image Optimization Audit
+  const imageSources = [];
+  if (frontmatter.image && frontmatter.image.src) {
+    imageSources.push(frontmatter.image.src);
+  }
+  const inlineImgMatches = body.matchAll(/!\[.*?\]\(((\/images\/[^\s)]+))/g);
+  for (const match of inlineImgMatches) {
+    imageSources.push(match[1]);
+  }
+
+  for (const imgSrc of imageSources) {
+    const cleanPath = imgSrc.startsWith('/') ? imgSrc.slice(1) : imgSrc;
+    const localImgPath = path.resolve('public', cleanPath);
+    if (fs.existsSync(localImgPath)) {
+      const stats = fs.statSync(localImgPath);
+      const sizeKB = Math.round(stats.size / 1024);
+      if (sizeKB > 500) {
+        errors.push(
+          `${relPath}: Image "${imgSrc}" is oversized (${sizeKB}KB > 500KB cap). Run 'python scripts/optimize_images.py ${localImgPath}' before publishing.`
+        );
+      }
+    }
+  }
 }
 
 if (errors.length > 0) {
