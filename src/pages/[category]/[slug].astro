@@ -51,17 +51,6 @@ const jsonLd = [
       <div class="article-meta"><span>작성자: <strong>{post.data.author}</strong></span><span>발행일: <time datetime={post.data.publishedAt.toISOString()}>{formatDate(post.data.publishedAt, 'ko')}</time></span><span>수정일: <time datetime={post.data.updatedAt.toISOString()}>{formatDate(post.data.updatedAt, 'ko')}</time></span></div>
     </header>
     <div class="article-shell"><img class="article-visual" src={withBase(post.data.image.src)} width={post.data.image.width} height={post.data.image.height} alt={post.data.image.alt} decoding="async" /></div>
-    {post.data.experienceNote && (
-      <div class="article-shell">
-        <aside class="experience-callout" aria-label="실무자 경험 메모">
-          <div class="experience-badge">
-            <span class="experience-indicator"></span>
-            <strong>실무자 경험 메모 (E-E-A-T Field Note)</strong>
-          </div>
-          <p class="experience-content">{post.data.experienceNote}</p>
-        </aside>
-      </div>
-    )}
     <div class="article-body article-shell"><Content /></div>
     <div class="article-end article-shell"><div class="tag-list">{post.data.tags.map((tag) => <a href={tagPath(tag, 'ko')}>#{tag}</a>)}</div></div>
   </article>

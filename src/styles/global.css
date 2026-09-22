@@ -429,40 +429,7 @@ html[data-theme="dark"] .astro-code span {
 .search-results p { margin: .4rem 0 0; color: var(--muted); font-size: .88rem; }
 .search-results mark { color: var(--ink); background: #f7d7a5; }
 
-/* E-E-A-T Field Experience Callout */
-.experience-callout {
-  margin: 2.2rem 0 1.2rem;
-  padding: 1.2rem 1.5rem;
-  background: var(--surface);
-  border-left: 4px solid var(--accent);
-  border-top: 1px solid var(--line);
-  border-right: 1px solid var(--line);
-  border-bottom: 1px solid var(--line);
-  border-radius: 4px;
-}
-.experience-badge {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-size: 0.78rem;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: var(--accent);
-  margin-bottom: 0.5rem;
-}
-.experience-indicator {
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  background: var(--accent);
-}
-.experience-content {
-  margin: 0;
-  font-size: 0.96rem;
-  font-weight: 550;
-  line-height: 1.6;
-  color: var(--ink);
-}
+
 
 @media (max-width: 860px) {
   .header-inner { flex-wrap: wrap; gap: .4rem 1rem; padding-block: .85rem; }

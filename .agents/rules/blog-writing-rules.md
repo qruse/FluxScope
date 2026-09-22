@@ -28,5 +28,6 @@ See `AGENTS.md` and `GEMINI.md` at the project root for the full guidelines.
   - Static & Auto-Resolution: 100% static assets under `public/images/posts/<category>/`. Max width 1600px, payload under 250KB (hard cap 500KB). All 5 types do not need to appear in every article.
 - **E-E-A-T & Mandatory Experience Comment**:
   - AI MUST ask the user for a 1–2 sentence firsthand experience comment before drafting. Never draft/publish without it.
-  - Frontmatter must include `experienceNote: string` (min 15 chars), rendered in `.experience-callout`.
+  - Frontmatter retains `experienceNote: string` (min 15 chars) as provenance metadata, but it MUST NEVER be rendered as an artificial callout box on the UI.
+  - The experience comment must be naturally and deeply woven into the entire article narrative (3-line summary, architecture explanation, gotchas, Q&A) so the text authentically reflects real production field experience.
 - **Verification**: `npm run check` executes `check-eeat.mjs` $\to$ `astro check` $\to$ `astro build` $\to$ `pagefind` $\to$ `check-links` $\to$ `check-performance.mjs` (HTML $\le$ 100KB, CSS $\le$ 60KB, Image $\le$ 500KB, CLS attributes). Must pass with 0 errors.
