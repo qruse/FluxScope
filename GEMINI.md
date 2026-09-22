@@ -118,10 +118,19 @@ All images in articles must strictly belong to one of the **5 approved types**. 
 - **Technical In-text Citations**:
   - All empirical figures, benchmarks, or architectures must have inline markdown links to official primary sources: `...벤치마크 달성 ([arXiv:2303.04137](https://arxiv.org/abs/2303.04137))`
 
-### ② Type 2: AI-Generated Hand-Drawn Sketch (사람이 직접 그린 듯한 스케치 설명 이미지)
-- **Definition**: Explanatory visuals generated via image AI designed to look like rough, human hand-drawn sketches (whiteboard marker sketches, notebook pen drawings, Excalidraw / XKCD informal diagrams).
-- **Prompting Guideline**: Prompt the image generator with keywords such as *"rough hand-drawn whiteboard sketch on a clean matte white background, ink pen line art, minimalist technical diagram, felt-tip marker annotations, engineer handwritten notes style, zero 3D rendering, zero glossy neon lighting"*.
-- **Use Case**: Conceptualizing high-level intuitive metaphors, physical robot manipulation concepts, or user-facing decision workflows without intimidating technical jargon.
+### ② Type 2: AI-Generated Hand-Drawn Sketch (사람이 직접 그린 듯한 스케치/화이트보드 설명 이미지)
+- **Definition**: Explanatory visuals generated via image AI designed to look like an authentic, tangible photograph of real-world whiteboard marker drawings or engineering notebook sketches written directly by a human engineer.
+- **Visual Style & Realism (실제 화이트보드/노트 촬영 실사 연출)**:
+  - 어설픈 디지털 그래픽이나 어두운 배경의 기계적 박스 도식 절대 금지.
+  - 실제 사무실/연구실 벽면의 화이트보드에 굵은 보드마커(검정, 빨강, 파랑)로 그리거나, 실제 엔지니어의 노트에 펜과 마커로 직접 쓰고 그린 것을 정면 또는 탑다운으로 촬영한 실사 느낌으로 연출함.
+  - 화이트보드 프레임, 보드마커 트레이, 자연스러운 조명 반사, 종이 질감 등 실제 현장감(Tangible Field Notes)을 살려 독자가 '진짜 엔지니어가 칠판에 그려준 그림'처럼 느끼도록 함.
+- **Simplicity & Legibility (극도의 단순함과 직관성 원칙 — 3초 이해 규칙)**:
+  - **복잡도 금지 ("이미지가 너무 복잡해 퀄리티는 좋은데, 좀 쉽게만들어")**: 자잘한 수식, 장문의 설명 텍스트, 복잡한 다중 분기 절대 금지.
+  - **초간결 3단계 구조**: 3~4단계 이내의 굵직한 블록, 명확하고 굵은 화살표, 큼직한 손글씨 라벨, 핵심을 찌르는 직관적 심볼(칩, 카메라, 화살표, 프레임 등) 위주로 구성하여 모바일 화면에서도 3초 만에 핵심 메커니즘을 바로 이해할 수 있어야 함.
+- **Prompting Guideline**: Prompt the image generator with keywords such as:
+  - *"A real photo of an office whiteboard with a very simple, clean, intuitive hand-drawn sketch explaining [Topic]. Drawn with bold dry-erase markers (black, red, blue). Three clear and minimal stages with thick arrows: [Stage 1] -> [Stage 2] -> [Stage 3]. Clean, large handwriting, minimal text, bold sketches, easy to understand in 3 seconds, natural whiteboard gloss and room lighting, zero clutter, zero complex formulas."*
+  - Or for notebook style: *"A real photo taken from above of a clean open spiral notebook on a wooden desk with a pen beside it. A very simple, clean, minimalist hand-drawn diagram explaining [Topic], drawn with black ink and red/blue marker highlights. Simple 3-step flowchart, large legible handwriting, minimal words, natural paper texture, warm lighting."*
+- **Use Case**: Conceptualizing high-level intuitive mechanisms, physical robot manipulation workflows, hardware heat dissipation loops, or end-to-end decision pipelines without intimidating jargon.
 
 ### ③ Type 3: AI-Generated PPT-Style System Architecture (PPT 스타일 시스템 전반 설명 도식)
 - **Definition**: Professional system architecture diagrams reminiscent of modern tech conference keynote slides or enterprise solution blueprints (clean vector 2D flat design, crisp rectangles, subtle drop shadows, clean modern typography, clear module hierarchy).

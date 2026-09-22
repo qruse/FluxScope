@@ -191,6 +191,14 @@ const searchUrl = withBase(currentLang === 'en' ? '/en/search/' : '/search/');
         <p class="footer-copy">© {new Date().getFullYear()} {site.name}</p>
       </div>
     </footer>
+    <div id="image-lightbox" class="image-lightbox" role="dialog" aria-modal="true" aria-label="Image Zoom Preview" aria-hidden="true">
+      <button class="image-lightbox-close" type="button" aria-label="Close image zoom" title="Close (Esc)">
+        <svg viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"></path></svg>
+      </button>
+      <div class="image-lightbox-dialog" id="image-lightbox-dialog">
+        <div id="image-lightbox-caption" class="image-lightbox-caption"></div>
+      </div>
+    </div>
     <script>
       const button = document.querySelector<HTMLButtonElement>('.theme-toggle');
       button?.addEventListener('click', () => {
@@ -207,6 +215,67 @@ const searchUrl = withBase(currentLang === 'en' ? '/en/search/' : '/search/');
             try { localStorage.setItem('lang-pref', lang); } catch (_) {}
           }
         });
+      });
+
+      // 이미지 클릭 시 확대 (Image Zoom Lightbox)
+      const lightbox = document.getElementById('image-lightbox');
+      const dialog = document.getElementById('image-lightbox-dialog');
+      const lightboxCaption = document.getElementById('image-lightbox-caption');
+
+      function openLightbox(img: HTMLImageElement) {
+        if (!lightbox || !dialog) return;
+
+        // Clean up previous image if any
+        const existingImg = dialog.querySelector<HTMLImageElement>('.image-lightbox-img');
+        if (existingImg) existingImg.remove();
+
+        const newImg = document.createElement('img');
+        newImg.className = 'image-lightbox-img';
+        newImg.src = img.currentSrc || img.src;
+        newImg.alt = img.alt || '';
+        newImg.decoding = 'async';
+        dialog.insertBefore(newImg, lightboxCaption);
+
+        if (lightboxCaption) {
+          lightboxCaption.textContent = img.alt || '';
+          lightboxCaption.style.display = img.alt ? 'block' : 'none';
+        }
+        lightbox.classList.add('active');
+        lightbox.setAttribute('aria-hidden', 'false');
+        document.body.style.overflow = 'hidden';
+      }
+
+      function closeLightbox() {
+        if (!lightbox) return;
+        lightbox.classList.remove('active');
+        lightbox.setAttribute('aria-hidden', 'true');
+        document.body.style.overflow = '';
+        setTimeout(() => {
+          if (!lightbox.classList.contains('active')) {
+            const activeImg = dialog?.querySelector<HTMLImageElement>('.image-lightbox-img');
+            if (activeImg) activeImg.remove();
+          }
+        }, 250);
+      }
+
+      document.querySelectorAll<HTMLImageElement>('.article-body img, .article-visual').forEach((img) => {
+        img.addEventListener('click', (e) => {
+          e.stopPropagation();
+          openLightbox(img);
+        });
+      });
+
+      lightbox?.addEventListener('click', (e) => {
+        const target = e.target as HTMLElement;
+        if (target === lightbox || target.closest('.image-lightbox-close') || target.classList.contains('image-lightbox-img')) {
+          closeLightbox();
+        }
+      });
+
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && lightbox?.classList.contains('active')) {
+          closeLightbox();
+        }
       });
     </script>
   </body>
