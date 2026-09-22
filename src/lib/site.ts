@@ -34,7 +34,7 @@ export const categories = {
   },
   mobility: {
     name: 'Mobility',
-    nameKo: '자동차(모빌리티)',
+    nameKo: '모빌리티',
     description: 'Electric vehicles, autonomous tech, SDV architecture, and battery powertrains.',
     descriptionKo: '전기차 파워트레인, 자율주행 센서, SDV 조널 아키텍처 및 모빌리티 하드웨어.',
     accent: 'blue',
@@ -42,7 +42,7 @@ export const categories = {
   },
   'it-devices': {
     name: 'IT Devices',
-    nameKo: 'IT 제품',
+    nameKo: 'IT기기',
     description: 'Smartphones, foldables, AP silicon, displays, and consumer tech hardware.',
     descriptionKo: '플래그십 스마트폰, 폴더블 힌지, 3nm AP 실리콘, 디스플레이 및 소비자 전자기기 하드웨어.',
     accent: 'teal',
@@ -60,13 +60,13 @@ export const majorCategories = {
   mobility: {
     slug: 'mobility',
     name: 'Mobility',
-    nameKo: '자동차(모빌리티)',
+    nameKo: '모빌리티',
     subcategories: ['mobility'] as const,
   },
   'it-devices': {
     slug: 'it-devices',
     name: 'IT Devices',
-    nameKo: 'IT 제품',
+    nameKo: 'IT기기',
     subcategories: ['it-devices'] as const,
   },
 } as const;
@@ -94,6 +94,13 @@ export function postPath(post: Post): string {
 
 export function categoryPath(category: Category, lang: Lang = defaultLang): string {
   return withBase(lang === 'en' ? `/en/${category}/` : `/${category}/`);
+}
+
+export function majorCategoryPath(major: MajorCategory, lang: Lang = defaultLang): string {
+  if (major === 'ai') {
+    return withBase(lang === 'en' ? '/en/ai/' : '/ai/');
+  }
+  return withBase(lang === 'en' ? `/en/${major}/` : `/${major}/`);
 }
 
 export function tagSlug(tag: string): string {

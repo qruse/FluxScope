@@ -21,8 +21,8 @@ This file contains the authoritative, non-negotiable guidelines for all AI agent
     - `agi`: AGI, frontier models, reasoning architectures, prompt engineering, LLM-ops, evaluation.
     - `physical-ai`: Autonomous driving, robotics, humanoid, VLA foundation models, real-world physics.
     - `other-ai`: On-device AI, small language models, edge compute, speech/audio multimodality, smart agriculture, IoT telemetry.
-  - **대분류 2. 자동차(모빌리티) (`mobility`)**: EV powertrain, 800V architecture, battery thermal management, SDV zonal architecture, regenerative braking, automotive ethernet.
-  - **대분류 3. IT 제품 (`it-devices`)**: Flagship smartphones (Galaxy, iPhone), AP silicon throttling, vapor chamber cooling, foldable hinges, UTG, mobile LTPO displays.
+  - **대분류 2. 모빌리티 (`mobility`)**: EV powertrain, 800V architecture, battery thermal management, SDV zonal architecture, regenerative braking, automotive ethernet.
+  - **대분류 3. IT기기 (`it-devices`)**: Flagship smartphones (Galaxy, iPhone), AP silicon throttling, vapor chamber cooling, foldable hinges, UTG, mobile LTPO displays.
 - **Minimal Maintainable Diffs**: Make the smallest, cleanest maintainable change.
 
 ---

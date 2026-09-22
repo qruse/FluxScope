@@ -2,7 +2,7 @@
 import { getCollection } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import PostCard from '../components/PostCard.astro';
-import { categories, categoryPath, publishedPosts } from '../lib/site';
+import { majorCategories, majorCategoryPath, publishedPosts } from '../lib/site';
 
 const allKoPosts = publishedPosts(await getCollection('posts'), 'ko');
 
@@ -29,19 +29,21 @@ const subPosts = allKoPosts.filter((p) => p.id !== headPost.id).slice(0, 2);
     </div>
   </section>
 
-  <!-- 2. 각 주제별 포스트 가로로 넘기는 스타일 -->
-  {Object.entries(categories).map(([slug, category], index) => {
-    const categoryKey = slug as keyof typeof categories;
-    const categoryPosts = allKoPosts.filter((post) => post.data.category === categoryKey);
+  <!-- 2. 대분류별(AI / 모빌리티 / IT기기) 포스트 가로 스크롤 섹션 -->
+  {Object.entries(majorCategories).map(([slug, major], index) => {
+    const majorKey = slug as keyof typeof majorCategories;
+    const categoryPosts = allKoPosts.filter((post) =>
+      (major.subcategories as readonly string[]).includes(post.data.category)
+    );
     return (
       <section class="topic-scroll-section">
         <div class="shell">
           <div class="section-head">
             <div>
               <div class="section-kicker">0{index + 1} / TOPIC</div>
-              <h2>{category.nameKo}</h2>
+              <h2>{major.nameKo}</h2>
             </div>
-            <a class="quiet-link" href={categoryPath(categoryKey, 'ko')}>
+            <a class="quiet-link" href={majorCategoryPath(majorKey, 'ko')}>
               전체보기 ↗
             </a>
           </div>

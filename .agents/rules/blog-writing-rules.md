@@ -16,8 +16,8 @@ See `AGENTS.md` and `GEMINI.md` at the project root for the full guidelines.
 - **Language**: Always write pairs in Korean (`ko/<category>/<slug>.md`) and English (`en/<category>/<slug>.md`).
 - **Category Hierarchy (대분류-중분류 체계)**:
   - **대분류 1. AI**: `agi`, `physical-ai`, `other-ai`
-  - **대분류 2. 자동차(모빌리티)**: `mobility`
-  - **대분류 3. IT 제품**: `it-devices`
+  - **대분류 2. 모빌리티**: `mobility`
+  - **대분류 3. IT기기**: `it-devices`
 - **Tone (냉소적·유머러스한 실무 엔지니어 스타일)**:
   - Korean: 개조식(Itemized bullet format) + 음슴체 (`~함`, `~임`, `~봄`, `~필수`, `~안 됨`, `~행`). 겉만 번지르르한 마케팅/벤치마크 헛소리를 꿰뚫어 보는 쌉싸름한 냉소와 뼈 때리는 블랙 유머 장착. 단, 핵심 수치와 기술 메커니즘은 칼같이 정확하게 제공.
   - English: Wry, cynical executive engineering memo. Punctures Silicon Valley hype with dry deadpan realism and witty field takeaways. Zero fluff, zero academic lecturing.
