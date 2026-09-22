@@ -25,4 +25,4 @@ See `AGENTS.md` and `GEMINI.md` at the project root for the full guidelines.
 - **E-E-A-T & Mandatory Experience Comment**:
   - AI MUST ask the user for a 1–2 sentence firsthand experience comment before drafting. Never draft/publish without it.
   - Frontmatter must include `experienceNote: string` (min 15 chars), rendered in `.experience-callout`.
-- **Verification**: `npm run check` automatically executes `node scripts/check-eeat.mjs` first, failing if experience notes or layout rules are violated. Must pass with 0 errors and 0 broken links.
+- **Verification**: `npm run check` executes `check-eeat.mjs` $\to$ `astro check` $\to$ `astro build` $\to$ `pagefind` $\to$ `check-links` $\to$ `check-performance.mjs` (HTML $\le$ 100KB, CSS $\le$ 60KB, Image $\le$ 500KB, CLS attributes). Must pass with 0 errors.

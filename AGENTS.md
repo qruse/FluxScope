@@ -188,5 +188,6 @@ FluxScope의 모든 아티클은 구글 E-E-A-T(Experience, Expertise, Authorita
   3. `astro build`: 전체 정적 사이트 컴파일
   4. `pagefind --site dist`: 다국어 검색 인덱싱
   5. `node scripts/check-links.mjs`: 생성된 모든 HTML 페이지 간 내부 링크 무결성 전수 검사
+  6. `node scripts/check-performance.mjs`: 웹 성능 예산 및 최적화 감사 (HTML <= 100KB, CSS <= 60KB, 이미지 <= 500KB, CLS 방지 width/height 속성 강제, Base64 인라인 차단)
 - In Windows restricted environments, set `ASTRO_TELEMETRY_DISABLED=1` if telemetry prompts fail.
 - All checks must pass with **0 errors and 0 broken links** before committing.
