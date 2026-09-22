@@ -47,6 +47,14 @@ experienceNote: "Embedding a 3B parameter model quantized to 4-bit AWQ into our 
 
 ---
 
+## Community Reactions
+
+- **Aggressive Mobile OS OOM Killers**: Developers note that while a 3B parameter model runs smoothly in isolation, background memory eviction triggers the instant a user opens a heavy app
+- **Real-World Quantization Degradation**: Discussions across open-source model forums emphasize that while 4-bit benchmarks show minimal perplexity drops, nuanced instruction following suffers noticeably
+- **Unbeatable Privacy and Zero-API Cost**: Strong praise for edge inference eliminating recurring cloud token bills and keeping private enterprise telemetry strictly air-gapped on device
+
+---
+
 ## Q&A (Field Notes)
 
 - **Q: Can modern smartphones run 7B or larger models smoothly?**

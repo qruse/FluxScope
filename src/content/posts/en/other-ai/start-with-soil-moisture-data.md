@@ -46,6 +46,14 @@ experienceNote: "An air pocket around a loose probe misreported saturated loam a
 
 ---
 
+## Community Reactions
+
+- **Cheap Resistive Sensor Horror Stories**: IoT developers warn against cheap copper-trace probes from online marketplaces, citing rapid electrolytic corrosion within weeks in fertilized soil
+- **Field Battery Drain in Winter Cold**: Practitioners note that advertised multi-year LoRa node battery life collapses to months during freezing winter nights alongside RF attenuation from greenhouse steel frames
+- **Simple Threshold Alerts Beat Complex ML**: Smart agriculture builders report that farm operators consistently prefer deterministic calibrated moisture threshold alerts over opaque time-series forecasting models
+
+---
+
 ## Q&A (Field Notes)
 
 - **Q: How many sensors are required per greenhouse bay?**

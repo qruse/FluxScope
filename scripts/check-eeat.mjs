@@ -96,21 +96,42 @@ for (const file of files) {
     }
   }
 
-  // 2. Fixed Section Headers Validation
+  // 2. Fixed Section Headers Validation & Ordering
   if (isKorean) {
     if (!body.includes('## 3줄 요약')) {
       errors.push(`${relPath}: Missing fixed top section '## 3줄 요약'.`);
     }
+    if (!body.includes('## 커뮤니티 반응')) {
+      errors.push(`${relPath}: Missing fixed pre-Q&A section '## 커뮤니티 반응'.`);
+    }
     if (!body.includes('## Q&A 또 궁금한 것은?')) {
       errors.push(`${relPath}: Missing fixed bottom section '## Q&A 또 궁금한 것은?'.`);
+    }
+    if (body.includes('## 커뮤니티 반응') && body.includes('## Q&A 또 궁금한 것은?')) {
+      if (body.indexOf('## 커뮤니티 반응') > body.indexOf('## Q&A 또 궁금한 것은?')) {
+        errors.push(`${relPath}: '## 커뮤니티 반응' must appear before '## Q&A 또 궁금한 것은?'.`);
+      }
     }
   } else if (isEnglish) {
     if (!body.includes('## 3-Line TL;DR')) {
       errors.push(`${relPath}: Missing fixed top section '## 3-Line TL;DR'.`);
     }
+    if (!body.includes('## Community Reactions')) {
+      errors.push(`${relPath}: Missing fixed pre-Q&A section '## Community Reactions'.`);
+    }
     if (!body.includes('## Q&A (Field Notes)')) {
       errors.push(`${relPath}: Missing fixed bottom section '## Q&A (Field Notes)'.`);
     }
+    if (body.includes('## Community Reactions') && body.includes('## Q&A (Field Notes)')) {
+      if (body.indexOf('## Community Reactions') > body.indexOf('## Q&A (Field Notes)')) {
+        errors.push(`${relPath}: '## Community Reactions' must appear before '## Q&A (Field Notes)'.`);
+      }
+    }
+  }
+
+  // 2-1. Forbidden Keyword: 'Reddit' naming prohibited in headings or content
+  if (/\breddit\b/i.test(body)) {
+    errors.push(`${relPath}: Explicit mention of 'Reddit' is prohibited. Use neutral phrasing such as '실무 엔지니어 커뮤니티' or 'Developer Community'.`);
   }
 
   // 3. Tags Count Validation (5 <= tags <= 15)

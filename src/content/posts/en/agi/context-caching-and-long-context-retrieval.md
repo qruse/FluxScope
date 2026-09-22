@@ -86,6 +86,14 @@ print(response.text)
 
 ---
 
+## Community Reactions
+
+- **Prefix Invalidation Frustrations**: Numerous engineers report 0% hit rates and unexpected bills caused by upstream prompt templates appending dynamic timestamps or session UUIDs ahead of the static prefix
+- **TTL Storage vs Warmup Retries**: Heated debates across developer forums on whether paying idle storage fees for low-traffic endpoints beats warm-on-demand recomputations
+- **RAG Retains Edge on Small Corpora**: Consensus among practitioners that for document sets below 100k tokens, lightweight hybrid RAG remains noticeably cheaper than context caching minimum hourly storage commitments
+
+---
+
 ## Q&A (Field Notes)
 - **Query Density**: If querying the same corpus $\ge 5$ times per hour, Context Caching wins on both latency and cost
 - **Data Mutability**: For fast-updating minute-by-minute streaming data, stick with RAG. For weekly codebases or regulatory PDFs, Caching dominates

@@ -60,6 +60,14 @@ lang: en
 
 ---
 
+## Community Reactions
+
+- **ACT vs Diffusion Policy Practicality Debates**: Robotics developers frequently compare ACT's single-pass transformer speed against Diffusion Policy's superior multimodal contact stability, noting trade-offs on compute-constrained arms
+- **Teleoperation Collection Grind**: While 30–50 demonstrations suffice, researchers highlight that recording flawless human teleop trajectories remains labor-intensive and error-prone
+- **Embedded Thermal Throttling on Edge Arms**: Practitioners warn of frame drops on Jetson Orin modules during extended 50Hz continuous control runs without dedicated active cooling
+
+---
+
 ## Q&A (Field Notes)
 
 - **Q: Predict joint angles directly or end-effector Cartesian coordinates?**

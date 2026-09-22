@@ -54,6 +54,14 @@ experienceNote: "Cascaded STT-LLM-TTS pipelines hit an irreducible 1.8-second la
 
 ---
 
+## Community Reactions
+
+- **Barge-in Sensitivity Frustration**: Voice AI engineers report frequent user complaints when brief pauses for breath are misinterpreted as speech conclusion, triggering premature AI interruptions
+- **Stateful Streaming Gateway Overhead**: Infrastructure engineers highlight the steep complexity of managing persistent WebRTC audio channels compared to stateless HTTP REST completions
+- **Praise for Native Expressiveness**: Practitioners widely celebrate the end of robotic flat TTS, noting genuine human nuances like whispers, laughter, and vocal hesitation
+
+---
+
 ## Q&A (Field Notes)
 
 - **Q: How does the model avoid interrupting the user mid-sentence?**

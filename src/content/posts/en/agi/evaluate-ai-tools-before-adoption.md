@@ -62,6 +62,14 @@ experienceNote: "A top-ranked MMLU model failed 14 out of 30 proprietary tax edg
 
 ---
 
+## Community Reactions
+
+- **Public Leaderboard Skepticism**: Field engineers consistently warn that top rankings on public benchmarks collapse when confronted with proprietary schemas and domain jargon
+- **Golden Dataset Maintenance Fatigue**: Teams cite significant operational overhead in constantly pruning 50+ enterprise test cases as internal business rules evolve quarterly
+- **LLM-as-a-Judge Verbosity Bias**: Practitioners emphasize that evaluator LLMs systematically overrate lengthy, sycophantic responses unless strictly calibrated against deterministic assertions
+
+---
+
 ## Q&A (Field Notes)
 
 - **Q: Can we just pick the #1 model on the LMSYS / MMLU leaderboard?**

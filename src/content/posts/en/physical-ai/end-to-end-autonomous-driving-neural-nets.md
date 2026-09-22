@@ -55,6 +55,14 @@ experienceNote: "At complex unprotected left turns where legacy rule engines hes
 
 ---
 
+## Community Reactions
+
+- **The Black-Box Debugging Nightmare**: Autonomous vehicle engineers emphasize that while modular stacks allow tracing a missed brake to a specific tracker ID, E2E failures offer zero interpretable stack traces
+- **Sim-to-Real Edge Case Gaps**: Discussions across practitioner forums highlight that despite massive neural world models, real-world edge scenarios like wet road glare or unmapped construction cones still trigger unpredictable disengagements
+- **Automotive Safety Certification Hurdles**: Clear consensus that automotive safety boards (ISO 26262) will never permit road deployment without deterministic fallback arbiters capable of overriding the neural network
+
+---
+
 ## Q&A (Field Notes)
 
 - **Q: Can vision-only cameras match LiDAR reliability in dense fog or snow?**

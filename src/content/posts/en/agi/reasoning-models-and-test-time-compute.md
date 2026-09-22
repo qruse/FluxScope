@@ -52,6 +52,14 @@ experienceNote: "Deploying reasoning models to automated SQL synthesis boosted m
 
 ---
 
+## Community Reactions
+
+- **Overthinking on Trivial Queries**: Developers building interactive UIs report user drop-off when simple formatting questions trigger 30-second internal reasoning monologues
+- **Hidden Thinking Token Cost Shock**: Heavy discussion on developer threads regarding API bill inflation from invisible chain-of-thought tokens, spurring dynamic routing classifiers
+- **Universal Praise for Tough Coding**: Broad consensus that for deep concurrency bug hunting, formal proofs, and hairy multi-table SQL queries, reasoning models outclass human seniors
+
+---
+
 ## Q&A (Field Notes)
 - **Simple Chatbots**: Never attach reasoning models to simple customer FAQs or general chat—users will bounce on high latency and costs
 - **High-Leverage Workloads**: Deploy exclusively where **factual precision is non-negotiable**: automated unit test synthesis, architecture audits, and critical data analysis

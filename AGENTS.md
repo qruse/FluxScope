@@ -36,12 +36,20 @@ Every post must adhere to this exact structural hierarchy:
   - Metrics comparison tables (latency, memory, throughput, accuracy)
   - Mermaid diagrams where architecture visualization adds clarity
 
-### ③ Bottom Section (Fixed): Q&A 또 궁금한 것은? / Q&A (Field Notes)
+### ③ Pre-Q&A Section (Fixed): 커뮤니티 반응 / Community Reactions
+- **Korean**: `## 커뮤니티 반응`
+- **English**: `## Community Reactions`
+- **Rule**:
+  - Summarize authentic developer discussions, skeptical critiques, real-world deployment feedback, or common gotchas (investigating discussions from developer communities such as Reddit r/MachineLearning, r/LocalLLaMA, Hacker News, etc.).
+  - **STRICT PROHIBITION (플랫폼 명칭 노출 절대 금지)**: **NEVER** mention the platform name "Reddit" (or other specific platform brand names) anywhere in the heading or the content text ("목차나 정보에 Reddit이라고 하지는 말고"). Instead, neutrally frame observations as "실무 엔지니어 커뮤니티", "현장 개발자 반응", "오픈소스 포럼 시각" or "Practitioner Community", "Developer Discussions", "Field Engineers".
+  - Follow 개조식 + 음슴체 (Korean) / Executive memo (English), with zero trailing periods.
+
+### ④ Bottom Section (Fixed): Q&A 또 궁금한 것은? / Q&A (Field Notes)
 - **Korean**: `## Q&A 또 궁금한 것은?`
 - **English**: `## Q&A (Field Notes)`
 - **Rule**: Concise Q&A bullet format addressing real-world edge cases, practical hurdles, or hardware constraints.
 
-### ④ No Trailing Footers / Disclaimers (꼬리말 절대 금지):
+### ⑤ No Trailing Footers / Disclaimers (꼬리말 절대 금지):
 - **NEVER** append horizontal rules (`---`) at the very end of the markdown body.
 - **NEVER** append review date disclaimers (e.g., `*2026년 9월 기준...*` or `*Last reviewed: ...*`).
 - **Reason**: The article header already renders author, publication date, and update date. The article layout automatically appends the tag container (`.article-end`) with its own top border. Adding markdown footers creates an ugly double border and redundant text.

@@ -48,6 +48,14 @@ experienceNote: "Fine-tuning an open VLA policy on 500 teleoperated demonstratio
 
 ---
 
+## Community Reactions
+
+- **Cherry-Picked Demo Fatigue**: Robotics researchers emphasize that glossy investor videos showing flawless laundry folding often mask hundreds of failed takes and human teleoperation resets
+- **Actuator Fatigue and Maintenance Bottlenecks**: Hardware engineers highlight that harmonic drive gear wear and cable harness failures after 100 operating hours create massive maintenance friction
+- **The Physical Data Wall**: Strong consensus across engineering forums that unlike text or images, real-world robotic interaction data cannot be scraped from the web, forming the primary bottleneck for physical AI
+
+---
+
 ## Q&A (Field Notes)
 
 - **Q: Can policies trained purely inside Isaac Sim or MuJoCo transfer directly to physical robots?**
