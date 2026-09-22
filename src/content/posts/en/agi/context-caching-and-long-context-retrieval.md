@@ -18,19 +18,19 @@ lang: en
 
 ## 3-Line TL;DR
 
-- Ingesting a million tokens per request without caching will murder both your API budget and latency.
-- **Context Caching** pins precomputed KV attention states in memory—slashing input token costs by 75% and returning answers in seconds.
-- Place all static context (repos, schemas, documentation) at the **strict prefix** of the prompt; push dynamic user queries to the very end.
+- Ingesting a million tokens per request without caching will murder both your API budget and latency
+- **Context Caching** pins precomputed KV attention states in memory—slashing input token costs by 75% and returning answers in seconds
+- Place all static context (repos, schemas, documentation) at the **strict prefix** of the prompt; push dynamic user queries to the very end
 
 ---
 
 ## Prefix Placement Rules
 
-- ❌ **Anti-Pattern (Guaranteed Cache Miss)**: `[Dynamic User Turn]` + `[500k-Token Codebase]` (every character change invalidates subsequent tokens).
-- ⭕ **Optimal Pattern (100% Cache Hit)**: `[Static System Instructions]` + `[500k-Token Codebase]` + `[Dynamic User Turn]`.
+- ❌ **Anti-Pattern (Guaranteed Cache Miss)**: `[Dynamic User Turn]` + `[500k-Token Codebase]` (every character change invalidates subsequent tokens)
+- ⭕ **Optimal Pattern (100% Cache Hit)**: `[Static System Instructions]` + `[500k-Token Codebase]` + `[Dynamic User Turn]`
 
 > **💡 Field Tip**  
-> A single modified character in the prefix breaks the cache chain. Keep timestamps, session IDs, and user metadata strictly at the end of the prompt payload.
+> A single modified character in the prefix breaks the cache chain. Keep timestamps, session IDs, and user metadata strictly at the end of the prompt payload
 
 ---
 
@@ -79,8 +79,8 @@ print(response.text)
 ---
 
 ## Production Decision Matrix
-- **Query Density**: If querying the same corpus $\ge 5$ times per hour, Context Caching wins on both latency and cost.
-- **Data Mutability**: For fast-updating minute-by-minute streaming data, stick with RAG. For weekly codebases or regulatory PDFs, Caching dominates.
+- **Query Density**: If querying the same corpus $\ge 5$ times per hour, Context Caching wins on both latency and cost
+- **Data Mutability**: For fast-updating minute-by-minute streaming data, stick with RAG. For weekly codebases or regulatory PDFs, Caching dominates
 
 ---
-*Reviewed against production context caching architectures as of September 2026.*
+*Reviewed against production context caching architectures as of September 2026*
