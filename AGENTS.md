@@ -132,32 +132,48 @@ tags:
   - keyword-three
   - keyword-four
   - keyword-five
+author: "FluxScope"
 image:
   src: "/images/posts/thumbnail.png"
   alt: "Descriptive alt text for accessibility"
   width: 1200
   height: 630
 draft: true # Keep true until factual and visual review is complete
+experienceNote: "1~2줄의 실제 현장 경험 코멘트 (글 작성 전 사용자에게 반드시 직접 받아야 함)"
 ---
 ```
 
 ---
 
-## 8. Fact-Checking & Technical Integrity (팩트 검증 및 정확성)
+## 8. E-E-A-T Standard & Mandatory User Experience Protocol (E-E-A-T 품질 원칙 및 사용자 경험 수취 의무)
 
-- **Primary Sources First**: Ground all technical claims in official documentation, research papers (arXiv), model cards, official benchmarks, or source code.
-- **Inline Citations**: Place markdown links close to the facts or claims they substantiate.
-- **No Hallucinations**: Never fabricate benchmark scores, release dates, model parameter counts, or fake quotes. Explicitly acknowledge uncertainties and real-world hardware limits.
+FluxScope의 모든 아티클은 구글 E-E-A-T(Experience, Expertise, Authoritativeness, Trustworthiness) 4대 품질 요소를 엄격히 반영해야 함:
+
+### ① 경험 (Experience) — [절대적 필수 수취 규칙]
+- **글 작성 전 사용자 질문 필수**: AI 에이전트는 글을 임의로 작성하거나 발행하기 전에, **반드시 사용자에게 해당 주제와 관련된 1~2줄의 직접 경험 코멘트(실제 사용 후기, 벤치마크 시행착오, 현장 장애 사례, 실무 노하우)를 요청하고 전달받아야 함.**
+- **임의 작성 절대 금지**: 사용자의 경험 코멘트를 받지 않은 상태에서 글을 단독으로 작성하거나 `draft: false`로 배포하는 행위 엄격 금지.
+- **표기 및 노출**: 받은 코멘트는 프런트매터 `experienceNote`에 등록하며, 아티클 상단 전용 콜아웃(`.experience-callout`)에 실무자 현장 메모로 공식 렌더링됨.
+
+### ② 전문성 (Expertise)
+- 단순한 개요나 사전적 설명 금지.
+- 구체적인 시스템 내부 구조, 정밀 수치(지연시간 ms, VRAM GB, Throughput tokens/sec), 실제 코드 스니펫, 실무 체크리스트 중심의 고밀도 기술 콘텐츠 제공.
+
+### ③ 권위성 (Authoritativeness)
+- 공신력 있는 1차 출처(arXiv 논문, 벤더 공식 테크니컬 리포트, 오픈소스 공식 문서) 인라인 링크 및 인용 명시.
+
+### ④ 신뢰성 (Trustworthiness) — [삼각형의 중심축]
+- 벤치마크 점수, 릴리즈 일자, 파라미터 수치 등의 날조(Hallucination) 절대 금지.
+- `## Q&A 또 궁금한 것은?` 섹션을 통해 기술의 물리적 한계점, 실패 시나리오, 엣지 케이스를 솔직하고 투명하게 공개.
 
 ---
 
-## 9. Verification & Build Integrity (검증 절차)
+## 9. Verification & Build Integrity (검증 절차 및 자동화 테스트)
 
-- Run `npm run check` after modifying any article, schema, or code.
-- This command automatically executes:
-  1. `astro check` (TypeScript and Astro type validation)
-  2. `astro build` (Full static site compilation)
-  3. `pagefind --site dist` (Multilingual search indexing)
-  4. `node scripts/check-links.mjs` (Comprehensive internal link validation across all generated HTML pages)
+- 수정/작성 후 반드시 `npm run check`를 실행하여 검증:
+  1. `node scripts/check-eeat.mjs`: E-E-A-T `experienceNote` 필수 여부, 더미 텍스트 여부, 고정 섹션 명칭, 태그 수(5~15개), 마침표 금지 자동 검증 (실패 시 즉시 빌드 차단)
+  2. `astro check`: TypeScript 및 Astro 컴포넌트 타입 검증
+  3. `astro build`: 전체 정적 사이트 컴파일
+  4. `pagefind --site dist`: 다국어 검색 인덱싱
+  5. `node scripts/check-links.mjs`: 생성된 모든 HTML 페이지 간 내부 링크 무결성 전수 검사
 - In Windows restricted environments, set `ASTRO_TELEMETRY_DISABLED=1` if telemetry prompts fail.
 - All checks must pass with **0 errors and 0 broken links** before committing.

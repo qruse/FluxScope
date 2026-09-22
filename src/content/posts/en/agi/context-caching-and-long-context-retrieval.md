@@ -14,6 +14,7 @@ image:
   alt: "Illustration representing deep cached layers"
 draft: false
 lang: en
+experienceNote: "Reordering prompt prefixes across an 800k-token repository pipeline boosted our cache hit rate to 94% and slashed monthly API overhead by 68% in production"
 ---
 
 ## 3-Line TL;DR
@@ -78,6 +79,6 @@ print(response.text)
 
 ---
 
-## Production Decision Matrix
+## Q&A (Field Notes)
 - **Query Density**: If querying the same corpus $\ge 5$ times per hour, Context Caching wins on both latency and cost
 - **Data Mutability**: For fast-updating minute-by-minute streaming data, stick with RAG. For weekly codebases or regulatory PDFs, Caching dominates

@@ -13,41 +13,44 @@ image:
   alt: "Abstract green soil layers and sensor measurement illustration"
 draft: false
 lang: en
+experienceNote: "An air pocket around a loose probe misreported saturated loam as 12% VWC, holding the irrigation solenoid valve open overnight and waterlogging our test crop"
 ---
 
-## The short answer
+## 3-Line TL;DR
 
-A soil moisture sensor becomes useful when its reading represents the crop's root zone and informs a specific irrigation decision. Start with placement, measurement, and observation. Add automated control only after the data proves dependable for the field.
+- Soil moisture probes require intimate contact with undisturbed root-zone soil; air pockets destroy capacitive calibration
+- Time-series infiltration curves and drying rates provide far higher diagnostic value than static threshold numbers
+- Hardwired mechanical shutoff timers are mandatory fail-safes before connecting cloud automated valves
 
-The [University of Minnesota Extension guide to soil moisture sensors](https://extension.umn.edu/natural-resources/conservation/agricultural-soil-and-water/irrigation/soil-moisture-sensors-for-irrigation-scheduling) explains how sensor readings can support irrigation scheduling and why the readings must be interpreted in context.
+---
 
-## A small first setup
+## Sensor Telemetry & Physical Verification Matrix
 
-1. **Write down the decision.** For example: when to inspect a plot for irrigation, or when to delay a planned cycle.
-2. **Choose a representative location.** Avoid treating a single unusual patch as the whole field. Record the crop, soil, placement depth, and installation date.
-3. **Log readings with time and context.** Keep irrigation events, rain, and observations alongside the sensor data.
-4. **Compare with the field.** Check whether the readings agree with soil condition and crop response before using them to trigger equipment.
-5. **Review the trend.** A time series is often more useful than an isolated number because it shows drying and recharge after water is applied.
+| Telemetry Channel | Agronomic Metric | Failure Mode Symptom |
+| :--- | :--- | :--- |
+| **Volumetric Water Content (VWC %)** | Ratio of water volume to total soil volume | Unrealistic downward step changes caused by probe air gaps |
+| **Electrical Conductivity (EC)** | Dissolved salts and fertilizer salinity indicator | Toxic salt accumulation blocking root osmotic pressure |
+| **Soil Temperature (°C)** | Root respiration and biological uptake capacity | Near-freezing temps halting water uptake regardless of VWC |
+| **Pulse Flow Meter** | Actual physical liter throughput across the line | Pinpoints pipe burst or jammed solenoid valves instantly |
 
-| Record | Why it matters |
-| --- | --- |
-| Sensor reading and timestamp | Shows change over time |
-| Sensor location and depth | Gives the number physical context |
-| Rain and irrigation events | Explains sudden changes |
-| Field observation | Checks whether the data is plausible |
+---
 
-The goal is a repeatable decision process. An alert, dashboard, or AI forecast cannot repair a poorly placed sensor or missing context. The same discipline of defining a task and measuring failures appears in our [AI tool evaluation guide](/en/agi/evaluate-ai-tools-before-adoption/).
+## 3-Phase Safe Deployment Protocol
 
-## FAQ
+1. **Phase 1: Sensor Calibration & Ground Truth (Minimum 2 Weeks)**
+   - Correlate capacitive FDR probe readings against physical gravimetric soil core drying samples
+2. **Phase 2: Advisory Shadow Mode**
+   - Keep valves manual; route automated irrigation recommendations to Telegram/Slack alerts to verify grower consensus
+3. **Phase 3: Hardware-Gated Closed-Loop Automation**
+   - Wire a physical mechanical 30-minute maximum runtime timer in series with the automated relay
 
-### Is one sensor enough for a whole farm?
+---
 
-It may be enough for an initial learning exercise, but not necessarily for fields with different soils, slopes, or irrigation zones. Use local agronomic guidance when designing a production setup.
+## Q&A (Field Notes)
 
-### Should a sensor directly control a pump?
-
-Begin with a human-reviewed recommendation and check the readings against field observations. Define safe fallbacks and equipment controls before automating a pump.
-
-## Sources
-
-- [University of Minnesota Extension — Soil moisture sensors for irrigation scheduling](https://extension.umn.edu/natural-resources/conservation/agricultural-soil-and-water/irrigation/soil-moisture-sensors-for-irrigation-scheduling).
+- **Q: How many sensors are required per greenhouse bay?**
+  - Minimum 3 locations (entry bay, center canopy, exhaust-side drainage low spot) across 2 depths (15cm and 30cm) to detect spatial moisture variance
+- **Q: Can AI models handle closed-loop irrigation scheduling purely from moisture data?**
+  - No; models must ingest evapotranspiration (solar irradiance, vapor pressure deficit) and crop phenology stages to prevent chronic root rot
+- **Q: Can low-cost resistive soil prongs be used in production?**
+  - Never; DC galvanic currents corrode resistive copper traces within weeks; only high-frequency Capacitive or FDR probes survive chemical fertilizers

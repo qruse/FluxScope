@@ -51,6 +51,17 @@ const jsonLd = [
       <div class="article-meta"><span>By <strong>{post.data.author}</strong></span><span>Published <time datetime={post.data.publishedAt.toISOString()}>{formatDate(post.data.publishedAt, 'en')}</time></span><span>Updated <time datetime={post.data.updatedAt.toISOString()}>{formatDate(post.data.updatedAt, 'en')}</time></span></div>
     </header>
     <div class="article-shell"><img class="article-visual" src={withBase(post.data.image.src)} width={post.data.image.width} height={post.data.image.height} alt={post.data.image.alt} decoding="async" /></div>
+    {post.data.experienceNote && (
+      <div class="article-shell">
+        <aside class="experience-callout" aria-label="Field Experience Note">
+          <div class="experience-badge">
+            <span class="experience-indicator"></span>
+            <strong>Field Experience Note (E-E-A-T)</strong>
+          </div>
+          <p class="experience-content">{post.data.experienceNote}</p>
+        </aside>
+      </div>
+    )}
     <div class="article-body article-shell"><Content /></div>
     <div class="article-end article-shell"><div class="tag-list">{post.data.tags.map((tag) => <a href={tagPath(tag, 'en')}>#{tag}</a>)}</div></div>
   </article>

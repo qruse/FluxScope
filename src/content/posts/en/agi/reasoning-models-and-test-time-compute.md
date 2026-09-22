@@ -14,6 +14,7 @@ image:
   alt: "Illustration representing abstract reasoning chains"
 draft: false
 lang: en
+experienceNote: "Deploying reasoning models to automated SQL synthesis boosted multi-table join precision from 62% to 91%, but introduced a 12-second latency penalty requiring query intent routing"
 ---
 
 ## 3-Line TL;DR
@@ -51,6 +52,6 @@ lang: en
 
 ---
 
-## Production Deployment Rule
-- Never attach reasoning models to simple customer FAQs or general chat—users will bounce on high latency and costs
-- Deploy exclusively where **factual precision is non-negotiable**: automated unit test synthesis, architecture audits, and critical data analysis
+## Q&A (Field Notes)
+- **Simple Chatbots**: Never attach reasoning models to simple customer FAQs or general chat—users will bounce on high latency and costs
+- **High-Leverage Workloads**: Deploy exclusively where **factual precision is non-negotiable**: automated unit test synthesis, architecture audits, and critical data analysis

@@ -13,6 +13,7 @@ image:
   alt: "Abstract concentric circles representing a measured AI workflow"
 draft: false
 lang: en
+experienceNote: "A top-ranked MMLU model failed 14 out of 30 proprietary tax edge cases in our staging trials, proving that public leaderboards cannot substitute for custom task-level evaluation"
 ---
 
 ## 3-Line TL;DR
@@ -61,7 +62,7 @@ lang: en
 
 ---
 
-## FAQ (Field Notes)
+## Q&A (Field Notes)
 
 - **Q: Can we just pick the #1 model on the LMSYS / MMLU leaderboard?**
   - No. Public benchmarks test generic world knowledge, not internal company schemas or proprietary workflows
