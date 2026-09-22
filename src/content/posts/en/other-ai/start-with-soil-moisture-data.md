@@ -51,5 +51,3 @@ Begin with a human-reviewed recommendation and check the readings against field 
 ## Sources
 
 - [University of Minnesota Extension — Soil moisture sensors for irrigation scheduling](https://extension.umn.edu/natural-resources/conservation/agricultural-soil-and-water/irrigation/soil-moisture-sensors-for-irrigation-scheduling).
-
-*Last reviewed: September 21, 2026.*

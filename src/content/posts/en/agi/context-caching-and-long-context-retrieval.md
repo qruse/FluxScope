@@ -81,6 +81,3 @@ print(response.text)
 ## Production Decision Matrix
 - **Query Density**: If querying the same corpus $\ge 5$ times per hour, Context Caching wins on both latency and cost
 - **Data Mutability**: For fast-updating minute-by-minute streaming data, stick with RAG. For weekly codebases or regulatory PDFs, Caching dominates
-
----
-*Reviewed against production context caching architectures as of September 2026*

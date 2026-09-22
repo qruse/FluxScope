@@ -69,6 +69,3 @@ lang: en
   - Do not start with hundreds. 20–30 high-signal edge cases catch 80% of failure modes much faster
 - **Q: When should tests be rerun?**
   - Mandatory after any prompt modification, model parameter update, or schema shift
-
----
-*Reviewed against production LLM evaluation standards as of September 2026*

@@ -54,6 +54,3 @@ lang: en
 ## Production Deployment Rule
 - Never attach reasoning models to simple customer FAQs or general chat—users will bounce on high latency and costs
 - Deploy exclusively where **factual precision is non-negotiable**: automated unit test synthesis, architecture audits, and critical data analysis
-
----
-*Reviewed against production reasoning model benchmarks as of September 2026*

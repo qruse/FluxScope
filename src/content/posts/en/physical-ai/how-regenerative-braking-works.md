@@ -49,5 +49,3 @@ No. Electric vehicles still use friction brakes. Regeneration may reduce their u
 ## Sources
 
 - [U.S. Department of Energy — Electric Vehicle Technology Overview](https://www.energy.gov/cmei/femp/articles/electric-vehicle-technology-overview-federal-fleet-training).
-
-*Last reviewed: September 21, 2026.*

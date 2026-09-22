@@ -6,6 +6,7 @@
   - **Top (Fixed)**: `## 3줄 요약` (English: `## 3-Line TL;DR`) with 3 concise bullet points.
   - **Middle (Dynamic / AI-generated)**: Intermediate headings and content generated dynamically based on the subject (e.g., core mechanisms, step-by-step checklists, architectural diagrams, code snippets, metric comparison tables).
   - **Bottom (Fixed)**: `## Q&A 또 궁금한 것은?` (English: `## Q&A (Field Notes)`) answering practical questions in concise Q&A bullet format.
+  - **No Trailing Footers/Disclaimers**: Do not append review date disclaimers or horizontal rules (`---`) at the bottom of posts (article header and layout already handle dates and tags).
 - **Writing Tone & Punctuation**:
   - **Korean**: 개조식(Itemized bullet format) + 음슴체 (`~함`, `~임`, `~봄`, `~필수`, `~안 됨`). Fast, punchy, zero conversational fluff.
   - **No Trailing Periods**: Never put a trailing period (`.`) at the end of bullet points or memo sentences.
