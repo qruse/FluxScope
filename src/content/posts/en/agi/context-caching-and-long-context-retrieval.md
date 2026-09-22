@@ -19,19 +19,19 @@ experienceNote: "Reordering prompt prefixes across an 800k-token repository pipe
 
 ## 3-Line TL;DR
 
-- Ingesting a million tokens per request without caching will murder both your API budget and latency
-- **Context Caching** pins precomputed KV attention states in memory—slashing input token costs by 75% and returning answers in seconds
-- Place all static context (repos, schemas, documentation) at the **strict prefix** of the prompt; push dynamic user queries to the very end
+- Ingesting a million tokens raw on every single API turn will incinerate your quarterly cloud budget before lunchtime
+- Swapping prompt prefix order boosted our cache hit rate to 94% and knocked 68% off our monthly API bill with zero model fine-tuning
+- Injecting a single dynamic timestamp byte at the front of a prompt nukes the entire KV cache and dumps you back into full-cost purgatory
 
 ---
 
-## Prefix Placement Rules
+## Prefix Layout Rules (or How to Avoid Bankruptcy)
 
-- ❌ **Anti-Pattern (Guaranteed Cache Miss)**: `[Dynamic User Turn]` + `[500k-Token Codebase]` (every character change invalidates subsequent tokens)
-- ⭕ **Optimal Pattern (100% Cache Hit)**: `[Static System Instructions]` + `[500k-Token Codebase]` + `[Dynamic User Turn]`
+- ❌ **Budget Destruction Pattern**: `[Dynamic User Turn]` + `[500k-Token Codebase]` (every new question mutates the prefix, triggering guaranteed 0% hit rate)
+- ⭕ **Promotion-Worthy Pattern**: `[Static System Instructions]` + `[500k-Token Codebase]` + `[Dynamic User Turn]` (prefix stays frozen, giving you sweet 94% cache hits)
 
 > **💡 Field Tip**  
-> A single modified character in the prefix breaks the cache chain. Keep timestamps, session IDs, and user metadata strictly at the end of the prompt payload
+> If an eager junior developer prepends "Current Timestamp: 2026-09-22 14:02:11" to the prompt, revoke their git push access immediately. Changing that single string invalidates the entire 800k KV tensor cache and burns full compute costs on every keystroke
 
 ---
 
@@ -44,19 +44,19 @@ from google.genai import types
 
 client = genai.Client(api_key=os.environ["GEMINI_API_KEY"])
 
-# 1. Warm the cache with full repository code (1-hour TTL)
+# 1. Freeze 500k lines of legacy spaghetti into memory for an hour
 cache = client.caches.create(
     model="gemini-2.5-pro",
     config=types.CreateCachedContentConfig(
-        contents=["... full codebase across hundreds of source files ..."],
-        ttl="3600s", # 1 hour
+        contents=["... full unholy monolith across hundreds of legacy files ..."],
+        ttl="3600s", # 1 hour of guilt-free reuse
         display_name="repo_cache_v1"
     )
 )
 
 print(f"Cache Ready: {cache.name} (Expires: {cache.expire_time})")
 
-# 2. Query against cached KV tensors with 75% discounted token pricing
+# 2. Query precomputed tensors with 75% discounted token pricing
 response = client.models.generate_content(
     model="gemini-2.5-pro",
     contents="Where is the JWT expiration handled in the auth middleware?",
@@ -75,25 +75,25 @@ print(response.text)
 
 ---
 
-## RAG vs Full Context Caching
+## RAG Vector Chunking Hell vs Lazy Full-Context Caching
 
-| Dimension | RAG (Vector Search) | Full Context Caching |
+| Dimension | RAG (The Chunking Craftsman) | Full Context Caching (Capitalist Shortcut) |
 | :--- | :--- | :--- |
-| **Data Ingestion** | Requires chunking, embedding models, vector DB setup | Zero preprocessing; feed raw documents directly |
-| **Cross-File Reasoning** | Vulnerable to fractured context across boundaries | Attention spans across the entire codebase |
-| **Operational Overhead** | Complex index tuning, hybrid search pipelines | Single API parameter |
-| **Cost Profile** | Pay only for retrieved chunks (~2k tokens) | Storage fee + 75% discounted token pricing upon hit |
+| **Data Ingestion** | Slicing chunks, tuning embeddings, babysitting vector DBs | Dump 800k tokens of raw spaghetti into the API raw |
+| **Cross-File Logic** | Asks questions spanning 3 files, receives hallucinated fiction | Attention spans the entire architecture without breaking a sweat |
+| **Setup Misery** | Endless weekends tuning cosine similarity thresholds | Three lines of Python to mint a cache handle |
+| **Billing Model** | Pay only for retrieved chunks (~2k tokens) | Hourly cache parking fee + 75% discount when you hit it |
 
 ---
 
 ## Community Reactions
 
-- **Prefix Invalidation Frustrations**: Numerous engineers report 0% hit rates and unexpected bills caused by upstream prompt templates appending dynamic timestamps or session UUIDs ahead of the static prefix
-- **TTL Storage vs Warmup Retries**: Heated debates across developer forums on whether paying idle storage fees for low-traffic endpoints beats warm-on-demand recomputations
-- **RAG Retains Edge on Small Corpora**: Consensus among practitioners that for document sets below 100k tokens, lightweight hybrid RAG remains noticeably cheaper than context caching minimum hourly storage commitments
+- **The Upstream Timestamp Sabotage**: Horror stories on engineering threads about upstream middleware silently injecting session UUIDs at prompt prefixes, burning $10k on zero cache hits
+- **Ghost Cache Parking Invoices**: Weekend billing panic where idle dev caches were left running at an hourly rate with zero queries hitting them
+- **RAG Wins on Small Corpora**: Broad consensus that keeping a 30-page employee handbook cached 24/7 is burning money—stick to lightweight vector search for tiny docs
 
 ---
 
 ## Q&A (Field Notes)
-- **Query Density**: If querying the same corpus $\ge 5$ times per hour, Context Caching wins on both latency and cost
-- **Data Mutability**: For fast-updating minute-by-minute streaming data, stick with RAG. For weekly codebases or regulatory PDFs, Caching dominates
+- **Should I cache if I only get 2 queries an hour?**: No, the hourly idle storage fee will outpace your savings; stick with naive calls or basic vector search
+- **What about high-frequency financial tickers?**: If the underlying numbers mutate every second, caching is useless because you will pay to rebuild the cache on every tick. Reserve caching for static codebases and massive regulatory manuals

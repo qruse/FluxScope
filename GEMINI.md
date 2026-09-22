@@ -58,18 +58,23 @@ Every post must adhere to this exact structural hierarchy:
 
 ---
 
-## 3. Writing Tone & Voice (문체 및 어조)
+## 3. Writing Tone & Voice (문체 및 어조: 냉소적·유머러스한 실무 엔지니어 스타일)
+
+기존의 뻔하고 딱딱한 학술 논문 요약투나 사전식 서술을 단호히 거부함. **"마케팅 헛소리와 벤더의 장밋빛 환상에 수없이 데어본 시니어 엔지니어가 냉소적이면서도 뼈 때리는 유머로 진실을 털어놓는 톤"**으로 독자가 피식 웃으며 끝까지 몰입할 수 있게 작성해야 함.
 
 ### Korean (한국어):
-- **개조식(Itemized Bullet Format) 필수**: 줄글 서술, 장황한 도입부, 만연체, 일기/칼럼식 말투 절대 금지.
-- **음슴체 종결**: 모든 문장/항목은 `~함`, `~임`, `~봄`, `~필수`, `~안 됨` 등의 음슴체 및 명사형으로 간결하게 종결.
+- **개조식(Itemized Bullet Format) + 음슴체 종결 필수**: 만연체 금지, 모든 항목은 `~함`, `~임`, `~봄`, `~필수`, `~안 됨`, `~행` 등으로 압축 종결.
+- **냉소적 위트와 블랙 유머 (Cynical Wit & Humor)**:
+  - 겉만 번지르르한 벤치마크 점수나 마케팅 쇼 뒤에 숨겨진 추악한 진실(새벽 온콜 호출, 불타는 클라우드 청구서, if-else 누더기 코드)을 씁쓸하고 유머러스하게 비틀기.
+  - "이론상 인공일반지능(AGI)이라 부르지만 실상은 수만 줄의 하드코딩 예외 처리", "투자용 데모 영상 믿고 배포했다간 새벽에 사직서 쓰게 됨" 등 실무 공감대 저격 비유 적극 사용.
+- **고밀도 팩트 폭격**: 유머러스하되 알맹이는 누구보다 전문적이어야 함. 뼈 때리는 위트 속에서도 정밀한 하드웨어 수치(ms, VRAM GB, 토큰 단가), 1차 논문 링크, 시스템 내부 메커니즘을 날카롭게 제공.
 - **경어체/존댓말 금지**: `~합니다`, `~입니다`, `~바랍니다`, `~알아보겠습니다` 등 일체 사용 금지.
-- **호흡 극도로 짧게**: 문장 길이를 최소화하고 핵심 정보와 수치 위주로 압축.
 
 ### English (영어):
-- **Executive Field-Note Memo Style**: Fast, punchy, active-verb technical memo.
-- Match the brisk tempo of the Korean 음슴체 version.
-- Zero conversational fluff, zero generic AI introductory filler ("In this post, we will explore...").
+- **Wry, Cynical Executive Field-Note Memo**: Fast, punchy, dark-humored insider engineering memo.
+- Punctures corporate marketing hype with deadpan, cynical technical realism ("looks revolutionary in investor slide decks until it burns $40k of cloud compute on a date parsing bug at 3 AM").
+- Match the brisk tempo, sharp wit, and cynical realism of the Korean 음슴체 version.
+- Zero generic introductory fluff, zero dry textbook lecturing.
 
 ---
 

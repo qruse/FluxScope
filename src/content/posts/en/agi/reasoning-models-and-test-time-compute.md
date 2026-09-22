@@ -19,50 +19,52 @@ experienceNote: "Deploying reasoning models to automated SQL synthesis boosted m
 
 ## 3-Line TL;DR
 
-- Conventional LLMs use System 1 (Fast, intuitive pattern-matching); reasoning models operate on **System 2 (Slow, deliberate verification)**
-- With pretraining data scaling hitting diminishing returns, the industry has pivoted to scaling **Test-time Compute** (thinking longer at inference)
-- Essential for eliminating hallucinations in complex math, formal logic proofs, and codebase refactoring
+- Conventional LLMs are fast-talking bullshitter parrots (System 1); reasoning models are tortured introverts agonizing over every comma (System 2)
+- Multi-table SQL precision jumped from 62% to 91%, but asking it to run `SELECT 1` triggers a 12-second existential crisis that blows up API timeouts
+- Feeding brainless queries into reasoning models will bankrupt the company by Friday unless an aggressive front-door routing gate drops the hammer
 
 ---
 
-## 3 Core Mechanisms of Test-Time Scaling
+## 3 Ways Reasoning Models Burn Cloud Compute to Act Smart
 
 1. **Hidden Chain-of-Thought (CoT)**
-   - Before emitting tokens to the user, the model formulates hypotheses and stress-tests its own reasoning internally
-   - Triggers automated backtracking whenever an intermediate step leads to a logical contradiction
+   - Before replying to the user, the model mutters thousands of tokens to itself in a dark digital corner
+   - Catches its own blunders with self-critical backtracking ("Wait, this pointer could be null, let me rewrite this whole loop")
+   - The catch: finance bills your credit card for every single invisible word of that agonizing self-reflection
 
 2. **Tree Search & Process Reward Models (PRM)**
-   - Employs search algorithms (similar to Monte Carlo Tree Search in AlphaGo) to prioritize promising solution branches
-   - Evaluates step-by-step correctness rather than scoring only the final output
+   - Mimics Monte Carlo Tree Search (MCTS) to explore only promising reasoning branches instead of hallucinating straight into a wall
+   - Grades every single intermediate deduction step rather than blindly hoping the final answer turns out right
+   - Demolishes nested queries, recursive tree traversals, and concurrency race conditions with uncanny precision
 
-3. **Inference Compute Proportionality**
-   - Trivial queries (simple lookups, basic grammar) resolve in <100 tokens with zero latency penalty
-   - Difficult problems scale internal tokens into the thousands, dramatically increasing accuracy
+3. **Inference Compute Proportionality (and Invoice Inflation)**
+   - Trivial prompts should finish instantly, but when the model gets obsessed, it burns thousands of hidden tokens overthinking
+   - Nothing tests an engineer's blood pressure like staring at a pulsating "Thinking..." spinner for 25 seconds just to parse an ISO timestamp
 
 ![OpenAI o1 Test-Time Compute Scaling Law Plot](/images/posts/agi/test-time-compute-scaling-sourced.webp)
 *Source: [OpenAI](https://openai.com/index/learning-to-reason-with-llms/) — Learning to reason with LLMs (o1 Test-Time Compute Scaling)*
 
 ---
 
-## Traditional LLMs vs Reasoning Models
+## Bullshit Generator (Classic LLM) vs Tortured Thinker (Reasoning Model)
 
 | Dimension | General-Purpose LLMs (e.g. GPT-4o) | Reasoning Architectures (o1 / o3 / R1) |
 | :--- | :--- | :--- |
-| **Cognitive Mode** | Intuitive pattern matching (System 1) | Deliberate verification & backtracking (System 2) |
-| **Time to First Token (TTFT)** | 0.2–0.5s (near-instant) | 5–30s (internal thinking phase) |
-| **Ideal Workload** | Translation, drafting, summaries, chat | Mathematical proofs, vulnerability audits, hard bugs |
-| **Cost Profile** | Predictable per-token cost | Higher cost per query due to hidden reasoning tokens |
+| **Cognitive Mode** | Instant confident fabrication (System 1) | Neurotic self-critique & backtracking (System 2) |
+| **Time to First Token (TTFT)** | 0.3s (gratifying instant dopamine) | 10s–30s (long enough to grab another espresso) |
+| **Ideal Workload** | Marketing spin, boilerplate summaries, simple chat | 7-way SQL joins, kernel security audits, nasty race bugs |
+| **Billing Trauma** | Dirt cheap pennies per call | Ghost thinking tokens multiply cloud invoices 5x–10x |
 
 ---
 
 ## Community Reactions
 
-- **Overthinking on Trivial Queries**: Developers building interactive UIs report user drop-off when simple formatting questions trigger 30-second internal reasoning monologues
-- **Hidden Thinking Token Cost Shock**: Heavy discussion on developer threads regarding API bill inflation from invisible chain-of-thought tokens, spurring dynamic routing classifiers
-- **Universal Praise for Tough Coding**: Broad consensus that for deep concurrency bug hunting, formal proofs, and hairy multi-table SQL queries, reasoning models outclass human seniors
+- **The Overthinking Catastrophe**: Field developers report users abandoning apps after asking "What day is today?" only to endure a 30-second silent monologue on the Gregorian calendar
+- **Phantom Token Invoicing Panic**: Deep discussions across platform forums on surprise invoices from invisible thinking tokens, forcing teams to hack together aggressive classifier routers
+- **Unstoppable on Hairy SQL & Kernel Bugs**: General agreement that when tasked with untangling 500-line legacy stored procedures, it humiliates human senior engineers
 
 ---
 
 ## Q&A (Field Notes)
-- **Simple Chatbots**: Never attach reasoning models to simple customer FAQs or general chat—users will bounce on high latency and costs
-- **High-Leverage Workloads**: Deploy exclusively where **factual precision is non-negotiable**: automated unit test synthesis, architecture audits, and critical data analysis
+- **Can I hook this up to our customer support bot?**: Only if your goal is getting fired after users wait 25 seconds for a simple return shipping address
+- **Where does it actually belong?**: Put it exclusively where a single silent hallucination costs more than the compute bill: multi-table SQL generation, smart contract audits, and zero-day patch analysis
