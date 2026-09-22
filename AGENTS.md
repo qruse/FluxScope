@@ -36,12 +36,14 @@ Every post must adhere to this exact structural hierarchy:
   - Metrics comparison tables (latency, memory, throughput, accuracy)
   - Mermaid diagrams where architecture visualization adds clarity
 
-### ③ Pre-Q&A Section (Fixed): 커뮤니티 반응 / Community Reactions
+### ③ Optional Dynamic Section: 커뮤니티 반응 / Community Reactions (선택적 유동 목차)
 - **Korean**: `## 커뮤니티 반응`
 - **English**: `## Community Reactions`
-- **Rule**:
-  - Summarize authentic developer discussions, skeptical critiques, real-world deployment feedback, or common gotchas (investigating discussions from developer communities such as Reddit r/MachineLearning, r/LocalLLaMA, Hacker News, etc.).
-  - **STRICT PROHIBITION (플랫폼 명칭 노출 절대 금지)**: **NEVER** mention the platform name "Reddit" (or other specific platform brand names) anywhere in the heading or the content text ("목차나 정보에 Reddit이라고 하지는 말고"). Instead, neutrally frame observations as "실무 엔지니어 커뮤니티", "현장 개발자 반응", "오픈소스 포럼 시각" or "Practitioner Community", "Developer Discussions", "Field Engineers".
+- **Rule (유동적 작성 규격)**:
+  - 개발자 포럼이나 커뮤니티(Reddit 등)에 **실질적이고 유의미한 현장 토론이나 흥미로운 반응, 실무 시행착오 피드백이 실제로 존재할 때만 선택적으로 작성**함.
+  - 딱히 관련 게시물이 없거나 흥미로운 반응이 없을 경우에는 억지로 내용을 꾸며내지 말고 **이 목차 자체를 완전히 생략함**.
+  - **STRICT PROHIBITION (플랫폼 명칭 노출 절대 금지)**: 작성 시 **NEVER** mention the platform name "Reddit" (or other specific platform brand names) anywhere in the heading or the content text ("목차나 정보에 Reddit이라고 하지는 말고"). Instead, neutrally frame observations as "실무 엔지니어 커뮤니티", "현장 개발자 반응", "오픈소스 포럼 시각" or "Practitioner Community", "Developer Discussions", "Field Engineers".
+  - **위치 규칙**: 작성할 경우 반드시 하단 고정 섹션인 `## Q&A 또 궁금한 것은?` / `## Q&A (Field Notes)` 바로 직전에 배치해야 함.
   - Follow 개조식 + 음슴체 (Korean) / Executive memo (English), with zero trailing periods.
 
 ### ④ Bottom Section (Fixed): Q&A 또 궁금한 것은? / Q&A (Field Notes)

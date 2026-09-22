@@ -96,35 +96,31 @@ for (const file of files) {
     }
   }
 
-  // 2. Fixed Section Headers Validation & Ordering
+  // 2. Fixed & Optional Section Headers Validation & Ordering
   if (isKorean) {
     if (!body.includes('## 3줄 요약')) {
       errors.push(`${relPath}: Missing fixed top section '## 3줄 요약'.`);
     }
-    if (!body.includes('## 커뮤니티 반응')) {
-      errors.push(`${relPath}: Missing fixed pre-Q&A section '## 커뮤니티 반응'.`);
-    }
     if (!body.includes('## Q&A 또 궁금한 것은?')) {
       errors.push(`${relPath}: Missing fixed bottom section '## Q&A 또 궁금한 것은?'.`);
     }
+    // Optional dynamic section: '## 커뮤니티 반응' (validated for ordering if present)
     if (body.includes('## 커뮤니티 반응') && body.includes('## Q&A 또 궁금한 것은?')) {
       if (body.indexOf('## 커뮤니티 반응') > body.indexOf('## Q&A 또 궁금한 것은?')) {
-        errors.push(`${relPath}: '## 커뮤니티 반응' must appear before '## Q&A 또 궁금한 것은?'.`);
+        errors.push(`${relPath}: Optional '## 커뮤니티 반응' must appear before '## Q&A 또 궁금한 것은?'.`);
       }
     }
   } else if (isEnglish) {
     if (!body.includes('## 3-Line TL;DR')) {
       errors.push(`${relPath}: Missing fixed top section '## 3-Line TL;DR'.`);
     }
-    if (!body.includes('## Community Reactions')) {
-      errors.push(`${relPath}: Missing fixed pre-Q&A section '## Community Reactions'.`);
-    }
     if (!body.includes('## Q&A (Field Notes)')) {
       errors.push(`${relPath}: Missing fixed bottom section '## Q&A (Field Notes)'.`);
     }
+    // Optional dynamic section: '## Community Reactions' (validated for ordering if present)
     if (body.includes('## Community Reactions') && body.includes('## Q&A (Field Notes)')) {
       if (body.indexOf('## Community Reactions') > body.indexOf('## Q&A (Field Notes)')) {
-        errors.push(`${relPath}: '## Community Reactions' must appear before '## Q&A (Field Notes)'.`);
+        errors.push(`${relPath}: Optional '## Community Reactions' must appear before '## Q&A (Field Notes)'.`);
       }
     }
   }

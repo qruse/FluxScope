@@ -16,7 +16,7 @@ See `AGENTS.md` and `GEMINI.md` at the project root for the full guidelines.
 - **Structure**:
   1. Top (Fixed): `## 3줄 요약` / `## 3-Line TL;DR` (3 bullet points).
   2. Middle (Dynamic): AI-generated technical breakdown, checklists, tables, code snippets.
-  3. Pre-Q&A (Fixed): `## 커뮤니티 반응` / `## Community Reactions` (Summarize real developer discussions/gotchas from forums like Reddit r/MachineLearning, but NEVER use the name 'Reddit' in heading or body; frame neutrally as "실무 엔지니어 커뮤니티" / "Developer Community").
+  3. Pre-Q&A (Optional Dynamic): `## 커뮤니티 반응` / `## Community Reactions` (유동적 목차: 관련 커뮤니티 토론/흥미로운 반응이 있을 때만 Q&A 바로 앞에 선택적으로 삽입하며, 없을 경우 완전 생략. 단, 작성 시 플랫폼명 'Reddit' 언급 절대 금지).
   4. Bottom (Fixed): `## Q&A 또 궁금한 것은?` / `## Q&A (Field Notes)`.
   5. Footer: NO trailing `---` or review date footers at the end.
 - **Images (5 Distinct Types & Standards)**:
