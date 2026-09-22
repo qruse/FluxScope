@@ -28,12 +28,13 @@ const {
 const currentLang: Lang = lang || getLangFromUrl(Astro.url);
 const t = useTranslations(currentLang);
 
-const title = Astro.props.title || (currentLang === 'ko' ? t('site.title') : site.name);
+const defaultTitle = t('site.title') || 'FluxScope Blog';
+const title = Astro.props.title || defaultTitle;
 const description = Astro.props.description || (currentLang === 'ko' ? t('site.description') : site.description);
 
 const canonical = new URL(Astro.url.pathname, Astro.site);
 const imageUrl = new URL(withBase(image), Astro.site);
-const fullTitle = title === site.name ? title : `${title} | ${site.name}`;
+const fullTitle = !Astro.props.title || title === defaultTitle || title === site.name ? defaultTitle : `${title} | ${site.name}`;
 
 // Language switcher link resolution
 const pathname = Astro.url.pathname.replace(/\/$/, '') || '/';

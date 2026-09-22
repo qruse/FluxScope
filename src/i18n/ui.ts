@@ -9,7 +9,7 @@ export const defaultLang: Lang = 'ko';
 
 export const ui = {
   ko: {
-    'site.title': 'FluxScope - 기술과 변화를 읽는 시선',
+    'site.title': 'FluxScope Blog',
     'site.description': '관심 있는 AI, 모빌리티, 최신 IT 기기 소식을 파고들어 나도 다시 보고 독자도 함께 보는 독립 기술 블로그.',
     'nav.home': '홈',
     'nav.ai': 'AI',
@@ -52,7 +52,7 @@ export const ui = {
     'article.by': '작성자',
   },
   en: {
-    'site.title': 'FluxScope - Technology and Change in Focus',
+    'site.title': 'FluxScope Blog',
     'site.description': 'Curating and investigating AI, mobility, and consumer hardware — practical notes for personal reference and public insight.',
     'nav.home': 'Home',
     'nav.ai': 'AI',
