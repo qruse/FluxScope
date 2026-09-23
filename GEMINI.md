@@ -118,19 +118,18 @@ All images in articles must strictly belong to one of the **5 approved types**. 
 - **Technical In-text Citations**:
   - All empirical figures, benchmarks, or architectures must have inline markdown links to official primary sources: `...벤치마크 달성 ([arXiv:2303.04137](https://arxiv.org/abs/2303.04137))`
 
-### ② Type 2: AI-Generated Hand-Drawn Sketch (사람이 직접 그린 듯한 스케치/화이트보드 설명 이미지)
-- **Definition**: Explanatory visuals generated via image AI designed to look like an authentic, tangible photograph of real-world whiteboard marker drawings or engineering notebook sketches written directly by a human engineer.
-- **Visual Style & Realism (실제 화이트보드/노트 촬영 실사 연출)**:
-  - 어설픈 디지털 그래픽이나 어두운 배경의 기계적 박스 도식 절대 금지.
-  - 실제 사무실/연구실 벽면의 화이트보드에 굵은 보드마커(검정, 빨강, 파랑)로 그리거나, 실제 엔지니어의 노트에 펜과 마커로 직접 쓰고 그린 것을 정면 또는 탑다운으로 촬영한 실사 느낌으로 연출함.
-  - 화이트보드 프레임, 보드마커 트레이, 자연스러운 조명 반사, 종이 질감 등 실제 현장감(Tangible Field Notes)을 살려 독자가 '진짜 엔지니어가 칠판에 그려준 그림'처럼 느끼도록 함.
-- **Simplicity & Legibility (극도의 단순함과 직관성 원칙 — 3초 이해 규칙)**:
-  - **복잡도 금지 ("이미지가 너무 복잡해 퀄리티는 좋은데, 좀 쉽게만들어")**: 자잘한 수식, 장문의 설명 텍스트, 복잡한 다중 분기 절대 금지.
-  - **초간결 3단계 구조**: 3~4단계 이내의 굵직한 블록, 명확하고 굵은 화살표, 큼직한 손글씨 라벨, 핵심을 찌르는 직관적 심볼(칩, 카메라, 화살표, 프레임 등) 위주로 구성하여 모바일 화면에서도 3초 만에 핵심 메커니즘을 바로 이해할 수 있어야 함.
+### ② Type 2: AI-Generated Hand-Drawn Notebook Notes (실제 엔지니어 손글씨 노트 필기 스케치)
+- **Definition**: Explanatory visuals generated via image AI designed to look like an authentic, tangible photograph of real-world handwritten notes and sketches inside an engineer's physical paper notebook. **(화이트보드 형식 배제, 실제 엔지니어링 종이 노트 필기 스타일로 단일 표준화)**
+- **Authentic Human Hand-drawn Feel (자연스러운 사람 손맛 연출)**:
+  - 자 대고 그린 듯 너무 기계적으로 반듯하거나 컴퓨터 폰트처럼 매끄러운 디지털 그래픽 절대 금지 ("사람이 그린거같지가 않고 너무 깔끔하면 안 됨").
+  - 실제 엔지니어가 모눈종이(Grid paper)나 방안지 스프링 노트에 볼펜, 젤펜, 형광펜(Highlighter)으로 직접 손으로 끄적이며 정리한 듯한 자연스러운 선, 필압의 굵기 변화, 살짝 비뚤어진 화살표와 박스, 진짜 사람의 손글씨(Handwriting) 질감을 생생하게 살림.
+  - 따뜻한 나무 책상 위에 펼쳐진 실제 스케치 노트와 곁에 놓인 펜을 탑다운(Top-down) 또는 자연스러운 각도로 촬영한 아날로그 현장감 연출.
+- **Simplicity & Legibility (초간결 3단계 구조 — 3초 이해 규칙)**:
+  - 손맛을 살리되 지저분하거나 수식·설명문이 빼곡하여 어지러워지는 복잡도 철저 금지 ("이미지가 너무 복잡해선 안 됨").
+  - 3~4단계 이내의 굵직한 핵심 블록, 명확한 손그림 화살표, 큼직하고 읽기 쉬운 손글씨 키워드 위주로 구성하여 모바일 화면에서도 3초 만에 핵심 시스템 메커니즘을 바로 이해할 수 있어야 함.
 - **Prompting Guideline**: Prompt the image generator with keywords such as:
-  - *"A real photo of an office whiteboard with a very simple, clean, intuitive hand-drawn sketch explaining [Topic]. Drawn with bold dry-erase markers (black, red, blue). Three clear and minimal stages with thick arrows: [Stage 1] -> [Stage 2] -> [Stage 3]. Clean, large handwriting, minimal text, bold sketches, easy to understand in 3 seconds, natural whiteboard gloss and room lighting, zero clutter, zero complex formulas."*
-  - Or for notebook style: *"A real photo taken from above of a clean open spiral notebook on a wooden desk with a pen beside it. A very simple, clean, minimalist hand-drawn diagram explaining [Topic], drawn with black ink and red/blue marker highlights. Simple 3-step flowchart, large legible handwriting, minimal words, natural paper texture, warm lighting."*
-- **Use Case**: Conceptualizing high-level intuitive mechanisms, physical robot manipulation workflows, hardware heat dissipation loops, or end-to-end decision pipelines without intimidating jargon.
+  - *"A realistic photograph taken from above of an open spiral engineering grid notebook on a wooden desk with a black gel pen beside it. A human engineer has hand-drawn a simple, intuitive 3-stage sketch explaining [Topic] using a black pen and subtle red and blue highlighter accents. Organic human hand-drawn lines, natural slight hand tremors and imperfect sketches, authentic legible human handwriting, large keywords, simple arrows: [Stage 1] -> [Stage 2] -> [Stage 3]. Very simple and clean 3-step diagram, easy to understand in 3 seconds, realistic paper texture, soft natural room lighting, zero digital graphics, zero complex equations."*
+- **Use Case**: Conceptualizing high-level intuitive mechanisms, model workflows, hardware physical loops, or architectural decision flows.
 
 ### ③ Type 3: AI-Generated PPT-Style System Architecture (PPT 스타일 시스템 전반 설명 도식)
 - **Definition**: Professional system architecture diagrams reminiscent of modern tech conference keynote slides or enterprise solution blueprints (clean vector 2D flat design, crisp rectangles, subtle drop shadows, clean modern typography, clear module hierarchy).
