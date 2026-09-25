@@ -146,13 +146,6 @@ for (const file of files) {
     }
   }
 
-  // 2-1. Forbidden Keyword: 'Reddit' naming prohibited in headings or content
-  if (/\breddit\b/i.test(body)) {
-    errors.push(`${relPath}: Explicit mention of 'Reddit' is prohibited. Use neutral phrasing such as '실무 엔지니어 커뮤니티' or 'Developer Community'.`);
-  }
-
-
-
   // 3. Tags Count Validation (5 <= tags <= 15)
   const tags = frontmatter.tags;
   if (!Array.isArray(tags) || tags.length < 5 || tags.length > 15) {
