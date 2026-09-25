@@ -30,8 +30,9 @@ import BaseLayout from '../layouts/BaseLayout.astro';
           await pagefind.options({ baseUrl: import.meta.env.BASE_URL });
           const search = await pagefind.search(query);
           const results = await Promise.all(search.results.slice(0, 12).map((item: { data: () => Promise<{ url: string; meta: { title: string }; plain_excerpt: string }> }) => item.data()));
+          const dynamic = await fetch(`/api/search?lang=ko&q=${encodeURIComponent(query)}`).then((response) => response.ok ? response.json() : { posts: [] }).catch(() => ({ posts: [] }));
           if (current !== requestId || !list || !status) return;
-          list.replaceChildren(...results.map((result) => {
+          list.replaceChildren(...[...dynamic.posts.map((post: { url: string; title: string; description: string }) => ({ url: post.url, meta: { title: post.title }, plain_excerpt: post.description })), ...results].map((result) => {
             const li = document.createElement('li');
             const link = document.createElement('a');
             link.href = result.url;
@@ -41,7 +42,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
             li.append(link, excerpt);
             return li;
           }));
-          status.textContent = `${search.results.length}개의 결과를 찾았습니다.`;
+          status.textContent = `${search.results.length + dynamic.posts.length}개의 결과를 찾았습니다.`;
         } catch (_) {
           if (status) status.textContent = '검색 기능은 프로덕션 빌드(npm run build) 후에 활성화됩니다.';
         }

@@ -1,0 +1,61 @@
+(() => {
+  const main = document.querySelector('main#content');
+  if (!main) return;
+  const segments = location.pathname.split('/').filter(Boolean);
+  const lang = segments[0] === 'en' ? 'en' : 'ko';
+  const route = lang === 'en' ? segments.slice(1) : segments;
+  if (route.length > 1 || (route.length === 1 && !['ai', 'agi', 'physical-ai', 'other-ai', 'mobility', 'it-devices'].includes(route[0]))) return;
+  const group = route[0];
+  const category = group && group !== 'ai' ? group : null;
+  const params = new URLSearchParams({ lang });
+  if (category) params.set('category', category);
+  fetch(`/api/posts?${params}`).then((response) => response.ok ? response.json() : null).then((result) => {
+    let posts = result?.posts || [];
+    if (group === 'ai') posts = posts.filter((post) => ['agi', 'physical-ai', 'other-ai'].includes(post.category));
+    if (!posts.length) return;
+    const section = document.createElement('section');
+    section.className = 'listing';
+    const shell = document.createElement('div');
+    shell.className = 'shell';
+    const header = document.createElement('div');
+    header.className = 'section-head';
+    const heading = document.createElement('h2');
+    heading.textContent = lang === 'ko' ? '최근 발행' : 'Latest posts';
+    header.append(heading);
+    const grid = document.createElement('div');
+    grid.className = 'post-grid';
+    posts.forEach((post) => {
+      const card = document.createElement('article');
+      card.className = 'post-card';
+      const link = document.createElement('a');
+      link.className = 'card-link';
+      link.href = post.url;
+      const media = document.createElement('div');
+      media.className = 'card-media';
+      if (post.imageUrl) {
+        const img = document.createElement('img');
+        img.className = 'card-visual';
+        img.src = post.imageUrl;
+        img.alt = post.imageAlt || post.title;
+        img.loading = 'lazy';
+        media.append(img);
+      }
+      const copy = document.createElement('div');
+      copy.className = 'card-copy';
+      const eyebrow = document.createElement('div');
+      eyebrow.className = 'eyebrow';
+      eyebrow.textContent = `${post.category.replaceAll('-', ' ')} / ${post.publishedAt.slice(0, 10)}`;
+      const title = document.createElement('h3');
+      title.textContent = post.title;
+      const description = document.createElement('p');
+      description.textContent = post.description;
+      copy.append(eyebrow, title, description);
+      link.append(media, copy);
+      card.append(link);
+      grid.append(card);
+    });
+    shell.append(header, grid);
+    section.append(shell);
+    main.prepend(section);
+  }).catch(() => {});
+})();

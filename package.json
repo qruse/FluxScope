@@ -6,7 +6,10 @@
     "dev": "astro dev",
     "build": "node scripts/check-eeat.mjs && astro check && astro build && pagefind --site dist && node scripts/check-links.mjs && node scripts/check-performance.mjs",
     "preview": "astro preview",
-    "check": "npm run build"
+    "check": "npm run build",
+    "worker:dev": "wrangler dev",
+    "db:local": "wrangler d1 migrations apply hsl-blog-posts --local",
+    "db:remote": "wrangler d1 migrations apply hsl-blog-posts --remote"
   },
   "dependencies": {
     "@astrojs/mdx": "^4.3.0",
@@ -14,11 +17,14 @@
     "@astrojs/sitemap": "^3.4.0",
     "@tailwindcss/vite": "^4.1.0",
     "astro": "^5.15.0",
+    "micromark": "^4.0.2",
+    "micromark-extension-gfm": "^3.0.0",
     "pagefind": "^1.4.0",
     "tailwindcss": "^4.1.0"
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.4",
-    "typescript": "^5.9.0"
+    "typescript": "^5.9.0",
+    "wrangler": "^4.140.0"
   }
 }
