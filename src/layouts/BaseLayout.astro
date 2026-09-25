@@ -17,7 +17,7 @@ interface Props {
 
 const {
   image = '/images/og-default.png',
-  imageAlt = 'FluxScope wordmark beside concentric focus rings',
+  imageAlt = "HSL's Blog wordmark beside concentric focus rings",
   type = 'website',
   publishedAt,
   updatedAt,
@@ -28,16 +28,17 @@ const {
 const currentLang: Lang = lang || getLangFromUrl(Astro.url);
 const t = useTranslations(currentLang);
 
-const defaultTitle = t('site.title') || 'FluxScope Blog';
+const defaultTitle = t('site.title');
 const title = Astro.props.title || defaultTitle;
 const description = Astro.props.description || (currentLang === 'ko' ? t('site.description') : site.description);
 
 const canonical = new URL(Astro.url.pathname, Astro.site);
 const imageUrl = new URL(withBase(image), Astro.site);
-const fullTitle = !Astro.props.title || title === defaultTitle || title === site.name ? defaultTitle : `${title} | ${site.name}`;
+const fullTitle = !Astro.props.title || title === defaultTitle || title === site.name ? defaultTitle : `${title} | ${defaultTitle}`;
 
 // Language switcher link resolution
-const pathname = Astro.url.pathname.replace(/\/$/, '') || '/';
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const pathname = Astro.url.pathname.slice(base.length).replace(/\/$/, '') || '/';
 let koPath = '/';
 let enPath = '/en/';
 
@@ -129,9 +130,9 @@ const searchUrl = withBase(currentLang === 'en' ? '/en/search/' : '/search/');
     <a class="skip-link" href="#content">Skip to content</a>
     <header class="site-header">
       <div class="shell header-inner">
-        <a class="brand" href={homeUrl} aria-label={`${site.name} home`}>
+        <a class="brand" href={homeUrl} aria-label={`${t('site.title')} home`}>
           <span class="brand-mark" aria-hidden="true"><span></span></span>
-          <span>Flux<span class="brand-accent">Scope</span></span>
+          <span>HSL<span class="brand-accent">{currentLang === 'ko' ? '의 블로그' : "'s Blog"}</span></span>
         </a>
         <nav class="main-nav" aria-label="Main navigation">
           <div class="nav-item-dropdown">
@@ -181,14 +182,14 @@ const searchUrl = withBase(currentLang === 'en' ? '/en/search/' : '/search/');
     <footer class="site-footer">
       <div class="shell footer-grid">
         <div>
-          <a class="footer-brand" href={homeUrl}>{site.name}<span class="brand-dot">.</span></a>
+          <a class="footer-brand" href={homeUrl}>{t('site.title')}<span class="brand-dot">.</span></a>
           <p>{t('footer.motto')}</p>
         </div>
         <div class="footer-links">
           <a href={withBase('/rss.xml')}>{t('footer.rss')}</a>
           <a href={searchUrl}>{t('footer.search')}</a>
         </div>
-        <p class="footer-copy">© {new Date().getFullYear()} {site.name}</p>
+        <p class="footer-copy">© {new Date().getFullYear()} {t('site.title')}</p>
       </div>
     </footer>
     <div id="image-lightbox" class="image-lightbox" role="dialog" aria-modal="true" aria-label="Image Zoom Preview" aria-hidden="true">
@@ -280,4 +281,3 @@ const searchUrl = withBase(currentLang === 'en' ? '/en/search/' : '/search/');
     </script>
   </body>
 </html>
-

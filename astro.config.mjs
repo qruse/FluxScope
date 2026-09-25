@@ -16,7 +16,7 @@ if (!site) {
       base = `/${repo}/`;
     }
   } else {
-    site = 'http://localhost:4321';
+    site = 'https://fluxscope.coolwin200.workers.dev';
   }
 }
 

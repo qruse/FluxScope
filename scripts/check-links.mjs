@@ -2,6 +2,8 @@ import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { join, relative, resolve } from 'node:path';
 
 const root = resolve('dist');
+const repository = process.env.GITHUB_REPOSITORY?.split('/')[1];
+const base = (process.env.BASE_PATH || (process.env.GITHUB_PAGES && repository && !process.env.CUSTOM_DOMAIN ? `/${repository}/` : '/')).replace(/\/$/, '');
 const htmlFiles = [];
 function visit(dir) {
   for (const entry of readdirSync(dir, { withFileTypes: true })) {
@@ -22,7 +24,11 @@ for (const file of htmlFiles) {
     const url = new URL(href, `https://local.invalid${route}`);
     if (url.hostname !== 'local.invalid') continue;
     const path = decodeURIComponent(url.pathname);
-    const target = resolve(root, `.${path}`);
+    if (base && !path.startsWith(`${base}/`)) {
+      errors.push(`${relative(root, file)} → ${href}`);
+      continue;
+    }
+    const target = resolve(root, `.${path.slice(base.length)}`);
     if (!target.startsWith(root) || !(existsSync(target) || existsSync(join(target, 'index.html')) || existsSync(`${target}.html`))) {
       errors.push(`${relative(root, file)} → ${href}`);
     }

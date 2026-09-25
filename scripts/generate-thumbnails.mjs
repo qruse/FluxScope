@@ -17,7 +17,7 @@ const images = [
     ink: '#e8f1ec',
     accent: '#e66043',
     lineColor: '#526970',
-    kicker: 'FLUXSCOPE   FIELDNOTES',
+    kicker: 'HSL   NOTES',
     title: 'AGI',
     titleSize: 130,
     subtitle: 'GENERAL INTELLIGENCE &amp; REASONING',
@@ -45,7 +45,7 @@ const images = [
     ink: '#312720',
     accent: '#d9583b',
     lineColor: '#5c4b3f',
-    kicker: 'FLUXSCOPE   FIELDNOTES',
+    kicker: 'HSL   NOTES',
     title: 'PHYSICAL AI',
     titleSize: 96,
     subtitle: 'EMBODIED ROBOTICS &amp; SPATIAL SYSTEMS',
@@ -73,7 +73,7 @@ const images = [
     ink: '#1d4133',
     accent: '#d8593a',
     lineColor: '#2b5a47',
-    kicker: 'FLUXSCOPE   FIELDNOTES',
+    kicker: 'HSL   NOTES',
     title: 'OTHER AI',
     titleSize: 110,
     subtitle: 'ON-DEVICE, MULTIMODAL &amp; APPLIED SYSTEMS',
@@ -99,10 +99,10 @@ const images = [
     ink: '#ffffff',
     accent: '#e66043',
     lineColor: '#4f6870',
-    kicker: 'FLUXSCOPE',
-    title: 'Flux Scope',
+    kicker: "HSL'S BLOG",
+    title: "HSL's Blog",
     titleSize: 110,
-    subtitle: 'CHANGE, IN FOCUS.',
+    subtitle: 'AI / CARS / DEVICES',
     footerText: 'AGI / PHYSICAL AI / OTHER AI',
     circles: [
       { r: 90, stroke: '#4f6870', width: 2.5, fill: 'none' },
@@ -127,7 +127,7 @@ async function generateAll() {
   for (const item of images) {
     const isOg = item.filename === 'og-default.png';
     const titleSvg = isOg 
-      ? `<text x="75" y="325" fill="${item.ink}" font-family="${fontStack}" font-size="${item.titleSize}" font-weight="850" letter-spacing="-3">Flux <tspan fill="${item.accent}">Scope</tspan></text>`
+      ? `<text x="75" y="325" fill="${item.ink}" font-family="${fontStack}" font-size="${item.titleSize}" font-weight="850" letter-spacing="-3">HSL<tspan fill="${item.accent}">'s Blog</tspan></text>`
       : `<text x="75" y="360" fill="${item.ink}" font-family="${fontStack}" font-size="${item.titleSize}" font-weight="850" letter-spacing="-2">${item.title}</text>`;
 
     const bottomSection = isOg

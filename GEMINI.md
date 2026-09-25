@@ -1,6 +1,6 @@
-# FluxScope Blog Writing & Development Rules (GEMINI.md)
+# HSL's Blog Blog Writing & Development Rules (GEMINI.md)
 
-This file mirrors `AGENTS.md` and contains the authoritative, non-negotiable guidelines for all AI agents writing articles, modifying content, or developing features for **FluxScope**. Every AI agent MUST read, understand, and strictly adhere to these rules before drafting or editing posts.
+This file mirrors `AGENTS.md` and contains the authoritative, non-negotiable guidelines for all AI agents writing articles, modifying content, or developing features for **HSL's Blog**. Every AI agent MUST read, understand, and strictly adhere to these rules before drafting or editing posts.
 
 ---
 
@@ -12,7 +12,7 @@ This file mirrors `AGENTS.md` and contains the authoritative, non-negotiable gui
     1. **나를 위한 실무 아카이브**: 마케팅 거품을 걷어내고 정밀한 하드웨어 수치, 시스템 내부 구조, 실패 시나리오, 엣지 케이스를 압축 정리하여 작성자 본인이 두고두고 다시 찾아볼 수 있는 실전 기술 노트 역할을 함.
     2. **동료 엔지니어/독자를 위한 고밀도 공유**: 같은 주제에 관심을 가진 다른 개발자와 테크 매니아들도 함께 읽고 뻔한 마케팅 쇼에 속지 않고 진짜 기술적 본질을 얻어갈 수 있도록 공유함.
   - 따라서 단순 기사 번역이나 피상적인 홍보성 소개글은 절대 지양하며, "내가 직접 납득하고 써먹으려고 파고든 진짜 엔지니어의 필드 노트" 수준의 정보 밀도를 유지해야 함.
-- **Static Architecture**: FluxScope is an Astro + TypeScript static site. Never add a backend, database, CMS, OpenAI API runtime call, or unnecessary external frameworks.
+- **Static Architecture**: HSL's Blog is an Astro + TypeScript static site. Never add a backend, database, CMS, OpenAI API runtime call, or unnecessary external frameworks.
 - **Language Pairing (다국어 쌍 작성)**: Every article must be published in both Korean and English simultaneously:
   - Korean path: `src/content/posts/ko/<category>/<slug>.md`
   - English path: `src/content/posts/en/<category>/<slug>.md`
@@ -146,7 +146,7 @@ All images in articles must strictly belong to one of the **5 approved types**. 
 
 ### ⑤ Type 5: Code-Generated Benchmark & Metric Charts (코드로 생성한 그래프 이미지 도식)
 - **Definition**: Precision data visualizations showing quantitative empirical benchmarks, inference latency, memory scaling curves, or throughput comparisons.
-- **Generation Toolkit**: Generated using `scripts/visuals/cli.py bar` or `scripts/visuals/cli.py trend` matching FluxScope's color palette:
+- **Generation Toolkit**: Generated using `scripts/visuals/cli.py bar` or `scripts/visuals/cli.py trend` matching HSL's Blog's color palette:
   ```bash
   python scripts/visuals/cli.py bar --labels "FP16,INT8,FP4" --values "184,105,62" --unit "ms" --title "Inference Latency" --output public/images/posts/<category>/<slug>-latency.png
   python scripts/visuals/cli.py trend --x "1k,2k,4k,8k" --series "Unoptimized:1.8,3.6,7.2,14.4;Cached:0.3,0.3,0.4,0.6" --title "KV Cache Footprint" --output public/images/posts/<category>/<slug>-scaling.png
@@ -199,7 +199,7 @@ tags:
   - keyword-three
   - keyword-four
   - keyword-five
-author: "FluxScope"
+author: "HSL"
 image:
   src: "/images/posts/thumbnail.png"
   alt: "Descriptive alt text for accessibility"
@@ -214,7 +214,7 @@ experienceNote: "1~2줄의 실제 현장 경험 코멘트 (글 작성 전 사용
 
 ## 8. E-E-A-T Standard & Mandatory User Experience Protocol (E-E-A-T 품질 원칙 및 사용자 경험 수취 의무)
 
-FluxScope의 모든 아티클은 구글 E-E-A-T(Experience, Expertise, Authoritativeness, Trustworthiness) 4대 품질 요소를 엄격히 반영해야 함:
+HSL's Blog의 모든 아티클은 구글 E-E-A-T(Experience, Expertise, Authoritativeness, Trustworthiness) 4대 품질 요소를 엄격히 반영해야 함:
 
 ### ① 경험 (Experience) — [필수 수취 및 본문 유기적 융합 규칙]
 - **글 작성 전 사용자 질문 필수**: AI 에이전트는 글을 임의로 작성하거나 발행하기 전에, **반드시 사용자에게 해당 주제와 관련된 1~2줄의 직접 경험 코멘트(실제 사용 후기, 벤치마크 시행착오, 현장 장애 사례, 실무 노하우)를 요청하고 전달받아야 함.**

@@ -12,7 +12,7 @@ export async function getStaticPaths() {
 
 const { tag, posts } = Astro.props as { tag: string; posts: Post[] };
 ---
-<BaseLayout lang="ko" title={`#${tag}`} description={`FluxScope의 #${tag} 태그 관련 아티클 목록.`}>
+<BaseLayout lang="ko" title={`#${tag}`} description={`HSL의 블로그에서 #${tag} 태그가 달린 글.`}>
   <header class="page-top"><div class="shell"><div class="section-kicker">태그 아카이브</div><h1>#{tag}<span class="brand-dot">.</span></h1><p>#{tag} 태그가 지정된 모든 글입니다.</p></div></header>
   <section class="listing"><div class="shell"><div class="post-grid">{posts.map((post) => <PostCard post={post} />)}</div></div></section>
 </BaseLayout>

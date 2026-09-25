@@ -2,9 +2,9 @@ import type { CollectionEntry } from 'astro:content';
 import { defaultLang, type Lang } from '../i18n/ui';
 
 export const site = {
-  name: 'FluxScope',
-  description: 'AI, 모빌리티, IT 기기 등 관심 분야의 기술적 본질과 최신 소식을 파헤쳐 나도 두고두고 찾아보고 함께 나누는 독립 기술 블로그.',
-  author: 'FluxScope',
+  name: "HSL's Blog",
+  description: 'AI, 자동차, IT 기기 등 궁금한 것을 찾아보고 기록하는 개인 블로그.',
+  author: 'HSL',
 };
 
 export const categories = {
@@ -116,4 +116,3 @@ export function publishedPosts(posts: Post[], lang?: Lang): Post[] {
     .filter((post) => !post.data.draft && (lang ? post.data.lang === lang : true))
     .sort((a, b) => b.data.publishedAt.getTime() - a.data.publishedAt.getTime());
 }
-
