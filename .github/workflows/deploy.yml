@@ -1,4 +1,4 @@
-name: Zero-Downtime Deployment
+name: Build Verification
 
 on:
   push:
@@ -7,24 +7,16 @@ on:
     branches: [main]
   workflow_dispatch:
 
-# 배포 충돌을 방지하기 위해 단일 동시 배포를 허용합니다. 진행 중인 배포는 취소하지 않고 안전하게 완료시킵니다.
-concurrency:
-  group: 'pages'
-  cancel-in-progress: false
-
 permissions:
   contents: read
-  pages: write
-  id-token: write
 
 jobs:
-  # 1. 빌드 및 사전 무결성 검증 단계 (CI)
   build:
     name: Build & Verify Integrity
     runs-on: ubuntu-latest
     env:
       ASTRO_TELEMETRY_DISABLED: 1
-      GITHUB_PAGES: "true"
+      SITE_URL: https://fluxscope.coolwin200.workers.dev
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -35,36 +27,8 @@ jobs:
           node-version-file: '.node-version'
           cache: 'npm'
 
-      - name: Configure GitHub Pages
-        id: configure-pages
-        uses: actions/configure-pages@v5
-
       - name: Install dependencies
         run: npm ci
 
-      - name: Run verification checks & build
-        # 타입 검사, 콘텐츠 스키마, 빌드, Pagefind 검색 인덱싱, 내부 링크 검사를 모두 통과해야 배포 단계로 넘어갑니다.
-        # 하나라도 실패하면 배포가 즉시 차단되어 운영 중인 사이트에 장애가 발생하지 않습니다.
+      - name: Run verification checks and build
         run: npm run check
-
-      - name: Upload Pages artifact
-        # main 브랜치일 때만 배포용 정적 아티팩트를 업로드합니다.
-        if: github.ref == 'refs/heads/main' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: './dist'
-
-  # 2. 원자적 무중단 배포 단계 (CD)
-  deploy:
-    name: Atomic Zero-Downtime Deploy
-    needs: build
-    if: github.ref == 'refs/heads/main' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
-    runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    steps:
-      - name: Deploy to GitHub Pages CDN
-        id: deployment
-        # GitHub Pages 원자적 배포 엔진: 새 버전이 글로벌 CDN 엣지에 완전히 배치된 순간 즉시 스위칭(다운타임 0초)
-        uses: actions/deploy-pages@v4
