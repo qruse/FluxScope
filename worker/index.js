@@ -12,6 +12,30 @@ const pathFor = (post) => `${post.lang === 'en' ? '/en' : ''}/posts/${post.slug}
 const urlFor = (post) => `${origin}${pathFor(post)}`;
 const rowToSummary = (post) => ({ lang: post.lang, slug: post.slug, category: post.category, title: post.title, description: post.description, imageUrl: post.image_url, imageAlt: post.image_alt, tags: JSON.parse(post.tags), publishedAt: post.published_at, updatedAt: post.updated_at, url: pathFor(post) });
 const responseHeaders = { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'public, max-age=60' };
+let schemaReady;
+
+function ensureSchema(db) {
+  if (!schemaReady) {
+    schemaReady = db.prepare(`CREATE TABLE IF NOT EXISTS posts (
+      lang TEXT NOT NULL CHECK (lang IN ('ko', 'en')),
+      slug TEXT NOT NULL,
+      category TEXT NOT NULL,
+      title TEXT NOT NULL,
+      description TEXT NOT NULL,
+      body TEXT NOT NULL,
+      image_url TEXT,
+      image_alt TEXT,
+      tags TEXT NOT NULL DEFAULT '[]',
+      published_at TEXT NOT NULL,
+      updated_at TEXT NOT NULL,
+      PRIMARY KEY (lang, slug)
+    )`).run().then(() => db.prepare('CREATE INDEX IF NOT EXISTS posts_published ON posts(lang, published_at DESC)').run()).catch((error) => {
+      schemaReady = undefined;
+      throw error;
+    });
+  }
+  return schemaReady;
+}
 
 function validText(value, max) { return typeof value === 'string' && value.trim().length > 0 && value.length <= max; }
 function parsePost(payload) {
@@ -169,6 +193,7 @@ export default {
   async fetch(request, env) {
     const url = new URL(request.url);
     try {
+      if (env.DB) await ensureSchema(env.DB);
       if (url.pathname.startsWith('/api/')) return api(request, env, url);
       if (request.method !== 'GET' && request.method !== 'HEAD') return new Response('Method not allowed', { status: 405 });
       if (!env.DB) return env.ASSETS.fetch(request);

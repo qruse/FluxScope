@@ -10,7 +10,7 @@ Node.js 22.19 이상에서 `npm ci`, `npm run check`를 실행합니다. 로컬 
 
 1. Cloudflare 대시보드 **Storage & databases → D1**에서 `hsl-blog-posts`를 생성합니다. 표시된 Database ID를 `wrangler.jsonc`의 `database_id`에 넣습니다.
 2. Worker `fluxscope`의 **Settings → Variables and Secrets**에서 `PUBLISH_TOKEN`을 **Secret**으로 추가합니다. 길고 고유한 문자열을 사용하고 Git에는 넣지 않습니다.
-3. GitHub `main`에 연결된 Workers Builds에서 빌드 명령 `npm run build`, 배포 명령 `npx wrangler deploy`를 사용합니다. 첫 배포 전에 Cloudflare 인증된 환경에서 `npm run db:remote`로 스키마를 적용합니다.
+3. GitHub `main`에 연결된 Workers Builds에서 빌드 명령 `npm run build`, 배포 명령 `npx wrangler deploy`를 사용합니다. D1 테이블은 Worker의 첫 요청에서 자동으로 생성됩니다. 이후 스키마 변경이 필요할 때는 Cloudflare 인증된 환경에서 `npm run db:remote`를 사용할 수 있습니다.
 4. Worker 설정을 한 번 배포하면 이후 API 글은 빌드 없이 게시됩니다. 공개 주소는 `https://fluxscope.coolwin200.workers.dev`입니다.
 
 Database ID가 예시 문자열인 상태로 운영 배포하지 마세요. 도메인을 바꾸면 `worker/index.js`의 공개 origin과 `SITE_URL`을 함께 바꿔야 합니다.
