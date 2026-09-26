@@ -2,6 +2,10 @@ import { micromark } from 'micromark';
 import { gfm, gfmHtml } from 'micromark-extension-gfm';
 
 const categories = new Set(['agi', 'physical-ai', 'other-ai', 'mobility', 'it-devices']);
+const categoryNames = {
+  ko: { agi: 'AGI', 'physical-ai': '피지컬 AI', 'other-ai': '기타 AI', mobility: '모빌리티', 'it-devices': 'IT기기' },
+  en: { agi: 'AGI', 'physical-ai': 'Physical AI', 'other-ai': 'Other AI', mobility: 'Mobility', 'it-devices': 'IT Devices' },
+};
 const origin = 'https://fluxscope.coolwin200.workers.dev';
 const json = (value, status = 200) => new Response(JSON.stringify(value), {
   status, headers: { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store' },
@@ -143,6 +147,10 @@ class SetLanguage {
 class SetArticle {
   element(element) { element.setAttribute('content', 'article'); }
 }
+class AppendHead {
+  constructor(html) { this.html = html; }
+  element(element) { element.append(this.html, { html: true }); }
+}
 
 async function article(post, env, request) {
   const lang = post.lang;
@@ -150,14 +158,36 @@ async function article(post, env, request) {
   const canonical = urlFor(post);
   const alternate = `${origin}${lang === 'ko' ? '/en' : ''}/posts/${post.slug}/`;
   const image = post.image_url ? (post.image_url.startsWith('/') ? `${origin}${post.image_url}` : post.image_url) : `${origin}/images/og-default.png`;
+  const imageAlt = post.image_alt || post.title;
   const date = new Date(post.published_at).toLocaleDateString(lang === 'ko' ? 'ko-KR' : 'en-US', { timeZone: 'UTC', year: 'numeric', month: 'long', day: 'numeric' });
-  const categoryName = post.category.replaceAll('-', ' ');
+  const updatedDate = new Date(post.updated_at).toLocaleDateString(lang === 'ko' ? 'ko-KR' : 'en-US', { timeZone: 'UTC', year: 'numeric', month: 'long', day: 'numeric' });
+  const categoryName = categoryNames[lang][post.category];
   const home = lang === 'ko' ? '/' : '/en/';
-  const html = `<article><header class="article-header article-shell"><nav class="breadcrumbs" aria-label="Breadcrumb"><a href="${home}">${lang === 'ko' ? '홈' : 'Home'}</a><span>/</span><a href="${home}${escape(post.category)}/">${escape(categoryName)}</a><span>/</span><span aria-current="page">${lang === 'ko' ? '글' : 'Article'}</span></nav><h1>${escape(post.title)}</h1><p class="article-dek">${escape(post.description)}</p><div class="article-meta"><span>${lang === 'ko' ? '작성자' : 'By'}: <strong>HSL</strong></span><span><time datetime="${escape(post.published_at)}">${escape(date)}</time></span></div></header>${post.image_url ? `<div class="article-shell"><img class="article-visual" src="${escape(post.image_url)}" alt="${escape(post.image_alt || post.title)}" loading="eager" /></div>` : ''}<div class="article-body article-shell">${micromark(post.body, { extensions: [gfm()], htmlExtensions: [gfmHtml()] })}</div><div class="article-end article-shell"><div class="tag-list">${JSON.parse(post.tags).map((tag) => `<span>#${escape(tag)}</span>`).join('')}</div></div></article>`;
+  const tags = JSON.parse(post.tags);
+  const jsonLd = [
+    {
+      '@context': 'https://schema.org', '@type': 'Article', headline: post.title,
+      description: post.description, mainEntityOfPage: canonical, image,
+      datePublished: post.published_at, dateModified: post.updated_at,
+      author: { '@type': 'Person', name: 'HSL' },
+      publisher: { '@type': 'Organization', name: "HSL's Blog" },
+      articleSection: categoryName, keywords: tags.join(', '),
+    },
+    {
+      '@context': 'https://schema.org', '@type': 'BreadcrumbList',
+      itemListElement: [
+        { '@type': 'ListItem', position: 1, name: lang === 'ko' ? '홈' : 'Home', item: `${origin}${home}` },
+        { '@type': 'ListItem', position: 2, name: categoryName, item: `${origin}${home}${post.category}/` },
+        { '@type': 'ListItem', position: 3, name: post.title, item: canonical },
+      ],
+    },
+  ];
+  const head = `<meta property="article:published_time" content="${escape(post.published_at)}"><meta property="article:modified_time" content="${escape(post.updated_at)}"><script type="application/ld+json">${JSON.stringify(jsonLd).replace(/</g, '\\u003c')}</script>`;
+  const html = `<article><header class="article-header article-shell"><nav class="breadcrumbs" aria-label="Breadcrumb"><a href="${home}">${lang === 'ko' ? '홈' : 'Home'}</a><span>/</span><a href="${home}${escape(post.category)}/">${escape(categoryName)}</a><span>/</span><span aria-current="page">${lang === 'ko' ? '글' : 'Article'}</span></nav><h1>${escape(post.title)}</h1><p class="article-dek">${escape(post.description)}</p><div class="article-meta"><span>${lang === 'ko' ? '작성자' : 'By'}: <strong>HSL</strong></span><span>${lang === 'ko' ? '발행일' : 'Published'}: <time datetime="${escape(post.published_at)}">${escape(date)}</time></span><span>${lang === 'ko' ? '수정일' : 'Updated'}: <time datetime="${escape(post.updated_at)}">${escape(updatedDate)}</time></span></div></header>${post.image_url ? `<div class="article-shell"><img class="article-visual" src="${escape(post.image_url)}" alt="${escape(imageAlt)}" loading="eager" /></div>` : ''}<div class="article-body article-shell">${micromark(post.body, { extensions: [gfm()], htmlExtensions: [gfmHtml()] })}</div><div class="article-end article-shell"><div class="tag-list">${tags.map((tag) => `<span>#${escape(tag)}</span>`).join('')}</div></div></article>`;
   const shell = await env.ASSETS.fetch(new Request(new URL(lang === 'ko' ? '/about/' : '/en/about/', request.url)));
   if (!shell.ok) return new Response('Template unavailable', { status: 503 });
   const alternateLang = lang === 'ko' ? 'en' : 'ko';
-  const rewriter = new HTMLRewriter().on('html', new SetLanguage(lang)).on('main#content', new ReplaceMain(html)).on('title', new ReplaceText(title))
+  const rewriter = new HTMLRewriter().on('html', new SetLanguage(lang)).on('head', new AppendHead(head)).on('main#content', new ReplaceMain(html)).on('title', new ReplaceText(title))
     .on('meta[name="description"]', new SetAttribute('content', post.description))
     .on('link[rel="canonical"]', new SetAttribute('href', canonical))
     .on(`link[hreflang="${lang}"]`, new SetAttribute('href', canonical))
@@ -167,6 +197,7 @@ async function article(post, env, request) {
     .on('meta[property="og:description"]', new SetAttribute('content', post.description))
     .on('meta[property="og:url"]', new SetAttribute('content', canonical))
     .on('meta[property="og:image"]', new SetAttribute('content', image))
+    .on('meta[property="og:image:alt"]', new SetAttribute('content', imageAlt))
     .on('meta[name="twitter:title"]', new SetAttribute('content', title))
     .on('meta[name="twitter:description"]', new SetAttribute('content', post.description))
     .on('meta[name="twitter:image"]', new SetAttribute('content', image))
