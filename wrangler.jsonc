@@ -11,7 +11,7 @@
   "d1_databases": [{
     "binding": "DB",
     "database_name": "hsl-blog-posts",
-    "database_id": "REPLACE_WITH_D1_DATABASE_ID",
+    "database_id": "3c931e30-7828-4c30-b7e3-0a69441a5b25",
     "migrations_dir": "migrations"
   }]
 }
