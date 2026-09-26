@@ -16,10 +16,10 @@ const posts = publishedPosts(await getCollection('posts'), 'en').filter((post) =
   </header>
   <section class="listing">
     <div class="shell">
-      <div class="post-grid">
+      <div class="post-grid" data-dynamic-category="ai">
         {posts.map((post) => <PostCard post={post} />)}
       </div>
-      {posts.length === 0 && <p class="empty-state">New posts coming soon.</p>}
+      {posts.length === 0 && <p class="empty-state" data-dynamic-empty="ai">New posts coming soon.</p>}
     </div>
   </section>
 </BaseLayout>

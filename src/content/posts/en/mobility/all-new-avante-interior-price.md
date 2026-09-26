@@ -19,7 +19,7 @@ lang: en
 
 - The new Avante starts at **₩23.98m**, **₩3.36m above** the old entry price — but these are different engines and trims
 - The room and standard safety and tech equipment **really have improved** — losing the cheaper Smart trim still makes the entry price harder to swallow
-- Heated front seats and built-in navigation maps on Modern sit in **₩650,000 and ₩960,000 bundles** — the price sheet bothers me more than the car
+- Heated seats and navigation maps on Modern sit in **₩650,000 and ₩960,000 bundles**; the pictured **9.9-inch driver display is another ₩350,000** — the price sheet bothers me more than the car
 
 ![Previous and new Avante entry and Modern trim prices](/images/posts/mobility/all-new-avante-price-entry.webp)
 
@@ -42,11 +42,13 @@ lang: en
 
 - Modern starts at **₩23.98m**, but front heated seats require the **₩650,000 Convenience I** bundle with automatic climate control, artificial leather seats, and a toll pass ([new price sheet](https://www.hyundai.com/contents/repn-car/catalog/the-all-new-avante_price.pdf))
 - On Modern, **built-in navigation maps** require the **₩960,000 Hyundai SmartSense I** bundle with more driver assists and Gleo AI — the 12.9-inch screen is standard, but the maps are not ([new price sheet](https://www.hyundai.com/contents/repn-car/catalog/the-all-new-avante_price.pdf))
-- Those two bundles take the car to **₩25.59m**. The extra features have value; making me buy the whole bundle for one feature feels downright stingy
+- The pictured **9.9-inch slim driver display is not standard on Modern** — it is a **₩350,000 option**. On Premium it comes bundled with the 14.6-inch center display for **₩830,000**; Inspiration includes it ([new price sheet](https://www.hyundai.com/contents/repn-car/catalog/the-all-new-avante_price.pdf))
+- Those two bundles take the car to **₩25.59m**, or **₩25.94m** with the driver display. The extra features have value; making me buy the whole bundle for one feature feels downright stingy
 
 ## What changed inside
 
 - The center display is **12.9 or 14.6 inches**; Pleos Connect and its app market are standard, but check the screen size on the trim you want ([Hyundai](https://www.hyundaimotorgroup.com/ko/news/hyundai-motor-company-all-new-avante))
+- The **9.9-inch display in front of the driver is separate from the center screen** — do not assume the layout in promotional photos comes with base Modern
 - Rear legroom grows **964 → 993mm** and headroom **940 → 958mm**, helped partly by slimmer front seatbacks ([Tech Day](https://www.hyundaimotorgroup.com/ko/story/the-all-new-avante-tech-day))
 - I like that the climate and hazard buttons stayed — photos cannot tell me whether the screen menus are easy to use while driving
 
@@ -61,8 +63,8 @@ lang: en
 
 - **Q: Did every trim rise by ₩3.36m?**
   - No — that compares two different entry trims
-- **Q: Does the ₩23.98m Modern include heated front seats and navigation maps?**
-  - Neither is standard — they require Convenience I and Hyundai SmartSense I respectively
+- **Q: Does the ₩23.98m Modern include heated seats, navigation maps, and the 9.9-inch driver display?**
+  - None is standard — the first two need Convenience I and Hyundai SmartSense I; the driver display is a separate ₩350,000 option
 - **Q: Do the buttons settle the cabin question?**
   - They help, but the screen and control placement still deserve a hands-on check
 - **Q: Is this a test drive?**

@@ -17,6 +17,48 @@ const xml = escape;
 const pathFor = (post) => `${post.lang === 'en' ? '/en' : ''}/posts/${post.slug}/`;
 const urlFor = (post) => `${origin}${pathFor(post)}`;
 const rowToSummary = (post) => ({ lang: post.lang, slug: post.slug, category: normalizeCategory(post.category), title: post.title, description: post.description, imageUrl: post.image_url, imageAlt: post.image_alt, tags: JSON.parse(post.tags), publishedAt: post.published_at, updatedAt: post.updated_at, url: pathFor(post) });
+
+function listingCard(post, lang) {
+  const category = normalizeCategory(post.category);
+  const read = lang === 'ko' ? '글 읽기' : 'Read article';
+  const image = post.image_url ? `<img class="card-visual" src="${escape(post.image_url)}" alt="${escape(post.image_alt || post.title)}" loading="lazy" decoding="async" />` : '';
+  const date = new Date(post.published_at).toLocaleDateString(lang === 'ko' ? 'ko-KR' : 'en-US', { year: 'numeric', month: 'long', day: 'numeric', timeZone: 'UTC' });
+  return `<article class="post-card"><a class="card-link" href="${escape(pathFor(post))}" aria-label="${escape(`${read}: ${post.title}`)}"><div class="card-media">${image}</div><div class="card-copy"><div class="eyebrow"><span class="category-pip"></span>${escape(categoryNames[lang][category])}<span class="eyebrow-sep">/</span><time datetime="${escape(post.published_at)}">${escape(date)}</time></div><h3>${escape(post.title)}</h3><p>${escape(post.description)}</p><span class="read-link">${read} <span aria-hidden="true">↗</span></span></div></a></article>`;
+}
+
+async function listingPage(request, env, lang) {
+  const asset = await env.ASSETS.fetch(request);
+  if (request.method !== 'GET' || !asset.ok || !env.DB) return asset;
+  let results;
+  try {
+    ({ results } = await env.DB.prepare('SELECT lang, slug, category, title, description, image_url, image_alt, published_at FROM posts WHERE lang = ? ORDER BY published_at DESC LIMIT 100').bind(lang).all());
+  } catch (error) {
+    console.error('Could not load dynamic listings', error);
+    return asset;
+  }
+  if (!results.length) return asset;
+  const byCategory = new Map([...categories].map((category) => [category, results.filter((post) => normalizeCategory(post.category) === category)]));
+  const rewritten = new HTMLRewriter()
+    .on('[data-dynamic-category]', {
+      element(element) {
+        const posts = byCategory.get(element.getAttribute('data-dynamic-category')) || [];
+        if (!posts.length) return;
+        const wrapper = element.getAttribute('class')?.includes('horizontal-scroll-track') ? 'scroll-item' : '';
+        element.prepend(posts.map((post) => wrapper ? `<div class="${wrapper}">${listingCard(post, lang)}</div>` : listingCard(post, lang)).join(''), { html: true });
+      },
+    })
+    .on('[data-dynamic-empty]', {
+      element(element) {
+        if (byCategory.get(element.getAttribute('data-dynamic-empty'))?.length) element.remove();
+      },
+    }).transform(asset);
+  const headers = new Headers(rewritten.headers);
+  headers.set('Cache-Control', 'no-store');
+  headers.delete('Content-Length');
+  headers.delete('ETag');
+  headers.delete('Last-Modified');
+  return new Response(rewritten.body, { status: rewritten.status, statusText: rewritten.statusText, headers });
+}
 const responseHeaders = { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'public, max-age=60' };
 const imageTypes = { 'image/png': 'png', 'image/jpeg': 'jpg', 'image/webp': 'webp', 'image/gif': 'gif', 'image/avif': 'avif' };
 const imageLimit = 5 * 1024 * 1024;
@@ -304,6 +346,8 @@ export default {
       if (oldGptPost) return Response.redirect(`${origin}/${oldGptPost[1] || ''}posts/gpt-6-sol-luna-opus-5-5-cost-per-success/`, 301);
       const oldAiCategory = url.pathname.match(/^\/(en\/)?(?:agi|physical-ai|other-ai)(?:\/.*)?$/);
       if (oldAiCategory) return Response.redirect(`${origin}/${oldAiCategory[1] || ''}ai/`, 301);
+      const listingRoute = url.pathname.match(/^\/(en\/)?(?:(ai|mobility|it-devices)\/?)?$/);
+      if (listingRoute) return listingPage(request, env, listingRoute[1] ? 'en' : 'ko');
       const match = url.pathname.match(/^\/(en\/)?posts\/([a-z0-9]+(?:-[a-z0-9]+)*)\/?$/);
       if (!match) return env.ASSETS.fetch(request);
       const post = await env.DB.prepare('SELECT * FROM posts WHERE lang = ? AND slug = ?').bind(match[1] ? 'en' : 'ko', match[2]).first();

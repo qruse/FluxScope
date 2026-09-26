@@ -43,7 +43,7 @@ curl -X POST 'https://fluxscope.coolwin200.workers.dev/api/posts' \
 }
 ```
 
-영어판은 `lang: "en"`과 같은 `slug`로 별도 요청합니다. `publishedAt`(ISO 8601 UTC)을 생략하면 게시 시각이 저장됩니다. 수정할 때는 `If-Match: update` 헤더를 추가하며 원래 발행일은 유지됩니다. 삭제는 인증 헤더와 함께 `DELETE /api/posts?lang=ko&slug=example-post`를 호출합니다. 반환된 `url`에서 글을 확인할 수 있습니다. 공개 조회는 `GET /api/posts?lang=ko`, 검색은 `GET /api/search?lang=ko&q=검색어`입니다. 홈·분류 목록, 검색, RSS, `/dynamic-sitemap.xml`에 새 글이 반영됩니다.
+영어판은 `lang: "en"`과 같은 `slug`로 별도 요청합니다. `publishedAt`(ISO 8601 UTC)을 생략하면 게시 시각이 저장됩니다. 수정할 때는 `If-Match: update` 헤더를 추가하며 원래 발행일은 유지됩니다. 삭제는 인증 헤더와 함께 `DELETE /api/posts?lang=ko&slug=example-post`를 호출합니다. 반환된 `url`에서 글을 확인할 수 있습니다. 공개 조회는 `GET /api/posts?lang=ko`, 검색은 `GET /api/search?lang=ko&q=검색어`입니다. Worker가 홈의 각 주제 구역과 분류 전체보기에 D1 글을 서버에서 넣으므로 새 글마다 재빌드할 필요가 없습니다. 검색, RSS, `/dynamic-sitemap.xml`에도 새 글이 반영됩니다.
 
 ## 이미지 업로드 API
 

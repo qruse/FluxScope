@@ -45,7 +45,7 @@ const subPosts = allEnPosts.filter((p) => p.id !== headPost.id).slice(0, 2);
             </a>
           </div>
           <div class="horizontal-scroll-container">
-            <div class="horizontal-scroll-track">
+            <div class="horizontal-scroll-track" data-dynamic-category={majorKey}>
               {categoryPosts.map((post) => (
                 <div class="scroll-item">
                   <PostCard post={post} />
