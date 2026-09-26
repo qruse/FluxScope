@@ -16,6 +16,8 @@ const pathFor = (post) => `${post.lang === 'en' ? '/en' : ''}/posts/${post.slug}
 const urlFor = (post) => `${origin}${pathFor(post)}`;
 const rowToSummary = (post) => ({ lang: post.lang, slug: post.slug, category: post.category, title: post.title, description: post.description, imageUrl: post.image_url, imageAlt: post.image_alt, tags: JSON.parse(post.tags), publishedAt: post.published_at, updatedAt: post.updated_at, url: pathFor(post) });
 const responseHeaders = { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'public, max-age=60' };
+const imageTypes = { 'image/png': 'png', 'image/jpeg': 'jpg', 'image/webp': 'webp', 'image/gif': 'gif', 'image/avif': 'avif' };
+const imageLimit = 5 * 1024 * 1024;
 let schemaReady;
 
 function ensureSchema(db) {
@@ -47,7 +49,7 @@ function parsePost(payload) {
   if (!validText(payload.title, 180) || !validText(payload.description, 400) || !validText(payload.body, 100000)) return null;
   const community = payload.body.match(/^## (?:커뮤니티 반응|Community Reactions)\s*\n([\s\S]*?)(?=^## |$(?![\s\S]))/m)?.[1];
   if (community && /https?:\/\/|\]\(/i.test(community)) return null;
-  if (payload.imageUrl && (typeof payload.imageUrl !== 'string' || payload.imageUrl.length > 1000 || !(payload.imageUrl.startsWith('/images/') || /^https:\/\/[^\s]+$/.test(payload.imageUrl)))) return null;
+  if (payload.imageUrl && (typeof payload.imageUrl !== 'string' || payload.imageUrl.length > 1000 || !(/^\/(?:images|media)\/[a-zA-Z0-9/_-]+\.(?:png|jpe?g|webp|gif|avif)$/.test(payload.imageUrl) || /^https:\/\/[^\s]+$/.test(payload.imageUrl)))) return null;
   if (payload.imageAlt && !validText(payload.imageAlt, 300)) return null;
   if (payload.tags && (!Array.isArray(payload.tags) || payload.tags.length > 15 || payload.tags.some((tag) => !validText(tag, 40)))) return null;
   const publishedAt = payload.publishedAt || new Date().toISOString();
@@ -65,7 +67,68 @@ function authorized(request, secret) {
   return mismatch === 0;
 }
 
+function imageMatchesType(bytes, type) {
+  const signature = Array.from(bytes.slice(0, 12));
+  const starts = (...values) => values.every((value, i) => signature[i] === value);
+  const ascii = (start, value) => value.split('').every((char, i) => signature[start + i] === char.charCodeAt(0));
+  if (type === 'image/png') return starts(137, 80, 78, 71, 13, 10, 26, 10);
+  if (type === 'image/jpeg') return starts(255, 216, 255);
+  if (type === 'image/gif') return ascii(0, 'GIF87a') || ascii(0, 'GIF89a');
+  if (type === 'image/webp') return ascii(0, 'RIFF') && ascii(8, 'WEBP');
+  if (type === 'image/avif') return ascii(4, 'ftyp') && (ascii(8, 'avif') || ascii(8, 'avis'));
+  return false;
+}
+
+async function images(request, env, url) {
+  if (!env.IMAGES) return json({ error: 'Image storage is unavailable' }, 503);
+  if (url.pathname === '/api/images' && request.method === 'POST') {
+    if (!authorized(request, env.PUBLISH_TOKEN)) return json({ error: 'Unauthorized' }, 401);
+    const type = request.headers.get('Content-Type')?.split(';')[0].trim().toLowerCase();
+    if (!imageTypes[type]) return json({ error: 'Use PNG, JPEG, WebP, GIF, or AVIF' }, 415);
+    if (Number(request.headers.get('Content-Length')) > imageLimit) return json({ error: 'Image exceeds 5 MB' }, 413);
+    if (!request.body) return json({ error: 'Image is empty' }, 400);
+    const reader = request.body.getReader();
+    const chunks = [];
+    let size = 0;
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      size += value.byteLength;
+      if (size > imageLimit) { await reader.cancel(); return json({ error: 'Image exceeds 5 MB' }, 413); }
+      chunks.push(value);
+    }
+    if (!size) return json({ error: 'Image is empty' }, 400);
+    const bytes = new Uint8Array(size);
+    let offset = 0;
+    for (const chunk of chunks) { bytes.set(chunk, offset); offset += chunk.byteLength; }
+    if (!imageMatchesType(bytes, type)) return json({ error: 'Image content does not match Content-Type' }, 415);
+    const filename = `${crypto.randomUUID()}.${imageTypes[type]}`;
+    await env.IMAGES.put(`images/${filename}`, bytes, { httpMetadata: { contentType: type } });
+    const path = `/media/${filename}`;
+    return json({ url: path, absoluteUrl: `${origin}${path}` }, 201);
+  }
+  const match = url.pathname.match(/^\/media\/([a-f0-9-]{36}\.(?:png|jpg|webp|gif|avif))$/);
+  if (!match) return json({ error: 'Not found' }, 404);
+  if (request.method === 'DELETE') {
+    if (!authorized(request, env.PUBLISH_TOKEN)) return json({ error: 'Unauthorized' }, 401);
+    await env.IMAGES.delete(`images/${match[1]}`);
+    return json({ deleted: true });
+  }
+  if (request.method !== 'GET' && request.method !== 'HEAD') return new Response('Method not allowed', { status: 405 });
+  const object = request.method === 'HEAD' ? await env.IMAGES.head(`images/${match[1]}`) : await env.IMAGES.get(`images/${match[1]}`);
+  if (!object) return new Response('Not found', { status: 404 });
+  const headers = new Headers({
+    'Content-Type': object.httpMetadata?.contentType || 'application/octet-stream',
+    'Content-Length': String(object.size),
+    'Cache-Control': 'public, max-age=31536000, immutable',
+    'X-Content-Type-Options': 'nosniff',
+  });
+  if (object.httpEtag) headers.set('ETag', object.httpEtag);
+  return new Response(request.method === 'HEAD' ? null : object.body, { headers });
+}
+
 async function api(request, env, url) {
+  if (url.pathname === '/api/images') return images(request, env, url);
   if (!env.DB) return json({ error: 'Database binding is unavailable' }, 503);
   if (url.pathname === '/api/posts' && request.method === 'GET') {
     const lang = url.searchParams.get('lang') || 'ko';
@@ -225,6 +288,7 @@ export default {
     const url = new URL(request.url);
     try {
       if (env.DB) await ensureSchema(env.DB);
+      if (url.pathname.startsWith('/media/')) return images(request, env, url);
       if (url.pathname.startsWith('/api/')) return api(request, env, url);
       if (request.method !== 'GET' && request.method !== 'HEAD') return new Response('Method not allowed', { status: 405 });
       if (!env.DB) return env.ASSETS.fetch(request);

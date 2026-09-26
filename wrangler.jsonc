@@ -6,12 +6,16 @@
   "assets": {
     "directory": "./dist",
     "binding": "ASSETS",
-    "run_worker_first": ["/api/*", "/posts/*", "/en/posts/*", "/rss.xml", "/dynamic-sitemap.xml", "/robots.txt"]
+    "run_worker_first": ["/api/*", "/media/*", "/posts/*", "/en/posts/*", "/rss.xml", "/dynamic-sitemap.xml", "/robots.txt"]
   },
   "d1_databases": [{
     "binding": "DB",
     "database_name": "hsl-blog-posts",
     "database_id": "3c931e30-7828-4c30-b7e3-0a69441a5b25",
     "migrations_dir": "migrations"
+  }],
+  "r2_buckets": [{
+    "binding": "IMAGES",
+    "bucket_name": "hsl-blog-images"
   }]
 }
