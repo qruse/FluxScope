@@ -2,24 +2,16 @@
 import { getCollection } from 'astro:content';
 import BaseLayout from '../../../layouts/BaseLayout.astro';
 import PostCard from '../../../components/PostCard.astro';
-import { categoryPath, publishedPosts } from '../../../lib/site';
+import { publishedPosts } from '../../../lib/site';
 
-const aiCategories = ['agi', 'physical-ai', 'other-ai'] as const;
-const posts = publishedPosts(await getCollection('posts'), 'en').filter((post) =>
-  aiCategories.includes(post.data.category as any)
-);
+const posts = publishedPosts(await getCollection('posts'), 'en').filter((post) => post.data.category === 'ai');
 ---
-<BaseLayout lang="en" title="AI (Artificial Intelligence)" description="Notes on frontier models, Physical AI, robotics, and multimodal intelligence.">
+<BaseLayout lang="en" title="AI" description="Models, robotics, on-device AI, and practical applications.">
   <header class="page-top">
     <div class="shell">
-      <div class="section-kicker">Topic Overview / AI</div>
-      <h1>Artificial Intelligence<span class="brand-dot">.</span></h1>
-      <p>Technical analyses exploring AGI frontiers, embodied physical robotics, and specialized multimodal architectures.</p>
-      <div class="sub-category-pills">
-        <a href={categoryPath('agi', 'en')} class="pill pill-violet"># AGI</a>
-        <a href={categoryPath('physical-ai', 'en')} class="pill pill-orange"># Physical AI</a>
-        <a href={categoryPath('other-ai', 'en')} class="pill pill-green"># Other AI</a>
-      </div>
+      <div class="section-kicker">Topic / AI</div>
+      <h1>AI<span class="brand-dot">.</span></h1>
+      <p>Models, robotics, on-device AI, and practical applications in one place.</p>
     </div>
   </header>
   <section class="listing">
@@ -31,33 +23,3 @@ const posts = publishedPosts(await getCollection('posts'), 'en').filter((post) =
     </div>
   </section>
 </BaseLayout>
-
-<style>
-  .sub-category-pills {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.6rem;
-    margin-top: 1.6rem;
-  }
-  .pill {
-    display: inline-flex;
-    align-items: center;
-    padding: 0.35rem 0.85rem;
-    font-size: 0.76rem;
-    font-weight: 750;
-    border-radius: 999px;
-    border: 1px solid var(--line);
-    background: var(--surface);
-    color: var(--ink);
-    text-decoration: none;
-    transition: all 0.15s ease;
-  }
-  .pill:hover {
-    border-color: var(--accent);
-    color: var(--accent);
-    transform: translateY(-1px);
-  }
-  .pill-violet:hover { border-color: #8b5cf6; color: #8b5cf6; }
-  .pill-orange:hover { border-color: #f97316; color: #f97316; }
-  .pill-green:hover { border-color: #10b981; color: #10b981; }
-</style>

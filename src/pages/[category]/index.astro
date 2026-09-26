@@ -5,7 +5,7 @@ import PostCard from '../../components/PostCard.astro';
 import { categories, publishedPosts, type Category } from '../../lib/site';
 
 export function getStaticPaths() {
-  return (Object.keys(categories) as Category[]).map((category) => ({ params: { category }, props: { category } }));
+  return (Object.keys(categories) as Category[]).filter((category) => category !== 'ai').map((category) => ({ params: { category }, props: { category } }));
 }
 
 const { category } = Astro.props;

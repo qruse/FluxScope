@@ -6,14 +6,13 @@ import { majorCategories, majorCategoryPath, publishedPosts } from '../../lib/si
 
 const allEnPosts = publishedPosts(await getCollection('posts'), 'en');
 
-// AGI head post large
-const headPost = allEnPosts.find((p) => p.data.category === 'agi') || allEnPosts[0];
+const headPost = allEnPosts.find((p) => p.data.category === 'ai') || allEnPosts[0];
 
 // Sub posts 1 and 2 on the right
 const subPosts = allEnPosts.filter((p) => p.id !== headPost.id).slice(0, 2);
 ---
 <BaseLayout lang="en">
-  <!-- 1. Lead Section: AGI Head Post Large + 2 Sub Posts on Right -->
+  <!-- 1. Lead Section -->
   <section class="lead-section">
     <div class="shell">
       <div class="lead-grid">
@@ -32,9 +31,7 @@ const subPosts = allEnPosts.filter((p) => p.id !== headPost.id).slice(0, 2);
   <!-- 2. Major Category Horizontal Scroll Slider (AI, Mobility, IT Devices) -->
   {Object.entries(majorCategories).map(([slug, major], index) => {
     const majorKey = slug as keyof typeof majorCategories;
-    const categoryPosts = allEnPosts.filter((post) =>
-      (major.subcategories as readonly string[]).includes(post.data.category)
-    );
+    const categoryPosts = allEnPosts.filter((post) => post.data.category === majorKey);
     return (
       <section class="topic-scroll-section">
         <div class="shell">

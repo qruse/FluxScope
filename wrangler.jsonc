@@ -6,7 +6,7 @@
   "assets": {
     "directory": "./dist",
     "binding": "ASSETS",
-    "run_worker_first": ["/api/*", "/media/*", "/posts/*", "/en/posts/*", "/rss.xml", "/dynamic-sitemap.xml", "/robots.txt"]
+    "run_worker_first": ["/api/*", "/media/*", "/posts/*", "/en/posts/*", "/agi", "/agi/*", "/physical-ai", "/physical-ai/*", "/other-ai", "/other-ai/*", "/en/agi", "/en/agi/*", "/en/physical-ai", "/en/physical-ai/*", "/en/other-ai", "/en/other-ai/*", "/rss.xml", "/dynamic-sitemap.xml", "/robots.txt"]
   },
   "d1_databases": [{
     "binding": "DB",

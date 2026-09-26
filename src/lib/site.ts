@@ -8,27 +8,11 @@ export const site = {
 };
 
 export const categories = {
-  agi: {
-    name: 'AGI',
-    nameKo: 'AGI',
-    description: 'Artificial General Intelligence, reasoning models, and frontier capabilities.',
-    descriptionKo: '범용 인공지능(AGI), 고도화된 추론 모델 및 프론티어 AI 연구 동향.',
-    accent: 'violet',
-    majorCategory: 'ai',
-  },
-  'physical-ai': {
-    name: 'Physical AI',
-    nameKo: '피지컬 AI',
-    description: 'Embodied AI, robotics, autonomous mobility, and physical interaction.',
-    descriptionKo: '로보틱스, 자율주행, 임베디드 및 물리적 세계와 상호작용하는 체화된 인공지능.',
-    accent: 'orange',
-    majorCategory: 'ai',
-  },
-  'other-ai': {
-    name: 'Other AI',
-    nameKo: '기타 AI',
-    description: 'Vision, audio, multimodal models, and specialized AI architectures.',
-    descriptionKo: '컴퓨터 비전, 음성, 멀티모달 및 다양한 특화 인공지능 기술 동향.',
+  ai: {
+    name: 'AI',
+    nameKo: 'AI',
+    description: 'Models, robotics, on-device AI, and practical applications.',
+    descriptionKo: 'AI 모델부터 로봇, 온디바이스 AI와 실제 활용까지 다룹니다.',
     accent: 'green',
     majorCategory: 'ai',
   },
@@ -55,19 +39,16 @@ export const majorCategories = {
     slug: 'ai',
     name: 'AI',
     nameKo: 'AI',
-    subcategories: ['agi', 'physical-ai', 'other-ai'] as const,
   },
   mobility: {
     slug: 'mobility',
     name: 'Mobility',
     nameKo: '모빌리티',
-    subcategories: ['mobility'] as const,
   },
   'it-devices': {
     slug: 'it-devices',
     name: 'IT Devices',
     nameKo: 'IT기기',
-    subcategories: ['it-devices'] as const,
   },
 } as const;
 
@@ -97,9 +78,6 @@ export function categoryPath(category: Category, lang: Lang = defaultLang): stri
 }
 
 export function majorCategoryPath(major: MajorCategory, lang: Lang = defaultLang): string {
-  if (major === 'ai') {
-    return withBase(lang === 'en' ? '/en/ai/' : '/ai/');
-  }
   return withBase(lang === 'en' ? `/en/${major}/` : `/${major}/`);
 }
 

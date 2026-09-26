@@ -6,14 +6,13 @@ import { majorCategories, majorCategoryPath, publishedPosts } from '../lib/site'
 
 const allKoPosts = publishedPosts(await getCollection('posts'), 'ko');
 
-// AGI 헤드 포스트 하나 크게 (AGI 글 우선)
-const headPost = allKoPosts.find((p) => p.data.category === 'agi') || allKoPosts[0];
+const headPost = allKoPosts.find((p) => p.data.category === 'ai') || allKoPosts[0];
 
 // 우측 서브 포스트 1, 2 (헤드 포스트 제외한 글들)
 const subPosts = allKoPosts.filter((p) => p.id !== headPost.id).slice(0, 2);
 ---
 <BaseLayout lang="ko">
-  <!-- 1. 리드 섹션: AGI 헤드 포스트 크게 + 우측 서브 포스트 1, 2 -->
+  <!-- 1. 리드 섹션 -->
   <section class="lead-section">
     <div class="shell">
       <div class="lead-grid">
@@ -32,9 +31,7 @@ const subPosts = allKoPosts.filter((p) => p.id !== headPost.id).slice(0, 2);
   <!-- 2. 대분류별(AI / 모빌리티 / IT기기) 포스트 가로 스크롤 섹션 -->
   {Object.entries(majorCategories).map(([slug, major], index) => {
     const majorKey = slug as keyof typeof majorCategories;
-    const categoryPosts = allKoPosts.filter((post) =>
-      (major.subcategories as readonly string[]).includes(post.data.category)
-    );
+    const categoryPosts = allKoPosts.filter((post) => post.data.category === majorKey);
     return (
       <section class="topic-scroll-section">
         <div class="shell">

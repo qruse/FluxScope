@@ -1,10 +1,12 @@
 import { micromark } from 'micromark';
 import { gfm, gfmHtml } from 'micromark-extension-gfm';
 
-const categories = new Set(['agi', 'physical-ai', 'other-ai', 'mobility', 'it-devices']);
+const categories = new Set(['ai', 'mobility', 'it-devices']);
+const legacyAI = new Set(['agi', 'physical-ai', 'other-ai']);
+const normalizeCategory = (category) => legacyAI.has(category) ? 'ai' : category;
 const categoryNames = {
-  ko: { agi: 'AGI', 'physical-ai': '피지컬 AI', 'other-ai': '기타 AI', mobility: '모빌리티', 'it-devices': 'IT기기' },
-  en: { agi: 'AGI', 'physical-ai': 'Physical AI', 'other-ai': 'Other AI', mobility: 'Mobility', 'it-devices': 'IT Devices' },
+  ko: { ai: 'AI', mobility: '모빌리티', 'it-devices': 'IT기기' },
+  en: { ai: 'AI', mobility: 'Mobility', 'it-devices': 'IT Devices' },
 };
 const origin = 'https://fluxscope.coolwin200.workers.dev';
 const json = (value, status = 200) => new Response(JSON.stringify(value), {
@@ -14,7 +16,7 @@ const escape = (value) => String(value ?? '').replace(/[&<>"']/g, (c) => ({ '&':
 const xml = escape;
 const pathFor = (post) => `${post.lang === 'en' ? '/en' : ''}/posts/${post.slug}/`;
 const urlFor = (post) => `${origin}${pathFor(post)}`;
-const rowToSummary = (post) => ({ lang: post.lang, slug: post.slug, category: post.category, title: post.title, description: post.description, imageUrl: post.image_url, imageAlt: post.image_alt, tags: JSON.parse(post.tags), publishedAt: post.published_at, updatedAt: post.updated_at, url: pathFor(post) });
+const rowToSummary = (post) => ({ lang: post.lang, slug: post.slug, category: normalizeCategory(post.category), title: post.title, description: post.description, imageUrl: post.image_url, imageAlt: post.image_alt, tags: JSON.parse(post.tags), publishedAt: post.published_at, updatedAt: post.updated_at, url: pathFor(post) });
 const responseHeaders = { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'public, max-age=60' };
 const imageTypes = { 'image/png': 'png', 'image/jpeg': 'jpg', 'image/webp': 'webp', 'image/gif': 'gif', 'image/avif': 'avif' };
 const imageLimit = 5 * 1024 * 1024;
@@ -133,8 +135,9 @@ async function api(request, env, url) {
     if (!['ko', 'en'].includes(lang)) return json({ error: 'Invalid language' }, 400);
     const category = url.searchParams.get('category');
     if (category && !categories.has(category)) return json({ error: 'Invalid category' }, 400);
-    const sql = `SELECT * FROM posts WHERE lang = ?${category ? ' AND category = ?' : ''} ORDER BY published_at DESC LIMIT 100`;
-    const { results } = await env.DB.prepare(sql).bind(...(category ? [lang, category] : [lang])).all();
+    const filter = category === 'ai' ? " AND category IN ('ai', 'agi', 'physical-ai', 'other-ai')" : category ? ' AND category = ?' : '';
+    const sql = `SELECT * FROM posts WHERE lang = ?${filter} ORDER BY published_at DESC LIMIT 100`;
+    const { results } = await env.DB.prepare(sql).bind(...(category && category !== 'ai' ? [lang, category] : [lang])).all();
     return json({ posts: results.map(rowToSummary) });
   }
   if (url.pathname === '/api/search' && request.method === 'GET') {
@@ -222,7 +225,8 @@ async function article(post, env, request) {
   const imageAlt = post.image_alt || post.title;
   const date = new Date(post.published_at).toLocaleDateString(lang === 'ko' ? 'ko-KR' : 'en-US', { timeZone: 'UTC', year: 'numeric', month: 'long', day: 'numeric' });
   const updatedDate = new Date(post.updated_at).toLocaleDateString(lang === 'ko' ? 'ko-KR' : 'en-US', { timeZone: 'UTC', year: 'numeric', month: 'long', day: 'numeric' });
-  const categoryName = categoryNames[lang][post.category];
+  const category = normalizeCategory(post.category);
+  const categoryName = categoryNames[lang][category];
   const home = lang === 'ko' ? '/' : '/en/';
   const tags = JSON.parse(post.tags);
   const jsonLd = [
@@ -238,13 +242,13 @@ async function article(post, env, request) {
       '@context': 'https://schema.org', '@type': 'BreadcrumbList',
       itemListElement: [
         { '@type': 'ListItem', position: 1, name: lang === 'ko' ? '홈' : 'Home', item: `${origin}${home}` },
-        { '@type': 'ListItem', position: 2, name: categoryName, item: `${origin}${home}${post.category}/` },
+        { '@type': 'ListItem', position: 2, name: categoryName, item: `${origin}${home}${category}/` },
         { '@type': 'ListItem', position: 3, name: post.title, item: canonical },
       ],
     },
   ];
   const head = `<meta property="article:published_time" content="${escape(post.published_at)}"><meta property="article:modified_time" content="${escape(post.updated_at)}"><script type="application/ld+json">${JSON.stringify(jsonLd).replace(/</g, '\\u003c')}</script>`;
-  const html = `<article><header class="article-header article-shell"><nav class="breadcrumbs" aria-label="Breadcrumb"><a href="${home}">${lang === 'ko' ? '홈' : 'Home'}</a><span>/</span><a href="${home}${escape(post.category)}/">${escape(categoryName)}</a><span>/</span><span aria-current="page">${lang === 'ko' ? '글' : 'Article'}</span></nav><h1>${escape(post.title)}</h1><p class="article-dek">${escape(post.description)}</p><div class="article-meta"><span>${lang === 'ko' ? '작성자' : 'By'}: <strong>HSL</strong></span><span>${lang === 'ko' ? '발행일' : 'Published'}: <time datetime="${escape(post.published_at)}">${escape(date)}</time></span><span>${lang === 'ko' ? '수정일' : 'Updated'}: <time datetime="${escape(post.updated_at)}">${escape(updatedDate)}</time></span></div></header>${post.image_url ? `<div class="article-shell"><img class="article-visual" src="${escape(post.image_url)}" alt="${escape(imageAlt)}" loading="eager" /></div>` : ''}<div class="article-body article-shell">${micromark(post.body, { extensions: [gfm()], htmlExtensions: [gfmHtml()] })}</div><div class="article-end article-shell"><div class="tag-list">${tags.map((tag) => `<span>#${escape(tag)}</span>`).join('')}</div></div></article>`;
+  const html = `<article><header class="article-header article-shell"><nav class="breadcrumbs" aria-label="Breadcrumb"><a href="${home}">${lang === 'ko' ? '홈' : 'Home'}</a><span>/</span><a href="${home}${escape(category)}/">${escape(categoryName)}</a><span>/</span><span aria-current="page">${lang === 'ko' ? '글' : 'Article'}</span></nav><h1>${escape(post.title)}</h1><p class="article-dek">${escape(post.description)}</p><div class="article-meta"><span>${lang === 'ko' ? '작성자' : 'By'}: <strong>HSL</strong></span><span>${lang === 'ko' ? '발행일' : 'Published'}: <time datetime="${escape(post.published_at)}">${escape(date)}</time></span><span>${lang === 'ko' ? '수정일' : 'Updated'}: <time datetime="${escape(post.updated_at)}">${escape(updatedDate)}</time></span></div></header>${post.image_url ? `<div class="article-shell"><img class="article-visual" src="${escape(post.image_url)}" alt="${escape(imageAlt)}" loading="eager" /></div>` : ''}<div class="article-body article-shell">${micromark(post.body, { extensions: [gfm()], htmlExtensions: [gfmHtml()] })}</div><div class="article-end article-shell"><div class="tag-list">${tags.map((tag) => `<span>#${escape(tag)}</span>`).join('')}</div></div></article>`;
   const shell = await env.ASSETS.fetch(new Request(new URL(lang === 'ko' ? '/about/' : '/en/about/', request.url)));
   if (!shell.ok) return new Response('Template unavailable', { status: 503 });
   const alternateLang = lang === 'ko' ? 'en' : 'ko';
@@ -298,6 +302,8 @@ export default {
       }
       const oldGptPost = url.pathname.match(/^\/(en\/)?agi\/gpt-6-sol-luna-opus-5-5-cost-performance\/?$/);
       if (oldGptPost) return Response.redirect(`${origin}/${oldGptPost[1] || ''}posts/gpt-6-sol-luna-opus-5-5-cost-per-success/`, 301);
+      const oldAiCategory = url.pathname.match(/^\/(en\/)?(?:agi|physical-ai|other-ai)(?:\/.*)?$/);
+      if (oldAiCategory) return Response.redirect(`${origin}/${oldAiCategory[1] || ''}ai/`, 301);
       const match = url.pathname.match(/^\/(en\/)?posts\/([a-z0-9]+(?:-[a-z0-9]+)*)\/?$/);
       if (!match) return env.ASSETS.fetch(request);
       const post = await env.DB.prepare('SELECT * FROM posts WHERE lang = ? AND slug = ?').bind(match[1] ? 'en' : 'ko', match[2]).first();

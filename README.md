@@ -18,7 +18,7 @@ Node.js 22.19 이상에서 `npm ci`, `npm run check`를 실행합니다. 로컬 
 
 ## 글 게시 API
 
-`POST /api/posts`에 `Authorization: Bearer <PUBLISH_TOKEN>`과 JSON 본문을 전송합니다. 언어별로 한 번씩 게시합니다. `lang`은 `ko` 또는 `en`, `slug`는 영문 소문자·숫자·하이픈, `category`는 `agi`, `physical-ai`, `other-ai`, `mobility`, `it-devices` 중 하나입니다.
+`POST /api/posts`에 `Authorization: Bearer <PUBLISH_TOKEN>`과 JSON 본문을 전송합니다. 언어별로 한 번씩 게시합니다. `lang`은 `ko` 또는 `en`, `slug`는 영문 소문자·숫자·하이픈, `category`는 `ai`, `mobility`, `it-devices` 중 하나입니다. 기존 AI 하위 분류 주소는 `/ai/`로 이동합니다.
 
 ```bash
 curl -X POST 'https://fluxscope.coolwin200.workers.dev/api/posts' \
@@ -33,7 +33,7 @@ curl -X POST 'https://fluxscope.coolwin200.workers.dev/api/posts' \
 {
   "lang": "ko",
   "slug": "example-post",
-  "category": "agi",
+  "category": "ai",
   "title": "예시 제목",
   "description": "검색 결과와 카드에 표시할 한 줄 요약",
   "body": "## 본문\n\n마크다운으로 작성합니다.",

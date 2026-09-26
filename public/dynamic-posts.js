@@ -4,14 +4,13 @@
   const segments = location.pathname.split('/').filter(Boolean);
   const lang = segments[0] === 'en' ? 'en' : 'ko';
   const route = lang === 'en' ? segments.slice(1) : segments;
-  if (route.length > 1 || (route.length === 1 && !['ai', 'agi', 'physical-ai', 'other-ai', 'mobility', 'it-devices'].includes(route[0]))) return;
+  if (route.length > 1 || (route.length === 1 && !['ai', 'mobility', 'it-devices'].includes(route[0]))) return;
   const group = route[0];
-  const category = group && group !== 'ai' ? group : null;
+  const category = group || null;
   const params = new URLSearchParams({ lang });
   if (category) params.set('category', category);
   fetch(`/api/posts?${params}`).then((response) => response.ok ? response.json() : null).then((result) => {
     let posts = result?.posts || [];
-    if (group === 'ai') posts = posts.filter((post) => ['agi', 'physical-ai', 'other-ai'].includes(post.category));
     if (!posts.length) return;
     const section = document.createElement('section');
     section.className = 'listing';
@@ -44,7 +43,8 @@
       copy.className = 'card-copy';
       const eyebrow = document.createElement('div');
       eyebrow.className = 'eyebrow';
-      eyebrow.textContent = `${post.category.replaceAll('-', ' ')} / ${post.publishedAt.slice(0, 10)}`;
+      const label = post.category === 'ai' ? 'AI' : post.category === 'mobility' ? (lang === 'ko' ? '모빌리티' : 'Mobility') : (lang === 'ko' ? 'IT기기' : 'IT Devices');
+      eyebrow.textContent = `${label} / ${post.publishedAt.slice(0, 10)}`;
       const title = document.createElement('h3');
       title.textContent = post.title;
       const description = document.createElement('p');

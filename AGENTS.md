@@ -16,13 +16,10 @@ This file contains the authoritative, non-negotiable guidelines for all AI agent
 - **Language Pairing (다국어 쌍 작성)**: Every article must be published in both Korean and English simultaneously:
   - Korean path: `src/content/posts/ko/<category>/<slug>.md`
   - English path: `src/content/posts/en/<category>/<slug>.md`
-- **Category Hierarchy (대분류-중분류 체계)**:
-  - **대분류 1. AI**:
-    - `agi`: AGI, frontier models, reasoning architectures, prompt engineering, LLM-ops, evaluation.
-    - `physical-ai`: Autonomous driving, robotics, humanoid, VLA foundation models, real-world physics.
-    - `other-ai`: On-device AI, small language models, edge compute, speech/audio multimodality, smart agriculture, IoT telemetry.
-  - **대분류 2. 모빌리티 (`mobility`)**: EV powertrain, 800V architecture, battery thermal management, SDV zonal architecture, regenerative braking, automotive ethernet.
-  - **대분류 3. IT기기 (`it-devices`)**: Flagship smartphones (Galaxy, iPhone), AP silicon throttling, vapor chamber cooling, foldable hinges, UTG, mobile LTPO displays.
+- **Categories (세 가지 대분류만 사용)**:
+  - **AI (`ai`)**: 모델, 추론, 에이전트, 로봇, 온디바이스 AI, 스마트팜 AI 등 AI 주제 전체. AGI·피지컬 AI·기타 AI로 나누지 않음
+  - **모빌리티 (`mobility`)**: 전기차, 배터리, 차량 소프트웨어, 주행 기술 등
+  - **IT기기 (`it-devices`)**: 스마트폰, AP, 디스플레이, 폴더블 등
 - **Minimal Maintainable Diffs**: Make the smallest, cleanest maintainable change.
 
 ---
@@ -185,7 +182,7 @@ Every post must fill out all required frontmatter properties accurately:
 ---
 title: "게시글 제목 (개조식 핵심 요약형)"
 description: "게시글 핵심 요약 1~2문장"
-category: "agi" # 'agi' | 'physical-ai' | 'other-ai'
+category: "ai" # 'ai' | 'mobility' | 'it-devices'
 publishedAt: "2026-09-22"
 updatedAt: "2026-09-22"
 tags:
