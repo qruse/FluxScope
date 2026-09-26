@@ -7,10 +7,10 @@ category: mobility
 tags: [all-new-avante, hyundai, compact-sedan, cabin-design, pleos-connect, car-pricing]
 author: HSL
 image:
-  src: /images/posts/mobility/all-new-avante-price-entry.webp
-  width: 1414
-  height: 631
-  alt: "Price chart separating previous Avante Smart and Modern from the all-new Modern"
+  src: /images/posts/mobility/all-new-avante-price-options-scribble.webp
+  width: 1500
+  height: 844
+  alt: "Rough notebook doodle of an Avante price tag and bundled options"
 draft: false
 lang: en
 ---
@@ -49,10 +49,6 @@ lang: en
 - The center display is **12.9 or 14.6 inches**; Pleos Connect and its app market are standard, but check the screen size on the trim you want ([Hyundai](https://www.hyundaimotorgroup.com/ko/news/hyundai-motor-company-all-new-avante))
 - Rear legroom grows **964 → 993mm** and headroom **940 → 958mm**, helped partly by slimmer front seatbacks ([Tech Day](https://www.hyundaimotorgroup.com/ko/story/the-all-new-avante-tech-day))
 - I like that the climate and hazard buttons stayed — photos cannot tell me whether the screen menus are easy to use while driving
-
-![Notebook sketch contrasting a physical climate button with an on-screen menu](/images/posts/mobility/all-new-avante-controls-notebook.webp)
-
-*A concept sketch, not a depiction of the Avante's actual button placement or menu*
 
 ![Rear-seat space dimensions published by Hyundai](/images/posts/mobility/all-new-avante-rear-space.webp)
 

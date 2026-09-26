@@ -7,10 +7,10 @@ category: it-devices
 tags: [iphone-18-pro, a20-pro, mobile-gaming, vapor-chamber, sustained-performance, smartphone-pricing]
 author: HSL
 image:
-  src: /images/posts/it-devices/iphone-18-pro-thermal-notebook.webp
-  width: 1600
-  height: 900
-  alt: "A20 Pro의 열이 베이퍼 챔버로 퍼지고 지속 게임 성능으로 이어지는 개념 스케치"
+  src: /images/posts/it-devices/iphone-18-pro-thermal-scribble.webp
+  width: 1500
+  height: 1000
+  alt: "A20 Pro의 열 확산과 지속 게임 성능을 물음표와 함께 대충 그린 종이 노트"
 draft: false
 lang: ko
 ---
@@ -21,7 +21,7 @@ lang: ko
 - 그래픽 테스트를 여러 번 돌렸을 때 점수가 얼마나 유지되는지는 **61.1% → 62.8%** — 기본 Pro끼리 보면 차이가 크지 않음
 - 국내 256GB 시작가는 **199만 원** — 지금 쓰는 게임이 새 GPU를 활용하는지 먼저 확인하고 싶음 ([Apple](https://www.apple.com/kr/shop/buy-iphone/iphone-18-pro))
 
-*대표 스케치 노트는 열이 퍼지는 방식을 그린 개념 그림이며 실제 내부 사진은 아님*
+*대표 스케치 노트는 열이 퍼지는 방식을 상상해 본 낙서이며 실제 내부 사진이나 프레임 측정 결과는 아님*
 
 ## 칩은 빨라졌는데, 게임도 그럴까
 

@@ -7,10 +7,10 @@ category: mobility
 tags: [all-new-avante, hyundai, compact-sedan, cabin-design, pleos-connect, car-pricing]
 author: HSL
 image:
-  src: /images/posts/mobility/all-new-avante-price-entry.webp
-  width: 1414
-  height: 631
-  alt: "이전 아반떼 스마트·모던과 신형 모던 시작 가격을 구분한 비교 차트"
+  src: /images/posts/mobility/all-new-avante-price-options-scribble.webp
+  width: 1500
+  height: 844
+  alt: "자동차 가격표와 묶음 옵션을 대충 그린 종이 노트의 개념 낙서"
 draft: false
 lang: ko
 ---
@@ -49,10 +49,6 @@ lang: ko
 - 센터 화면은 **12.9 또는 14.6인치**, 플레오스 커넥트와 앱 마켓은 전 트림 기본임 — 화면 크기는 고르는 트림에서 확인 필요 ([현대차](https://www.hyundaimotorgroup.com/ko/news/hyundai-motor-company-all-new-avante))
 - 뒷좌석 다리 공간은 **964 → 993mm**, 머리 공간은 **940 → 958mm** — 시트 등받이를 얇게 만든 것도 도움이 됐음 ([테크 데이](https://www.hyundaimotorgroup.com/ko/story/the-all-new-avante-tech-day))
 - 공조·비상등 버튼을 남긴 건 마음에 듦 — 다만 화면 메뉴나 버튼 위치는 사진만으로 판단하기 어려움
-
-![물리 공조 버튼과 화면 메뉴를 대비한 실내 조작 개념 스케치](/images/posts/mobility/all-new-avante-controls-notebook.webp)
-
-*실제 아반떼의 버튼 위치나 메뉴 화면을 재현한 그림은 아님*
 
 ![현대차 공개 자료 기반 아반떼 뒷좌석 공간 변화](/images/posts/mobility/all-new-avante-rear-space.webp)
 

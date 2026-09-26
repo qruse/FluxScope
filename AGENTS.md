@@ -112,16 +112,13 @@ All images in articles must strictly belong to one of the **5 approved types**. 
 
 ### ② Type 2: AI-Generated Hand-Drawn Notebook Notes (실제 엔지니어 손글씨 노트 필기 스케치)
 - **Definition**: Explanatory visuals generated via image AI designed to look like an authentic, tangible photograph of real-world handwritten notes and sketches inside an engineer's physical paper notebook. **(화이트보드 형식 배제, 실제 엔지니어링 종이 노트 필기 스타일로 단일 표준화)**
-- **글마다 한 장 필수**: 새 글과 기존 글을 수정할 때 글의 핵심 개념을 설명하는 종이 스케치 노트를 **주제당 정확히 한 장** 포함한다. 한국어·영어판은 같은 그림을 공유해도 된다. 대표 이미지로 썼다면 본문에서 같은 그림을 반복하지 않는다. 수치·제품 외형·조작 위치를 확인하지 않았다면 개념 그림이라고 밝히고 실제 측정이나 실물 묘사처럼 그리지 않는다.
-- **Authentic Human Hand-drawn Feel (자연스러운 사람 손맛 연출)**:
-  - 자 대고 그린 듯 너무 기계적으로 반듯하거나 컴퓨터 폰트처럼 매끄러운 디지털 그래픽 절대 금지 ("사람이 그린거같지가 않고 너무 깔끔하면 안 됨").
-  - 실제 엔지니어가 모눈종이(Grid paper)나 방안지 스프링 노트에 볼펜, 젤펜, 형광펜(Highlighter)으로 직접 손으로 끄적이며 정리한 듯한 자연스러운 선, 필압의 굵기 변화, 살짝 비뚤어진 화살표와 박스, 진짜 사람의 손글씨(Handwriting) 질감을 생생하게 살림.
-  - 따뜻한 나무 책상 위에 펼쳐진 실제 스케치 노트와 곁에 놓인 펜을 탑다운(Top-down) 또는 자연스러운 각도로 촬영한 아날로그 현장감 연출.
-- **Simplicity & Legibility (초간결 3단계 구조 — 3초 이해 규칙)**:
-  - 손맛을 살리되 지저분하거나 수식·설명문이 빼곡하여 어지러워지는 복잡도 철저 금지 ("이미지가 너무 복잡해선 안 됨").
-  - 3~4단계 이내의 굵직한 핵심 블록, 명확한 손그림 화살표, 큼직하고 읽기 쉬운 손글씨 키워드 위주로 구성하여 모바일 화면에서도 3초 만에 핵심 시스템 메커니즘을 바로 이해할 수 있어야 함.
-- **Prompting Guideline**: Prompt the image generator with keywords such as:
-  - *"A realistic photograph taken from above of an open spiral engineering grid notebook on a wooden desk with a black gel pen beside it. A human engineer has hand-drawn a simple, intuitive 3-stage sketch explaining [Topic] using a black pen and subtle red and blue highlighter accents. Organic human hand-drawn lines, natural slight hand tremors and imperfect sketches, authentic legible human handwriting, large keywords, simple arrows: [Stage 1] -> [Stage 2] -> [Stage 3]. Very simple and clean 3-step diagram, easy to understand in 3 seconds, realistic paper texture, soft natural room lighting, zero digital graphics, zero complex equations."*
+- **글마다 한 장 필수**: 새 글과 기존 글을 수정할 때 글의 핵심 개념을 설명하는 종이 스케치 노트를 **주제당 정확히 한 장** 포함하고, 이 한 장을 항상 대표 이미지(`image.src` 또는 API의 `imageUrl`)로 지정한다. 한국어·영어판은 같은 그림을 공유해도 된다. 대표 이미지를 본문에서 반복하지 않는다. 수치·제품 외형·조작 위치를 확인하지 않았다면 개념 그림이라고 밝히고 실제 측정이나 실물 묘사처럼 그리지 않는다.
+- **Authentic, rough human notes (대충 직접 그린 손맛)**:
+  - 디자인된 손그림 인포그래픽이 아니라 실제 사람이 1분쯤 메모한 듯한 투박한 낙서여야 한다. 삐뚤어진 간단한 형상, 필압이 들쭉날쭉한 펜 선, 지웠거나 다시 그은 선, 어긋난 간격을 허용한다.
+  - 흔한 모눈 노트를 일상적인 빛에서 촬영한 느낌으로. 정교한 자동차·기기 렌더링, 깔끔한 3단 카드, 대칭 구도, 반듯한 화살표, 예쁜 필기체, 컬러 코딩, 스튜디오 소품 연출을 피한다.
+- **Simplicity & Legibility (단순하지만 알아볼 수 있게)**:
+  - 핵심 낙서 두세 개와 짧은 단어만 남기고, 화면이 작아도 주제가 짐작되게 한다. 글씨가 틀리거나 주장을 잘못 암시하면 다시 만든다.
+- **Prompting Guideline**: *"An ordinary phone photo of a cheap grid notebook with a quick, slightly clumsy ballpoint doodle about [Topic]. Two or three crude shapes, uneven handwriting and lines, one small crossed-out attempt, lots of blank paper. An everyday person drew it in a minute, not a designer. Legible main idea, no precise product internals or invented numbers. No polished illustration, symmetric panels, pristine diagrams, color-coded layout, studio lighting or whiteboard."*
 - **Use Case**: Conceptualizing high-level intuitive mechanisms, model workflows, hardware physical loops, or architectural decision flows.
 
 ### ③ Type 3: AI-Generated PPT-Style System Architecture (PPT 스타일 시스템 전반 설명 도식)
@@ -161,9 +158,9 @@ All images in articles must strictly belong to one of the **5 approved types**. 
 ### ⑦ Image Count & Representative Thumbnail Policy (최소 2장 이상 및 대표 이미지 썸네일 규격)
 - **최소 수량 원칙 (Minimum 2 Images Rule)**: 모든 아티클은 반드시 **최소 2장 이상의 기술 시각 자료(Technical Visuals)**를 포함해야 함 (`images.length >= 2`).
 - **대표 썸네일 선정 의무 (Representative Thumbnail Selection)**:
-  - 아티클에 포함된 이미지 중 해당 글의 핵심 기술 주제나 시스템 메커니즘을 가장 직관적이고 적절하게 대변하는 대표 도식(시스템 아키텍처 다이어그램, 알고리즘 파이프라인, 핵심 벤치마크 차트 등)을 **반드시 프런트매터 썸네일(`image.src`)로 지정**해야 함.
+  - **대표 썸네일은 반드시 그 글의 거친 종이 스케치 노트**로 지정한다. 정적 글은 프런트매터 `image.src`, API 글은 `imageUrl`을 사용한다. 정확한 가격·측정값을 보여주는 그래프와 도표는 본문에 둔다.
   - 무성의한 범용 플레이스홀더 이미지(예: `/images/other-ai.png`, `/images/regenerative-braking.png` 등)를 여러 글에서 중복 재사용하는 행위는 엄격히 금지함.
-  - 썸네일로 지정된 대표 이미지 외에도 본문 전반에 최소 1장 이상의 상세 도식/차트/스케치를 추가 배치하여 독자의 기술적 이해도를 극대화해야 함.
+  - 썸네일로 지정된 대표 이미지 외에도 본문에 최소 1장 이상의 별도 도식/차트를 추가하고, 같은 스케치 이미지를 본문에 중복 삽입하지 않는다.
 
 ---
 
