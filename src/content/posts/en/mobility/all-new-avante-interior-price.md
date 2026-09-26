@@ -1,6 +1,6 @@
 ---
-title: "New Hyundai Avante: Did It Really Get ₩3.36 Million More Expensive?"
-description: "The cheapest Avante costs ₩3.36 million more, but it is a different trim with a different engine. Here is what changed inside, too"
+title: "The New Avante Is Better. Its Price Sheet Is Harder to Like"
+description: "More room and stronger standard equipment make the new Avante appealing. A higher starting price and bundled options make it harder to buy"
 publishedAt: 2026-09-26
 updatedAt: 2026-09-26
 category: mobility
@@ -18,8 +18,8 @@ lang: en
 ## 3-Line TL;DR
 
 - The new Avante starts at **₩23.98m**, **₩3.36m above** the old entry price — but these are different engines and trims
-- Compare the Modern nameplates and it is **₩23.88m → ₩23.98m** — losing the cheaper Smart trim is the bigger story
-- Hyundai kept **physical climate buttons** beside the big screen — welcome on paper, but I would still try the controls in person
+- The room and standard safety and tech equipment **really have improved** — losing the cheaper Smart trim still makes the entry price harder to swallow
+- Heated front seats and built-in navigation maps on Modern sit in **₩650,000 and ₩960,000 bundles** — the price sheet bothers me more than the car
 
 ![Previous and new Avante entry and Modern trim prices](/images/posts/mobility/all-new-avante-price-entry.webp)
 
@@ -36,6 +36,13 @@ lang: en
 - **The ₩0.10m gap also needs context** — the two Modern trims have different engines and standard equipment
 - New Modern includes Pleos Connect, ten airbags, and Lane Following Assist 2. That does not bring back the cheaper Smart option ([Hyundai](https://www.hyundaimotorgroup.com/ko/news/hyundai-motor-company-all-new-avante))
 - Hybrid Modern starts at **₩30.42m before tax benefits** — options and registration change what you actually pay
+- **To me, the buying cost has risen more than the value I would get from the improvements** — comparing two Modern badges alone misses the vanished ₩20.62m option and what happens when you add the equipment you want
+
+## The bundles make it worse
+
+- Modern starts at **₩23.98m**, but front heated seats require the **₩650,000 Convenience I** bundle with automatic climate control, artificial leather seats, and a toll pass ([new price sheet](https://www.hyundai.com/contents/repn-car/catalog/the-all-new-avante_price.pdf))
+- On Modern, **built-in navigation maps** require the **₩960,000 Hyundai SmartSense I** bundle with more driver assists and Gleo AI — the 12.9-inch screen is standard, but the maps are not ([new price sheet](https://www.hyundai.com/contents/repn-car/catalog/the-all-new-avante_price.pdf))
+- Those two bundles take the car to **₩25.59m**. The extra features have value; making me buy the whole bundle for one feature feels downright stingy
 
 ## What changed inside
 
@@ -58,6 +65,8 @@ lang: en
 
 - **Q: Did every trim rise by ₩3.36m?**
   - No — that compares two different entry trims
+- **Q: Does the ₩23.98m Modern include heated front seats and navigation maps?**
+  - Neither is standard — they require Convenience I and Hyundai SmartSense I respectively
 - **Q: Do the buttons settle the cabin question?**
   - They help, but the screen and control placement still deserve a hands-on check
 - **Q: Is this a test drive?**
