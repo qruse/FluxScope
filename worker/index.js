@@ -1,4 +1,5 @@
 import { micromark } from 'micromark';
+import { validateEditorial } from '../shared/editorial.mjs';
 import { gfm, gfmHtml } from 'micromark-extension-gfm';
 
 const categories = new Set(['ai', 'mobility', 'it-devices']);
@@ -214,6 +215,8 @@ async function api(request, env, url) {
     } catch { return json({ error: 'Invalid JSON' }, 400); }
     const post = parsePost(payload);
     if (!post) return json({ error: 'Invalid post. Required: lang, slug, category, title, description, body.' }, 400);
+    const editorialErrors = validateEditorial(post);
+    if (editorialErrors.length) return json({ error: 'Editorial validation failed', details: editorialErrors }, 422);
     const current = await env.DB.prepare('SELECT published_at FROM posts WHERE lang = ? AND slug = ?').bind(post.lang, post.slug).first();
     if (current && request.headers.get('If-Match') !== 'update') return json({ error: 'Post exists. Set If-Match: update to replace it.' }, 409);
     if (current) post.publishedAt = current.published_at;

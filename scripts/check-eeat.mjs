@@ -1,5 +1,6 @@
 import fs from 'node:fs';
 import path from 'node:path';
+import { validateEditorial } from '../shared/editorial.mjs';
 
 const postsDir = path.resolve('src/content/posts');
 
@@ -85,6 +86,15 @@ function parseFrontmatter(content) {
 
 const files = getPostFiles(postsDir);
 const errors = [];
+const pairs = new Map();
+function register(post, file) {
+  const key = `${post.category}/${post.slug}`;
+  const group = pairs.get(key) || new Map();
+  if (group.has(post.lang)) errors.push(`${file}: duplicate language in ${key}`);
+  group.set(post.lang, post);
+  pairs.set(key, group);
+  errors.push(...validateEditorial(post).map(e => `${file}: ${e}`));
+}
 
 const PLACEHOLDER_TERMS = ['todo', 'lorem ipsum', '경험 코멘트', '경험 메모', 'placeholder', 'test comment'];
 
@@ -99,6 +109,8 @@ for (const file of files) {
     errors.push(`${relPath}: Missing frontmatter block.`);
     continue;
   }
+
+  register({ ...frontmatter, lang: isKorean ? 'ko' : 'en', slug: path.basename(file).replace(/\.mdx?$/, ''), body }, relPath);
 
   // 1. E-E-A-T: Experience Note Validation (Optional during test phase, validated if present)
   const exp = frontmatter.experienceNote;
@@ -220,6 +232,26 @@ for (const file of files) {
   }
 }
 
+const payloadDir = 'editorial/api-posts';
+if (fs.existsSync(payloadDir)) {
+  for (const name of fs.readdirSync(payloadDir).filter(n => n.endsWith('.json'))) {
+    const filename = path.join(payloadDir, name);
+    const post = JSON.parse(fs.readFileSync(filename, 'utf8'));
+    register(post, filename);
+    for (const match of post.body.matchAll(/!\[[^\]]*\]\((\/images\/[^\s)]+)\)/g)) {
+      const asset = path.resolve('public', match[1].slice(1));
+      if (!fs.existsSync(asset) || fs.statSync(asset).size > 500 * 1024) errors.push(`${filename}: missing or oversized body asset ${match[1]}`);
+    }
+  }
+}
+for (const [key, pair] of pairs) {
+  if (!pair.has('ko') || !pair.has('en')) { errors.push(`${key}: both ko and en are required`); continue; }
+  const ko = pair.get('ko'), en = pair.get('en');
+  if (JSON.stringify(ko.tags) !== JSON.stringify(en.tags)) errors.push(`${key}: bilingual tags must agree`);
+  if ((ko.imageUrl || ko.image?.src) !== (en.imageUrl || en.image?.src)) errors.push(`${key}: bilingual thumbnails must agree`);
+  if (String(ko.publishedAt).slice(0, 10) !== String(en.publishedAt).slice(0, 10)) errors.push(`${key}: bilingual publication dates must agree`);
+}
+
 if (errors.length > 0) {
   console.error('\n❌ [E-E-A-T & Blog Quality Check Failed] The following violations must be fixed:');
   for (const err of errors) {
@@ -228,5 +260,5 @@ if (errors.length > 0) {
   console.error('\nRun failed. Total errors:', errors.length);
   process.exit(1);
 } else {
-  console.log(`✅ [E-E-A-T & Quality Check Passed] All ${files.length} articles verified successfully.`);
+  console.log(`✅ [E-E-A-T & Quality Check Passed] All ${files.length} static articles and ${pairs.size} bilingual reference pairs verified successfully.`);
 }

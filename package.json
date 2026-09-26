@@ -4,12 +4,13 @@
   "type": "module",
   "scripts": {
     "dev": "astro dev",
-    "build": "node scripts/check-eeat.mjs && astro check && astro build && pagefind --site dist && node scripts/check-links.mjs && node scripts/check-performance.mjs",
+    "build": "npm run test:editorial && node scripts/check-eeat.mjs && astro check && astro build && pagefind --site dist && node scripts/check-links.mjs && node scripts/check-performance.mjs",
     "preview": "astro preview",
     "check": "npm run build",
     "worker:dev": "wrangler dev",
     "db:local": "wrangler d1 migrations apply hsl-blog-posts --local",
-    "db:remote": "wrangler d1 migrations apply hsl-blog-posts --remote"
+    "db:remote": "wrangler d1 migrations apply hsl-blog-posts --remote",
+    "test:editorial": "node --test scripts/editorial.test.mjs"
   },
   "dependencies": {
     "@astrojs/mdx": "^4.3.0",

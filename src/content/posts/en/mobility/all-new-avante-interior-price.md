@@ -2,7 +2,7 @@
 title: "The New Avante Is Better. Its Price Sheet Is Harder to Like"
 description: "More room and stronger standard equipment make the new Avante appealing. A higher starting price and bundled options make it harder to buy"
 publishedAt: 2026-09-26
-updatedAt: 2026-09-26
+updatedAt: 2026-09-27
 category: mobility
 tags: [all-new-avante, hyundai, compact-sedan, cabin-design, pleos-connect, car-pricing]
 author: HSL
@@ -40,10 +40,19 @@ lang: en
 
 ## The bundles make it worse
 
-- Modern starts at **₩23.98m**, but front heated seats require the **₩650,000 Convenience I** bundle with automatic climate control, artificial leather seats, and a toll pass ([new price sheet](https://www.hyundai.com/contents/repn-car/catalog/the-all-new-avante_price.pdf))
-- On Modern, **built-in navigation maps** require the **₩960,000 Hyundai SmartSense I** bundle with more driver assists and Gleo AI — the 12.9-inch screen is standard, but the maps are not ([new price sheet](https://www.hyundai.com/contents/repn-car/catalog/the-all-new-avante_price.pdf))
-- The pictured **9.9-inch slim driver display is not standard on Modern** — it is a **₩350,000 option**. On Premium it comes bundled with the 14.6-inch center display for **₩830,000**; Inspiration includes it ([new price sheet](https://www.hyundai.com/contents/repn-car/catalog/the-all-new-avante_price.pdf))
-- Those two bundles take the car to **₩25.59m**, or **₩25.94m** with the driver display. The extra features have value; making me buy the whole bundle for one feature feels downright stingy
+- This is the **Korean gasoline 2.0 Modern** — do not carry its equipment or prices over to an overseas Elantra or the hybrid ([official price sheet, pages 1–2](https://www.hyundai.com/contents/repn-car/catalog/the-all-new-avante_price.pdf))
+
+| Feature wanted | Modern selection | Extra |
+| :--- | :--- | ---: |
+| 12.9-inch center screen and wireless phone projection | Standard | None |
+| Front heated seats | Convenience I: climate control, synthetic leather, toll pass | ₩650,000 |
+| Built-in navigation maps | SmartSense I: additional driver assistance and Gleo AI | ₩960,000 |
+| 9.9-inch driver display | Separate option | ₩350,000 |
+
+- **₩23.98m + ₩0.65m + ₩0.96m = ₩25.59m**, or **₩25.94m** with the driver display — vehicle and listed options only, excluding registration, insurance, and extra-cost paint
+- Optional built-in maps do not mean no navigation — standard wireless Android Auto or Apple CarPlay provides another route
+- Premium bundles the driver display with a 14.6-inch center screen for **₩830,000**; Inspiration includes it
+- My frustration is having to buy a package for one wanted feature — heated seats grow quite a shopping basket. The car has improved; these bundles still feel stingy
 
 ## What changed inside
 
@@ -54,10 +63,16 @@ lang: en
 
 ![Rear-seat space dimensions published by Hyundai](/images/posts/mobility/all-new-avante-rear-space.webp)
 
+## How I would read the quote
+
+- **Lowest purchase price first**: Losing Smart matters most if you will not use the extra standard equipment
+- **Want heated seats, built-in maps, and the cluster**: Compare the **₩25.94m configuration**, not the starting price — it still does not include ventilated seats
+- **Buying for the screen layout**: Inspect the actual trim — the showroom picture and your order sheet need to describe the same car
+
 ## Community Reactions
 
-- In an [r/Hyundai reveal discussion](https://www.reddit.com/r/Hyundai/comments/1uftasb/the_cn8_elantraavante_has_been_unveiled/), several people liked the exterior but disliked the large screen perched on the dashboard
-- Others in the [same thread](https://www.reddit.com/r/Hyundai/comments/1uftasb/the_cn8_elantraavante_has_been_unveiled/) liked having a big screen **and** physical buttons — screen design and usable controls are separate questions
+- In an r/Hyundai reveal discussion, several people liked the exterior but disliked the large screen perched on the dashboard
+- Others in the same thread liked having a big screen **and** physical buttons — these are reactions to reveal images, not evidence about Korean option pricing or ownership satisfaction
 
 ## Q&A (Field Notes)
 

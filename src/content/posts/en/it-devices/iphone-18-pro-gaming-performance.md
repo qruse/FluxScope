@@ -1,8 +1,8 @@
 ---
 title: "iPhone 18 Pro: Is It Worth Upgrading for Games?"
-description: "The graphics benchmark jumps, but the repeated stress result barely moves for the standard Pro. Here is what to check before upgrading"
+description: "Graphics are about 33% faster in one benchmark. Stability alone cannot tell us sustained gaming speed, so here is what to check before leaving a 17 Pro"
 publishedAt: 2026-09-26
-updatedAt: 2026-09-26
+updatedAt: 2026-09-27
 category: it-devices
 tags: [iphone-18-pro, a20-pro, mobile-gaming, vapor-chamber, sustained-performance, smartphone-pricing]
 author: HSL
@@ -18,7 +18,7 @@ lang: en
 ## 3-Line TL;DR
 
 - iPhone 18 Pro scores **61.93fps versus 46.4fps** in a graphics test, about **33% higher** — a clear gain, but not an in-game frame rate ([Tom's Guide](https://www.tomsguide.com/phones/iphones/iphone-18-pro-and-pro-max-review))
-- On a repeated graphics test, the standard Pro's stability moves **61.1% → 62.8%** — a much smaller change
+- Stress-test stability moves **61.1% → 62.8%, up 1.7 percentage points** — that ratio alone cannot tell us the difference in sustained gaming speed
 - The 256GB model starts at **₩1,990,000 in Korea** — I would check what my actual games can use before paying ([Apple](https://www.apple.com/kr/shop/buy-iphone/iphone-18-pro))
 
 *The thumbnail is a rough idea sketch, not a photograph of the phone's internals or measured frame rates*
@@ -30,31 +30,39 @@ lang: en
 
 | Tom's Guide test | 17 Pro | 18 Pro | What it means |
 | :--- | ---: | ---: | :--- |
-| Solar Bay graphics | 46.4fps | 61.93fps | About 33% faster in this scene |
-| Wild Life Extreme repeated-test stability | 61.1% | 62.8% | Small difference under repeated load |
+| Solar Bay Unlimited average frame rate | 46.4fps | 61.93fps | About 33% faster in this scene |
+| Wild Life Extreme repeated-test stability | 61.1% | 62.8% | Retention ratio rises 1.7 percentage points |
 
 ![Independent iPhone 17 Pro versus 18 Pro graphics and stress results](/images/posts/it-devices/iphone-18-pro-gaming-benchmarks.webp)
 
 - **Pro Max is a separate result**: Its stability rose **65.2% → 79.4%** in the same review — that number does not belong to the smaller Pro ([original test](https://www.tomsguide.com/phones/iphones/iphone-18-pro-and-pro-max-review))
 - The review does not include a long game session measured at fixed settings — a benchmark and the game I play are still different things
 
+## What 62.8% actually tells us
+
+- Stability expresses **the worst loop relative to the best loop**, rather than absolute speed across devices ([UL explanation](https://support.benchmarks.ul.com/support/solutions/articles/44002134931-stress-test-result-screen))
+- In a **made-up example**, scores falling from 100 to 60 and from 150 to 90 both give 60% stability — the second device still delivers more performance
+- Similar stability therefore does not establish similar sustained speed for the two Pros — we need their best and worst scores in the same test, plus game measurements
+- Multiplying Solar Bay's frame rate by Wild Life Extreme's stability would mix different workloads — convenient arithmetic, wrong answer
+
 ## What I would check before upgrading
 
 - **Coming from an older phone**: The graphics gain is substantial — check whether your games offer the frame-rate setting you want
-- **Already using a 17 Pro**: The repeated-test gap is small, so I would try the same game myself before upgrading just for gaming
+- **Already using a 17 Pro**: Name the problem first — frame drops, heat, or battery life — then check whether the new phone actually fixes it
 - **Before spending ₩1,990,000**: Check graphics options, frame caps, and heat during a longer session — the benchmark table alone cannot answer this
 
 ## Community Reactions
 
-- In an [r/iosgaming buyer thread](https://www.reddit.com/r/iosgaming/comments/1wokwzw/best_looking_games_to_take_advantage_of_the/), people recommended games to try; one Pro Max owner said *Aniimo* recommended low graphics by default
-- An [r/Genshin_Impact buyer](https://www.reddit.com/r/Genshin_Impact/comments/1wjzitx/iphone_18_pro/) could not find the 120fps option on an 18 Pro — the cause was not established in the replies
-- An [r/iphone discussion](https://www.reddit.com/r/iphone/comments/1wi44sl/iphone_18_pro_a20_pro_deep_dive_possibly_apples/) included excitement about cooling and people who felt their older phones were still fast enough — use matters more than the launch buzz
+- An r/iphone A20 Pro thread included excitement about cooling — these were expectations about the announcement, not sustained-game measurements
+- One participant said phone speed was already sufficient and battery life and cameras drove their upgrades — a faster chip and a reason to replace your phone are separate questions
 
 ## Q&A (Field Notes)
 
 - **Q: Does 61.93fps mean every game runs at 60fps?**
   - No — that is the result of one graphics test
 - **Q: Why does Apple say 40% when the stability numbers barely move?**
-  - They are different measurements under different conditions
+  - Apple describes a gain over the previous generation; stability compares a device’s worst loop with its own best loop
+- **Q: Did you test games on an iPhone 18 Pro yourself?**
+  - No — this is an analysis of published tests and official specifications
 - **Q: Can I apply Pro Max results to the smaller Pro?**
   - No — they have different room for cooling

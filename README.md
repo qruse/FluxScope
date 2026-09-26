@@ -27,21 +27,11 @@ curl -X POST 'https://fluxscope.coolwin200.workers.dev/api/posts' \
   --data-binary @post.json
 ```
 
-`post.json` 예시:
+게시 JSON을 처음부터 임의로 만들지 말고 `editorial/api-posts/`의 검수된 한영 샘플을 구조 참고용으로 읽습니다. 가격·후기·경험은 새 주제의 출처로 다시 확인해야 합니다. 작성·검수 기준은 `AGENTS.md`와 `editorial/QUALITY.md`가 기준입니다.
 
-```json
-{
-  "lang": "ko",
-  "slug": "example-post",
-  "category": "ai",
-  "title": "예시 제목",
-  "description": "검색 결과와 카드에 표시할 한 줄 요약",
-  "body": "## 본문\n\n마크다운으로 작성합니다.",
-  "tags": ["AI", "기술"],
-  "imageUrl": "/images/og-default.png",
-  "imageAlt": "대표 이미지 설명"
-}
-```
+필수 필드: `lang`, `slug`, `category`, `title`, `description`(50~180자), `body`, `tags`(서로 다른 소문자 kebab-case 5~15개), `imageUrl`, `imageAlt`. 대표 스케치와 별도의 본문 이미지, 정확히 세 항목인 요약, 마지막 Q&A가 필요합니다. 인증된 게시 요청도 구조 검사를 통과하지 못하면 `422`와 `details`를 반환합니다. 구조 검사는 사실관계를 보증하지 않으므로 출처 대조는 별도로 수행합니다.
+
+샘플 JSON은 Git에서 검수·보존하는 원고이며 D1과 자동 동기화되지 않습니다. 원고를 수정한 뒤 아래 API로 실제 게시하고 공개 URL에서 확인해야 합니다. 정적 글은 기존 Markdown을 수정하여 Git 배포하며, 같은 글을 API에 중복 생성하지 않습니다.
 
 영어판은 `lang: "en"`과 같은 `slug`로 별도 요청합니다. `publishedAt`(ISO 8601 UTC)을 생략하면 게시 시각이 저장됩니다. 수정할 때는 `If-Match: update` 헤더를 추가하며 원래 발행일은 유지됩니다. 삭제는 인증 헤더와 함께 `DELETE /api/posts?lang=ko&slug=example-post`를 호출합니다. 반환된 `url`에서 글을 확인할 수 있습니다. 공개 조회는 `GET /api/posts?lang=ko`, 검색은 `GET /api/search?lang=ko&q=검색어`입니다. Worker가 홈의 각 주제 구역과 분류 전체보기에 D1 글을 서버에서 넣으므로 새 글마다 재빌드할 필요가 없습니다. 검색, RSS, `/dynamic-sitemap.xml`에도 새 글이 반영됩니다.
 
@@ -58,4 +48,15 @@ curl -X POST 'https://fluxscope.coolwin200.workers.dev/api/images' \
 
 응답의 `url`은 `/media/<고유 ID>.webp` 형식입니다. 글의 `imageUrl` 또는 Markdown 본문의 `![설명](/media/<고유 ID>.webp)`에 그대로 사용하면 됩니다. 이미지는 비공개 R2 버킷에 저장되고 이 Worker를 통해 공개 표시됩니다. 잘못 올린 이미지는 인증 헤더를 넣어 `DELETE /media/<고유 ID>.webp`로 삭제할 수 있습니다. 글에서 사용 중인 이미지를 삭제하면 해당 이미지도 사라지므로 먼저 글을 수정하세요.
 
-커뮤니티 반응은 원문을 확인해 짧게 요약하고 해당 Reddit 게시물 링크를 본문에 넣습니다. 관련 이전 글이 공개되어 있으면 자연스럽게 연결합니다. 편집 지침은 `AGENTS.md`를 따릅니다.
+커뮤니티 반응은 실제 원문을 확인해 요약하되 본문 해당 절에는 링크를 넣지 않습니다. 원문 URL과 확인 내용은 `editorial/reviews/<slug>.md`에 보관합니다. 관련 이전 글은 독자에게 직접 도움이 되는 경우에만 같은 언어의 공개 URL로 자연스럽게 연결합니다.
+
+## 품질 기준과 검증
+
+- `AGENTS.md`: 단일 작성 규칙 (`GEMINI.md`는 이 문서만 참조)
+- `editorial/QUALITY.md`: 기준 글 3개, 실패 예시, 검수표, 다음 작성자용 프롬프트
+- `editorial/reviews/`: 글별 사실·계산·커뮤니티 출처와 검수 기록
+- `shared/editorial.mjs`: 정적 빌드와 Worker 게시 API의 공통 구조 검사
+- `npm run test:editorial`: 정상 원고와 잘못된 입력의 회귀 검사
+- `npm run check`: 위 검사와 한영 짝 검사, Astro·검색·링크·성능 검사
+
+API는 언어별로 별도 요청합니다. 두 원고를 모두 검수한 뒤 게시하고, 두 번째 언어에 실패하면 재시도하거나 첫 번째를 원래 원고로 복구합니다. 두 언어가 모두 확인되기 전에는 발행 완료로 보고하지 않습니다.
