@@ -1,6 +1,6 @@
 ---
-title: "아이폰 18 Pro 게임 성능: GPU는 33% 뛰었는데 30분 뒤에도 그럴까?"
-description: "A20 Pro의 화려한 순간 점수와 소폭 오른 반복 부하 안정성. 게임 설정과 199만 원 가격표까지 같이 봄"
+title: "아이폰 18 Pro, 게임 때문에 바꿀 만할까?"
+description: "그래픽 벤치 점수는 크게 올랐지만 반복 테스트의 차이는 작음. 17 Pro에서 바꿀 이유가 있는지 따져봄"
 publishedAt: 2026-09-26
 updatedAt: 2026-09-26
 category: it-devices
@@ -17,46 +17,46 @@ lang: ko
 
 ## 3줄 요약
 
-- 아이폰 18 Pro의 Solar Bay 점수는 **46.4 → 61.93fps**, 약 33% 상승 — 특정 벤치 장면의 결과임 ([Tom's Guide 시험](https://www.tomsguide.com/phones/iphones/iphone-18-pro-and-pro-max-review))
-- 같은 Pro 모델의 반복 부하 안정성은 **61.1% → 62.8%** — 피크 점수를 장시간 게임 프레임으로 읽으면 곤란함
-- 국내 256GB 시작가 **199만 원** — 교체 이유가 게임이라면 자주 하는 게임의 옵션·발열부터 확인할 일임 ([Apple](https://www.apple.com/kr/shop/buy-iphone/iphone-18-pro))
+- 아이폰 18 Pro의 그래픽 테스트는 **46.4 → 61.93fps**, 약 **33% 상승** — 분명 빠르지만 실제 게임 프레임을 뜻하진 않음 ([Tom's Guide](https://www.tomsguide.com/phones/iphones/iphone-18-pro-and-pro-max-review))
+- 그래픽 테스트를 여러 번 돌렸을 때 점수가 얼마나 유지되는지는 **61.1% → 62.8%** — 기본 Pro끼리 보면 차이가 크지 않음
+- 국내 256GB 시작가는 **199만 원** — 지금 쓰는 게임이 새 GPU를 활용하는지 먼저 확인하고 싶음 ([Apple](https://www.apple.com/kr/shop/buy-iphone/iphone-18-pro))
 
 ![아이폰 18 Pro 게임 중 열 확산의 개념적인 손그림](/images/posts/it-devices/iphone-18-pro-thermal-notebook.webp)
 
-*개념 스케치: 열 확산을 단순화한 생성 이미지, 실제 부품 배치나 측정 결과는 아님*
+*열이 퍼지는 방식을 그린 개념 그림이며 실제 내부 사진은 아님*
 
-## A20 Pro: 순간 점수와 지속 성능은 별개
+## 칩은 빨라졌는데, 게임도 그럴까
 
-- **칩**: 2nm 공정, 6코어 CPU, 7코어 GPU — 메모리 대역폭 최대 50% 증가와 GPU 최대 40% 향상은 Apple 발표 수치임 ([Apple](https://www.apple.com/newsroom/2026/09/apple-debuts-iphone-18-pro-and-iphone-18-pro-max/))
-- **냉각**: 칩 옆에 메모리를 배치해 베이퍼 챔버로 열을 전달, 챔버 표면적은 전작의 3배 — 지속 성능 최대 40% 향상도 제조사 주장임
+- A20 Pro는 **7코어 GPU**를 쓰고, Apple은 GPU 성능이 최대 40% 올랐다고 말함 — '최대'라는 말을 실제 게임 전체에 적용하면 안 됨 ([Apple 발표](https://www.apple.com/newsroom/2026/09/apple-debuts-iphone-18-pro-and-iphone-18-pro-max/))
+- 칩 옆에 메모리를 배치하고 열을 빼는 베이퍼 챔버도 키웠음 — Apple의 지속 성능 최대 40% 향상은 제조사 시험 기준임
 
-| Tom's Guide 시험 | 17 Pro | 18 Pro | 읽는 법 |
+| Tom's Guide 자체 시험 | 17 Pro | 18 Pro | 어떻게 볼까 |
 | :--- | ---: | ---: | :--- |
-| Solar Bay Unlimited | 46.4fps | 61.93fps | 특정 장면 약 33% 상승 |
-| Wild Life Extreme 반복 안정성 | 61.1% | 62.8% | 기본 Pro의 변화는 작음 |
+| Solar Bay 그래픽 점수 | 46.4fps | 61.93fps | 이 장면에선 약 33% 빠름 |
+| Wild Life Extreme 반복 테스트 안정성 | 61.1% | 62.8% | 오래 돌렸을 때 차이는 작음 |
 
 ![iPhone 17 Pro와 18 Pro의 독립 GPU 및 반복 부하 시험](/images/posts/it-devices/iphone-18-pro-gaming-benchmarks.webp)
 
-- **Pro Max는 별도**: 같은 시험에서 **65.2% → 79.4%** — 큰 모델의 결과를 기본 Pro에 붙이면 안 됨 ([원본 시험](https://www.tomsguide.com/phones/iphones/iphone-18-pro-and-pro-max-review))
-- **실게임 자료의 빈칸**: 리뷰에는 고정 설정으로 30분 이상 측정한 프레임 로그가 없음 — 벤치 한 바퀴가 여름철 보스전 보증서는 아님
+- 같은 리뷰에서 **Pro Max**는 안정성이 **65.2% → 79.4%**로 더 많이 올랐음 — 큰 모델의 결과를 일반 Pro의 성능이라고 하면 안 됨 ([시험 원문](https://www.tomsguide.com/phones/iphones/iphone-18-pro-and-pro-max-review))
+- 이 리뷰에는 같은 설정으로 게임을 오래 돌린 프레임 기록은 없음 — 벤치 결과와 내가 하는 게임의 체감은 아직 다른 얘기임
 
-## 교체 전 확인할 것
+## 나라면 이렇게 확인하겠음
 
-- **구형 기기에서 업그레이드**: GPU 피크 향상은 뚜렷함 — 내 게임이 원하는 그래픽·프레임 옵션을 지원하는지 먼저 확인
-- **17 Pro 사용자**: 기본 Pro의 반복 안정성 차이는 작음 — 게임만을 위해 바꾼다면 매장에서 20~30분 직접 돌려볼 것
-- **가격**: 256GB 시작가 199만 원 — 게임별 장시간 체감이 없으면 벤치 숫자만 비싼 액세서리가 됨
+- **오래된 아이폰에서 바꾸는 경우**: 그래픽 성능 향상은 뚜렷함 — 주로 하는 게임에 원하는 프레임 옵션이 있는지 확인
+- **17 Pro를 이미 쓰는 경우**: 반복 테스트 차이가 작아서 게임 하나만 보고 바꾸긴 망설여짐 — 가능하면 같은 게임을 직접 돌려볼 것
+- **199만 원을 쓰기 전**: 그래픽 설정, 프레임 제한, 오래 할 때의 발열을 먼저 봄 — 점수표만으로는 답이 안 나옴
 
 ## 커뮤니티 반응
 
-- **새 칩으로 무슨 게임을 돌릴까**: r/iosgaming의 구매자 토론에서 게임 추천이 이어졌고, Pro Max 사용자는 *Aniimo*가 낮은 그래픽을 기본 추천했다고 전함
-- **120fps 메뉴부터 막힘**: r/Genshin_Impact의 18 Pro 구매자는 120fps 옵션이 보이지 않는다고 질문함 — 댓글의 기기 인식 문제 추정은 확인된 원인이 아님
-- **기대와 교체 이유는 다름**: r/iphone에선 냉각 향상을 반기면서도 구형 아이폰으로 충분하다는 반응이 함께 나옴 — 후기와 장시간 프레임 측정은 구분해야 함
+- [r/iosgaming 구매자 토론](https://www.reddit.com/r/iosgaming/comments/1wokwzw/best_looking_games_to_take_advantage_of_the/)에선 새 폰으로 뭘 돌려볼지 추천을 받음 — 한 Pro Max 사용자는 *Aniimo*가 낮은 그래픽 설정을 추천했다고 함
+- [r/Genshin_Impact의 18 Pro 구매자](https://www.reddit.com/r/Genshin_Impact/comments/1wjzitx/iphone_18_pro/)는 120fps 선택지가 안 보인다고 질문함 — 왜 빠졌는지는 댓글에서도 확인되지 않음
+- [r/iphone 토론](https://www.reddit.com/r/iphone/comments/1wi44sl/iphone_18_pro_a20_pro_deep_dive_possibly_apples/)엔 냉각 개선을 기대하는 사람과 지금 쓰는 구형 아이폰으로도 충분하다는 사람이 함께 있음 — 쓰는 게임에 따라 결론이 달라질 듯함
 
 ## Q&A 또 궁금한 것은?
 
-- **Q. Solar Bay 61.93fps면 게임도 60fps 고정임?**
-  - 아님 — 엔진·해상도·옵션·발열 조건이 다른 시험임
-- **Q. Apple의 지속 성능 40%와 안정성 62.8%가 충돌함?**
-  - 다른 기준의 수치임 — 제조사 최대 개선 주장과 독립 시험의 안정성 점수를 섞으면 안 됨
-- **Q. Pro Max 측정치를 Pro에 적용해도 됨?**
-  - 안 됨 — 크기와 열 용량이 달라 별도 측정 필요
+- **Q. 61.93fps면 게임도 늘 60fps야?**
+  - 아님 — 이 수치는 특정 그래픽 테스트 장면의 결과임
+- **Q. Apple은 지속 성능 40%라는데 왜 안정성은 조금만 올랐어?**
+  - 서로 다른 시험에서 나온 수치임 — 같은 퍼센트처럼 비교하면 안 됨
+- **Q. Pro Max 결과를 그냥 Pro에 적용해도 돼?**
+  - 안 됨 — 크기와 냉각 여유가 다름

@@ -58,4 +58,4 @@ curl -X POST 'https://fluxscope.coolwin200.workers.dev/api/images' \
 
 응답의 `url`은 `/media/<고유 ID>.webp` 형식입니다. 글의 `imageUrl` 또는 Markdown 본문의 `![설명](/media/<고유 ID>.webp)`에 그대로 사용하면 됩니다. 이미지는 비공개 R2 버킷에 저장되고 이 Worker를 통해 공개 표시됩니다. 잘못 올린 이미지는 인증 헤더를 넣어 `DELETE /media/<고유 ID>.webp`로 삭제할 수 있습니다. 글에서 사용 중인 이미지를 삭제하면 해당 이미지도 사라지므로 먼저 글을 수정하세요.
 
-커뮤니티 반응은 실제 내용을 확인해 요약하고 본문에는 링크를 넣지 않습니다. 근거 URL은 내부 작업 기록에 남깁니다. 편집 지침은 `AGENTS.md`를 따릅니다.
+커뮤니티 반응은 원문을 확인해 짧게 요약하고 해당 Reddit 게시물 링크를 본문에 넣습니다. 관련 이전 글이 공개되어 있으면 자연스럽게 연결합니다. 편집 지침은 `AGENTS.md`를 따릅니다.

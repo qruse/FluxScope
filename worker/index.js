@@ -47,8 +47,6 @@ function validText(value, max) { return typeof value === 'string' && value.trim(
 function parsePost(payload) {
   if (!payload || typeof payload !== 'object' || !['ko', 'en'].includes(payload.lang) || !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(payload.slug ?? '') || payload.slug.length > 100 || !categories.has(payload.category)) return null;
   if (!validText(payload.title, 180) || !validText(payload.description, 400) || !validText(payload.body, 100000)) return null;
-  const community = payload.body.match(/^## (?:커뮤니티 반응|Community Reactions)\s*\n([\s\S]*?)(?=^## |$(?![\s\S]))/m)?.[1];
-  if (community && /https?:\/\/|\]\(/i.test(community)) return null;
   if (payload.imageUrl && (typeof payload.imageUrl !== 'string' || payload.imageUrl.length > 1000 || !(/^\/(?:images|media)\/[a-zA-Z0-9/_-]+\.(?:png|jpe?g|webp|gif|avif)$/.test(payload.imageUrl) || /^https:\/\/[^\s]+$/.test(payload.imageUrl)))) return null;
   if (payload.imageAlt && !validText(payload.imageAlt, 300)) return null;
   if (payload.tags && (!Array.isArray(payload.tags) || payload.tags.length > 15 || payload.tags.some((tag) => !validText(tag, 40)))) return null;

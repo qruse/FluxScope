@@ -1,6 +1,6 @@
 # Community source notes, 2026-09-26
 
-These links support paraphrases in the published community sections. The posts themselves deliberately omit community links.
+These links support paraphrases in the published community sections. Published reactions now link directly to the relevant threads.
 
 ## GPT-6 Sol, Luna, Opus 5.5
 

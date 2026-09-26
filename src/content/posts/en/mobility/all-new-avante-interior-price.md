@@ -1,6 +1,6 @@
 ---
-title: "All-New Hyundai Avante: The Buttons Survived, the Cheap Trim Didn't"
-description: "A bigger screen and surviving climate buttons meet a vanished entry trim; the ₩3.36m entry gap is not a like-for-like price hike"
+title: "New Hyundai Avante: Did It Really Get ₩3.36 Million More Expensive?"
+description: "The cheapest Avante costs ₩3.36 million more, but it is a different trim with a different engine. Here is what changed inside, too"
 publishedAt: 2026-09-26
 updatedAt: 2026-09-26
 category: mobility
@@ -17,44 +17,44 @@ lang: en
 
 ## 3-Line TL;DR
 
-- The new Avante keeps **physical climate and hazard buttons** beside its large screen — changing the temperature need not be a menu hunt ([Hyundai](https://www.hyundaimotorgroup.com/ko/news/hyundai-motor-company-all-new-avante))
-- The lowest gasoline price goes from **₩20.62m to ₩23.98m**, a ₩3.36m gap between different engines and trims
-- Compare the **Modern** nameplates and the gap is **₩23.88m to ₩23.98m** — the cheap Smart entry trim is gone
+- The new Avante starts at **₩23.98m**, **₩3.36m above** the old entry price — but these are different engines and trims
+- Compare the Modern nameplates and it is **₩23.88m → ₩23.98m** — losing the cheaper Smart trim is the bigger story
+- Hyundai kept **physical climate buttons** beside the big screen — welcome on paper, but I would still try the controls in person
 
 ![Previous and new Avante entry and Modern trim prices](/images/posts/mobility/all-new-avante-price-entry.webp)
 
-*Price data: [2026 price sheet](https://www.hyundai.com/contents/repn-car/catalog/avante-2026-price.pdf), [new model release](https://www.hyundaimotorgroup.com/ko/news/hyundai-motor-company-all-new-avante); engines and equipment differ*
+*Prices: [2026 price sheet](https://www.hyundai.com/contents/repn-car/catalog/avante-2026-price.pdf), [new model release](https://www.hyundaimotorgroup.com/ko/news/hyundai-motor-company-all-new-avante)*
 
-## Cabin: the buttons survived
-
-- **Center screen**: Pleos Connect and its app market are standard; check which trim gets the 12.9- or 14.6-inch display ([Hyundai](https://www.hyundaimotorgroup.com/ko/news/hyundai-motor-company-all-new-avante))
-- **Rear room**: Legroom **964 → 993mm**, headroom **940 → 958mm**, helped in part by slimmer seatbacks ([Tech Day](https://www.hyundaimotorgroup.com/ko/story/the-all-new-avante-tech-day))
-- **Still untested here**: A physical button is not proof of easy operation in traffic — try the screen and controls in the actual car
-
-![Rear-seat space dimensions published by Hyundai](/images/posts/mobility/all-new-avante-rear-space.webp)
-
-## Price: what the ₩3.36m comparison means
+## First, the price comparison
 
 | Comparison | Previous 2026 model | New model | Gap |
 | :--- | ---: | ---: | ---: |
-| Lowest gasoline | Smart 1.6 **₩20.62m** | Modern 2.0 **₩23.98m** | **+₩3.36m** |
-| Modern nameplate | Modern 1.6 **₩23.88m** | Modern 2.0 **₩23.98m** | **+₩0.10m** |
+| Cheapest gasoline | Smart 1.6 **₩20.62m** | Modern 2.0 **₩23.98m** | **+₩3.36m** |
+| Modern to Modern | Modern 1.6 **₩23.88m** | Modern 2.0 **₩23.98m** | **+₩0.10m** |
 
-- **₩3.36m is an entry-price gap** across different engines, equipment, and trims — not a like-for-like increase
-- **New Modern equipment** includes Pleos Connect, ten airbags, and Lane Following Assist 2 ([Hyundai](https://www.hyundaimotorgroup.com/ko/news/hyundai-motor-company-all-new-avante))
-- **Hybrid Modern starts at ₩30.42m before tax benefits** — options and registration still need their own line on the bill
+- **The ₩3.36m gap is real** — it compares the old Smart 1.6 with the new Modern 2.0, so it is not a price rise on an identical car
+- **The ₩0.10m gap also needs context** — the two Modern trims have different engines and standard equipment
+- New Modern includes Pleos Connect, ten airbags, and Lane Following Assist 2. That does not bring back the cheaper Smart option ([Hyundai](https://www.hyundaimotorgroup.com/ko/news/hyundai-motor-company-all-new-avante))
+- Hybrid Modern starts at **₩30.42m before tax benefits** — options and registration change what you actually pay
+
+## What changed inside
+
+- The center display is **12.9 or 14.6 inches**; Pleos Connect and its app market are standard, but check the screen size on the trim you want ([Hyundai](https://www.hyundaimotorgroup.com/ko/news/hyundai-motor-company-all-new-avante))
+- Rear legroom grows **964 → 993mm** and headroom **940 → 958mm**, helped partly by slimmer front seatbacks ([Tech Day](https://www.hyundaimotorgroup.com/ko/story/the-all-new-avante-tech-day))
+- I like that the climate and hazard buttons stayed — photos cannot tell me whether the screen menus are easy to use while driving
+
+![Rear-seat space dimensions published by Hyundai](/images/posts/mobility/all-new-avante-rear-space.webp)
 
 ## Community Reactions
 
-- **Exterior praise, screen pushback**: Some overseas Elantra/Avante commenters liked the bodywork but disliked the floating center display
-- **Buttons get a pass**: Even screen skeptics welcomed physical climate controls — how well they work remains a hands-on question
-- **Cluster options drew scrutiny**: Those comments concern overseas equipment, not the Korean trim list — check the local price sheet
+- In an [r/Hyundai reveal discussion](https://www.reddit.com/r/Hyundai/comments/1uftasb/the_cn8_elantraavante_has_been_unveiled/), several people liked the exterior but disliked the large screen perched on the dashboard
+- Others in the [same thread](https://www.reddit.com/r/Hyundai/comments/1uftasb/the_cn8_elantraavante_has_been_unveiled/) liked having a big screen **and** physical buttons — screen design and usable controls are separate questions
 
 ## Q&A (Field Notes)
 
-- **Q: Did every trim become ₩3.36m dearer?**
-  - No — that compares the lowest prices of different engines and trims
-- **Q: Are cabin photos enough?**
-  - No — test control reach, screen response, and rear room in person; this is not a test drive
-- **Q: Is ₩30.42m the hybrid checkout price?**
-  - No — that starting figure precedes tax benefits, options, and registration
+- **Q: Did every trim rise by ₩3.36m?**
+  - No — that compares two different entry trims
+- **Q: Do the buttons settle the cabin question?**
+  - They help, but the screen and control placement still deserve a hands-on check
+- **Q: Is this a test drive?**
+  - No — it is a look at published prices and specifications

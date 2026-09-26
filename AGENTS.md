@@ -48,10 +48,15 @@ Every post must adhere to this exact structural hierarchy:
 ### ③ Community Reactions: 커뮤니티 반응 / Community Reactions (기본 포함)
 - **Korean**: `## 커뮤니티 반응`
 - **English**: `## Community Reactions`
-- Reddit 등에서 해당 제품·모델에 관한 실제 사용 후기나 유의미한 토론을 찾아 기본적으로 포함함. 충분히 찾아도 관련 반응이 전혀 없을 때만 생략함
-- 게시물·댓글 원문은 내부 자료에 기록하고, 블로그의 커뮤니티 반응 섹션에는 링크를 넣지 않음. 경험담·의견을 객관적 측정치나 전체 여론으로 일반화하지 않고 상반된 반응은 함께 다룸
-- 다른 제품·세대의 반응을 신제품 후기처럼 옮기거나, 댓글에 없는 극적인 사건과 수치를 만들어 넣지 않음. Reddit이라는 출처 이름을 본문에 써도 됨
-- 위치는 하단 Q&A 바로 앞. Korean 개조식 + 음슴체 / English concise field notes
+- 실제 사용 후기나 유의미한 Reddit 토론을 확인해 기본적으로 포함함. 관련 반응을 충분히 찾아도 없을 때만 생략함
+- 각 반응이 나온 **원문 게시물이나 댓글에 직접 링크**함. 서로 다른 사람의 말을 하나의 의견처럼 합치지 않고, 경험담을 전체 여론이나 객관적 측정치로 일반화하지 않음
+- 다른 제품·세대의 반응을 신제품 후기처럼 옮기거나, 댓글에 없는 사건과 수치를 만들어 넣지 않음
+- 위치는 하단 Q&A 바로 앞. 짧은 항목으로 쓰고 링크는 해당 주장 끝에 자연스럽게 붙임
+
+### 관련 이전 글 링크
+- 주제상 도움이 되는 **이미 공개된** 이전 글이 있으면 본문 설명 중 1~2개를 자연스럽게 연결하고, 왜 읽을 만한지 한마디 덧붙임
+- 같은 언어의 실제 공개 URL을 확인한 뒤 연결함. 보관 중인 미발행 글, 삭제된 주소, 자기 글, 관련 없는 글은 연결하지 않음
+- 관련 이전 글이 없다면 링크를 억지로 만들지 않음. 기계적인 '함께 읽기' 목록보다 문맥 속 링크를 우선함
 
 ### ④ Bottom Section (Fixed): Q&A 또 궁금한 것은? / Q&A (Field Notes)
 - **Korean**: `## Q&A 또 궁금한 것은?`
@@ -65,29 +70,21 @@ Every post must adhere to this exact structural hierarchy:
 
 ---
 
-## 3. Writing Tone & Voice (문체 및 어조: 냉소적·유머러스한 실무 엔지니어 스타일)
+## 3. Writing Tone & Voice (쉽고 자연스러운 글)
 
-기존의 뻔하고 딱딱한 학술 논문 요약투나 사전식 서술을 단호히 거부함. **"마케팅 헛소리와 벤더의 장밋빛 환상에 수없이 데어본 시니어 엔지니어가 냉소적이면서도 뼈 때리는 유머로 진실을 털어놓는 톤"**으로 독자가 피식 웃으며 끝까지 몰입할 수 있게 작성해야 함.
+실제로 관심 있는 주제를 찾아보고 주변 사람에게 설명하듯 씀. 정확한 수치와 한계는 남기되, 읽는 사람이 한 번에 이해할 수 있는 말부터 고름. 웃긴 문장이 저절로 나오면 써도 되지만 모든 항목에 농담이나 냉소를 끼워 넣지 않음.
 
-### Korean (한국어):
-- **개조식(Itemized Bullet Format) + 음슴체 종결 필수**: 만연체 금지, 모든 항목은 `~함`, `~임`, `~봄`, `~필수`, `~안 됨`, `~행` 등으로 압축 종결.
-- **제목 및 요약문 어조 규격 (Title & Description Style)**:
-  - **핵심 키워드 전진 배치 필수 (Front-Loading Core Keywords)**: 검색 및 독자 인지성을 위해 글의 핵심 기술 키워드(예: `800V 배터리`, `SDV 조널 아키텍처`, `Diffusion Policy`, `120Hz LTPO 디스플레이`, `스마트폰 3nm AP`, `폴더블폰 물방울 힌지` 등)가 **제목의 맨 처음 또는 극초반에 명확히 먼저 딱 나오고 시작해야 함**. 수식어나 부연 설명 뒤로 핵심 키워드가 밀려나는 구조 철저히 금지. 권장 패턴: `[핵심 키워드]: [마케팅 허상 폭로 및 엔지니어 블랙 유머]` 형태.
-  - **제목 어조**: 교과서식/학술 논문투(예: `~의 원리와 실무 분석`, `~의 상관관계 분석`, `~하는 방법`) 철저히 금지. 핵심 키워드를 선두에 박고 뒤이어 마케팅 허상을 직격하는 씁쓸한 실무 현실이나 엔지니어의 블랙 유머를 제목에서부터 바로 체감할 수 있게 작성 (예: `800V 배터리와 초고속 충전 쇼의 진실: SiC 인버터의 원가·발열 대참사`, `120Hz LTPO 디스플레이와 1Hz의 거짓말: 가변 주사율 마케팅과 배터리 절감의 추악한 진실`).
-  - **요약문 (`description` & `## 3줄 요약`)**: 점잖은 사전식 개요 서술을 금지하고, 독자가 피식 웃으며 공감할 수 있는 뼈 때리는 팩트 폭격과 씁쓸한 엔지니어링 현실을 위트 있게 압축 요약. 문장 끝 마침표(`.`) 절대 금지.
-- **냉소적 위트와 블랙 유머 (Cynical Wit & Humor)**:
-  - 겉만 번지르르한 벤치마크 점수나 마케팅 쇼 뒤에 숨겨진 추악한 진실(새벽 온콜 호출, 불타는 클라우드 청구서, if-else 누더기 코드)을 씁쓸하고 유머러스하게 비틀기.
-  - "이론상 인공일반지능(AGI)이라 부르지만 실상은 수만 줄의 하드코딩 예외 처리", "투자용 데모 영상 믿고 배포했다간 새벽에 사직서 쓰게 됨" 등 실무 공감대 저격 비유 적극 사용.
-- **고밀도 팩트 폭격**: 유머러스하되 알맹이는 누구보다 전문적이어야 함. 뼈 때리는 위트 속에서도 정밀한 하드웨어 수치(ms, VRAM GB, 토큰 단가), 1차 논문 링크, 시스템 내부 메커니즘을 날카롭게 제공.
+### Korean (한국어)
+- **짧은 개조식 중심**: 한 항목에 한 가지 생각만 담고, 필요한 설명은 쉬운 일상어로 덧붙임. 음슴체를 억지로 반복하지 않고 자연스러운 문장도 허용함. 같은 문장 틀과 결론을 계속 복제하지 않음
+- **제목**: 대상과 실제 질문을 쉬운 말로 씀. 검색할 모델·제품 이름은 앞쪽에 두되 콜론, 과장, 억지 반전은 강요하지 않음
+- **요약문**: 핵심 수치, 그 수치가 뜻하는 바, 독자가 확인할 일을 짧게 씀. '화려한', '반가운 가격표', '영수증', '함정' 같은 관용적 AI 문구를 습관적으로 쓰지 않음
+- **수치는 풀어서 설명**: '안정성 62.8%'라고만 하지 말고 무엇을 반복 측정한 값인지 말함. 단순 계산과 실제 사용 결과를 구분함
+- **목소리**: 담백한 반말·음슴체를 자연스럽게 섞되 존댓말 안내문이나 과장된 전문가 페르소나로 바꾸지 않음
 
-- **경어체/존댓말 금지**: `~합니다`, `~입니다`, `~바랍니다`, `~알아보겠습니다` 등 일체 사용 금지.
-
-### English (영어):
-- **Wry, Cynical Executive Field-Note Memo**: Fast, punchy, dark-humored insider engineering memo.
-- **Title & Summary Tone (Front-loaded Keywords)**: Place the core technical keyword at the very beginning of the headline, followed by a biting, cynical hype-puncturing hook (e.g., `800V EV Fast-Charging: The 18-Minute Illusion and the SiC Cost Trap`, `120Hz LTPO Mobile Displays: The 1Hz Idle Fairy Tale vs. Battery Reality`). Never bury keywords behind vague intro clauses or use dry textbook paper titles.
-- Punctures corporate marketing hype with deadpan, cynical technical realism ("looks revolutionary in investor slide decks until it burns $40k of cloud compute on a date parsing bug at 3 AM").
-- Match the brisk tempo, sharp wit, and cynical realism of the Korean 음슴체 version.
-- Zero generic introductory fluff, zero dry textbook lecturing.
+### English (영어)
+- Use short, natural sentences that sound like a person sharing what they found, not an executive memo
+- Put the product or topic near the start of the title, followed by a plain question or useful finding; no mandatory punchline
+- Explain the numbers in everyday terms, keep caveats close to claims, and avoid generic introductory fluff
 
 ---
 
