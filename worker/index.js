@@ -298,6 +298,8 @@ export default {
         const original = await (await env.ASSETS.fetch(request)).text();
         return new Response(`${original.trim()}\nSitemap: ${origin}/dynamic-sitemap.xml\n`, { headers: { 'Content-Type': 'text/plain; charset=utf-8' } });
       }
+      const oldGptPost = url.pathname.match(/^\/(en\/)?agi\/gpt-6-sol-luna-opus-5-5-cost-performance\/?$/);
+      if (oldGptPost) return Response.redirect(`${origin}/${oldGptPost[1] || ''}posts/gpt-6-sol-luna-opus-5-5-cost-per-success/`, 301);
       const match = url.pathname.match(/^\/(en\/)?posts\/([a-z0-9]+(?:-[a-z0-9]+)*)\/?$/);
       if (!match) return env.ASSETS.fetch(request);
       const post = await env.DB.prepare('SELECT * FROM posts WHERE lang = ? AND slug = ?').bind(match[1] ? 'en' : 'ko', match[2]).first();

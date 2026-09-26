@@ -17,49 +17,46 @@ lang: en
 
 ## 3-Line TL;DR
 
-- The A20 Pro's 7-core GPU and cooling redesign lift Solar Bay Unlimited from **46.4fps on 17 Pro to 61.93fps on 18 Pro**; that first lap is fast ([Apple](https://www.apple.com/newsroom/2026/09/apple-debuts-iphone-18-pro-and-iphone-18-pro-max/), [Tom's Guide testing](https://www.tomsguide.com/phones/iphones/iphone-18-pro-and-pro-max-review))
-- Stress-test stability on those Pro models moves from **61.1% to 62.8%**; a 33% peak gain is not a warranty for your third hour of play
-- Korean 256GB pricing starts at **₩1,990,000**; the checkout screen may run hotter than the phone ([Apple Korea store](https://www.apple.com/kr/shop/buy-iphone/iphone-18-pro))
+- iPhone 18 Pro reaches **61.93fps versus 46.4fps** on Solar Bay, about 33% higher — in that benchmark scene ([Tom's Guide tests](https://www.tomsguide.com/phones/iphones/iphone-18-pro-and-pro-max-review))
+- Stress-test stability for the standard Pro moves only **61.1% → 62.8%** — peak speed is no promise for a long game session
+- The Korean 256GB model starts at **₩1,990,000** — check your game's settings and thermals before paying for a benchmark score ([Apple](https://www.apple.com/kr/shop/buy-iphone/iphone-18-pro))
 
 ![Concept sketch of heat spreading during iPhone 18 Pro gaming](/images/posts/it-devices/iphone-18-pro-thermal-notebook.webp)
 
-*Concept image: an AI-generated simplification of heat spreading, not a photograph of the actual component layout or a measured frame-time trace*
+*Concept sketch: generated illustration of heat spreading, not the actual component layout or a measurement*
 
-## A20 Pro: One benchmark lap is not a gaming marathon
+## A20 Pro: peak and sustained results differ
 
-[Apple says](https://www.apple.com/newsroom/2026/09/apple-debuts-iphone-18-pro-and-iphone-18-pro-max/) A20 Pro uses a 2nm process, 6-core CPU, and 7-core GPU, with 50% more memory bandwidth than A19 Pro. Its up-to-40% GPU gain is a manufacturer claim under selected conditions
+- **Chip**: 2nm, six CPU cores, seven GPU cores — up to 50% more memory bandwidth and 40% faster GPU are Apple's claims ([Apple](https://www.apple.com/newsroom/2026/09/apple-debuts-iphone-18-pro-and-iphone-18-pro-max/))
+- **Cooling**: Memory sits beside the die, allowing direct contact with a vapor chamber with triple the former surface area — the up-to-40% sustained gain is also Apple's claim
 
-The redesigned package places chip and memory side by side, letting the die contact a vapor chamber with three times the previous surface area. Apple's up-to-40% sustained-performance figure is a manufacturer claim; a bigger vapor chamber cannot unlock a game's frame-rate cap by itself
-
-| Independent test | iPhone 17 Pro | iPhone 18 Pro | What it tells us |
+| Tom's Guide test | 17 Pro | 18 Pro | Interpretation |
 | :--- | ---: | ---: | :--- |
-| 3DMark Solar Bay Unlimited | 46.4fps | 61.93fps | About 33% higher in that graphics scene |
-| 3DMark Wild Life Extreme stress stability | 61.1% | 62.8% | A small gain for the standard Pro |
+| Solar Bay Unlimited | 46.4fps | 61.93fps | About 33% higher in this scene |
+| Wild Life Extreme stress stability | 61.1% | 62.8% | Small change for standard Pro |
 
 ![Independent iPhone 17 Pro versus 18 Pro graphics and stress results](/images/posts/it-devices/iphone-18-pro-gaming-benchmarks.webp)
 
-*Data: [Tom's Guide's original tests](https://www.tomsguide.com/phones/iphones/iphone-18-pro-and-pro-max-review) — the two 3DMark scenes measure different things; neither guarantees in-game frame rates*
+- **Max is different**: Its stability moved **65.2% → 79.4%** in the same review — do not transplant that result onto the smaller Pro ([original tests](https://www.tomsguide.com/phones/iphones/iphone-18-pro-and-pro-max-review))
+- **Missing game data**: The review has no 30-minute frame-time log at fixed game settings — a benchmark lap cannot guarantee a summer boss fight
 
-- The same review measured **65.2% to 79.4%** stability for 17 Pro Max versus 18 Pro Max, a much larger improvement; do not quietly apply that Max result to the smaller Pro
-- The reviewer described smooth play in one game but did not publish a fixed-settings, 30-minute frame-time trace; a quick boss fight and a long summer session are different tests
+## Before replacing your phone
 
-## The ₩1,990,000 question: will your games pay for the upgrade?
-
-- **Frequent demanding-game players upgrading from an older phone** get a strong peak GPU and improved thermal design, provided their chosen game supports the desired settings and frame cap
-- **Current 17 Pro owners** should be careful: the cited stress test shows a modest stability change on the standard Pro; try a 20–30 minute session on a demo unit before paying for gaming alone
-- **Price-sensitive buyers** face a ₩1,990,000 Korean starting price for 256GB; measure the games you actually play against the cost of switching
+- **Upgrading from an older model**: Peak graphics are clearly better — verify the options and frame cap in the games you actually play
+- **Already on 17 Pro**: The standard Pro's stress stability barely moves — try a 20–30 minute session before upgrading for games alone
+- **Price**: At ₩1,990,000 for 256GB in Korea, a higher benchmark number is an expensive accessory without sustained gains in your games
 
 ## Community Reactions
 
-- **New chip, old problem: which games use it?** An iOS gaming discussion started with an 18 Pro owner asking for demanding games; a Pro Max owner said *Aniimo* recommended low graphics by default. A game profile can lag behind hardware, and one setting report cannot measure chip performance
-- **A missing 120fps switch stops the GPU at the menu**: An 18 Pro buyer reported that *Genshin Impact* did not show the 120fps option. Replies suggested new-device recognition as a possible cause, without confirming it; benchmark speed and game support remain separate
-- **Future-proofing versus a phone that is already fast enough**: An A20 Pro discussion welcomed better thermals, while other owners said older iPhones still handled their daily work. Enthusiasm for the hardware is not a sustained-game frame log
+- **Which games use the new chip?** An r/iosgaming buyer asked for demanding games; a Pro Max owner said *Aniimo* recommended low graphics by default
+- **120fps missing at the menu**: An r/Genshin_Impact 18 Pro buyer could not find the 120fps option — replies guessed at device recognition, without confirming the cause
+- **Hardware enthusiasm versus replacement need**: r/iphone had praise for cooling alongside owners content with older phones — neither is a long-session frame log
 
 ## Q&A (Field Notes)
 
-- **Q: Does 61.93fps in Solar Bay mean 60fps in every game?**
-  - No; it is one benchmark scene, not a guaranteed result across engines, resolutions, settings, and temperatures
-- **Q: Is Apple's 40% sustained claim inconsistent with the 62.8% stability score?**
-  - They measure different things against different baselines; keep the claim and independent score separate
-- **Q: Can I use Pro Max stress results for the standard Pro?**
-  - No; a shared chip does not imply equal thermal capacity or identical sustained results
+- **Q: Does 61.93fps in Solar Bay guarantee 60fps in games?**
+  - No — engines, resolutions, settings, and heat differ
+- **Q: Does Apple's 40% conflict with the 62.8% stability score?**
+  - No — one is a manufacturer maximum improvement claim, the other a different stress metric
+- **Q: Can Max results stand in for the standard Pro?**
+  - No — different size and thermal capacity require separate tests
