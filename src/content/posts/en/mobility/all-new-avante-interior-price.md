@@ -43,6 +43,10 @@ lang: en
 - Rear legroom grows **964 → 993mm** and headroom **940 → 958mm**, helped partly by slimmer front seatbacks ([Tech Day](https://www.hyundaimotorgroup.com/ko/story/the-all-new-avante-tech-day))
 - I like that the climate and hazard buttons stayed — photos cannot tell me whether the screen menus are easy to use while driving
 
+![Notebook sketch contrasting a physical climate button with an on-screen menu](/images/posts/mobility/all-new-avante-controls-notebook.webp)
+
+*A concept sketch, not a depiction of the Avante's actual button placement or menu*
+
 ![Rear-seat space dimensions published by Hyundai](/images/posts/mobility/all-new-avante-rear-space.webp)
 
 ## Community Reactions

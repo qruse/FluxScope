@@ -112,6 +112,7 @@ All images in articles must strictly belong to one of the **5 approved types**. 
 
 ### ② Type 2: AI-Generated Hand-Drawn Notebook Notes (실제 엔지니어 손글씨 노트 필기 스케치)
 - **Definition**: Explanatory visuals generated via image AI designed to look like an authentic, tangible photograph of real-world handwritten notes and sketches inside an engineer's physical paper notebook. **(화이트보드 형식 배제, 실제 엔지니어링 종이 노트 필기 스타일로 단일 표준화)**
+- **글마다 한 장 필수**: 새 글과 기존 글을 수정할 때 글의 핵심 개념을 설명하는 종이 스케치 노트를 **주제당 정확히 한 장** 포함한다. 한국어·영어판은 같은 그림을 공유해도 된다. 대표 이미지로 썼다면 본문에서 같은 그림을 반복하지 않는다. 수치·제품 외형·조작 위치를 확인하지 않았다면 개념 그림이라고 밝히고 실제 측정이나 실물 묘사처럼 그리지 않는다.
 - **Authentic Human Hand-drawn Feel (자연스러운 사람 손맛 연출)**:
   - 자 대고 그린 듯 너무 기계적으로 반듯하거나 컴퓨터 폰트처럼 매끄러운 디지털 그래픽 절대 금지 ("사람이 그린거같지가 않고 너무 깔끔하면 안 됨").
   - 실제 엔지니어가 모눈종이(Grid paper)나 방안지 스프링 노트에 볼펜, 젤펜, 형광펜(Highlighter)으로 직접 손으로 끄적이며 정리한 듯한 자연스러운 선, 필압의 굵기 변화, 살짝 비뚤어진 화살표와 박스, 진짜 사람의 손글씨(Handwriting) 질감을 생생하게 살림.
@@ -146,7 +147,7 @@ All images in articles must strictly belong to one of the **5 approved types**. 
 - **Use Case**: Quantitative ablation studies, VRAM scaling laws, token throughput vs. batch size.
 
 ### ⑥ Static Preservation & Auto-Resolution Scaling Policy (정적 유지 및 자동 해상도 최적화)
-- **100% Static Files**: All graphics must be saved as static image assets under `public/images/posts/<category>/`. Never add client-side dynamic chart rendering scripts or live runtime APIs.
+- **Static assets or R2 uploads**: Repository articles use static assets under `public/images/posts/<category>/`. API-published articles upload images to R2 through `/api/images` and reference the returned `/media/` URL, without a rebuild. Never add client-side dynamic chart rendering scripts.
 - **Resolution Cap (800px ~ 1600px)**:
   - Article content column width is ~760px–860px (max 1200px for hero containers).
   - Maximum image width is strictly capped at **1600px** (sharp 2x Retina display without 4K payload bloat).

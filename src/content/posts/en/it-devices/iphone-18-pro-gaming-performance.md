@@ -21,9 +21,7 @@ lang: en
 - On a repeated graphics test, the standard Pro's stability moves **61.1% → 62.8%** — a much smaller change
 - The 256GB model starts at **₩1,990,000 in Korea** — I would check what my actual games can use before paying ([Apple](https://www.apple.com/kr/shop/buy-iphone/iphone-18-pro))
 
-![Concept sketch of heat spreading during iPhone 18 Pro gaming](/images/posts/it-devices/iphone-18-pro-thermal-notebook.webp)
-
-*Illustration of how heat spreads, not a photograph of the phone's internals*
+*The notebook sketch above illustrates heat spreading; it is not a photograph of the phone's internals*
 
 ## A faster chip does not settle the game question
 

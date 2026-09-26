@@ -21,9 +21,7 @@ lang: ko
 - 그래픽 테스트를 여러 번 돌렸을 때 점수가 얼마나 유지되는지는 **61.1% → 62.8%** — 기본 Pro끼리 보면 차이가 크지 않음
 - 국내 256GB 시작가는 **199만 원** — 지금 쓰는 게임이 새 GPU를 활용하는지 먼저 확인하고 싶음 ([Apple](https://www.apple.com/kr/shop/buy-iphone/iphone-18-pro))
 
-![아이폰 18 Pro 게임 중 열 확산의 개념적인 손그림](/images/posts/it-devices/iphone-18-pro-thermal-notebook.webp)
-
-*열이 퍼지는 방식을 그린 개념 그림이며 실제 내부 사진은 아님*
+*대표 스케치 노트는 열이 퍼지는 방식을 그린 개념 그림이며 실제 내부 사진은 아님*
 
 ## 칩은 빨라졌는데, 게임도 그럴까
 

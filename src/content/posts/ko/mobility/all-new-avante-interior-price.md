@@ -43,6 +43,10 @@ lang: ko
 - 뒷좌석 다리 공간은 **964 → 993mm**, 머리 공간은 **940 → 958mm** — 시트 등받이를 얇게 만든 것도 도움이 됐음 ([테크 데이](https://www.hyundaimotorgroup.com/ko/story/the-all-new-avante-tech-day))
 - 공조·비상등 버튼을 남긴 건 마음에 듦 — 다만 화면 메뉴나 버튼 위치는 사진만으로 판단하기 어려움
 
+![물리 공조 버튼과 화면 메뉴를 대비한 실내 조작 개념 스케치](/images/posts/mobility/all-new-avante-controls-notebook.webp)
+
+*실제 아반떼의 버튼 위치나 메뉴 화면을 재현한 그림은 아님*
+
 ![현대차 공개 자료 기반 아반떼 뒷좌석 공간 변화](/images/posts/mobility/all-new-avante-rear-space.webp)
 
 ## 커뮤니티 반응
