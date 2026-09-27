@@ -18,7 +18,7 @@ test('Q&A must remain last and answers cannot be missing', () => {
  assert.ok(changed(p => p.body += '\n## Extra\n').some(e => e.includes('final H2')));
  assert.ok(changed(p => p.body = p.body.replace(/^  - .+$/gm, '')).some(e => e.includes('nested answer')));
 });
-test('fenced sample headings and bullets are ignored', () => assert.deepEqual(changed(p => p.body = p.body.replace('## 토큰값', '```text\n## Fake\n- Example.\n```\n\n## 토큰값')), []));
+test('fenced sample headings and bullets are ignored', () => assert.deepEqual(changed(p => p.body = p.body.replace('## 가격표는', '```text\n## Fake\n- Example.\n```\n\n## 가격표는')), []));
 test('periods fail in prose, decimals do not', () => assert.ok(changed(p => p.body = p.body + '\n- Invalid trailing period.\n').some(e => e.includes('period'))));
 
 test('rendered emphasis leakage fails while code samples are allowed', () => {
