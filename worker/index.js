@@ -205,11 +205,14 @@ async function comments(request, env, url) {
   }
   if (request.method === 'DELETE') {
     const id = Number(payload.id);
-    const row = Number.isInteger(id) ? await env.DB.prepare('SELECT id, parent_id, password_hash, password_salt, deleted FROM comments WHERE id = ?').bind(id).first() : null;
+    const row = Number.isInteger(id) ? await env.DB.prepare('SELECT id, parent_id, nickname, password_hash, password_salt, deleted FROM comments WHERE id = ?').bind(id).first() : null;
     if (!row || row.deleted) return commentError('not_found', 404);
     if (!admin) {
+      // Deletion needs both the nickname and the password used when posting.
+      const nickname = String(payload.nickname || '').normalize('NFC').trim().replace(/\s+/g, ' ');
       const password = String(payload.password || '');
-      if (!password || password.length > 64 || !sameString(await hashPassword(password, fromBase64(row.password_salt)), row.password_hash)) return commentError('wrong_password', 403);
+      const passwordOk = password && password.length <= 64 && sameString(await hashPassword(password, fromBase64(row.password_salt)), row.password_hash);
+      if (!passwordOk || nickname !== row.nickname) return commentError('wrong_credentials', 403);
     }
     const replies = row.parent_id === null ? await env.DB.prepare('SELECT COUNT(*) AS n FROM comments WHERE parent_id = ?').bind(id).first() : { n: 0 };
     if (replies.n) await env.DB.prepare("UPDATE comments SET deleted = 1, body = '', mention = NULL WHERE id = ?").bind(id).run();
@@ -331,11 +334,46 @@ async function images(request, env, url) {
   return new Response(request.method === 'HEAD' ? null : object.body, { headers });
 }
 
-async function api(request, env, url) {
+// IndexNow: tell Naver, Bing and other participating engines about new or changed URLs.
+const indexNowKey = 'ec644d7e01fcc3492c6211c1805fd628';
+const indexNowEndpoints = ['https://api.indexnow.org/indexnow', 'https://searchadvisor.naver.com/indexnow'];
+
+async function submitIndexNow(urls) {
+  const urlList = [...new Set(urls)].filter((u) => u.startsWith(`${origin}/`)).slice(0, 10000);
+  if (!urlList.length) return [];
+  const body = JSON.stringify({ host: new URL(origin).host, key: indexNowKey, keyLocation: `${origin}/${indexNowKey}.txt`, urlList });
+  return Promise.all(indexNowEndpoints.map((endpoint) => fetch(endpoint, { method: 'POST', headers: { 'Content-Type': 'application/json; charset=utf-8' }, body })
+    .then((response) => ({ endpoint, status: response.status }))
+    .catch((error) => ({ endpoint, error: String(error) }))));
+}
+
+async function sitemapUrls(env, sinceMs) {
+  const sitemap = await env.ASSETS.fetch(new Request(`${origin}/sitemap-0.xml`)).then((response) => (response.ok ? response.text() : '')).catch(() => '');
+  const urls = [...sitemap.matchAll(/<url><loc>([^<]+)<\/loc>(?:<lastmod>([^<]+)<\/lastmod>)?/g)]
+    .filter(([, , lastmod]) => sinceMs == null || (lastmod && Date.parse(lastmod) >= sinceMs)).map(([, loc]) => loc);
+  const { results } = sinceMs == null
+    ? await env.DB.prepare('SELECT lang, slug FROM posts').all()
+    : await env.DB.prepare('SELECT lang, slug FROM posts WHERE updated_at >= ?').bind(new Date(sinceMs).toISOString()).all();
+  return [...urls, ...results.map(urlFor)];
+}
+
+async function submitRecentlyChanged(env) {
+  if (env.DB) await ensureSchema(env.DB);
+  const results = await submitIndexNow(await sitemapUrls(env, Date.now() - 26 * 3600000));
+  console.log('IndexNow daily submission', JSON.stringify(results));
+}
+
+async function api(request, env, url, ctx) {
   if (url.pathname === '/api/images') return images(request, env, url);
   if (!env.DB) return json({ error: 'Database binding is unavailable' }, 503);
   if (url.pathname === '/api/comments') return comments(request, env, url);
   if (url.pathname === '/api/views') return views(request, env, url);
+  if (url.pathname === '/api/indexnow' && request.method === 'POST') {
+    if (!authorized(request, env.PUBLISH_TOKEN)) return json({ error: 'Unauthorized' }, 401);
+    const payload = await readJson(request, 100000);
+    const urls = Array.isArray(payload?.urls) && payload.urls.length ? payload.urls.map(String) : await sitemapUrls(env, null);
+    return json({ submitted: urls.length, results: await submitIndexNow(urls) });
+  }
   if (url.pathname === '/api/posts' && request.method === 'GET') {
     const lang = url.searchParams.get('lang') || 'ko';
     if (!['ko', 'en'].includes(lang)) return json({ error: 'Invalid language' }, 400);
@@ -387,6 +425,7 @@ async function api(request, env, url) {
       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       ON CONFLICT(lang, slug) DO UPDATE SET category=excluded.category, title=excluded.title, description=excluded.description, body=excluded.body, image_url=excluded.image_url, image_alt=excluded.image_alt, tags=excluded.tags, updated_at=excluded.updated_at`)
       .bind(post.lang, post.slug, post.category, post.title, post.description, post.body, post.imageUrl || null, post.imageAlt || null, JSON.stringify(post.tags), post.publishedAt, post.updatedAt).run();
+    ctx?.waitUntil(submitIndexNow([urlFor(post)]));
     return json({ url: pathFor(post), publishedAt: post.publishedAt, updatedAt: post.updatedAt }, current ? 200 : 201);
   }
   if (url.pathname === '/api/posts' && request.method === 'DELETE') {
@@ -395,6 +434,7 @@ async function api(request, env, url) {
     const slug = url.searchParams.get('slug');
     if (!['ko', 'en'].includes(lang) || !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug || '')) return json({ error: 'Invalid language or slug' }, 400);
     const result = await env.DB.prepare('DELETE FROM posts WHERE lang = ? AND slug = ?').bind(lang, slug).run();
+    if (result.meta.changes > 0) ctx?.waitUntil(submitIndexNow([urlFor({ lang, slug })]));
     return json({ deleted: result.meta.changes > 0 });
   }
   return json({ error: 'Not found' }, 404);
@@ -547,17 +587,20 @@ function withSecurityHeaders(response) {
 }
 
 export default {
-  async fetch(request, env) {
-    return withSecurityHeaders(await handle(request, env));
+  async fetch(request, env, ctx) {
+    return withSecurityHeaders(await handle(request, env, ctx));
+  },
+  async scheduled(event, env, ctx) {
+    ctx.waitUntil(submitRecentlyChanged(env));
   },
 };
 
-async function handle(request, env) {
+async function handle(request, env, ctx) {
     const url = new URL(request.url);
     try {
       if (env.DB) await ensureSchema(env.DB);
       if (url.pathname.startsWith('/media/')) return images(request, env, url);
-      if (url.pathname.startsWith('/api/')) return api(request, env, url);
+      if (url.pathname.startsWith('/api/')) return api(request, env, url, ctx);
       if (request.method !== 'GET' && request.method !== 'HEAD') return new Response('Method not allowed', { status: 405 });
       if (!env.DB) return env.ASSETS.fetch(request);
       if (url.pathname === '/dynamic-sitemap.xml') return dynamicSitemap(env);

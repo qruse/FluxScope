@@ -56,7 +56,7 @@ curl -X POST 'https://fluxscope.coolwin200.workers.dev/api/images' \
 
 - 조회: `GET /api/comments?page=/it-devices/<slug>/` (글 페이지 경로 기준, 한·영 별도)
 - 작성: `POST /api/comments` — `page`, `nickname`, `password`, `body`(1~1,000자), 답글이면 `parentId`(원 댓글)와 `replyToId`(답하는 댓글)
-- 삭제: `DELETE /api/comments` — `{ "id": 1, "password": "..." }`. 운영자는 `Authorization: Bearer <PUBLISH_TOKEN>`으로 비밀번호 없이 삭제할 수 있고, `HSL` 같은 운영자 닉네임도 이 토큰으로만 쓸 수 있습니다
+- 삭제: `DELETE /api/comments` — `{ "id": 1, "nickname": "...", "password": "..." }`. 작성 때와 같은 닉네임과 비밀번호가 모두 맞아야 합니다. 운영자는 `Authorization: Bearer <PUBLISH_TOKEN>`으로 비밀번호 없이 삭제할 수 있고, `HSL` 같은 운영자 닉네임도 이 토큰으로만 쓸 수 있습니다
 - 답글이 달린 댓글을 지우면 "삭제된 댓글"로 남고, 답글이 모두 지워지면 함께 정리됩니다
 - 같은 IP에서 1분 3개, 하루 30개까지 작성할 수 있고, 봇만 채우는 숨은 입력칸이 있으면 거부합니다. 테이블은 Worker 첫 요청 때 자동 생성되며 `migrations/0002_comments.sql`과 같습니다
 
@@ -66,6 +66,14 @@ curl -X POST 'https://fluxscope.coolwin200.workers.dev/api/images' \
 - 개인정보처리방침: `/privacy/`, `/en/privacy/`. 댓글·통계의 수집 항목이나 보관 기간을 바꾸면 이 페이지와 시행일도 함께 고칩니다. 댓글 IP 해시는 30일 뒤 자동으로 지웁니다
 - 보안 헤더: 정적 파일은 `public/_headers`, Worker 응답은 `worker/index.js`의 `securityHeaders`가 같은 값을 붙입니다. 외부 스크립트·폰트·iframe을 추가하려면 두 곳의 CSP를 함께 넓혀야 합니다
 - 없는 주소는 `src/pages/404.astro`를 404 상태로 보여줍니다(설정 파일의 `not_found_handling`)
+
+## IndexNow
+
+글이 바뀌면 네이버·Bing 등 IndexNow 참여 검색엔진에 바로 알립니다. 키 파일은 `public/<키>.txt`, 같은 키가 `worker/index.js`의 `indexNowKey`에 있습니다(공개 값). 키를 바꾸면 두 곳을 함께 바꿉니다.
+
+- API 글: 게시·수정·삭제 직후 해당 URL을 `api.indexnow.org`와 `searchadvisor.naver.com/indexnow`에 전송합니다
+- 정적 글: Worker 크론(`wrangler.jsonc`의 `triggers.crons`, 매일 00:17 UTC)이 최근 26시간 안에 `lastmod`가 바뀐 사이트맵 URL과 API 글을 전송합니다
+- 수동 전송: `POST /api/indexnow`에 `Authorization: Bearer <PUBLISH_TOKEN>`. 본문 없이 보내면 전체 사이트맵과 API 글을, `{ "urls": [...] }`를 보내면 해당 URL만 전송합니다
 
 ## 품질 기준과 검증
 
