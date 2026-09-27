@@ -84,3 +84,10 @@
 
 ### Title/summary voice pass — 2026-09-27 KST
 - Korean title, description and 3-line summary rewritten in the same 음슴체 as the body; English title/description/TL;DR matched as short field notes. Facts, numbers and links unchanged; validator 0 errors, tests 10/10
+
+### Release — 2026-09-27 KST
+- User approved pushing to main: fast-forward 4336c8f..4773485 after `npm run check` passed. New Worker validator confirmed live at 06:31 UTC with a non-writing probe (invalid tags → 422 without the old community-link error)
+- Pre-edit backup: live rows matched the a13d5eb payloads (updated 03:14 UTC)
+- Published via `POST /api/posts` + `If-Match: update`: en 200 (updated 06:31:33Z), ko 200 (updated 06:31:34Z); publishedAt preserved
+- Live checks: both URLs 200 with new titles; 4 Hacker News reaction links and OpenAI pricing links render; published/updated dates shown; language-switch links present; no unrendered `**`; thumbnail and two body images 200 `image/webp`; post listed on `/`, `/ai/`, `/en/`, `/en/ai/` and in `/rss.xml` (single bilingual feed; `/en/rss.xml` does not exist by design); search finds both new titles
+- Not performed: 390px browser inspection
