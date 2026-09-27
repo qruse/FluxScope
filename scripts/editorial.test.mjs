@@ -11,8 +11,8 @@ test('old AI category and duplicate tags fail', () => {
  assert.ok(errors.some(e => e.includes('category'))); assert.ok(errors.some(e => e.includes('tags')));
 });
 test('repeated hero cannot satisfy the distinct-body-visual requirement', () => assert.ok(changed(p => p.body = p.body.replace('/images/posts/agi/gpt-6-api-prices.webp', p.imageUrl)).some(e => e.includes('distinct'))));
-test('community inline and reference links fail', () => {
- for (const link of ['[source](https://reddit.com/x)', '[source][r]']) assert.ok(changed(p => p.body = p.body.replace('## 커뮤니티 반응', `## 커뮤니티 반응\n\n- ${link}`)).some(e => e.includes('URLs/links')));
+test('community reactions may link their original sources', () => {
+ assert.deepEqual(changed(p => p.body = p.body.replace('## 커뮤니티 반응', '## 커뮤니티 반응\n\n- 한 사용자의 보고 ([Hacker News](https://news.ycombinator.com/item?id=1))')), []);
 });
 test('Q&A must remain last and answers cannot be missing', () => {
  assert.ok(changed(p => p.body += '\n## Extra\n').some(e => e.includes('final H2')));

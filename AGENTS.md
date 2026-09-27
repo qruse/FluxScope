@@ -73,7 +73,7 @@ Korean is primarily short bullets with natural 반말/음슴체. One point per b
 3. `## 커뮤니티 반응` / `## Community Reactions`
    - Immediately before Q&A; normally 2–4 concise reactions
    - Include when meaningful verified reactions exist; differing views when the sources actually contain them, never invent artificial balance
-   - **No links in this section**. Store exact source URLs and checked paraphrases in the internal review record
+   - **Link each reaction to the original post or comment** at the end of its bullet, e.g. `([Hacker News](https://news.ycombinator.com/item?id=…))`. Link only sources actually read; also record the exact URL and checked paraphrase in the review record
    - Omit only after a genuine search finds no usable reactions; record queries, date and reason internally
 4. Final H2: `## Q&A 또 궁금한 것은?` / `## Q&A (Field Notes)`
    - 3–5 real reader questions, each followed by a concise nested answer

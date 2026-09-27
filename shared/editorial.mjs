@@ -36,8 +36,6 @@ export function validateEditorial(post) {
   const ci = headings.findIndex(h => h[1] === community);
   if (ci >= 0) {
     add(ci === headings.length - 2 && headings.filter(h => h[1] === community).length === 1, 'community must occur once, immediately before Q&A');
-    const section = prose.slice(headings[ci].index + headings[ci][0].length, headings[ci + 1]?.index ?? prose.length);
-    add(!/https?:\/\/|\[[^\]]+\]\s*(?:\(|\[)|<a\b/i.test(section), 'keep community URLs/links in the internal source record, not the published section');
   }
   const qi = headings.find(h => h[1] === qa);
   const qbody = qi ? prose.slice(qi.index + qi[0].length) : '';

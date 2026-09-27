@@ -47,3 +47,37 @@
 - Published via authenticated `POST /api/posts` with `If-Match: update`: en 200 (updated 2026-09-27T03:14:56Z), ko 200 (updated 2026-09-27T03:14:57Z); original publishedAt preserved
 - Live checks: both article URLs 200 with the new sentence, published and updated dates shown, language-switch links present, thumbnail and two body images 200 `image/webp`, `/ai/` and `/en/ai/` listings include the post, search finds the new English wording
 - Not performed: 390px browser inspection (text-only change)
+
+## Full text rewrite with linked community reactions — 2026-09-27 KST
+- Scope: title, description, tags and entire body rewritten from re-checked sources in both languages; slug, category, publishedAt, thumbnail, body images and visualTypes unchanged
+- Rule change requested by the user: community reactions now link their original sources in the published section (AGENTS.md §5, README, validator, regression test updated)
+- Reader question: do Luna/Sol's low token rates actually lower the cost of accepted work compared with Opus 5.5?
+- Conclusion: rates are verified, but cached input, tier fine print and tokens per task decide the bill; measure API cost per accepted task and review minutes separately
+- User experience: unchanged, the user's supplied impression only (Sol/Luna good value; Opus 5.5 finished output strong). No success rate or task-specific claim added
+
+### Claim ledger
+| Claim | Kind | Source and location | Checked qualification |
+| --- | --- | --- | --- |
+| Luna $0.10 in / $0.01 cached / $0.50 out; Sol $2 / $0.20 / $10 | Official rate | https://developers.openai.com/api/docs/pricing — Flagship models, Standard, Short context | openai.com announcement returned 403 from this environment; the official pricing page was used instead |
+| Long context: Sol $4/$15, Luna $0.20/$0.75; Batch and Flex half of standard | Official rate | Same page, Long context columns and Batch/Flex tables | Long-context threshold for GPT-6 not stated on the page, so none is claimed |
+| GPT-5.6 Sol $4/$20, GPT-5.6 Luna $0.20/$1.20 | Official rate | Same page, All models Standard table | Luna output cut (1.20−0.50)/1.20 = 58.3% → "58%" |
+| Opus 5.5 $4/$20, cache reads $0.20, Fast mode $8/$40 | Official rate | https://www.anthropic.com/claude-opus-5-5/ — Pricing table and Fast mode paragraph | Not cache-write or batch |
+| Cache reads are the majority of agentic/coding costs; 40% cheaper than Opus 5 on typical workloads at default settings | Maker claim | Same Anthropic page, pricing paragraph | Attributed to Anthropic's tests |
+| $0.225 / $4.50 / $9.00 | Our calculation | Formula shown in article | 1m input + 250k output aggregate, uncached, standard tier |
+| Routing table and five-step procedure | Editorial proposal | Price plus checkability | Labelled as a proposal, not a measured ranking |
+
+### Community evidence (read in full via the Hacker News API on 2026-09-27)
+| Published paraphrase | Exact URL | Context and limits |
+| --- | --- | --- |
+| Luna 6 used more tokens than 5.6 for the same result; savings wiped out | https://news.ycombinator.com/item?id=49856057 | One team's internal cybersecurity evals; no public data |
+| 30/36 (GPT-6 Luna) vs 33/36 (GPT-5.6 Luna); suite tuned for 5.6; kept 5.6 | https://news.ycombinator.com/item?id=49814239 | One app's 36 agent+tool scenarios |
+| Astra plans, Luna codes, Sol reviews/tests; ~20% more usage-efficient and ~20% faster | https://news.ycombinator.com/item?id=49806361 | Self-reported, one setup in Codex |
+| Artificial Analysis index cost-to-run higher than previous Opus | https://news.ycombinator.com/item?id=49805082 | Commenter's reading of a third-party index; attributed as such |
+- Previous Reddit reactions were dropped: reddit.com and old.reddit.com now return a login wall/403 to this environment, so they could not be re-read. Search snippets were not used as evidence
+
+### Images
+- Unchanged; all three viewed again against the new text: thumbnail (Luna $0.50, Sol $10, Opus 5.5 $20 output; retry/review/checks), rate chart (input/output rates match the table), acceptance pipeline (matches the five-step procedure)
+
+### Checks
+- Shared validator and rendered-emphasis check: 0 errors for both payloads; regression tests 10/10
+- Live API before the Worker redeploy: en POST returned 422 with only the old community-link rule; nothing was written. Publication waits for the validator change to reach production
