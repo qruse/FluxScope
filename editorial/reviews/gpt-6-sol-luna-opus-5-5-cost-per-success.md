@@ -40,3 +40,10 @@
 - Images: AI 3 (sketch/chart/pipeline), iPhone 3 (sketch/chart/chart), Avante 4 (sketch/3 charts). All factual plots produced by code, not generation
 - API price evidence unchanged: standard uncached USD rates. Pipeline is an editorial operating proposal; it does not claim measured superiority. Review minutes remain separate from dollars
 - Final checks: 10 regression tests and full build passed; six bilingual live articles and ten unique images verified; desktop browser checked. 390px browser/real-device inspection not performed (viewport control unavailable in current browser interface)
+
+## API wording alignment — 2026-09-27 KST
+- Change: retry/billing caveat bullet in the price section aligned across languages. Korean previously stated as certain ("길어지고 … 달라짐") what English qualified with "can"; both now say retries can lengthen context and output, caching and tool use can change the bill. No numbers, sources, images or conclusions changed
+- Pre-edit backup: live D1 rows read before writing; body, title and dates matched the previous Git payloads (commit 4336c8f), which serve as the restore copy
+- Published via authenticated `POST /api/posts` with `If-Match: update`: en 200 (updated 2026-09-27T03:14:56Z), ko 200 (updated 2026-09-27T03:14:57Z); original publishedAt preserved
+- Live checks: both article URLs 200 with the new sentence, published and updated dates shown, language-switch links present, thumbnail and two body images 200 `image/webp`, `/ai/` and `/en/ai/` listings include the post, search finds the new English wording
+- Not performed: 390px browser inspection (text-only change)
