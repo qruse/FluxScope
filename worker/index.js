@@ -336,7 +336,7 @@ async function images(request, env, url) {
 
 // IndexNow: tell Naver, Bing and other participating engines about new or changed URLs.
 const indexNowKey = 'ec644d7e01fcc3492c6211c1805fd628';
-const indexNowEndpoints = ['https://api.indexnow.org/indexnow', 'https://searchadvisor.naver.com/indexnow'];
+const indexNowEndpoints = ['https://api.indexnow.org/indexnow', 'https://www.bing.com/indexnow', 'https://searchadvisor.naver.com/indexnow'];
 
 async function submitIndexNow(urls) {
   const urlList = [...new Set(urls)].filter((u) => u.startsWith(`${origin}/`)).slice(0, 10000);

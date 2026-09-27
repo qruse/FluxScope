@@ -71,7 +71,7 @@ curl -X POST 'https://fluxscope.coolwin200.workers.dev/api/images' \
 
 글이 바뀌면 네이버·Bing 등 IndexNow 참여 검색엔진에 바로 알립니다. 키 파일은 `public/<키>.txt`, 같은 키가 `worker/index.js`의 `indexNowKey`에 있습니다(공개 값). 키를 바꾸면 두 곳을 함께 바꿉니다.
 
-- API 글: 게시·수정·삭제 직후 해당 URL을 `api.indexnow.org`와 `searchadvisor.naver.com/indexnow`에 전송합니다
+- API 글: 게시·수정·삭제 직후 해당 URL을 `api.indexnow.org`, `www.bing.com/indexnow`, `searchadvisor.naver.com/indexnow`에 전송합니다(한 곳이 요청 제한으로 거절해도 전달되도록)
 - 정적 글: Worker 크론(`wrangler.jsonc`의 `triggers.crons`, 매일 00:17 UTC)이 최근 26시간 안에 `lastmod`가 바뀐 사이트맵 URL과 API 글을 전송합니다
 - 수동 전송: `POST /api/indexnow`에 `Authorization: Bearer <PUBLISH_TOKEN>`. 본문 없이 보내면 전체 사이트맵과 API 글을, `{ "urls": [...] }`를 보내면 해당 URL만 전송합니다
 
