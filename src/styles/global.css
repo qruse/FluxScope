@@ -683,3 +683,43 @@ html[data-theme="dark"] .astro-code span {
 
 /* Standalone source and price notes remain readable but secondary. */
 .article-body > p > em:only-child { display: block; font-size: .82em; line-height: 1.6; color: var(--text-muted, #64748b); }
+
+/* Guest comments */
+.comments { padding: 2.2rem 0 4rem; border-top: 1px solid var(--line); }
+.comments-title { display: flex; align-items: baseline; gap: .5rem; margin: 0 0 .35rem; font-size: 1.3rem; }
+.comments-count { color: var(--accent); font-size: 1rem; }
+.comments-note, .comments-empty { margin: 0 0 1rem; color: var(--muted); font-size: .85rem; }
+.comment-form { display: grid; gap: .55rem; margin-bottom: 1.6rem; }
+.comment-fields { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .55rem; }
+.comment-form input, .comment-form textarea, .comment-delete input { width: 100%; box-sizing: border-box; padding: .6rem .7rem; border: 1px solid var(--line); border-radius: 4px; background: var(--surface); color: var(--ink); font: inherit; font-size: .92rem; }
+.comment-form textarea { resize: vertical; min-height: 5.5rem; }
+.comment-form input:focus-visible, .comment-form textarea:focus-visible, .comment-delete input:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+.comment-actions { display: flex; justify-content: flex-end; gap: .75rem; align-items: center; }
+.comment-submit { padding: .55rem 1.2rem; border: 0; border-radius: 4px; background: var(--ink); color: var(--bg); font: inherit; font-size: .85rem; font-weight: 750; cursor: pointer; }
+.comment-submit:disabled { opacity: .6; cursor: wait; }
+.comment-trap { position: absolute !important; left: -9999px; width: 1px; height: 1px; opacity: 0; }
+.comment-status { margin: 0; min-height: 1.2em; color: var(--accent); font-size: .82rem; }
+.comment-list, .comment-replies { list-style: none; margin: 0; padding: 0; }
+.comment { padding: 1rem 0; border-top: 1px solid var(--line); }
+.comment-replies { margin-top: .6rem; padding-left: 1.1rem; border-left: 2px solid var(--soft); }
+.comment-child { padding: .75rem 0; border-top: 0; }
+.comment-child + .comment-child { border-top: 1px dashed var(--line); }
+.comment-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: .6rem; }
+.comment-author { font-size: .92rem; }
+.comment-head time { color: var(--muted); font-size: .76rem; }
+.comment-body { margin: .35rem 0 .4rem; white-space: pre-wrap; overflow-wrap: anywhere; font-size: .95rem; }
+.comment-mention { color: var(--accent); font-weight: 750; }
+.comment-replying { margin: 0; font-size: .85rem; }
+.comment-tools { display: flex; gap: .8rem; }
+.comment-link { padding: 0; border: 0; background: none; color: var(--muted); font: inherit; font-size: .78rem; font-weight: 700; cursor: pointer; }
+.comment-link:hover { color: var(--accent); }
+.comment-danger { color: var(--accent); }
+.comment-removed { margin: 0; color: var(--muted); font-size: .88rem; font-style: italic; }
+.comment-thread .comment-form-reply { margin: .8rem 0 0 1.1rem; }
+.comment-delete { display: flex; flex-wrap: wrap; align-items: center; gap: .6rem; margin-top: .6rem; }
+.comment-delete input { width: auto; flex: 1 1 12rem; }
+.comment-delete .comment-status { flex-basis: 100%; }
+@media (max-width: 560px) {
+  .comment-fields { grid-template-columns: 1fr; }
+  .comment-replies, .comment-thread .comment-form-reply { padding-left: .7rem; margin-left: 0; }
+}

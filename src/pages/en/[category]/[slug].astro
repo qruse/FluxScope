@@ -54,5 +54,7 @@ const jsonLd = [
     <div class="article-body article-shell"><Content /></div>
     <div class="article-end article-shell"><div class="tag-list">{post.data.tags.map((tag) => <a href={tagPath(tag, 'en')}>#{tag}</a>)}</div></div>
   </article>
+  <section class="comments article-shell" id="comments" data-comments data-lang="en" data-page={postPath(post)}></section>
+  <script is:inline src={withBase('/comments.js')} defer></script>
   {related.length > 0 && <section class="related"><div class="shell"><div class="section-head"><div><div class="section-kicker">Keep exploring</div><h2>Related reading</h2></div></div><div class="post-grid">{related.map((item) => <PostCard post={item} />)}</div></div></section>}
 </BaseLayout>

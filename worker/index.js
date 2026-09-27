@@ -80,12 +80,140 @@ function ensureSchema(db) {
       published_at TEXT NOT NULL,
       updated_at TEXT NOT NULL,
       PRIMARY KEY (lang, slug)
-    )`).run().then(() => db.prepare('CREATE INDEX IF NOT EXISTS posts_published ON posts(lang, published_at DESC)').run()).catch((error) => {
+    )`).run().then(() => db.prepare('CREATE INDEX IF NOT EXISTS posts_published ON posts(lang, published_at DESC)').run())
+      .then(() => db.batch(commentSchema.map((sql) => db.prepare(sql)))).catch((error) => {
       schemaReady = undefined;
       throw error;
     });
   }
   return schemaReady;
+}
+
+const commentSchema = [
+  `CREATE TABLE IF NOT EXISTS comments (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    page TEXT NOT NULL,
+    parent_id INTEGER REFERENCES comments(id),
+    nickname TEXT NOT NULL,
+    mention TEXT,
+    body TEXT NOT NULL,
+    password_hash TEXT NOT NULL,
+    password_salt TEXT NOT NULL,
+    ip_hash TEXT NOT NULL,
+    deleted INTEGER NOT NULL DEFAULT 0,
+    created_at TEXT NOT NULL
+  )`,
+  'CREATE INDEX IF NOT EXISTS comments_page ON comments(page, id)',
+  'CREATE INDEX IF NOT EXISTS comments_ip ON comments(ip_hash, created_at)',
+];
+
+// Guest comments: nickname + password per comment, one reply level, @mention of the replied-to nickname.
+const commentPage = /^\/(en\/)?(?:(posts)|ai|mobility|it-devices)\/([a-z0-9]+(?:-[a-z0-9]+)*)\/$/;
+const reservedNicknames = /^(?:hsl|admin|administrator|관리자|운영자)$/i;
+const commentError = (code, status) => json({ error: code }, status);
+const toBase64 = (buffer) => btoa(String.fromCharCode(...new Uint8Array(buffer)));
+const fromBase64 = (value) => Uint8Array.from(atob(value), (c) => c.charCodeAt(0));
+
+async function hashPassword(password, salt) {
+  const key = await crypto.subtle.importKey('raw', new TextEncoder().encode(password), 'PBKDF2', false, ['deriveBits']);
+  return toBase64(await crypto.subtle.deriveBits({ name: 'PBKDF2', hash: 'SHA-256', salt, iterations: 100000 }, key, 256));
+}
+
+function sameString(a, b) {
+  let mismatch = a.length ^ b.length;
+  for (let i = 0; i < Math.max(a.length, b.length); i++) mismatch |= (a.charCodeAt(i) || 0) ^ (b.charCodeAt(i) || 0);
+  return mismatch === 0;
+}
+
+async function readJson(request, limit) {
+  if (Number(request.headers.get('Content-Length')) > limit) return null;
+  try {
+    const text = await request.text();
+    return text.length > limit ? null : JSON.parse(text);
+  } catch { return null; }
+}
+
+async function commentPageExists(env, request, page) {
+  const match = page.match(commentPage);
+  if (!match) return false;
+  if (match[2]) return Boolean(await env.DB.prepare('SELECT 1 FROM posts WHERE lang = ? AND slug = ?').bind(match[1] ? 'en' : 'ko', match[3]).first());
+  const asset = await env.ASSETS.fetch(new Request(new URL(page, request.url)));
+  return asset.ok;
+}
+
+const rowToComment = (row) => ({
+  id: row.id, parentId: row.parent_id, createdAt: row.created_at, deleted: Boolean(row.deleted),
+  nickname: row.deleted ? '' : row.nickname, mention: row.deleted ? null : row.mention, body: row.deleted ? '' : row.body,
+});
+
+async function comments(request, env, url) {
+  if (request.method === 'GET') {
+    const page = url.searchParams.get('page') || '';
+    if (!commentPage.test(page)) return commentError('invalid_page', 400);
+    const { results } = await env.DB.prepare('SELECT id, parent_id, nickname, mention, body, deleted, created_at FROM comments WHERE page = ? ORDER BY id LIMIT 1000').bind(page).all();
+    return json({ comments: results.map(rowToComment) });
+  }
+  const admin = authorized(request, env.PUBLISH_TOKEN);
+  const payload = await readJson(request, 8000);
+  if (!payload || typeof payload !== 'object') return commentError('invalid_request', 400);
+  if (request.method === 'POST') {
+    if (payload.website) return commentError('invalid_request', 400);
+    const page = String(payload.page || '');
+    const nickname = String(payload.nickname || '').normalize('NFC').trim().replace(/\s+/g, ' ');
+    const password = String(payload.password || '');
+    const body = String(payload.body || '').normalize('NFC').replace(/\r\n?/g, '\n').replace(/[\u0000-\u0008\u000b-\u001f\u007f]/g, '').replace(/\n{3,}/g, '\n\n').trim();
+    if (!commentPage.test(page)) return commentError('invalid_page', 400);
+    if ([...nickname].length < 2 || [...nickname].length > 20 || /[\u0000-\u001f\u007f<>@]/.test(nickname)) return commentError('invalid_nickname', 400);
+    if (!admin && reservedNicknames.test(nickname)) return commentError('reserved_nickname', 400);
+    if (password.length < 4 || password.length > 64) return commentError('invalid_password', 400);
+    if (!body || [...body].length > 1000) return commentError('invalid_body', 400);
+    const ip = request.headers.get('CF-Connecting-IP') || 'unknown';
+    const ipHash = toBase64(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(`fluxscope-comments:${ip}`))).slice(0, 24);
+    const now = Date.now();
+    const recent = await env.DB.prepare('SELECT SUM(created_at > ?) AS minute, COUNT(*) AS day FROM comments WHERE ip_hash = ? AND created_at > ?')
+      .bind(new Date(now - 60000).toISOString(), ipHash, new Date(now - 86400000).toISOString()).first();
+    if (!admin && ((recent?.minute || 0) >= 3 || (recent?.day || 0) >= 30)) return commentError('rate_limited', 429);
+    let parentId = null;
+    let mention = null;
+    if (payload.parentId != null) {
+      parentId = Number(payload.parentId);
+      const parent = await env.DB.prepare('SELECT id, parent_id, nickname, deleted, page FROM comments WHERE id = ?').bind(parentId).first();
+      if (!parent || parent.page !== page || parent.parent_id !== null) return commentError('invalid_parent', 400);
+      const replyToId = payload.replyToId == null ? parentId : Number(payload.replyToId);
+      if (replyToId === parentId) {
+        if (parent.deleted) return commentError('invalid_parent', 400);
+        mention = parent.nickname;
+      } else {
+        const target = await env.DB.prepare('SELECT nickname, parent_id, deleted FROM comments WHERE id = ?').bind(replyToId).first();
+        if (!target || target.parent_id !== parentId || target.deleted) return commentError('invalid_parent', 400);
+        mention = target.nickname;
+      }
+    }
+    if (!(await commentPageExists(env, request, page))) return commentError('page_not_found', 404);
+    const salt = crypto.getRandomValues(new Uint8Array(16));
+    const createdAt = new Date(now).toISOString();
+    const result = await env.DB.prepare('INSERT INTO comments (page, parent_id, nickname, mention, body, password_hash, password_salt, ip_hash, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)')
+      .bind(page, parentId, nickname, mention, body, await hashPassword(password, salt), toBase64(salt), ipHash, createdAt).run();
+    return json({ comment: rowToComment({ id: result.meta.last_row_id, parent_id: parentId, nickname, mention, body, deleted: 0, created_at: createdAt }) }, 201);
+  }
+  if (request.method === 'DELETE') {
+    const id = Number(payload.id);
+    const row = Number.isInteger(id) ? await env.DB.prepare('SELECT id, parent_id, password_hash, password_salt, deleted FROM comments WHERE id = ?').bind(id).first() : null;
+    if (!row || row.deleted) return commentError('not_found', 404);
+    if (!admin) {
+      const password = String(payload.password || '');
+      if (!password || password.length > 64 || !sameString(await hashPassword(password, fromBase64(row.password_salt)), row.password_hash)) return commentError('wrong_password', 403);
+    }
+    const replies = row.parent_id === null ? await env.DB.prepare('SELECT COUNT(*) AS n FROM comments WHERE parent_id = ?').bind(id).first() : { n: 0 };
+    if (replies.n) await env.DB.prepare("UPDATE comments SET deleted = 1, body = '', mention = NULL WHERE id = ?").bind(id).run();
+    else await env.DB.prepare('DELETE FROM comments WHERE id = ?').bind(id).run();
+    if (row.parent_id !== null) {
+      // A removed root stays only as a placeholder while it still has replies.
+      await env.DB.prepare('DELETE FROM comments WHERE id = ? AND deleted = 1 AND NOT EXISTS (SELECT 1 FROM comments WHERE parent_id = ?)').bind(row.parent_id, row.parent_id).run();
+    }
+    return json({ deleted: true });
+  }
+  return commentError('method_not_allowed', 405);
 }
 
 function validText(value, max) { return typeof value === 'string' && value.trim().length > 0 && value.length <= max; }
@@ -173,6 +301,7 @@ async function images(request, env, url) {
 async function api(request, env, url) {
   if (url.pathname === '/api/images') return images(request, env, url);
   if (!env.DB) return json({ error: 'Database binding is unavailable' }, 503);
+  if (url.pathname === '/api/comments') return comments(request, env, url);
   if (url.pathname === '/api/posts' && request.method === 'GET') {
     const lang = url.searchParams.get('lang') || 'ko';
     if (!['ko', 'en'].includes(lang)) return json({ error: 'Invalid language' }, 400);
@@ -293,7 +422,7 @@ async function article(post, env, request) {
     },
   ];
   const head = `<meta property="article:published_time" content="${escape(post.published_at)}"><meta property="article:modified_time" content="${escape(post.updated_at)}"><script type="application/ld+json">${JSON.stringify(jsonLd).replace(/</g, '\\u003c')}</script>`;
-  const html = `<article><header class="article-header article-shell"><nav class="breadcrumbs" aria-label="Breadcrumb"><a href="${home}">${lang === 'ko' ? '홈' : 'Home'}</a><span>/</span><a href="${home}${escape(category)}/">${escape(categoryName)}</a><span>/</span><span aria-current="page">${lang === 'ko' ? '글' : 'Article'}</span></nav><h1>${escape(post.title)}</h1><p class="article-dek">${escape(post.description)}</p><div class="article-meta"><span>${lang === 'ko' ? '작성자' : 'By'}: <strong>HSL</strong></span><span>${lang === 'ko' ? '발행일' : 'Published'}: <time datetime="${escape(post.published_at)}">${escape(date)}</time></span><span>${lang === 'ko' ? '수정일' : 'Updated'}: <time datetime="${escape(post.updated_at)}">${escape(updatedDate)}</time></span></div></header>${post.image_url ? `<div class="article-shell"><img class="article-visual" src="${escape(post.image_url)}" alt="${escape(imageAlt)}" loading="eager" /></div>` : ''}<div class="article-body article-shell">${micromark(post.body, { extensions: [gfm()], htmlExtensions: [gfmHtml()] })}</div><div class="article-end article-shell"><div class="tag-list">${tags.map((tag) => `<span>#${escape(tag)}</span>`).join('')}</div></div></article>`;
+  const html = `<article><header class="article-header article-shell"><nav class="breadcrumbs" aria-label="Breadcrumb"><a href="${home}">${lang === 'ko' ? '홈' : 'Home'}</a><span>/</span><a href="${home}${escape(category)}/">${escape(categoryName)}</a><span>/</span><span aria-current="page">${lang === 'ko' ? '글' : 'Article'}</span></nav><h1>${escape(post.title)}</h1><p class="article-dek">${escape(post.description)}</p><div class="article-meta"><span>${lang === 'ko' ? '작성자' : 'By'}: <strong>HSL</strong></span><span>${lang === 'ko' ? '발행일' : 'Published'}: <time datetime="${escape(post.published_at)}">${escape(date)}</time></span><span>${lang === 'ko' ? '수정일' : 'Updated'}: <time datetime="${escape(post.updated_at)}">${escape(updatedDate)}</time></span></div></header>${post.image_url ? `<div class="article-shell"><img class="article-visual" src="${escape(post.image_url)}" alt="${escape(imageAlt)}" loading="eager" /></div>` : ''}<div class="article-body article-shell">${micromark(post.body, { extensions: [gfm()], htmlExtensions: [gfmHtml()] })}</div><div class="article-end article-shell"><div class="tag-list">${tags.map((tag) => `<span>#${escape(tag)}</span>`).join('')}</div></div></article><section class="comments article-shell" id="comments" data-comments data-lang="${lang}" data-page="${escape(pathFor(post))}"></section><script src="/comments.js" defer></script>`;
   const shell = await env.ASSETS.fetch(new Request(new URL(lang === 'ko' ? '/about/' : '/en/about/', request.url)));
   if (!shell.ok) return new Response('Template unavailable', { status: 503 });
   const alternateLang = lang === 'ko' ? 'en' : 'ko';

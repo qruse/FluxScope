@@ -50,6 +50,16 @@ curl -X POST 'https://fluxscope.coolwin200.workers.dev/api/images' \
 
 커뮤니티 반응은 실제 원문을 확인해 요약하고, 각 항목 끝에 해당 게시물·댓글 원문 링크를 답니다. 원문 URL과 확인 내용은 `editorial/reviews/<slug>.md`에도 기록합니다. 관련 이전 글은 독자에게 직접 도움이 되는 경우에만 같은 언어의 공개 URL로 자연스럽게 연결합니다.
 
+## 댓글
+
+모든 글 하단에 회원가입 없는 댓글창이 붙습니다. 작성자는 댓글마다 닉네임(2~20자)과 비밀번호(4~64자)를 입력하고, 비밀번호는 PBKDF2 해시로만 D1 `comments` 테이블에 저장됩니다. 답글은 한 단계까지 들여 쓰며, 답글을 달면 대상 댓글의 닉네임이 `@닉네임`으로 자동 태그됩니다. 태그는 서버가 원 댓글에서 가져오므로 위조할 수 없습니다.
+
+- 조회: `GET /api/comments?page=/it-devices/<slug>/` (글 페이지 경로 기준, 한·영 별도)
+- 작성: `POST /api/comments` — `page`, `nickname`, `password`, `body`(1~1,000자), 답글이면 `parentId`(원 댓글)와 `replyToId`(답하는 댓글)
+- 삭제: `DELETE /api/comments` — `{ "id": 1, "password": "..." }`. 운영자는 `Authorization: Bearer <PUBLISH_TOKEN>`으로 비밀번호 없이 삭제할 수 있고, `HSL` 같은 운영자 닉네임도 이 토큰으로만 쓸 수 있습니다
+- 답글이 달린 댓글을 지우면 "삭제된 댓글"로 남고, 답글이 모두 지워지면 함께 정리됩니다
+- 같은 IP에서 1분 3개, 하루 30개까지 작성할 수 있고, 봇만 채우는 숨은 입력칸이 있으면 거부합니다. 테이블은 Worker 첫 요청 때 자동 생성되며 `migrations/0002_comments.sql`과 같습니다
+
 ## 품질 기준과 검증
 
 - `AGENTS.md`: 단일 작성 규칙 (`GEMINI.md`는 이 문서만 참조)
