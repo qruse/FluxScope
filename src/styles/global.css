@@ -680,3 +680,6 @@ html[data-theme="dark"] .astro-code span {
   stroke-linecap: round;
   stroke-linejoin: round;
 }
+
+/* Standalone source and price notes remain readable but secondary. */
+.article-body > p > em:only-child { display: block; font-size: .82em; line-height: 1.6; color: var(--text-muted, #64748b); }

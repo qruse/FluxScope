@@ -29,7 +29,7 @@ curl -X POST 'https://fluxscope.coolwin200.workers.dev/api/posts' \
 
 게시 JSON을 처음부터 임의로 만들지 말고 `editorial/api-posts/`의 검수된 한영 샘플을 구조 참고용으로 읽습니다. 가격·후기·경험은 새 주제의 출처로 다시 확인해야 합니다. 작성·검수 기준은 `AGENTS.md`와 `editorial/QUALITY.md`가 기준입니다.
 
-필수 필드: `lang`, `slug`, `category`, `title`, `description`(50~180자), `body`, `tags`(서로 다른 소문자 kebab-case 5~15개), `imageUrl`, `imageAlt`. 대표 스케치와 별도의 본문 이미지, 정확히 세 항목인 요약, 마지막 Q&A가 필요합니다. 인증된 게시 요청도 구조 검사를 통과하지 못하면 `422`와 `details`를 반환합니다. 구조 검사는 사실관계를 보증하지 않으므로 출처 대조는 별도로 수행합니다.
+필수 필드: `lang`, `slug`, `category`, `title`, `description`(50~180자), `body`, `tags`(서로 다른 소문자 kebab-case 5~15개), `imageUrl`, `imageAlt`, `visualTypes`(썸네일부터 이미지 순서대로 `sketch/source/architecture/pipeline/chart`). 총 2~10장의 이미지, 정확히 한 장의 생성 스케치 썸네일과 별도의 본문 이미지, 정확히 세 항목인 요약, 마지막 Q&A가 필요합니다. 인증된 게시 요청도 구조 검사를 통과하지 못하면 `422`와 `details`를 반환합니다. 구조 검사는 사실관계를 보증하지 않으므로 출처 대조는 별도로 수행합니다.
 
 샘플 JSON은 Git에서 검수·보존하는 원고이며 D1과 자동 동기화되지 않습니다. 원고를 수정한 뒤 아래 API로 실제 게시하고 공개 URL에서 확인해야 합니다. 정적 글은 기존 Markdown을 수정하여 Git 배포하며, 같은 글을 API에 중복 생성하지 않습니다.
 
@@ -60,3 +60,5 @@ curl -X POST 'https://fluxscope.coolwin200.workers.dev/api/images' \
 - `npm run check`: 위 검사와 한영 짝 검사, Astro·검색·링크·성능 검사
 
 API는 언어별로 별도 요청합니다. 두 원고를 모두 검수한 뒤 게시하고, 두 번째 언어에 실패하면 재시도하거나 첫 번째를 원래 원고로 복구합니다. 두 언어가 모두 확인되기 전에는 발행 완료로 보고하지 않습니다.
+
+영어판을 기준으로 쓰고 한국어판을 함께 유지합니다. 냉소적이면서 유머러스한 문체가 기본이며, 이미지 내부 문구는 영어로 고정합니다. 가격은 미국 공식 USD 가격을 우선합니다. 없을 때만 한국 출시가를 달러로 환산하고 작은 주석에 기준을 남깁니다. 자세한 예외와 검수 절차는 AGENTS.md를 따릅니다.

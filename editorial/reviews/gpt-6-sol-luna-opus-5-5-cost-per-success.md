@@ -33,3 +33,9 @@
 - Visual assets: all existing reference sketches and charts viewed; numeric labels checked against the article; no chart regenerated
 - Production and browser verification: pending deployment; record the result in `editorial/release-2026-09-27.md`
 - Limits: automatic checks cover structure, not factual truth or image meaning; community accounts are anecdotes; full mobile viewport check remains a manual gate
+
+## Final voice/image/currency revision — 2026-09-27 KST
+- English master with natural Korean counterpart; cynical, humorous observations grounded in pricing, marketing and verification friction; no invented hands-on experience
+- Exactly one generated notebook thumbnail; approved information density preserved, slightly less polished lines/lettering; all image text English
+- Images: AI 3 (sketch/chart/pipeline), iPhone 3 (sketch/chart/chart), Avante 4 (sketch/3 charts). All factual plots produced by code, not generation
+- API price evidence unchanged: standard uncached USD rates. Pipeline is an editorial operating proposal; it does not claim measured superiority. Review minutes remain separate from dollars

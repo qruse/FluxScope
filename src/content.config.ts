@@ -13,6 +13,7 @@ const posts = defineCollection({
     category: z.enum(['ai', 'mobility', 'it-devices']),
     tags: z.array(z.string().min(2)).min(5).max(15),
     author: z.string().min(2),
+    visualTypes: z.array(z.enum(['source', 'sketch', 'architecture', 'pipeline', 'chart'])).min(2).max(10),
     image: z.object({
       src: z.string().startsWith('/'),
       width: z.number().int().positive(),

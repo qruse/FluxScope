@@ -49,5 +49,17 @@ export function validateEditorial(post) {
   add(bodyImages.some(m => m[2] !== imageUrl), 'include a distinct useful body image in addition to the sketch thumbnail');
   add(!bodyImages.some(m => m[2] === imageUrl), 'do not repeat the thumbnail in the body');
   add(bodyImages.every(m => m[1].trim().length >= 5), 'body images need descriptive alt text');
+  const urls = [imageUrl, ...bodyImages.map(m => m[2])];
+  add(urls.length >= 2 && urls.length <= 10, 'use 2–10 images including the thumbnail');
+  add(new Set(urls).size === urls.length, 'all image URLs must be distinct');
+  const types = post.visualTypes;
+  add(Array.isArray(types) && types.length === urls.length && types.every(t => ['source', 'sketch', 'architecture', 'pipeline', 'chart'].includes(t)), 'visualTypes must match all images in order using the five supported types');
+  add(Array.isArray(types) && types[0] === 'sketch' && types.filter(t => t === 'sketch').length === 1, 'use exactly one sketch, as the thumbnail');
+  add(!/<img\b|!\[[^\]]*\](?!\()/i.test(prose), 'use inline Markdown images, not HTML or reference-style images');
   return errors;
+}
+
+export function validateRendered(html) {
+  const prose = html.replace(/<(pre|code)\b[^>]*>[\s\S]*?<\/\1>/gi, '').replace(/<[^>]*>/g, '');
+  return /\*\*[^\n]*\*\*/.test(prose) ? ['unrendered ** emphasis markers remain; rewrite punctuation next to the closing marker'] : [];
 }

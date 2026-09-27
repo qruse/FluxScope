@@ -1,6 +1,8 @@
+import { micromark } from 'micromark';
+import { gfm, gfmHtml } from 'micromark-extension-gfm';
 import fs from 'node:fs';
 import path from 'node:path';
-import { validateEditorial } from '../shared/editorial.mjs';
+import { validateEditorial, validateRendered } from '../shared/editorial.mjs';
 
 const postsDir = path.resolve('src/content/posts');
 
@@ -93,7 +95,7 @@ function register(post, file) {
   if (group.has(post.lang)) errors.push(`${file}: duplicate language in ${key}`);
   group.set(post.lang, post);
   pairs.set(key, group);
-  errors.push(...validateEditorial(post).map(e => `${file}: ${e}`));
+  errors.push(...[...validateEditorial(post), ...validateRendered(micromark(post.body, { extensions: [gfm()], htmlExtensions: [gfmHtml()] }))].map(e => `${file}: ${e}`));
 }
 
 const PLACEHOLDER_TERMS = ['todo', 'lorem ipsum', '경험 코멘트', '경험 메모', 'placeholder', 'test comment'];
@@ -247,6 +249,7 @@ if (fs.existsSync(payloadDir)) {
 for (const [key, pair] of pairs) {
   if (!pair.has('ko') || !pair.has('en')) { errors.push(`${key}: both ko and en are required`); continue; }
   const ko = pair.get('ko'), en = pair.get('en');
+  if (JSON.stringify(ko.visualTypes) !== JSON.stringify(en.visualTypes)) errors.push(`${key}: bilingual visualTypes must agree`);
   if (JSON.stringify(ko.tags) !== JSON.stringify(en.tags)) errors.push(`${key}: bilingual tags must agree`);
   if ((ko.imageUrl || ko.image?.src) !== (en.imageUrl || en.image?.src)) errors.push(`${key}: bilingual thumbnails must agree`);
   if (String(ko.publishedAt).slice(0, 10) !== String(en.publishedAt).slice(0, 10)) errors.push(`${key}: bilingual publication dates must agree`);

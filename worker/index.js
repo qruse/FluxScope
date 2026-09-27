@@ -1,5 +1,5 @@
 import { micromark } from 'micromark';
-import { validateEditorial } from '../shared/editorial.mjs';
+import { validateEditorial, validateRendered } from '../shared/editorial.mjs';
 import { gfm, gfmHtml } from 'micromark-extension-gfm';
 
 const categories = new Set(['ai', 'mobility', 'it-devices']);
@@ -23,7 +23,7 @@ function listingCard(post, lang) {
   const category = normalizeCategory(post.category);
   const read = lang === 'ko' ? '글 읽기' : 'Read article';
   const image = post.image_url ? `<img class="card-visual" src="${escape(post.image_url)}" alt="${escape(post.image_alt || post.title)}" loading="lazy" decoding="async" />` : '';
-  const date = new Date(post.published_at).toLocaleDateString(lang === 'ko' ? 'ko-KR' : 'en-US', { year: 'numeric', month: 'long', day: 'numeric', timeZone: 'UTC' });
+  const date = new Date(post.published_at).toLocaleDateString(lang === 'ko' ? 'ko-KR' : 'en-US', { year: 'numeric', month: 'long', day: 'numeric', timeZone: 'Asia/Seoul' });
   return `<article class="post-card"><a class="card-link" href="${escape(pathFor(post))}" aria-label="${escape(`${read}: ${post.title}`)}"><div class="card-media">${image}</div><div class="card-copy"><div class="eyebrow"><span class="category-pip"></span>${escape(categoryNames[lang][category])}<span class="eyebrow-sep">/</span><time datetime="${escape(post.published_at)}">${escape(date)}</time></div><h3>${escape(post.title)}</h3><p>${escape(post.description)}</p><span class="read-link">${read} <span aria-hidden="true">↗</span></span></div></a></article>`;
 }
 
@@ -215,7 +215,7 @@ async function api(request, env, url) {
     } catch { return json({ error: 'Invalid JSON' }, 400); }
     const post = parsePost(payload);
     if (!post) return json({ error: 'Invalid post. Required: lang, slug, category, title, description, body.' }, 400);
-    const editorialErrors = validateEditorial(post);
+    const editorialErrors = [...validateEditorial(post), ...validateRendered(micromark(post.body, { extensions: [gfm()], htmlExtensions: [gfmHtml()] }))];
     if (editorialErrors.length) return json({ error: 'Editorial validation failed', details: editorialErrors }, 422);
     const current = await env.DB.prepare('SELECT published_at FROM posts WHERE lang = ? AND slug = ?').bind(post.lang, post.slug).first();
     if (current && request.headers.get('If-Match') !== 'update') return json({ error: 'Post exists. Set If-Match: update to replace it.' }, 409);
@@ -268,8 +268,8 @@ async function article(post, env, request) {
   const alternate = `${origin}${lang === 'ko' ? '/en' : ''}/posts/${post.slug}/`;
   const image = post.image_url ? (post.image_url.startsWith('/') ? `${origin}${post.image_url}` : post.image_url) : `${origin}/images/og-default.png`;
   const imageAlt = post.image_alt || post.title;
-  const date = new Date(post.published_at).toLocaleDateString(lang === 'ko' ? 'ko-KR' : 'en-US', { timeZone: 'UTC', year: 'numeric', month: 'long', day: 'numeric' });
-  const updatedDate = new Date(post.updated_at).toLocaleDateString(lang === 'ko' ? 'ko-KR' : 'en-US', { timeZone: 'UTC', year: 'numeric', month: 'long', day: 'numeric' });
+  const date = new Date(post.published_at).toLocaleDateString(lang === 'ko' ? 'ko-KR' : 'en-US', { timeZone: 'Asia/Seoul', year: 'numeric', month: 'long', day: 'numeric' });
+  const updatedDate = new Date(post.updated_at).toLocaleDateString(lang === 'ko' ? 'ko-KR' : 'en-US', { timeZone: 'Asia/Seoul', year: 'numeric', month: 'long', day: 'numeric' });
   const category = normalizeCategory(post.category);
   const categoryName = categoryNames[lang][category];
   const home = lang === 'ko' ? '/' : '/en/';

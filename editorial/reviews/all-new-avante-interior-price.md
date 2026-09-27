@@ -35,3 +35,11 @@
 - Visual assets: all existing reference sketches and charts viewed; numeric labels checked against the article; no chart regenerated
 - Production and browser verification: pending deployment; record the result in `editorial/release-2026-09-27.md`
 - Limits: automatic checks cover structure, not factual truth or image meaning; community accounts are anecdotes; full mobile viewport check remains a manual gate
+
+## Final voice/image/currency revision — 2026-09-27 KST
+- English master with natural Korean counterpart; cynical, humorous observations grounded in pricing, marketing and verification friction; no invented hands-on experience
+- Exactly one generated notebook thumbnail; approved information density preserved, slightly less polished lines/lettering; all image text English
+- Images: AI 3 (sketch/chart/pipeline), iPhone 3 (sketch/chart/chart), Avante 4 (sketch/3 charts). All factual plots produced by code, not generation
+- No new-generation US official price sheet verified after checking Hyundai USA and searching Hyundai USA Media Center (2026-09-27 KST). Existing 2026 US model is not substituted for the new Korean model
+- Per user fallback: Korean launch-price figures converted at 1 USD = KRW 1,354.81. Xe quote timestamp 2026-09-26 23:08 UTC (2026-09-27 08:08 KST): https://www.xe.com/en-gb/currencyconverter/convert/?Amount=1&From=USD&To=KRW. Small nearby note explicitly says converted Korean prices, not US MSRP
+- Source KRW inputs: 20,620,000; 23,880,000; 23,980,000; bundles 650,000/960,000; cluster 350,000; Premium option 830,000. Totals 24,630,000/25,590,000/25,940,000. Divide unrounded inputs/totals by 1,354.81 then round to whole USD: 15,220/17,626/17,700; 480/709/258/613; totals 18,180/18,888/19,147. Differences 3,360,000→2,480 and 100,000→74. Rounding may differ by $1 from summing displayed components

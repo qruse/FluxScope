@@ -21,10 +21,10 @@ Every row must pass. A polished title cannot compensate for fabricated experienc
 | Reader value | One clear question; an answer and an actionable choice; each section adds a new fact or decision | Human review |
 | Evidence | Core claims traceable to opened original sources; market/model/date/units stated; calculations reproducible | Human review |
 | Reasoning | Conclusion follows from the actual metric; opinion, calculation and observation remain distinct | Human review |
-| Voice | Concrete short notes; natural humor where useful; no fake experience, forced drama or repetitive filler | Human review |
+| Voice | Concrete short notes with a clearly cynical, humorous editorial voice; no fake experience, forced drama or repetitive filler | Human review |
 | Structure | Exactly 3 summary bullets; final Q&A with 3–5 answered questions; community immediately before it when present | Shared validator |
 | Metadata | Correct category; 5–15 unique kebab-case tags; useful title/description/alt; original date/URL preserved | Validator plus human |
-| Images | One rough sketch hero and a distinct useful body visual; verified labels and dimensions; optimized files | Partial file/structure checks, then visual review |
+| Images | 2–10 distinct visuals, exactly one generated rough sketch hero; English text and USD labels; meaningful choice among five types; verified labels and dimensions; optimized files | Partial file/structure checks, then visual review |
 | Bilingual | Same claims, prices, units, limitations and meaning; natural English | Pair existence/metadata plus human |
 | Delivery | Both live pages and discovery paths work; actual production content matches the reviewed revision | Live checks |
 
@@ -84,4 +84,4 @@ If omitted: list searches, date and why no usable reaction was found
 
 ## Prompt for the next writing agent
 
-“Read AGENTS.md, editorial/QUALITY.md, the closest of the three reference articles, and its review record. State the reader question internally. Verify sources and fill the claim ledger before drafting. Preserve only the user's actual experience. Write Korean and English with matching facts. Apply every release gate; fix failures instead of relaxing checks. Publish through the existing static/API route and verify the live result. Report changes, checks and any unfinished publication separately.”
+“Read AGENTS.md, editorial/QUALITY.md, the closest of the three reference articles, and its review record. State the reader question internally. Verify sources and fill the claim ledger before drafting. Preserve only the user's actual experience. Write the English master and natural Korean counterpart with matching facts, USD prices and English-only shared images. Apply every release gate; fix failures instead of relaxing checks. Publish through the existing static/API route and verify the live result. Report changes, checks and any unfinished publication separately.”
