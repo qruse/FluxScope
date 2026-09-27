@@ -42,3 +42,4 @@
 - Images: AI 3 (sketch/chart/pipeline), iPhone 3 (sketch/chart/chart), Avante 4 (sketch/3 charts). All factual plots produced by code, not generation
 - Price corrected to official Apple US 256GB starting price $1,199 before tax, without trade-in/promotional credits. Sources opened: https://www.apple.com/newsroom/2026/09/apple-debuts-iphone-18-pro-and-iphone-18-pro-max/ (Pricing and Availability), https://www.apple.com/shop/buy-iphone/iphone-18-pro. Supersedes Korean-price/FX wording above
 - Hypothetical 100→60 and 150→90 retention chart is explicitly fictional; no cross-benchmark multiplication
+- Final checks: 10 regression tests and full build passed; six bilingual live articles and ten unique images verified; desktop browser checked. 390px browser/real-device inspection not performed (viewport control unavailable in current browser interface)

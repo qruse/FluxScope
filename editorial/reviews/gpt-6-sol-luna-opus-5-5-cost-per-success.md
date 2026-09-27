@@ -39,3 +39,4 @@
 - Exactly one generated notebook thumbnail; approved information density preserved, slightly less polished lines/lettering; all image text English
 - Images: AI 3 (sketch/chart/pipeline), iPhone 3 (sketch/chart/chart), Avante 4 (sketch/3 charts). All factual plots produced by code, not generation
 - API price evidence unchanged: standard uncached USD rates. Pipeline is an editorial operating proposal; it does not claim measured superiority. Review minutes remain separate from dollars
+- Final checks: 10 regression tests and full build passed; six bilingual live articles and ten unique images verified; desktop browser checked. 390px browser/real-device inspection not performed (viewport control unavailable in current browser interface)

@@ -10,7 +10,7 @@ image:
   src: /images/posts/it-devices/iphone-18-pro-gaming-notes-v2.webp
   width: 1500
   height: 1000
-  alt: "iPhone notebook: GPU benchmark plus 33 percent, unconfirmed gameplay gain, and US starting price of US starting price of $1,199"
+  alt: "iPhone notebook: GPU benchmark plus 33 percent, unconfirmed gameplay gain, and US starting price of $1,199"
 draft: false
 lang: en
 visualTypes: [sketch, chart, chart]

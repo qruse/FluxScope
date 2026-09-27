@@ -22,7 +22,7 @@ visualTypes: [sketch, chart, chart, chart]
 - Its **$17,700** entry price is **$2,480 above** the old minimum — that compares Smart 1.6 with Modern 2.0, not a uniform increase across trims
 - Add Modern's heated-seat bundle, built-in map bundle and 9.9-inch cluster and the total is **$19,147** — the compact car has an impressively sophisticated options department
 
-*All prices below are **approximate USD conversions of Korean-market prices, not US MSRP**. Calculated at 1 USD = 1,354.81 KRW, [Xe](https://www.xe.com/en-gb/currencyconverter/convert/?Amount=1&From=USD&To=KRW), September 26, 2026 at 23:08 UTC, rounded to whole dollars*
+*All prices in this article are **approximate USD conversions of Korean-market prices, not US MSRP**. Calculated at 1 USD = 1,354.81 KRW, [Xe](https://www.xe.com/en-gb/currencyconverter/convert/?Amount=1&From=USD&To=KRW), September 26, 2026 at 23:08 UTC, rounded to whole dollars*
 
 ## The car improved. The cheap one also disappeared
 
