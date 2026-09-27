@@ -18,7 +18,7 @@ test('Q&A must remain last and answers cannot be missing', () => {
  assert.ok(changed(p => p.body += '\n## Extra\n').some(e => e.includes('final H2')));
  assert.ok(changed(p => p.body = p.body.replace(/^  - .+$/gm, '')).some(e => e.includes('nested answer')));
 });
-test('fenced sample headings and bullets are ignored', () => assert.deepEqual(changed(p => p.body = p.body.replace('## 토큰값', '```text\n## Fake\n- Example.\n```\n\n## 토큰값')), []));
+test('fenced sample headings and bullets are ignored', () => assert.deepEqual(changed(p => p.body = p.body.replace('## 가격표는', '```text\n## Fake\n- Example.\n```\n\n## 가격표는')), []));
 test('periods fail in prose, decimals do not', () => assert.ok(changed(p => p.body = p.body + '\n- Invalid trailing period.\n').some(e => e.includes('period'))));
 
 test('rendered emphasis leakage fails while code samples are allowed', () => {
@@ -31,4 +31,10 @@ test('image cap, ordered types and unique sketch are enforced', () => {
  assert.ok(changed(p => p.visualTypes.pop()).some(e => e.includes('match all images')));
  assert.ok(changed(p => { for(let i=0;i<9;i++){ p.body += `\n![Useful chart ${i}](/images/x${i}.webp)\n`; p.visualTypes.push('chart'); } }).some(e => e.includes('2–10')));
  for (const type of ['source', 'architecture', 'pipeline', 'chart']) assert.deepEqual(changed(p => p.visualTypes[1] = type), []);
+});
+
+test('Korean headline and sourced Reddit reactions are required', () => {
+ assert.ok(changed(p => p.title = '모델 가격은 정말 저렴하다').some(e => e.includes('Korean title')));
+ assert.ok(changed(p => p.body = p.body.replaceAll(/\[레딧[^\]]*\]\([^)]+\)/g, '출처 없음')).some(e => e.includes('original-source')));
+ assert.ok(changed(p => p.body = p.body.replaceAll('www.reddit.com', 'example.com')).some(e => e.includes('Reddit')));
 });

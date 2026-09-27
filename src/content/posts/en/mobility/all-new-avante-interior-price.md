@@ -1,8 +1,8 @@
 ---
-title: "The New Avante Improved. So Did the Art of Selling Options"
-description: "Better equipment deserves credit. The missing cheap trim and option bundles deserve scrutiny: how a Korean Modern moves from $17,700 to $19,147"
+title: "New Avante: Better Cabin, More Work for the Options Budget"
+description: "The new Avante improves space and equipment, but the cheaper entry trim is gone. Following a Korean Modern from its base price to the features you actually want."
 publishedAt: 2026-09-26
-updatedAt: 2026-09-27
+updatedAt: 2026-09-27T07:30:00Z
 category: mobility
 tags: [all-new-avante, hyundai, compact-sedan, cabin-design, pleos-connect, car-pricing]
 author: HSL
@@ -18,76 +18,77 @@ visualTypes: [sketch, chart, chart, chart]
 
 ## 3-Line TL;DR
 
-- The new Avante has more room and better standard equipment — it also removes the option of buying the cheaper Avante
-- Its **$17,700** entry price is **$2,480 above** the old minimum — that compares Smart 1.6 with Modern 2.0, not a uniform increase across trims
-- Add Modern's heated-seat bundle, built-in map bundle and 9.9-inch cluster and the total is **$19,147** — the compact car has an impressively sophisticated options department
+- The new Avante offers more cabin space and equipment; my complaint is that the improvement arrives with a higher entry budget and inconvenient option bundles
+- The entry point moves from the old Smart 1.6 at about $15,220 to Modern 2.0 at about $17,700; that is a change of trim and engine, not a uniform price rise
+- Modern with the heated-seat bundle, built-in map bundle and 9.9-inch cluster reaches about $19,147; decide which features you need before the brochure decides for you
 
-*All prices in this article are **approximate USD conversions of Korean-market prices, not US MSRP**. Calculated at 1 USD = 1,354.81 KRW, [Xe](https://www.xe.com/en-gb/currencyconverter/convert/?Amount=1&From=USD&To=KRW), September 26, 2026 at 23:08 UTC, rounded to whole dollars*
+*Korean launch prices converted to approximate USD, not US MSRP; no new-generation US price verified. FX: 1 USD = KRW 1,354.81, [Xe](https://www.xe.com/en-gb/currencyconverter/convert/?Amount=1&From=USD&To=KRW), September 26, 2026, 23:08 UTC. Whole-dollar rounding*
 
-## The car improved. The cheap one also disappeared
+## The cheap entry point disappeared, even if Modern barely moved
 
-- New Modern includes Pleos Connect, ten airbags and Lane Following Assist 2 — the equipment gains are real ([Hyundai announcement](https://www.hyundaimotorgroup.com/ko/news/hyundai-motor-company-all-new-avante))
-- “We added good things” and “I wanted to pay for them” are different statements — a budget buyer may notice the extra spending before the extra features
-
-| Comparison | Previous 2026 model | New model | Gap |
+| Comparison | Previous 2026 model | New model | Difference |
 | :--- | ---: | ---: | ---: |
-| Cheapest gasoline | Smart 1.6 **$15,220** | Modern 2.0 **$17,700** | **+$2,480** |
-| Modern to Modern | Modern 1.6 **$17,626** | Modern 2.0 **$17,700** | **+$74** |
+| Cheapest gasoline model | Smart 1.6: $15,220 | Modern 2.0: $17,700 | +$2,480 |
+| Modern badge to Modern badge | Modern 1.6: $17,626 | Modern 2.0: $17,700 | +$74 |
 
-*Prices: [2026 price sheet](https://www.hyundai.com/contents/repn-car/catalog/avante-2026-price.pdf), [new price sheet](https://www.hyundai.com/contents/repn-car/catalog/the-all-new-avante_price.pdf)*
+*Sources: [previous price sheet](https://www.hyundai.com/contents/repn-car/catalog/avante-2026-price.pdf), [new price sheet](https://www.hyundai.com/contents/repn-car/catalog/the-all-new-avante_price.pdf). All amounts in this article use the conversion above*
 
 ![Old Smart and Modern prices compared with the new Modern entry price](/images/posts/mobility/all-new-avante-price-entry-usd.webp)
 
-- **“Up $2,480” and “only $74 more” both need context** — engines and equipment differ, and comparing Modern badges does not resurrect Smart
-- My view: the improvements do not make the buying burden feel proportionate — I came to look at a compact, not to give my budget a trim upgrade
+- The first row answers how much you need to enter the range; the second compares like-named trims with different engines and equipment. Neither is an identical-car comparison
+- Hyundai adds equipment including Pleos Connect, ten airbags and Lane Following Assist 2 ([announcement](https://www.hyundaimotorgroup.com/ko/news/hyundai-motor-company-all-new-avante)). There is more car here, but a buyer with a fixed budget cannot pay the difference in appreciation
+- My view is that the buying burden grew more than the improvements justify for me. That is a value judgment; the measurable point is that the cheaper Smart choice is gone
 
-## Heated seats arrive with quite an entourage
+## Pick the features first. Then meet their traveling companions
 
-- This table covers **Korean gasoline 2.0 Modern**, not the hybrid or an overseas Elantra ([official price sheet, pages 1–2](https://www.hyundai.com/contents/repn-car/catalog/the-all-new-avante_price.pdf))
+These are **Korean gasoline 2.0 Modern** options, not a US Elantra specification.
 
-| Wanted feature | Actual selection | Extra |
+| Wanted feature | How it is supplied | Additional cost |
 | :--- | :--- | ---: |
-| 12.9-inch center screen and wireless phone projection | Standard | None |
-| Front heated seats | Convenience I: climate control, synthetic leather, toll pass | $480 |
-| Built-in navigation maps | SmartSense I: extra driver assists and Gleo AI | $709 |
+| 12.9-inch center screen and wireless phone projection | Standard | $0 |
+| Front heated seats | Convenience I, also including climate control, synthetic leather and toll pass | $480 |
+| Built-in navigation | SmartSense I, also including driver assists and Gleo AI | $709 |
 | 9.9-inch driver display | Separate option | $258 |
 
-- Heated seats require their $480 bundle; built-in maps require their $709 bundle — **buying heated seats does not force you to buy maps and the cluster too**. The complaint is about the package attached to each wanted feature
-- A standard big screen with optional built-in maps is a neat sales maneuver — the display welcomes you aboard; the quote follows with a few questions
-- Navigation is not trapped behind that option: standard wireless Android Auto and Apple CarPlay let you use phone maps — criticism works better when it knows which feature it is criticizing
+*Source: [official price sheet, pages 1–2](https://www.hyundai.com/contents/repn-car/catalog/the-all-new-avante_price.pdf)*
 
-## To get the pictured cabin, read the options rather than the picture
+- Heated seats do not force you to buy navigation or the cluster. Each wanted feature has its own selection; my objection is paying for its accompanying package
+- The center screen, built-in maps and driver display are three different things. Standard wireless Android Auto and Apple CarPlay still provide phone navigation without the built-in map option
+- The 9.9-inch cluster is optional on Modern; Premium pairs it with a 14.6-inch center screen for about $613, while Inspiration includes it. A cabin photograph is very good at showing equipment and remarkably quiet about trim names
 
-- The **9.9-inch cluster is not standard on Modern**: add $258. Premium bundles it with the 14.6-inch center screen for **$613**; Inspiration includes it ([price sheet](https://www.hyundai.com/contents/repn-car/catalog/the-all-new-avante_price.pdf))
-- Both heated-seat and map bundles bring the total to **$18,888**; the cluster makes it **$19,147** — a configuration with all three selected, excluding registration, insurance and extra-cost paint
+| Modern configuration | Approximate total |
+| :--- | ---: |
+| Base | $17,700 |
+| Plus heated-seat bundle only | $18,180 |
+| Plus heated-seat and map bundles | $18,888 |
+| Both bundles plus 9.9-inch cluster | $19,147 |
 
 ![Modern option totals in approximate USD converted from Korean prices](/images/posts/mobility/all-new-avante-option-total.webp)
 
-- This configuration still does not include ventilated seats — heated and ventilated are different equipment. A little less imagination at the order desk can save money
-- The options have value; **buying a package for one wanted feature** is what bothers me — the bundling feels distinctly stingy
+- Totals are converted from the unrounded Korean amounts, so summing rounded dollar components can differ by $1. Registration, insurance and extra-cost paint are excluded
+- This example does not include ventilated seats. Heated and ventilated are different features, however optimistic the shopping mood
+- Some buyers will use the whole package. I dislike the bundling when I want one feature and have to adopt its entire family
 
-## The cabin gains deserve credit
+## The extra room deserves credit, not a blank check
 
-- Rear legroom grows **964 → 993mm**, headroom **940 → 958mm**, helped by slimmer front seatbacks ([Hyundai Tech Day](https://www.hyundaimotorgroup.com/ko/story/the-all-new-avante-tech-day))
+- Hyundai publishes rear legroom increasing from **964 to 993mm** and headroom from **940 to 958mm**, with slimmer front seatbacks helping the packaging ([Tech Day](https://www.hyundaimotorgroup.com/ko/story/the-all-new-avante-tech-day))
 
 ![Hyundai's published changes in rear legroom and headroom](/images/posts/mobility/all-new-avante-rear-space.webp)
 
-- I like the retained climate and hazard buttons — frequently used controls do not need a career in hide-and-seek. Their feel and the screen's responsiveness still need a hands-on check
-- **A better car and an irritating price sheet can coexist** — extra space may justify a comparison, while the missing Smart matters more to someone shopping strictly on price
+- Those are useful dimensions, not a substitute for sitting in the car. Check your driving position, rear-seat clearance and the controls you use frequently
+- I welcome retained physical controls; adjusting the cabin temperature need not become a small software project
+- My buying order would be: set a budget, list essential features, price that configuration, then inspect the cabin. The car improved; that does not give its option sheet unlimited spending authority
 
 ## Community Reactions
 
-- An r/Hyundai reveal thread included people who liked the exterior but disliked the tablet-like display perched on the dashboard
-- Others liked the big-screen-plus-physical-buttons combination — even screen skeptics have reasons to appreciate a button
-- These are reactions to reveal images, not evidence about Korean option pricing or real-world driving satisfaction
+- In the r/Hyundai reveal thread, some liked the exterior but disliked the tablet-like display, preferring the previous screen integration ([Reddit discussion](https://www.reddit.com/r/Hyundai/comments/1uftasb/the_cn8_elantraavante_has_been_unveiled/))
+- Another commenter welcomed the large screen because physical buttons remained for basic tasks. The disagreement is about cabin design; these reveal reactions do not establish Korean pricing or driving quality ([Reddit discussion](https://www.reddit.com/r/Hyundai/comments/1uftasb/the_cn8_elantraavante_has_been_unveiled/))
 
 ## Q&A (Field Notes)
 
-- **Q: Did every trim rise by $2,480?**
-  - No — that compares the old Smart 1.6 entry point with Modern 2.0. Even Modern-to-Modern involves different engines and equipment
-- **Q: Do heated seats alone take the price to $19,147?**
-  - No — Modern plus Convenience I is **$18,180**. $19,147 also includes the map bundle and cluster
-- **Q: Can I use phone navigation without buying built-in maps?**
-  - Yes, through standard wireless phone projection — Android Auto and Apple CarPlay are separate from the car's built-in maps
-- **Q: Is this a negative test-drive verdict?**
-  - No — it is a purchase-oriented reading of published specifications and prices. The complaint concerns cost and packaging, not measured driving behavior
+- **Q: Did every Avante become $2,480 more expensive?**
+  - No; that compares the old cheapest Smart 1.6 with the new Modern 2.0. Trim, engine and standard equipment differ
+- **Q: Do heated seats alone require the $19,147 configuration?**
+  - No; Modern plus the heated-seat bundle is about $18,180. The higher example also adds built-in maps and the cluster
+- **Q: Can I use these prices for an American Elantra order?**
+  - No; these are converted Korean-market figures. Use the matching US model year's official trims and prices when available

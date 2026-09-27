@@ -91,3 +91,11 @@
 - Published via `POST /api/posts` + `If-Match: update`: en 200 (updated 06:31:33Z), ko 200 (updated 06:31:34Z); publishedAt preserved
 - Live checks: both URLs 200 with new titles; 4 Hacker News reaction links and OpenAI pricing links render; published/updated dates shown; language-switch links present; no unrendered `**`; thumbnail and two body images 200 `image/webp`; post listed on `/`, `/ai/`, `/en/`, `/en/ai/` and in `/rss.xml` (single bilingual feed; `/en/rss.xml` does not exist by design); search finds both new titles
 - Not performed: 390px browser inspection
+
+## Full editorial rebuild — 2026-09-27 afternoon KST
+- Read latest main d790b08 and all six live pages. Live AI at 07:18 UTC was newer than versioned prose; reviewed that version before replacing it
+- Rebuilt the argument from scratch around one reader question, in both languages. Korean title uses 음슴체; dry humor supports the explanation
+- Images and image order preserved byte-for-byte; only Avante Korean alt text corrected to remove leftover unlabeled 65/96 figures
+- Reopened Reddit originals and linked every reaction publicly. AI: omissions report and ten tasks × three runs; iPhone: longevity vs battery/camera upgrade priorities with verified comment permalinks; Avante: screen integration vs retained buttons in the reveal thread
+- Removed unsupported implications: a cheap rate does not require equal token use to save money; equal cache-read rates do not determine the whole bill; ratio similarity does not imply equal absolute performance; heated seats do not require all optional packages
+- Preserved USD policy and frozen Avante FX to match unchanged charts. No image regeneration or asset modification

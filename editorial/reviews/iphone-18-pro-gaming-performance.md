@@ -43,3 +43,11 @@
 - Price corrected to official Apple US 256GB starting price $1,199 before tax, without trade-in/promotional credits. Sources opened: https://www.apple.com/newsroom/2026/09/apple-debuts-iphone-18-pro-and-iphone-18-pro-max/ (Pricing and Availability), https://www.apple.com/shop/buy-iphone/iphone-18-pro. Supersedes Korean-price/FX wording above
 - Hypothetical 100→60 and 150→90 retention chart is explicitly fictional; no cross-benchmark multiplication
 - Final checks: 10 regression tests and full build passed; six bilingual live articles and ten unique images verified; desktop browser checked. 390px browser/real-device inspection not performed (viewport control unavailable in current browser interface)
+
+## Full editorial rebuild — 2026-09-27 afternoon KST
+- Read latest main d790b08 and all six live pages. Live AI at 07:18 UTC was newer than versioned prose; reviewed that version before replacing it
+- Rebuilt the argument from scratch around one reader question, in both languages. Korean title uses 음슴체; dry humor supports the explanation
+- Images and image order preserved byte-for-byte; only Avante Korean alt text corrected to remove leftover unlabeled 65/96 figures
+- Reopened Reddit originals and linked every reaction publicly. AI: omissions report and ten tasks × three runs; iPhone: longevity vs battery/camera upgrade priorities with verified comment permalinks; Avante: screen integration vs retained buttons in the reveal thread
+- Removed unsupported implications: a cheap rate does not require equal token use to save money; equal cache-read rates do not determine the whole bill; ratio similarity does not imply equal absolute performance; heated seats do not require all optional packages
+- Preserved USD policy and frozen Avante FX to match unchanged charts. No image regeneration or asset modification

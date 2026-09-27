@@ -52,7 +52,9 @@ The defining voice is **cynical AND humorous**, not optional seasoning. Question
 
 Korean is primarily short bullets with natural 반말/음슴체. One point per bullet; normally one or two short sentences. Do not force all sentences into the same ending. English is natural concise field notes, not literal Korean syntax.
 
-- Put the model/product near the start of the title; state a real question or supported judgment
+- Put the model/product near the start of the title; state a supported judgment. Korean titles, descriptions and narrative headings use natural 음슴체 (e.g. `검수는 내 몫임`, `지갑은 설득 안 됨`, `예산도 커짐`); English titles use concise field-note phrasing, not artificial Korean grammar
+- Rebuild a confused draft around ONE reader question before polishing sentences. Every section must advance that question; delete tangents, repeated caveats and jokes that need their own explanation
+- Humor follows the concrete fact. Prefer 2–4 restrained observations over an analogy in every bullet; never let sarcasm imply unsupported test results or product defects
 - The description gives the actual angle and substance, not “a comprehensive analysis”
 - Explain what a number measures and why it changes the decision. A table full of unexplained numbers is not depth
 - Keep humor rooted in a verified inconvenience. Do not add invented war stories or pretend to have tested the product
@@ -73,7 +75,8 @@ Korean is primarily short bullets with natural 반말/음슴체. One point per b
 3. `## 커뮤니티 반응` / `## Community Reactions`
    - Immediately before Q&A; normally 2–4 concise reactions
    - Include when meaningful verified reactions exist; differing views when the sources actually contain them, never invent artificial balance
-   - **Link each reaction to the original post or comment** at the end of its bullet, e.g. `([Hacker News](https://news.ycombinator.com/item?id=…))`. Link only sources actually read; also record the exact URL and checked paraphrase in the review record
+   - **Link each reaction to the original post or comment** at the end of its bullet, e.g. `([Reddit](https://www.reddit.com/r/<sub>/comments/<id>/<slug>/))`. Link only sources actually read; also record the exact URL and checked paraphrase in the review record
+   - Use Reddit as a required research source. Each reaction bullet needs a directly opened original-source link; at least one must be a Reddit thread/comment. Prefer comment permalinks when verified; thread links are acceptable. Distinguish individual experience, small tests and speculation; do not call a handful of comments consensus
    - Omit only after a genuine search finds no usable reactions; record queries, date and reason internally
 4. Final H2: `## Q&A 또 궁금한 것은?` / `## Q&A (Field Notes)`
    - 3–5 real reader questions, each followed by a concise nested answer

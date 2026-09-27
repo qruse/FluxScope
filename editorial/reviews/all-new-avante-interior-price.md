@@ -44,3 +44,11 @@
 - Per user fallback: Korean launch-price figures converted at 1 USD = KRW 1,354.81. Xe quote timestamp 2026-09-26 23:08 UTC (2026-09-27 08:08 KST): https://www.xe.com/en-gb/currencyconverter/convert/?Amount=1&From=USD&To=KRW. Small nearby note explicitly says converted Korean prices, not US MSRP
 - Source KRW inputs: 20,620,000; 23,880,000; 23,980,000; bundles 650,000/960,000; cluster 350,000; Premium option 830,000. Totals 24,630,000/25,590,000/25,940,000. Divide unrounded inputs/totals by 1,354.81 then round to whole USD: 15,220/17,626/17,700; 480/709/258/613; totals 18,180/18,888/19,147. Differences 3,360,000→2,480 and 100,000→74. Rounding may differ by $1 from summing displayed components
 - Final checks: 10 regression tests and full build passed; six bilingual live articles and ten unique images verified; desktop browser checked. 390px browser/real-device inspection not performed (viewport control unavailable in current browser interface)
+
+## Full editorial rebuild — 2026-09-27 afternoon KST
+- Read latest main d790b08 and all six live pages. Live AI at 07:18 UTC was newer than versioned prose; reviewed that version before replacing it
+- Rebuilt the argument from scratch around one reader question, in both languages. Korean title uses 음슴체; dry humor supports the explanation
+- Images and image order preserved byte-for-byte; only Avante Korean alt text corrected to remove leftover unlabeled 65/96 figures
+- Reopened Reddit originals and linked every reaction publicly. AI: omissions report and ten tasks × three runs; iPhone: longevity vs battery/camera upgrade priorities with verified comment permalinks; Avante: screen integration vs retained buttons in the reveal thread
+- Removed unsupported implications: a cheap rate does not require equal token use to save money; equal cache-read rates do not determine the whole bill; ratio similarity does not imply equal absolute performance; heated seats do not require all optional packages
+- Preserved USD policy and frozen Avante FX to match unchanged charts. No image regeneration or asset modification
