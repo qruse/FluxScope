@@ -38,3 +38,9 @@ test('Korean headline and sourced Reddit reactions are required', () => {
  assert.ok(changed(p => p.body = p.body.replaceAll(/\[레딧[^\]]*\]\([^)]+\)/g, '출처 없음')).some(e => e.includes('original-source')));
  assert.ok(changed(p => p.body = p.body.replaceAll('www.reddit.com', 'example.com')).some(e => e.includes('Reddit')));
 });
+
+test('SEO limits: long titles, long alt text and body H1 fail', () => {
+ assert.ok(changed(p => p.title = 'x'.repeat(71)).some(e => e.includes('8–70')));
+ assert.ok(changed(p => p.imageAlt = 'x'.repeat(151)).some(e => e.includes('5–150')));
+ assert.ok(changed(p => p.body = p.body.replace('## 커뮤니티 반응', '# Extra title\n\n## 커뮤니티 반응')).some(e => e.includes('H1')));
+});

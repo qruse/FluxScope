@@ -105,6 +105,12 @@ const commentSchema = [
   )`,
   'CREATE INDEX IF NOT EXISTS comments_page ON comments(page, id)',
   'CREATE INDEX IF NOT EXISTS comments_ip ON comments(ip_hash, created_at)',
+  `CREATE TABLE IF NOT EXISTS page_views (
+    day TEXT NOT NULL,
+    page TEXT NOT NULL,
+    views INTEGER NOT NULL DEFAULT 0,
+    PRIMARY KEY (day, page)
+  )`,
 ];
 
 // Guest comments: nickname + password per comment, one reply level, @mention of the replied-to nickname.
@@ -190,6 +196,7 @@ async function comments(request, env, url) {
       }
     }
     if (!(await commentPageExists(env, request, page))) return commentError('page_not_found', 404);
+    await env.DB.prepare("UPDATE comments SET ip_hash = '' WHERE ip_hash != '' AND created_at < ?").bind(new Date(now - 30 * 86400000).toISOString()).run();
     const salt = crypto.getRandomValues(new Uint8Array(16));
     const createdAt = new Date(now).toISOString();
     const result = await env.DB.prepare('INSERT INTO comments (page, parent_id, nickname, mention, body, password_hash, password_salt, ip_hash, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)')
@@ -214,6 +221,32 @@ async function comments(request, env, url) {
     return json({ deleted: true });
   }
   return commentError('method_not_allowed', 405);
+}
+
+// Cookie-free visit counts: page path and daily total only, no IP or device data.
+const countedPage = /^\/(?:en\/)?(?:(?:ai|mobility|it-devices|posts|about|privacy)\/(?:[a-z0-9]+(?:-[a-z0-9]+)*\/)?)?$/;
+const botAgent = /bot|crawl|spider|slurp|headless|lighthouse|preview|monitor|curl|wget|python|java\//i;
+
+async function views(request, env, url) {
+  if (request.method === 'POST') {
+    const page = String((await readJson(request, 500))?.page || '');
+    if (!countedPage.test(page) || botAgent.test(request.headers.get('User-Agent') || '')) return new Response(null, { status: 204 });
+    if (/\/(?:posts|ai|mobility|it-devices)\/[a-z0-9-]+\/$/.test(page) && !(await commentPageExists(env, request, page))) return new Response(null, { status: 204 });
+    const day = new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Seoul' });
+    await env.DB.prepare('INSERT INTO page_views (day, page, views) VALUES (?, ?, 1) ON CONFLICT(day, page) DO UPDATE SET views = views + 1').bind(day, page).run();
+    return new Response(null, { status: 204 });
+  }
+  if (request.method === 'GET') {
+    if (!authorized(request, env.PUBLISH_TOKEN)) return json({ error: 'Unauthorized' }, 401);
+    const days = Math.min(Math.max(Number(url.searchParams.get('days')) || 30, 1), 365);
+    const since = new Date(Date.now() - (days - 1) * 86400000).toLocaleDateString('en-CA', { timeZone: 'Asia/Seoul' });
+    const [pages, daily] = await Promise.all([
+      env.DB.prepare('SELECT page, SUM(views) AS views FROM page_views WHERE day >= ? GROUP BY page ORDER BY views DESC LIMIT 100').bind(since).all(),
+      env.DB.prepare('SELECT day, SUM(views) AS views FROM page_views WHERE day >= ? GROUP BY day ORDER BY day').bind(since).all(),
+    ]);
+    return json({ since, pages: pages.results, daily: daily.results });
+  }
+  return json({ error: 'Method not allowed' }, 405);
 }
 
 function validText(value, max) { return typeof value === 'string' && value.trim().length > 0 && value.length <= max; }
@@ -302,6 +335,7 @@ async function api(request, env, url) {
   if (url.pathname === '/api/images') return images(request, env, url);
   if (!env.DB) return json({ error: 'Database binding is unavailable' }, 503);
   if (url.pathname === '/api/comments') return comments(request, env, url);
+  if (url.pathname === '/api/views') return views(request, env, url);
   if (url.pathname === '/api/posts' && request.method === 'GET') {
     const lang = url.searchParams.get('lang') || 'ko';
     if (!['ko', 'en'].includes(lang)) return json({ error: 'Invalid language' }, 400);
@@ -494,8 +528,31 @@ async function rssFeed(env, request) {
   return new Response(feed.replace('</channel>', `${items}</channel>`), { headers: { 'Content-Type': 'application/rss+xml; charset=utf-8', 'Cache-Control': 'public, max-age=300' } });
 }
 
+// Mirrors public/_headers for responses the Worker builds itself.
+const securityHeaders = {
+  'Content-Security-Policy': "default-src 'self'; script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self'; worker-src 'self' blob:; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'; upgrade-insecure-requests",
+  'Strict-Transport-Security': 'max-age=31536000; includeSubDomains',
+  'X-Content-Type-Options': 'nosniff',
+  'X-Frame-Options': 'DENY',
+  'Referrer-Policy': 'strict-origin-when-cross-origin',
+  'Permissions-Policy': 'camera=(), microphone=(), geolocation=(), browsing-topics=()',
+  'Cross-Origin-Opener-Policy': 'same-origin',
+};
+
+function withSecurityHeaders(response) {
+  if (response.status === 101) return response;
+  const headers = new Headers(response.headers);
+  for (const [name, value] of Object.entries(securityHeaders)) if (!headers.has(name)) headers.set(name, value);
+  return new Response(response.body, { status: response.status, statusText: response.statusText, headers });
+}
+
 export default {
   async fetch(request, env) {
+    return withSecurityHeaders(await handle(request, env));
+  },
+};
+
+async function handle(request, env) {
     const url = new URL(request.url);
     try {
       if (env.DB) await ensureSchema(env.DB);
@@ -523,5 +580,4 @@ export default {
       console.error(error);
       return json({ error: 'Server error' }, 500);
     }
-  },
-};
+}

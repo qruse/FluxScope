@@ -60,6 +60,13 @@ curl -X POST 'https://fluxscope.coolwin200.workers.dev/api/images' \
 - 답글이 달린 댓글을 지우면 "삭제된 댓글"로 남고, 답글이 모두 지워지면 함께 정리됩니다
 - 같은 IP에서 1분 3개, 하루 30개까지 작성할 수 있고, 봇만 채우는 숨은 입력칸이 있으면 거부합니다. 테이블은 Worker 첫 요청 때 자동 생성되며 `migrations/0002_comments.sql`과 같습니다
 
+## 방문 통계, 개인정보, 보안 헤더
+
+- 방문 통계: 모든 페이지가 로드 후 `POST /api/views`로 경로만 보냅니다. 쿠키·IP·기기 정보 없이 D1 `page_views`에 날짜(서울 기준)별 조회 수만 쌓고, 봇·없는 글·유틸리티 경로는 세지 않습니다. 조회는 `GET /api/views?days=30`에 `Authorization: Bearer <PUBLISH_TOKEN>`을 붙입니다
+- 개인정보처리방침: `/privacy/`, `/en/privacy/`. 댓글·통계의 수집 항목이나 보관 기간을 바꾸면 이 페이지와 시행일도 함께 고칩니다. 댓글 IP 해시는 30일 뒤 자동으로 지웁니다
+- 보안 헤더: 정적 파일은 `public/_headers`, Worker 응답은 `worker/index.js`의 `securityHeaders`가 같은 값을 붙입니다. 외부 스크립트·폰트·iframe을 추가하려면 두 곳의 CSP를 함께 넓혀야 합니다
+- 없는 주소는 `src/pages/404.astro`를 404 상태로 보여줍니다(설정 파일의 `not_found_handling`)
+
 ## 품질 기준과 검증
 
 - `AGENTS.md`: 단일 작성 규칙 (`GEMINI.md`는 이 문서만 참조)

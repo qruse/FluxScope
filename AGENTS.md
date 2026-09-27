@@ -149,7 +149,28 @@ Declare `visualTypes` in static frontmatter and API payloads, ordered **thumbnai
 - Required API fields: `lang`, `slug`, `category`, `title`, `description` (50–180 characters), `body`, `tags`, `imageUrl`, `imageAlt`, `visualTypes`; preserve `publishedAt` on update
 - New static drafts stay `draft: true` until reviewed. API has no draft mode; never POST unfinished work
 
-## 10. Verification and completion
+## 10. SEO
+
+Technical SEO lives in the templates and Worker, not in article text. Do not hand-add canonical, hreflang, robots, Open Graph or JSON-LD tags to a post; change the template instead so every page stays consistent.
+
+Template-owned (keep working when editing layouts or the Worker):
+- One canonical URL per page; `hreflang` ko/en pairs plus `x-default` pointing to the Korean version of the same page
+- `robots` meta: `index, follow, max-image-preview:large` for content; `noindex, follow` for search, 404 and other utility pages, which also stay out of the sitemaps
+- Open Graph/Twitter tags with real image dimensions and `og:locale`; `BlogPosting` + `BreadcrumbList` JSON-LD with `inLanguage`, image size and author/publisher URLs
+- Sitemaps: `/sitemap-index.xml` (static, with hreflang and article `lastmod`) and `/dynamic-sitemap.xml` (API posts), both listed in `robots.txt`
+- The LCP hero image loads eagerly with `fetchpriority="high"`; body images carry width/height and load lazily; unknown URLs return the bilingual 404 page with status 404
+
+Author checklist (validated where marked):
+- Title: model/product first, a real question or judgment, **≤ 70 characters** (validated), unique across the site. No clickbait that the article does not answer
+- Description: 50–180 characters (validated), states the actual answer or angle; it becomes the search snippet
+- Slug: lowercase English kebab-case, short, the same for both languages, and **never changed after publication**
+- Headings: the template renders the only H1; the body starts at H2 (validated: no `# ` headings) and does not skip levels
+- Images: descriptive alt text of 5–150 characters (validated), describing what the image shows, no keyword lists; descriptive file names
+- Links: primary sources beside claims; 1–2 relevant internal links only when they genuinely help (section 3)
+- No keyword stuffing, hidden text, duplicate or near-duplicate pages, or thin pages created for search traffic
+- A substantive edit advances `updatedAt`, which feeds `lastmod`; cosmetic fixes need not
+
+## 11. Verification and completion
 
 Run `npm run check` before committing. It runs the editorial regression tests, shared article checks (including API reference payloads), Astro type checking, static build, Pagefind indexing, internal link checks and performance budgets.
 

@@ -24,6 +24,7 @@ Every row must pass. A polished title cannot compensate for fabricated experienc
 | Voice | One coherent question per article; Korean titles in 음슴체; restrained cynical humor grounded in facts; no fake experience, forced drama or repetitive filler | Human review |
 | Structure | Exactly 3 summary bullets; final Q&A with 3–5 answered questions; community immediately before it when present, each reaction linked and Reddit represented | Shared validator |
 | Metadata | Correct category; 5–15 unique kebab-case tags; useful title/description/alt; original date/URL preserved | Validator plus human |
+| SEO | Title ≤ 70 chars with the product first; description states the answer; stable slug; body starts at H2; alt text 5–150 chars; no manual SEO tags | Validator plus human |
 | Images | 2–10 distinct visuals, exactly one generated rough sketch hero; English text and USD labels; meaningful choice among five types; verified labels and dimensions; optimized files | Partial file/structure checks, then visual review |
 | Bilingual | Same claims, prices, units, limitations and meaning; natural English | Pair existence/metadata plus human |
 | Delivery | Both live pages and discovery paths work; actual production content matches the reviewed revision | Live checks |
