@@ -81,3 +81,6 @@
 ### Checks
 - Shared validator and rendered-emphasis check: 0 errors for both payloads; regression tests 10/10
 - Live API before the Worker redeploy: en POST returned 422 with only the old community-link rule; nothing was written. Publication waits for the validator change to reach production
+
+### Title/summary voice pass — 2026-09-27 KST
+- Korean title, description and 3-line summary rewritten in the same 음슴체 as the body; English title/description/TL;DR matched as short field notes. Facts, numbers and links unchanged; validator 0 errors, tests 10/10
