@@ -7,5 +7,11 @@
 - Strengthened AGENTS.md, QUALITY.md and shared title/community validation
 - `npm run check` passed: 11 regression tests, 40 built pages, internal links and performance/image budgets
 - All six image URL sequences match the preceding revision; no image files changed
-- Live publication verification: pending below
+- Content/rules commit: f3fea3db95d10d1c72411beda1d56c27f02dfbe8
+- Static publication verified: all four English/Korean iPhone and Avante pages show the rewritten titles, two Reddit links each, preserved images/order and working language links
+- AI publication BLOCKED: saved local publish credential returned HTTP 401 Unauthorized before either language was changed; both reviewed JSON payloads are committed and ready to publish. Existing live AI editions remain unchanged
+- Cloudflare dashboard also remained at its bot-verification challenge after one reload; no authentication or security setting was changed
+- Do not report all three articles as published. Resume by restoring the authorized publishing connection, rereading both live AI editions to guard concurrent changes, then publishing both validated JSON payloads
 - No new 390px browser viewport check; do not describe mobile as tested
+
+- Verified 12 discovery pages/endpoints and all 7 unchanged static-article images (HTTP 200); desktop iPhone page has no page-wide overflow at 1363px viewport
