@@ -2,6 +2,25 @@ import { defineConfig } from 'astro/config';
 import mdx from '@astrojs/mdx';
 import sitemap from '@astrojs/sitemap';
 import tailwindcss from '@tailwindcss/vite';
+import fs from 'node:fs';
+import path from 'node:path';
+
+// Last-modified dates for static articles, keyed by their public path, for the sitemap.
+function postUpdatedDates() {
+  const dates = new Map();
+  const root = 'src/content/posts';
+  for (const lang of fs.existsSync(root) ? fs.readdirSync(root) : []) {
+    for (const category of fs.readdirSync(path.join(root, lang))) {
+      for (const file of fs.readdirSync(path.join(root, lang, category)).filter((name) => /\.mdx?$/.test(name))) {
+        const text = fs.readFileSync(path.join(root, lang, category, file), 'utf8');
+        const updated = text.match(/^updatedAt:\s*["']?([^"'\n]+)/m)?.[1];
+        if (updated && !/^draft:\s*true/m.test(text)) dates.set(`${lang === 'en' ? '/en' : ''}/${category}/${file.replace(/\.mdx?$/, '')}/`, new Date(updated).toISOString());
+      }
+    }
+  }
+  return dates;
+}
+const updatedDates = postUpdatedDates();
 
 let site = process.env.SITE_URL;
 let base = process.env.BASE_PATH || '/';
@@ -45,6 +64,13 @@ export default defineConfig({
       wrap: true,
     },
   },
-  integrations: [mdx({ rehypePlugins: [rehypeOptimizeImages] }), sitemap()],
+  integrations: [mdx({ rehypePlugins: [rehypeOptimizeImages] }), sitemap({
+    filter: (page) => !/\/search\/$/.test(page),
+    i18n: { defaultLocale: 'ko', locales: { ko: 'ko', en: 'en' } },
+    serialize(item) {
+      const lastmod = updatedDates.get(new URL(item.url).pathname.replace(base.replace(/\/$/, ''), ''));
+      return lastmod ? { ...item, lastmod } : item;
+    },
+  })],
   vite: { plugins: [tailwindcss()] },
 });

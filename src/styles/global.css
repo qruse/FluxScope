@@ -723,3 +723,5 @@ html[data-theme="dark"] .astro-code span {
   .comment-fields { grid-template-columns: 1fr; }
   .comment-replies, .comment-thread .comment-form-reply { padding-left: .7rem; margin-left: 0; }
 }
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+.not-found { padding-bottom: 5rem; } .not-found-links { display: flex; flex-wrap: wrap; gap: 1rem; margin-top: 1.5rem; font-weight: 750; } .not-found-links a { border-bottom: 1px solid var(--accent); } .not-found-links a:hover { color: var(--accent); }

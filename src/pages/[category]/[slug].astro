@@ -25,11 +25,11 @@ const related = allPosts.filter((candidate) => candidate.id !== post.id).sort((a
 
 const jsonLd = [
   {
-    '@context': 'https://schema.org', '@type': 'Article',
-    headline: post.data.title, description: post.data.description, mainEntityOfPage: url,
-    image: imageUrl, datePublished: post.data.publishedAt.toISOString(), dateModified: post.data.updatedAt.toISOString(),
-    author: { '@type': 'Person', name: post.data.author },
-    publisher: { '@type': 'Organization', name: site.name },
+    '@context': 'https://schema.org', '@type': 'BlogPosting',
+    headline: post.data.title, description: post.data.description, mainEntityOfPage: url, inLanguage: 'ko',
+    image: { '@type': 'ImageObject', url: imageUrl, width: post.data.image.width, height: post.data.image.height }, datePublished: post.data.publishedAt.toISOString(), dateModified: post.data.updatedAt.toISOString(),
+    author: { '@type': 'Person', name: post.data.author, url: new URL(withBase('/about/'), Astro.site).href },
+    publisher: { '@type': 'Organization', name: site.name, url: new URL(withBase('/'), Astro.site).href },
     articleSection: category.nameKo, keywords: post.data.tags.join(', '),
   },
   {
@@ -42,7 +42,7 @@ const jsonLd = [
   },
 ];
 ---
-<BaseLayout lang="ko" title={post.data.seoTitle || post.data.title} description={post.data.description} image={post.data.image.src} imageAlt={post.data.image.alt} type="article" publishedAt={post.data.publishedAt} updatedAt={post.data.updatedAt} jsonLd={jsonLd}>
+<BaseLayout lang="ko" title={post.data.seoTitle || post.data.title} description={post.data.description} image={post.data.image.src} imageAlt={post.data.image.alt} imageWidth={post.data.image.width} imageHeight={post.data.image.height} type="article" publishedAt={post.data.publishedAt} updatedAt={post.data.updatedAt} jsonLd={jsonLd}>
   <article data-pagefind-body>
     <header class="article-header article-shell">
       <nav class="breadcrumbs" aria-label="Breadcrumb"><a href={withBase('/')}>홈</a><span>/</span><a href={categoryPath(post.data.category, 'ko')}>{category.nameKo}</a><span>/</span><span aria-current="page">기사</span></nav>
@@ -50,7 +50,7 @@ const jsonLd = [
       <p class="article-dek">{post.data.description}</p>
       <div class="article-meta"><span>작성자: <strong>{post.data.author}</strong></span><span>발행일: <time datetime={post.data.publishedAt.toISOString()}>{formatDate(post.data.publishedAt, 'ko')}</time></span><span>수정일: <time datetime={post.data.updatedAt.toISOString()}>{formatDate(post.data.updatedAt, 'ko')}</time></span></div>
     </header>
-    <div class="article-shell"><img class="article-visual" src={withBase(post.data.image.src)} width={post.data.image.width} height={post.data.image.height} alt={post.data.image.alt} decoding="async" /></div>
+    <div class="article-shell"><img class="article-visual" src={withBase(post.data.image.src)} width={post.data.image.width} height={post.data.image.height} alt={post.data.image.alt} decoding="async" fetchpriority="high" /></div>
     <div class="article-body article-shell"><Content /></div>
     <div class="article-end article-shell"><div class="tag-list">{post.data.tags.map((tag) => <a href={tagPath(tag, 'ko')}>#{tag}</a>)}</div></div>
   </article>

@@ -1,7 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 
-function getDimensions(filePath) {
+export function getDimensions(filePath) {
   try {
     const buf = fs.readFileSync(filePath);
     // PNG

@@ -390,6 +390,25 @@ class AppendHead {
   element(element) { element.append(this.html, { html: true }); }
 }
 
+let imageDimensions;
+async function loadImageDimensions(env, request) {
+  if (!imageDimensions) {
+    imageDimensions = env.ASSETS.fetch(new Request(new URL('/image-dimensions.json', request.url)))
+      .then((response) => (response.ok ? response.json() : {})).catch(() => ({}));
+  }
+  return imageDimensions;
+}
+const sizeAttributes = (dimensions, src) => (dimensions[src] ? ` width="${dimensions[src][0]}" height="${dimensions[src][1]}"` : '');
+
+class RemoveElement {
+  element(element) { element.remove(); }
+}
+
+async function notFound(env, request) {
+  const page = await env.ASSETS.fetch(new Request(new URL('/404-not-found/', request.url)));
+  return new Response(page.body, { status: 404, headers: { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-store' } });
+}
+
 async function article(post, env, request) {
   const lang = post.lang;
   const title = `${post.title} | ${lang === 'ko' ? 'HSL의 블로그' : "HSL's Blog"}`;
@@ -397,6 +416,9 @@ async function article(post, env, request) {
   const alternate = `${origin}${lang === 'ko' ? '/en' : ''}/posts/${post.slug}/`;
   const image = post.image_url ? (post.image_url.startsWith('/') ? `${origin}${post.image_url}` : post.image_url) : `${origin}/images/og-default.png`;
   const imageAlt = post.image_alt || post.title;
+  const dimensions = await loadImageDimensions(env, request);
+  const imageSize = post.image_url ? dimensions[post.image_url] : [1200, 630];
+  const koUrl = lang === 'ko' ? canonical : alternate;
   const date = new Date(post.published_at).toLocaleDateString(lang === 'ko' ? 'ko-KR' : 'en-US', { timeZone: 'Asia/Seoul', year: 'numeric', month: 'long', day: 'numeric' });
   const updatedDate = new Date(post.updated_at).toLocaleDateString(lang === 'ko' ? 'ko-KR' : 'en-US', { timeZone: 'Asia/Seoul', year: 'numeric', month: 'long', day: 'numeric' });
   const category = normalizeCategory(post.category);
@@ -405,11 +427,12 @@ async function article(post, env, request) {
   const tags = JSON.parse(post.tags);
   const jsonLd = [
     {
-      '@context': 'https://schema.org', '@type': 'Article', headline: post.title,
-      description: post.description, mainEntityOfPage: canonical, image,
+      '@context': 'https://schema.org', '@type': 'BlogPosting', headline: post.title, inLanguage: lang,
+      description: post.description, mainEntityOfPage: canonical,
+      image: imageSize ? { '@type': 'ImageObject', url: image, width: imageSize[0], height: imageSize[1] } : image,
       datePublished: post.published_at, dateModified: post.updated_at,
-      author: { '@type': 'Person', name: 'HSL' },
-      publisher: { '@type': 'Organization', name: "HSL's Blog" },
+      author: { '@type': 'Person', name: 'HSL', url: `${origin}${lang === 'ko' ? '/about/' : '/en/about/'}` },
+      publisher: { '@type': 'Organization', name: "HSL's Blog", url: `${origin}${home}` },
       articleSection: categoryName, keywords: tags.join(', '),
     },
     {
@@ -422,7 +445,7 @@ async function article(post, env, request) {
     },
   ];
   const head = `<meta property="article:published_time" content="${escape(post.published_at)}"><meta property="article:modified_time" content="${escape(post.updated_at)}"><script type="application/ld+json">${JSON.stringify(jsonLd).replace(/</g, '\\u003c')}</script>`;
-  const html = `<article><header class="article-header article-shell"><nav class="breadcrumbs" aria-label="Breadcrumb"><a href="${home}">${lang === 'ko' ? '홈' : 'Home'}</a><span>/</span><a href="${home}${escape(category)}/">${escape(categoryName)}</a><span>/</span><span aria-current="page">${lang === 'ko' ? '글' : 'Article'}</span></nav><h1>${escape(post.title)}</h1><p class="article-dek">${escape(post.description)}</p><div class="article-meta"><span>${lang === 'ko' ? '작성자' : 'By'}: <strong>HSL</strong></span><span>${lang === 'ko' ? '발행일' : 'Published'}: <time datetime="${escape(post.published_at)}">${escape(date)}</time></span><span>${lang === 'ko' ? '수정일' : 'Updated'}: <time datetime="${escape(post.updated_at)}">${escape(updatedDate)}</time></span></div></header>${post.image_url ? `<div class="article-shell"><img class="article-visual" src="${escape(post.image_url)}" alt="${escape(imageAlt)}" loading="eager" /></div>` : ''}<div class="article-body article-shell">${micromark(post.body, { extensions: [gfm()], htmlExtensions: [gfmHtml()] })}</div><div class="article-end article-shell"><div class="tag-list">${tags.map((tag) => `<span>#${escape(tag)}</span>`).join('')}</div></div></article><section class="comments article-shell" id="comments" data-comments data-lang="${lang}" data-page="${escape(pathFor(post))}"></section><script src="/comments.js" defer></script>`;
+  const html = `<article><header class="article-header article-shell"><nav class="breadcrumbs" aria-label="Breadcrumb"><a href="${home}">${lang === 'ko' ? '홈' : 'Home'}</a><span>/</span><a href="${home}${escape(category)}/">${escape(categoryName)}</a><span>/</span><span aria-current="page">${lang === 'ko' ? '글' : 'Article'}</span></nav><h1>${escape(post.title)}</h1><p class="article-dek">${escape(post.description)}</p><div class="article-meta"><span>${lang === 'ko' ? '작성자' : 'By'}: <strong>HSL</strong></span><span>${lang === 'ko' ? '발행일' : 'Published'}: <time datetime="${escape(post.published_at)}">${escape(date)}</time></span><span>${lang === 'ko' ? '수정일' : 'Updated'}: <time datetime="${escape(post.updated_at)}">${escape(updatedDate)}</time></span></div></header>${post.image_url ? `<div class="article-shell"><img class="article-visual" src="${escape(post.image_url)}" alt="${escape(imageAlt)}"${sizeAttributes(dimensions, post.image_url)} loading="eager" fetchpriority="high" decoding="async" /></div>` : ''}<div class="article-body article-shell">${micromark(post.body, { extensions: [gfm()], htmlExtensions: [gfmHtml()] }).replace(/<img src="([^"]+)"/g, (tag, src) => `<img src="${src}"${sizeAttributes(dimensions, src.replace(/&amp;/g, '&'))} loading="lazy" decoding="async"`)}</div><div class="article-end article-shell"><div class="tag-list">${tags.map((tag) => `<span>#${escape(tag)}</span>`).join('')}</div></div></article><section class="comments article-shell" id="comments" data-comments data-lang="${lang}" data-page="${escape(pathFor(post))}"></section><script src="/comments.js" defer></script>`;
   const shell = await env.ASSETS.fetch(new Request(new URL(lang === 'ko' ? '/about/' : '/en/about/', request.url)));
   if (!shell.ok) return new Response('Template unavailable', { status: 503 });
   const alternateLang = lang === 'ko' ? 'en' : 'ko';
@@ -431,6 +454,11 @@ async function article(post, env, request) {
     .on('link[rel="canonical"]', new SetAttribute('href', canonical))
     .on(`link[hreflang="${lang}"]`, new SetAttribute('href', canonical))
     .on(`link[hreflang="${alternateLang}"]`, new SetAttribute('href', alternate))
+    .on('link[hreflang="x-default"]', new SetAttribute('href', koUrl))
+    .on('meta[property="og:locale"]', new SetAttribute('content', lang === 'ko' ? 'ko_KR' : 'en_US'))
+    .on('meta[property="og:locale:alternate"]', new SetAttribute('content', lang === 'ko' ? 'en_US' : 'ko_KR'))
+    .on('meta[property="og:image:width"]', imageSize ? new SetAttribute('content', String(imageSize[0])) : new RemoveElement())
+    .on('meta[property="og:image:height"]', imageSize ? new SetAttribute('content', String(imageSize[1])) : new RemoveElement())
     .on('meta[property="og:type"]', new SetArticle())
     .on('meta[property="og:title"]', new SetAttribute('content', title))
     .on('meta[property="og:description"]', new SetAttribute('content', post.description))
@@ -447,8 +475,15 @@ async function article(post, env, request) {
 
 async function dynamicSitemap(env) {
   const { results } = await env.DB.prepare('SELECT lang, slug, updated_at FROM posts ORDER BY updated_at DESC').all();
-  const entries = results.map((post) => `<url><loc>${xml(urlFor(post))}</loc><lastmod>${xml(post.updated_at.slice(0, 10))}</lastmod></url>`).join('');
-  return new Response(`<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${entries}</urlset>`, { headers: { 'Content-Type': 'application/xml; charset=utf-8', 'Cache-Control': 'public, max-age=300' } });
+  const langsBySlug = new Map();
+  for (const post of results) langsBySlug.set(post.slug, [...(langsBySlug.get(post.slug) || []), post.lang]);
+  const alternates = (slug) => {
+    const langs = langsBySlug.get(slug);
+    if (langs.length < 2) return '';
+    return [...langs.map((lang) => `<xhtml:link rel="alternate" hreflang="${lang}" href="${xml(urlFor({ lang, slug }))}"/>`), `<xhtml:link rel="alternate" hreflang="x-default" href="${xml(urlFor({ lang: 'ko', slug }))}"/>`].join('');
+  };
+  const entries = results.map((post) => `<url><loc>${xml(urlFor(post))}</loc><lastmod>${xml(post.updated_at)}</lastmod>${alternates(post.slug)}</url>`).join('');
+  return new Response(`<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">${entries}</urlset>`, { headers: { 'Content-Type': 'application/xml; charset=utf-8', 'Cache-Control': 'public, max-age=300' } });
 }
 
 async function rssFeed(env, request) {
@@ -483,7 +518,7 @@ export default {
       const match = url.pathname.match(/^\/(en\/)?posts\/([a-z0-9]+(?:-[a-z0-9]+)*)\/?$/);
       if (!match) return env.ASSETS.fetch(request);
       const post = await env.DB.prepare('SELECT * FROM posts WHERE lang = ? AND slug = ?').bind(match[1] ? 'en' : 'ko', match[2]).first();
-      return post ? article(post, env, request) : new Response('Not found', { status: 404 });
+      return post ? article(post, env, request) : notFound(env, request);
     } catch (error) {
       console.error(error);
       return json({ error: 'Server error' }, 500);
