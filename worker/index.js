@@ -19,12 +19,12 @@ const pathFor = (post) => `${post.lang === 'en' ? '/en' : ''}/posts/${post.slug}
 const urlFor = (post) => `${origin}${pathFor(post)}`;
 const rowToSummary = (post) => ({ lang: post.lang, slug: post.slug, category: normalizeCategory(post.category), title: post.title, description: post.description, imageUrl: post.image_url, imageAlt: post.image_alt, tags: JSON.parse(post.tags), publishedAt: post.published_at, updatedAt: post.updated_at, url: pathFor(post) });
 
-function listingCard(post, lang) {
+function listingCard(post, lang, variant = '') {
   const category = normalizeCategory(post.category);
   const read = lang === 'ko' ? '글 읽기' : 'Read article';
-  const image = post.image_url ? `<img class="card-visual" src="${escape(post.image_url)}" alt="${escape(post.image_alt || post.title)}" loading="lazy" decoding="async" />` : '';
+  const image = post.image_url ? `<img class="card-visual" src="${escape(post.image_url)}" alt="${escape(post.image_alt || post.title)}" loading="${variant === 'featured' ? 'eager' : 'lazy'}" decoding="async" />` : '';
   const date = new Date(post.published_at).toLocaleDateString(lang === 'ko' ? 'ko-KR' : 'en-US', { year: 'numeric', month: 'long', day: 'numeric', timeZone: 'Asia/Seoul' });
-  return `<article class="post-card"><a class="card-link" href="${escape(pathFor(post))}" aria-label="${escape(`${read}: ${post.title}`)}"><div class="card-media">${image}</div><div class="card-copy"><div class="eyebrow"><span class="category-pip"></span>${escape(categoryNames[lang][category])}<span class="eyebrow-sep">/</span><time datetime="${escape(post.published_at)}">${escape(date)}</time></div><h3>${escape(post.title)}</h3><p>${escape(post.description)}</p><span class="read-link">${read} <span aria-hidden="true">↗</span></span></div></a></article>`;
+  return `<article class="post-card${variant ? ` ${variant}` : ''}"><a class="card-link" href="${escape(pathFor(post))}" aria-label="${escape(`${read}: ${post.title}`)}"><div class="card-media">${image}</div><div class="card-copy"><div class="eyebrow"><span class="category-pip"></span>${escape(categoryNames[lang][category])}<span class="eyebrow-sep">/</span><time datetime="${escape(post.published_at)}">${escape(date)}</time></div><h3>${escape(post.title)}</h3><p>${escape(post.description)}</p><span class="read-link">${read} <span aria-hidden="true">↗</span></span></div></a></article>`;
 }
 
 async function listingPage(request, env, lang) {
@@ -46,6 +46,15 @@ async function listingPage(request, env, lang) {
         if (!posts.length) return;
         const wrapper = element.getAttribute('class')?.includes('horizontal-scroll-track') ? 'scroll-item' : '';
         element.prepend(posts.map((post) => wrapper ? `<div class="${wrapper}">${listingCard(post, lang)}</div>` : listingCard(post, lang)).join(''), { html: true });
+      },
+    })
+    .on('[data-dynamic-lead]', {
+      element(element) {
+        // Lead slots hold the latest static post per category; a newer D1 post replaces it.
+        const [post] = byCategory.get(element.getAttribute('data-dynamic-lead')) || [];
+        const staticDate = Date.parse(element.getAttribute('data-published') || '');
+        if (!post || Date.parse(post.published_at) <= staticDate) return;
+        element.setInnerContent(listingCard(post, lang, element.getAttribute('data-lead-variant') || ''), { html: true });
       },
     })
     .on('[data-dynamic-empty]', {

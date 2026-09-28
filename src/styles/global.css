@@ -90,7 +90,7 @@ img { max-width: 100%; height: auto; }
 .read-link { display: inline-flex; gap: .65rem; align-items: center; margin-top: 1.55rem; font-size: .72rem; font-weight: 850; text-transform: uppercase; letter-spacing: .075em; }
 .read-link span { color: var(--accent); font-size: 1rem; }
 
-/* Lead Section (AGI Head Post Large + 2 Sub Posts) */
+/* Lead Section (AI head post + mobility / IT devices sub posts) */
 .lead-section { padding-block: 2.5rem 3.5rem; border-bottom: 1px solid var(--line); }
 .lead-grid { display: grid; grid-template-columns: 1.32fr 1fr; gap: 1.4rem; align-items: stretch; }
 
@@ -103,7 +103,10 @@ img { max-width: 100%; height: auto; }
 .head-post .card-copy p { font-size: 1rem; line-height: 1.7; color: var(--muted); }
 
 .sub-posts { display: flex; flex-direction: column; gap: 1.3rem; justify-content: space-between; }
+.sub-posts .sub-slot { flex: 1; display: flex; min-height: 0; }
 .sub-posts .post-card { flex: 1; min-height: 0; }
+.head-post:not(:has(.post-card)), .sub-slot:not(:has(.post-card)) { display: none; }
+.lead-grid:not(:has(.head-post .post-card)) { grid-template-columns: 1fr; }
 .sub-posts .card-link { display: flex; height: 100%; }
 .sub-posts .card-media { width: 175px; height: 100%; min-height: 140px; flex-shrink: 0; border-bottom: 0; border-right: 1px solid var(--line); }
 .sub-posts .card-copy { flex: 1; padding: 1.2rem 1.4rem; display: flex; flex-direction: column; justify-content: space-between; }
