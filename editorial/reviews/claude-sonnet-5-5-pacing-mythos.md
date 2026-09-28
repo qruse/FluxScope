@@ -1,6 +1,6 @@
 # Review: claude-sonnet-5-5-pacing-mythos
 - Checked date/time and timezone: 2026-09-28, 08:25–08:45 UTC (17:25–17:45 Asia/Seoul)
-- Live URLs and storage route (static/API): new D1 article via API, `/posts/claude-sonnet-5-5-pacing-mythos/` and `/en/posts/claude-sonnet-5-5-pacing-mythos/`; not yet published
+- Live URLs and storage route (static/API): new D1 article via API, `/posts/claude-sonnet-5-5-pacing-mythos/` and `/en/posts/claude-sonnet-5-5-pacing-mythos/`; published 2026-09-28T11:10:32.341Z by Codex with `publish-post.mjs`
 - Reader question: does a Sonnet 5.5 launch weeks after "We Must Pace the Frontier" contradict Anthropic's pacing pledge, and is a stronger model being held back?
 - Supported conclusion: no contradiction by the essay's own definition (pacing is not halting; outside evaluators tested Opus 5.5); the gated model is Mythos, which is the same model as public Fable; Opus 5.5 beats Fable 5.1 on all eight published percentage rows; an internal Fable 5.5 is unconfirmed; the leaked Sonnet 5.5 specs equal Sonnet 5's; the essay itself frames AI as a US–China security race
 - Scope: Anthropic lineup and statements as of 2026-09-28; API list prices in USD per 1M tokens (standard, no batch/cache)
@@ -25,17 +25,17 @@
 | "Beats GPT-6 Sol" claims from testers | Rumor | TestingCatalog (Chetaslua video mention) | Read report only | Stated as unpublished evaluation |
 
 ## Community evidence
-Codex adds this section and the rows below, per AGENTS §7.
-
 | Published paraphrase | Exact thread/comment URL | Context and limits | Checked on |
 | --- | --- | --- | --- |
+| An r/OpenAI commenter read the pacing essay as a request to slow rivals down until Anthropic caught up, a sarcastic interpretation of its timing | https://www.reddit.com/r/OpenAI/comments/1wee3nt/comment/p9cween/ | Opened and paraphrased by Codex; Reddit returns 403 to Claude's environment, so Claude checked only that the live bullet and link match this row | 2026-09-28 (Codex) |
+| In r/ClaudeAI, centminmod shared a CVP approval walkthrough, but the program text they quoted still described Mythos access as a future addition | https://www.reddit.com/r/ClaudeAI/comments/1w6sp4h/trusted_access_to_claude_mythos_51_fable_51/ | Opened and paraphrased by Codex; Reddit returns 403 to Claude's environment, so Claude checked only that the live bullet and link match this row | 2026-09-28 (Codex) |
 
 ## Images
 | Asset | Purpose/type | Data provenance | Dimensions/bytes | Visually checked |
 | --- | --- | --- | --- | --- |
-| `claude-sonnet-5-5-pacing-mythos-notebook.webp` | sketch thumbnail | Codex, from the brief below | pending | pending |
-| `claude-sonnet-5-5-pacing-timeline.webp` | chart: 2026 release timeline vs pacing essay | Anthropic pages above | 1440×810, 42,698 B | Yes: 7 events, dates, "10 days" arrow Sep 12→Sep 22, grey "Coming weeks", footnote |
-| `claude-sonnet-5-5-opus-vs-fable.webp` | chart: 8 benchmark rows Opus 5.5 vs Fable 5.1 | Opus 5.5 page table | 1440×810, 52,908 B | Yes: 16 values, 8 point gaps recomputed, $ prices, zero baseline, GDPval note |
+| `claude-sonnet-5-5-pacing-mythos-notebook.webp` → `/media/73017419-6b58-498b-9b08-45bc114e375e.webp` | sketch thumbnail | Codex, from the brief below; uploaded through `/api/images`, no Git file | 1536×1024, 114,098 B | Yes: title, speedometer with red needle, SLOW DOWN sign, four callouts, doc -> magnifier -> rocket; text matches the brief |
+| `claude-sonnet-5-5-pacing-timeline.webp` → `/media/93914099-fe8d-47a0-9544-605bfba7bf8f.webp` (Git copy removed; byte-identical) | chart: 2026 release timeline vs pacing essay | Anthropic pages above | 1440×810, 42,698 B | Yes: 7 events, dates, "10 days" arrow Sep 12→Sep 22, grey "Coming weeks", footnote |
+| `claude-sonnet-5-5-opus-vs-fable.webp` → `/media/99ab7bdd-9624-4210-bf4e-7c8721d69bb1.webp` (Git copy removed; byte-identical) | chart: 8 benchmark rows Opus 5.5 vs Fable 5.1 | Opus 5.5 page table | 1440×810, 52,908 B | Yes: 16 values, 8 point gaps recomputed, $ prices, zero baseline, GDPval note |
 
 ## Sketch brief
 ```
@@ -61,6 +61,6 @@ Output: public/images/posts/ai/claude-sonnet-5-5-pacing-mythos-notebook.webp
 - Korean-English parity: same numbers, dates, links and qualifications
 - Related article: the Astra vs Opus 5.5 same-prompt article (same language each) supports "per-token price vs cost per task"
 - Automatic check command and actual result: `publish-post.mjs --dry-run` passed both languages with a temporary stand-in thumbnail (removed afterwards); `npm run check` exit 0
-- Mobile/desktop visual check and actual result: pending
-- Live URLs/listings/images/language switch/search/feed checks: pending
-- Remaining limitations: essay day (Sep 12) from secondary reports; leak has no primary source; community section and sketch pending from Codex
+- Mobile/desktop visual check and actual result: 2026-09-28, Chromium at 390 px and 1280 px, ko and en: no page-wide overflow, 3/3 images loaded
+- Live URLs/listings/images/language switch/search/feed checks: 2026-09-28: both URLs 200 with ko/en/x-default hreflang; language switch links both editions; thumbnail and body `/media/` images 200 `image/webp`; listed on `/`, `/en/`, `/ai/`, `/en/ai/`, both RSS feeds and `/dynamic-sitemap.xml`; live body equals the draft plus the community section; local payloads synced to live
+- Remaining limitations: essay day (Sep 12) from secondary reports; leak has no primary source

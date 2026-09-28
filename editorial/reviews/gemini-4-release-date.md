@@ -1,6 +1,6 @@
 # Review: gemini-4-release-date
 - Checked date/time and timezone: 2026-09-28, 08:00–08:20 UTC (17:00–17:20 Asia/Seoul)
-- Live URLs and storage route (static/API): new D1 article via API, `/posts/gemini-4-release-date/` and `/en/posts/gemini-4-release-date/`; not yet published
+- Live URLs and storage route (static/API): new D1 article via API, `/posts/gemini-4-release-date/` and `/en/posts/gemini-4-release-date/`; published 2026-09-28T11:08:46.783Z by Codex with `publish-post.mjs`
 - Reader question: when is Gemini 4 actually coming out, and are the rumored performance and price worth waiting for when Antigravity is the tool it arrives in?
 - Supported conclusion: no official date; Google says post-training and "much earlier" than year-end; Polymarket prices 79% by Oct 31; leaked scores and price are unsourced; keep a working Claude Code/Codex setup and test Gemini 4 by API once a model page exists
 - Scope: Gemini 4 (unreleased); official comparisons are standard API list prices (Gemini 3.8 Flash, Claude Opus 5.5, GPT-6 Astra short context), USD per 1M tokens
@@ -24,17 +24,18 @@
 | Users hit limits within an hour; limits tripled twice in a week; users said still below previous levels | Reported | https://9to5google.com/2026/05/21/google-has-tripled-gemini-usage-limits-for-antigravity-twice/ | Read | Attributed to 9to5Google |
 
 ## Community evidence
-Codex adds this section and the rows below, per AGENTS §7.
-
 | Published paraphrase | Exact thread/comment URL | Context and limits | Checked on |
 | --- | --- | --- | --- |
+| Nov4Saki in r/GoogleGeminiAI dismissed the leaked benchmark figures as recycled speculation, rather than treating an Arena sighting as proof | https://www.reddit.com/r/GoogleGeminiAI/comments/1wqze2k/comment/pc8qqmy/ | Opened and paraphrased by Codex; Reddit returns 403 to Claude's environment, so Claude checked only that the live bullet and link match this row | 2026-09-28 (Codex) |
+| In an earlier Antigravity discussion, sdexca said Claude Code offered steadier tooling and better limits for their work, a personal report from before these Gemini 4 leaks | https://www.reddit.com/r/google_antigravity/comments/1t59ng9/is_there_any_reason_to_still_use_antigravity/ | Opened and paraphrased by Codex; Reddit returns 403 to Claude's environment, so Claude checked only that the live bullet and link match this row | 2026-09-28 (Codex) |
+| Another participant in that older thread, pjerky, reported good results building web apps with Antigravity, so even that discussion was not a unanimous verdict | https://www.reddit.com/r/google_antigravity/comments/1t59ng9/is_there_any_reason_to_still_use_antigravity/ | Opened and paraphrased by Codex; Reddit returns 403 to Claude's environment, so Claude checked only that the live bullet and link match this row | 2026-09-28 (Codex) |
 
 ## Images
 | Asset | Purpose/type | Data provenance | Dimensions/bytes | Visually checked |
 | --- | --- | --- | --- | --- |
-| `gemini-4-release-date-notebook.webp` | sketch thumbnail | Codex, from the brief below | pending | pending |
-| `gemini-4-release-odds.webp` | chart: release odds by deadline | Polymarket gamma API, 2026-09-28 08:15 UTC | 1440×810, 31,898 B | Yes: titles, 7 deadlines, 4 expired labels, 2.25/79/94.5%, zero baseline, footnote |
-| `gemini-4-price-context.webp` | chart: output price per 1M tokens | Google, Anthropic, OpenAI official pages; rumor hatched and labeled | 1440×810, 44,174 B | Yes: all five $ labels, RUMOR label, zero baseline, footnote |
+| `gemini-4-release-date-notebook.webp` → `/media/c156996f-7d63-4360-99ba-4d7080955207.webp` | sketch thumbnail | Codex, from the brief below; uploaded through `/api/images`, no Git file | 1536×1024, 116,686 B | Yes: title, SOON calendar with red "?", three callouts, brain -> shield -> laptop; text matches the brief |
+| `gemini-4-release-odds.webp` → `/media/b0a13f71-35f7-46de-8eba-9491af1aac23.webp` (Git copy removed; byte-identical) | chart: release odds by deadline | Polymarket gamma API, 2026-09-28 08:15 UTC | 1440×810, 31,898 B | Yes: titles, 7 deadlines, 4 expired labels, 2.25/79/94.5%, zero baseline, footnote |
+| `gemini-4-price-context.webp` → `/media/5e9013f8-3e97-43fa-843b-c85e41b43c51.webp` (Git copy removed; byte-identical) | chart: output price per 1M tokens | Google, Anthropic, OpenAI official pages; rumor hatched and labeled | 1440×810, 44,174 B | Yes: all five $ labels, RUMOR label, zero baseline, footnote |
 
 ## Sketch brief
 ```
@@ -59,7 +60,7 @@ Output: public/images/posts/ai/gemini-4-release-date-notebook.webp
 - Line-by-line cut pass (AGENTS §4): done on both languages; headings alone: "Much earlier" still leaves three months → bettors lost four deadlines → the leak wore a used name → rumored price between Flash and Opus → a better model does not fix Antigravity
 - Korean-English parity: same numbers, dates, links and qualifications
 - Related article search and selected link: the Astra vs Opus 5.5 same-prompt article (same language each) directly supports "per-token price vs cost per task"
-- Automatic check command and actual result: `publish-post.mjs --dry-run` passed both languages with a temporary stand-in thumbnail (removed afterwards; the real sketch is pending); `npm run check` exit 0
-- Mobile/desktop visual check and actual result: pending
-- Live URLs/listings/images/language switch/search/feed checks: pending
-- Remaining limitations: The Information original paywalled; leak has no primary source; community section and sketch pending from Codex
+- Automatic check command and actual result: `publish-post.mjs --dry-run` passed both languages with a temporary stand-in thumbnail (removed afterwards); `npm run check` exit 0
+- Mobile/desktop visual check and actual result: 2026-09-28, Chromium at 390 px and 1280 px, ko and en: no page-wide overflow, 3/3 images loaded
+- Live URLs/listings/images/language switch/search/feed checks: 2026-09-28: both URLs 200 with ko/en/x-default hreflang; language switch links both editions; thumbnail and body `/media/` images 200 `image/webp`; listed on `/`, `/en/`, `/ai/`, `/en/ai/`, both RSS feeds and `/dynamic-sitemap.xml`; live body equals the draft plus the community section; local payloads synced to live
+- Remaining limitations: The Information original paywalled; leak has no primary source
