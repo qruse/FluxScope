@@ -42,3 +42,12 @@
 - API structure passed; one Korean emphasis delimiter issue caught and corrected before publication
 - Full npm run check passed: 12 regression cases, bilingual editorial validation, Astro zero errors/warnings, 43-page build/internal links and performance budgets. Stale generated dist CSS initially doubled the audit total; moving the old generated build aside produced a clean 36.0KB CSS audit without changing any budget
 - 390px visual verification unavailable: current cloud-browser API has no viewport control. Existing responsive template unchanged; desktop production inspection to follow. This limitation is not a claimed mobile pass
+
+## Production release
+- Source commit b9537c452d428240c49dcd0af6d29874919c217a; GitHub integrity check succeeded; Cloudflare deployed the license resource (200, exact notice content)
+- Authenticated existing-post updates succeeded: en updatedAt 2026-09-28T05:36:00.915Z; ko 2026-09-28T05:36:08.059Z. Original publishedAt preserved in both; URLs unchanged
+- Both live pages HTTP200 with matching title, all three new image URLs, Sunward/Tidewater prose, source notices, language-switch links and updated schema dates
+- All three live images returned 200 image/webp and loaded at the expected dimensions. Desktop screenshots inspected for hero, body text and both real project examples; no page-wide overflow at 1363px viewport
+- Clicked EN language switch and confirmed matching English headline, summary and dates
+- Home and AI category in both languages, both API search results and RSS contain the new title. Dynamic sitemap includes the existing slug; license text is public at /licenses/astra-opus-examples.txt
+- Mobile visual limitation remains as recorded above; not a full cross-device test
