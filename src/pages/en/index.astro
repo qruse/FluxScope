@@ -6,10 +6,10 @@ import { majorCategories, majorCategoryPath, publishedPosts } from '../../lib/si
 
 const allEnPosts = publishedPosts(await getCollection('posts'), 'en');
 
-const headPost = allEnPosts.find((p) => p.data.category === 'ai') || allEnPosts[0];
-
-// Sub posts 1 and 2 on the right
-const subPosts = allEnPosts.filter((p) => p.id !== headPost.id).slice(0, 2);
+// Lead: one slot per major category. The Worker swaps in a newer D1 post by category.
+const latestIn = (category: keyof typeof majorCategories) => allEnPosts.find((p) => p.data.category === category);
+const subSlots = (['mobility', 'it-devices'] as const).map((category) => ({ category, post: latestIn(category) }));
+const headPost = latestIn('ai');
 ---
 <BaseLayout lang="en">
   <!-- 1. Lead Section -->
@@ -17,12 +17,14 @@ const subPosts = allEnPosts.filter((p) => p.id !== headPost.id).slice(0, 2);
   <section class="lead-section">
     <div class="shell">
       <div class="lead-grid">
-        <div class="head-post">
-          <PostCard post={headPost} featured={true} />
+        <div class="head-post" data-dynamic-lead="ai" data-lead-variant="featured" data-published={headPost?.data.publishedAt.toISOString()}>
+          {headPost && <PostCard post={headPost} featured={true} />}
         </div>
         <div class="sub-posts">
-          {subPosts.map((post) => (
-            <PostCard post={post} compact={true} />
+          {subSlots.map(({ category, post }) => (
+            <div class="sub-slot" data-dynamic-lead={category} data-lead-variant="compact" data-published={post?.data.publishedAt.toISOString()}>
+              {post && <PostCard post={post} compact={true} />}
+            </div>
           ))}
         </div>
       </div>
