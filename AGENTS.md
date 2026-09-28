@@ -123,12 +123,14 @@ The thumbnail must contain the product/model AND 2–4 core facts or a meaningfu
 Declare `visualTypes` in static frontmatter and API payloads, ordered **thumbnail first, then inline body images in reading order**. Length must match the image count; first and only sketch must be index 0. Use inline Markdown images with distinct URLs; raw HTML/reference-style images are rejected to keep validation unambiguous. These types are source/preflight metadata; they are not displayed publicly or persisted in D1.
 
 
-Division of work (Claude cannot generate raster images or open Reddit from its environment):
-- Claude writes the article, body visuals and review record, then adds to `editorial/reviews/<slug>.md` a `## Sketch brief` (product/model, 2–4 exact facts or the relationship, every English word/number to appear, USD labels, 3:2 at 1536×1024) and a `## Reddit brief` (reader question, 2–3 search queries, subreddits)
-- Claude leaves the community section out of its draft entirely; Codex adds it
-- Codex does the Reddit research: opens the originals, inserts the `## 커뮤니티 반응` / `## Community Reactions` section immediately before Q&A with 2–4 bullets for both languages in the one-sentence style, and records exact URLs and checked paraphrases in the review record
-- Codex generates the sketch from that brief, saves it as `public/images/posts/<category>/<slug>-notebook.webp` (≤1600 px, <250 KiB target, 500 KiB cap) on a branch and reports the path; apart from the community bullets it does not edit article text
-- Claude reads the image, checks every word and number against the brief, rejects or re-requests it on any error, then wires it in and publishes
+Division of work (Claude cannot generate raster images or open Reddit from its environment). **The handoff channel is the publish script, the image upload API and D1 — never Git.** Pushing an article asset to Git forces a site build for every post, which is exactly what section 9 avoids.
+
+1. **Claude — draft.** Writes the article (without the community section), body visuals, both payloads and `editorial/reviews/<slug>.md` with a `## Sketch brief` (product/model, 2–4 exact facts or the relationship, every English word/number to appear, USD labels, 3:2 at 1536×1024) and a `## Reddit brief` (reader question, 2–3 search queries, subreddits). Uploads each finished body image with `curl -sS -X POST https://hslblog.com/api/images -H "Authorization: Bearer $PUBLISH_TOKEN" -H 'Content-Type: image/webp' --data-binary @<file>` and puts the returned `/media/` URL in both payloads, so no image goes into Git. Runs `--dry-run`, commits only the two payloads and the review record to its working branch, pushes that branch (a branch push does not build; only `main` deploys), and tells the user the branch name and slug(s). The payload's `imageUrl` names the sketch's future local path `/images/posts/<category>/<slug>-notebook.webp`; that file does not exist yet
+2. **Codex — sketch.** Checks out that branch, generates the sketch from the brief with the prompt below, and saves it locally at exactly that path. **Do not commit or push it**
+3. **Codex — community.** Opens the Reddit originals and inserts `## 커뮤니티 반응` / `## Community Reactions` immediately before the Q&A heading in both payloads: 2–4 bullets, same reactions in the same order in both languages, one sentence each, link at the end. Apart from these bullets, do not edit article text, title, description, tags, alt text or `visualTypes`
+4. **Codex — publish.** Runs `PUBLISH_TOKEN=… node scripts/publish-post.mjs editorial/api-posts/en-<slug>.json editorial/api-posts/ko-<slug>.json --dry-run`, then the same command without `--dry-run`. The script uploads the local sketch (and any body image not yet live) through `POST /api/images`, rewrites both payloads to `/media/<uuid>.webp` and writes D1. No build, PR or merge
+5. **Codex — report**, in one message: the slugs published; each sketch's `/media/` URL, pixel size and bytes; and for every community bullet the exact Reddit URL and what the original post or comment actually says. Codex does not need to commit anything
+6. **Claude — verify and record.** Reads each live sketch from its `/media/` URL and checks every word and number against the brief. On any error, requests a new sketch; the fix is republished with the same command and the replaced upload removed with `DELETE /media/<uuid>.webp`. Runs the section 11 live checks. Copies the live bodies and `/media/` URLs back into the local payloads, fills the review record's Community evidence, Images and live-check rows, and commits them to its branch as history
 
 Sketch brief format (Claude fills it; values only, no prose):
 
@@ -138,7 +140,7 @@ Hero doodle: <one object: the product itself or a simple stand-in>
 Callouts (2–4, exact text): "<callout 1>" | "<callout 2>" | "<callout 3>"
 Bottom mini-flow (optional, ≤3 icons + arrows): <icon> -> <icon> -> <icon>
 Red accent on: <one thing to shade/mark in red>
-Output: public/images/posts/<category>/<slug>-notebook.webp
+Output: public/images/posts/<category>/<slug>-notebook.webp (local file only; uploaded by publish-post.mjs)
 ```
 
 Codex sketch prompt — paste as is, replacing only the `{…}` fields from the brief. Reference look: `public/images/posts/mobility/tesla-roadster-reveal-notebook.webp`
@@ -158,7 +160,7 @@ Landscape 3:2, 1536x1024.
 
 - Generate 2–4 candidates, keep the one whose text matches the brief character for character; regenerate rather than hand-fixing text. Currency always `$`
 - Convert with Pillow: `Image.open(src).convert('RGB').resize((1536,1024)).save(out,'WEBP',quality=82,method=6)`; lower quality until ≤250 KiB target (500 KiB cap)
-- Commit only the `.webp` on a branch, report path, pixel size and file size; do not touch Markdown, payloads or D1
+- Never commit the `.webp`; `publish-post.mjs` uploads it to `/media/`. Report the `/media/` URL, pixel size and file size (handoff step 5)
 
 - Exactly **one rough paper-notebook sketch per topic**, always the thumbnail (`image.src` for static, `imageUrl` for API)
 - Use the same sketch for both languages. Never repeat it in the body
