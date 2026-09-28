@@ -1,5 +1,5 @@
 ---
-title: "iPhone 18 Pro: Faster Benchmarks, Upgrade Case Still Pending"
+title: "iPhone 18 Pro Is 33% Faster. A Reason to Spend $1,199? Hmm.."
 description: "A stronger GPU is useful. Whether it earns a $1,199 upgrade depends on your games: separating measured gains, stability ratios and the checks that matter."
 publishedAt: 2026-09-26
 updatedAt: 2026-09-27T07:30:00Z

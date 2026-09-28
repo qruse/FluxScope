@@ -5,7 +5,6 @@ export function validateEditorial(post) {
   add(['ko', 'en'].includes(post.lang), 'lang must be ko or en');
   add(['ai', 'mobility', 'it-devices'].includes(post.category), 'category must be ai, mobility or it-devices');
   add(typeof post.title === 'string' && post.title.trim().length >= 8 && [...post.title.trim()].length <= 70, 'title must contain 8–70 characters');
-  add(post.lang !== 'ko' || /[음임함됨짐봄]$/.test(post.title?.trim() || ''), 'Korean title must end in note-style 음슴체 (음/임/함/됨/짐/봄)');
   add(typeof post.description === 'string' && post.description.trim().length >= 50 && post.description.length <= 180, 'description must contain 50–180 characters');
   add(Array.isArray(post.tags) && post.tags.length >= 5 && post.tags.length <= 15 && new Set(post.tags).size === post.tags.length && post.tags.every(t => typeof t === 'string' && /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(t)), 'use 5–15 distinct lowercase kebab-case tags');
   const imageUrl = post.imageUrl || post.image?.src;

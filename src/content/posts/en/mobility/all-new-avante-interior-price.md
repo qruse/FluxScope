@@ -1,5 +1,5 @@
 ---
-title: "Tesla Roadster: Another Reveal Date, Still Waiting for a Delivery Date"
+title: "Tesla Roadster: 1.9 Seconds to 60, Nine Years and Counting to Delivery"
 description: "Tesla has a new Roadster reveal countdown. Separate the old performance claims, the $50,000 US reservation and the evidence that would make this a production car"
 publishedAt: 2026-09-26
 updatedAt: 2026-09-28T05:00:14Z

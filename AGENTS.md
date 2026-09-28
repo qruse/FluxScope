@@ -52,7 +52,8 @@ The defining voice is **cynical AND humorous**, not optional seasoning. Question
 
 Korean is primarily short bullets with natural 반말/음슴체. One point per bullet; normally one or two short sentences. Do not force all sentences into the same ending. English is natural concise field notes, not literal Korean syntax.
 
-- Put the model/product near the start of the title; state a supported judgment. Korean titles, descriptions and narrative headings use natural 음슴체 (e.g. `검수는 내 몫임`, `지갑은 설득 안 됨`, `예산도 커짐`); English titles use concise field-note phrasing, not artificial Korean grammar
+- Titles are headlines, not memo lines. Put the model/product near the start, then a sharp hook: a pointed question, a blunt contrast, a decisive number or a verdict some readers will dispute. The article must pay the hook off with evidence; no bait the body does not answer, no implied test results or defects
+- Korean titles do **not** use 음슴체; write them as natural headline phrasing (question, contrast, noun ending). Korean descriptions and narrative headings still use natural 음슴체 (e.g. `검수는 내 몫임`, `예산도 커짐`). English titles use punchy headline phrasing, not artificial Korean grammar
 - Rebuild a confused draft around ONE reader question before polishing sentences. Every section must advance that question; delete tangents, repeated caveats and jokes that need their own explanation
 - Humor follows the concrete fact. Prefer 2–4 restrained observations over an analogy in every bullet; never let sarcasm imply unsupported test results or product defects
 - The description gives the actual angle and substance, not “a comprehensive analysis”
