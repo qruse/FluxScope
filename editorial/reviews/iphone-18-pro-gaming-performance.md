@@ -51,3 +51,10 @@
 - Reopened Reddit originals and linked every reaction publicly. AI: omissions report and ten tasks × three runs; iPhone: longevity vs battery/camera upgrade priorities with verified comment permalinks; Avante: screen integration vs retained buttons in the reveal thread
 - Removed unsupported implications: a cheap rate does not require equal token use to save money; equal cache-read rates do not determine the whole bill; ratio similarity does not imply equal absolute performance; heated seats do not require all optional packages
 - Preserved USD policy and frozen Avante FX to match unchanged charts. No image regeneration or asset modification
+
+## Rewrite — one-sentence bullets (2026-09-28, Claude)
+- Title kept; body rewritten in one-sentence bullets in both languages; images unchanged; updatedAt advanced
+- Re-opened https://www.tomsguide.com/phones/iphones/iphone-18-pro-and-pro-max-review: Solar Bay Unlimited 17 Pro 46.4 fps, 18 Pro 61.93 fps (review states 33%); Wild Life Extreme stability 17 Pro 61.1%, 18 Pro 62.8%, 17 Pro Max 65.2%, 18 Pro Max 79.4%
+- Re-opened Apple Newsroom: 7-core GPU up to 40% faster than A19 Pro; redesigned vapor chamber up to 40% sustained gain; $1,199 for 256GB
+- Community bullets unchanged in substance (Codex-verified comment permalinks); Reddit not reachable from this session
+- `npm run check` passed

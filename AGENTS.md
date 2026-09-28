@@ -114,7 +114,8 @@ Declare `visualTypes` in static frontmatter and API payloads, ordered **thumbnai
 
 Division of work (Claude cannot generate raster images or open Reddit from its environment):
 - Claude writes the article, body visuals and review record, then adds to `editorial/reviews/<slug>.md` a `## Sketch brief` (product/model, 2–4 exact facts or the relationship, every English word/number to appear, USD labels, 3:2 at 1536×1024) and a `## Reddit brief` (reader question, 2–3 search queries, subreddits)
-- Codex does the Reddit research: opens the originals, writes the 2–4 `## 커뮤니티 반응` / `## Community Reactions` bullets for both languages in the one-sentence style, and records exact URLs and checked paraphrases in the review record
+- Claude leaves the community section out of its draft entirely; Codex adds it
+- Codex does the Reddit research: opens the originals, inserts the `## 커뮤니티 반응` / `## Community Reactions` section immediately before Q&A with 2–4 bullets for both languages in the one-sentence style, and records exact URLs and checked paraphrases in the review record
 - Codex generates the sketch from that brief, saves it as `public/images/posts/<category>/<slug>-notebook.webp` (≤1600 px, <250 KiB target, 500 KiB cap) on a branch and reports the path; apart from the community bullets it does not edit article text
 - Claude reads the image, checks every word and number against the brief, rejects or re-requests it on any error, then wires it in and publishes
 
