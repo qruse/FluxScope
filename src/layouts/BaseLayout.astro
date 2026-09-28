@@ -57,6 +57,13 @@ if (currentLang === 'en') {
   enPath = pathname === '/' ? '/en/' : `/en${pathname}/`;
 }
 
+// Home pages declare the site name so search engines show and match "HSL의 블로그" / "HSL's Blog".
+const websiteJsonLd = pathname === '/' || pathname === '/en' ? {
+  '@context': 'https://schema.org', '@type': 'WebSite', name: defaultTitle,
+  alternateName: [...new Set(['HSL의 블로그', "HSL's Blog", 'HSL Blog', 'hslblog'])].filter((name) => name !== defaultTitle),
+  url: new URL(withBase(currentLang === 'en' ? '/en/' : '/'), Astro.site).href, inLanguage: currentLang,
+} : undefined;
+
 if (pathname === '/404' || pathname === '/404.html') {
   koPath = '/';
   enPath = '/en/';
@@ -88,7 +95,7 @@ const searchUrl = withBase(currentLang === 'en' ? '/en/search/' : '/search/');
     <link rel="alternate" type="application/rss+xml" title={`${site.name} RSS`} href={withBase('/rss.xml')} />
     <link rel="sitemap" href={withBase('/sitemap-index.xml')} />
     <meta property="og:type" content={type} />
-    <meta property="og:site_name" content={site.name} />
+    <meta property="og:site_name" content={defaultTitle} />
     <meta property="og:locale" content={currentLang === 'ko' ? 'ko_KR' : 'en_US'} />
     <meta property="og:locale:alternate" content={currentLang === 'ko' ? 'en_US' : 'ko_KR'} />
     <meta property="og:title" content={fullTitle} />
@@ -104,6 +111,7 @@ const searchUrl = withBase(currentLang === 'en' ? '/en/search/' : '/search/');
     <meta name="twitter:image" content={imageUrl.href} />
     {publishedAt && <meta property="article:published_time" content={publishedAt.toISOString()} />}
     {updatedAt && <meta property="article:modified_time" content={updatedAt.toISOString()} />}
+    {websiteJsonLd && <script type="application/ld+json" set:html={JSON.stringify(websiteJsonLd).replace(/</g, '\\u003c')} />}
     {jsonLd && <script type="application/ld+json" set:html={JSON.stringify(jsonLd).replace(/</g, '\\u003c')} />}
     <script is:inline>
       addEventListener('load', () => { try { if (navigator.sendBeacon && !navigator.webdriver) navigator.sendBeacon('/api/views', JSON.stringify({ page: location.pathname })); } catch {} });
