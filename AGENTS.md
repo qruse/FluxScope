@@ -154,18 +154,18 @@ Red accent on: <one thing to shade/mark in red>
 Output: public/images/posts/<category>/<slug>-notebook.webp (local file only; uploaded by publish-post.mjs)
 ```
 
-Codex sketch prompt — paste as is, replacing only the `{…}` fields from the brief. Reference look: `public/images/posts/mobility/tesla-roadster-reveal-notebook.webp`
+Codex sketch prompt — paste as is, replacing only the `{…}` fields from the brief. Quality baseline: the Grok 5 (`/media/da169d17-f27c-475a-a0f9-93fdbbaf4f4e.webp`) and second-tier AI (`/media/accced3f-9e07-425c-bc0d-1b09e40bf31c.webp`) thumbnails. Keep their legibility and information density, but draw noticeably rougher, like a real person's quick pen notes (user feedback, 2026-09-29)
 
 ```
 A casual phone photo, taken from straight above in soft daylight, of one page of cheap cream grid notebook paper (faint grey 5 mm grid, paper fills the whole frame, no desk, no props, no hands).
 Everything is drawn freehand with a blue ballpoint pen, with one red pen used only for shading {red accent}.
-Top center: the title "{Product}" in large, slightly uneven hand-lettered capitals, underlined twice with a wobbly line.
-Center: one quick crude sketch of {hero doodle}, loose hatching, a few retraced lines, slightly lopsided, clearly a notebook doodle rather than a technical drawing.
+Top center: the title "{Product}" in large, hurried hand-lettered capitals of slightly different sizes, a couple of letters leaning, underlined twice with a wobbly line that overshoots.
+Center: one quick crude sketch of {hero doodle}, drawn fast in under a minute: wobbly lines that overshoot corners, slightly wrong perspective, scribbled uneven hatching, a few retraced lines, clearly a notebook doodle rather than a technical drawing.
 Below it, one row of short hand-lettered notes, each underlined once, spaced apart: {callout 1} | {callout 2} | {callout 3}
 Bottom center (small): {mini-flow as simple doodle icons joined by hand-drawn arrows}
 All text is English, spelled exactly as given, with no other words, numbers, labels or watermarks anywhere (a maker badge drawn on the product itself is fine). Every word and number must be clearly legible.
-Plenty of empty grid space; slightly uneven baselines; imperfect but neat handwriting.
-Avoid: polished infographic cards, symmetric panels, printed fonts, calligraphy, 3D, glossy rendering, stickers, color fills beyond the red accent, blur or heavy grunge.
+Plenty of empty grid space; drifting baselines; hurried, imperfect but fully legible handwriting with uneven letter sizes and stroke pressure.
+Avoid: polished infographic cards, symmetric panels, printed fonts, calligraphy, ruler-straight lines, uniform stroke weight, perfect perspective, even hatching, 3D, glossy rendering, stickers, color fills beyond the red accent, blur or heavy grunge.
 Landscape 3:2, 1536x1024.
 ```
 
@@ -175,7 +175,7 @@ Landscape 3:2, 1536x1024.
 
 - Exactly **one rough paper-notebook sketch per topic**, always the thumbnail (`image.src` for static, `imageUrl` for API)
 - Use the same sketch for both languages. Never repeat it in the body
-- Preserve the approved information density; lower polish only slightly (roughly 10–15%): uneven baselines, wobbly shapes and occasional retraced lines. Keep every key word and number legible. Never blur, heavily distress or remove facts to imitate amateur work
+- Preserve the approved information density; draw it rougher than the quality baseline above (roughly 20–30% less polish): hurried lettering, wobbly overshooting lines, imperfect perspective, scribbled hatching and retraced lines. Keep every key word and number legible. Never blur, heavily distress or remove facts to imitate amateur work
 - Look: an ordinary phone photograph of cheap grid paper, two or three crude pen doodles, uneven lines, short legible words and plenty of empty space
 - Avoid polished card layouts, symmetric infographic panels, studio props, beautiful calligraphy, glossy 3D art and generic AI decoration
 - The sketch explains a concept, not unverified product internals or measurements. Add a nearby qualification if it could be mistaken for a real device drawing or test
