@@ -1,0 +1,17 @@
+{
+  "checkedAt": "2026-09-28T14:00:00+09:00",
+  "roadster": {
+    "url": "https://www.tesla.com/roadster",
+    "targetTime": "2026-10-02T00:30:00.000+00:00",
+    "sha256": "18cea61db6bef929121d2bd9c71e6040094688d7264de28adb70eb505c48d8b4"
+  },
+  "reservation": {
+    "url": "https://www.tesla.com/roadster/reserve",
+    "amount_general": {
+      "initial": 5000,
+      "second": 45000
+    },
+    "paymentTerms": "Initial credit card payment, second wire transfer due within 10 days; reservation not final until wire received",
+    "sha256": "f21c053938c469d2e701abf7ede50d22bd1c05b126174590e3410265839bcbad"
+  }
+}

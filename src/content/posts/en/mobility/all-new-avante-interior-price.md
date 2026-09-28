@@ -1,94 +1,80 @@
 ---
-title: "New Avante: Better Cabin, More Work for the Options Budget"
-description: "The new Avante improves space and equipment, but the cheaper entry trim is gone. Following a Korean Modern from its base price to the features you actually want."
+title: "Tesla Roadster: Another Reveal Date, Still Waiting for a Delivery Date"
+description: "Tesla has a new Roadster reveal countdown. Separate the old performance claims, the $50,000 US reservation and the evidence that would make this a production car"
 publishedAt: 2026-09-26
-updatedAt: 2026-09-27T07:30:00Z
+updatedAt: 2026-09-28T05:00:14Z
 category: mobility
-tags: [all-new-avante, hyundai, compact-sedan, cabin-design, pleos-connect, car-pricing]
+tags: [tesla, roadster, electric-sports-car, ev-performance, vehicle-launch, reservation]
 author: HSL
 image:
-  src: /images/posts/mobility/all-new-avante-price-options-notes-v2.webp
-  width: 1500
-  height: 1000
-  alt: "Avante notebook: approximately $17,700 plus $480 seat bundle, $709 map bundle and $258 cluster equals $19,147, converted Korean prices"
+  src: /images/posts/mobility/tesla-roadster-reveal-notebook.webp
+  width: 1536
+  height: 1024
+  alt: "Tesla Roadster notebook separating the 2017 and 2026 reveals from delivery and verified specifications"
 draft: false
 lang: en
-visualTypes: [sketch, chart, chart, chart]
+visualTypes: [sketch, chart]
 ---
 
 ## 3-Line TL;DR
 
-- The new Avante offers more cabin space and equipment; my complaint is that the improvement arrives with a higher entry budget and inconvenient option bundles
-- The entry point moves from the old Smart 1.6 at about $15,220 to Modern 2.0 at about $17,700; that is a change of trim and engine, not a uniform price rise
-- Modern with the heated-seat bundle, built-in map bundle and 9.9-inch cluster reaches about $19,147; decide which features you need before the brochure decides for you
+- Tesla has announced another Roadster unveiling for October 1 in the US; a reveal date still does not tell you when a customer gets the keys
+- The famous 1.9-second acceleration and 620-mile range come from earlier Tesla claims, while the US general reservation totals $50,000; neither is a verified new production specification or final purchase price
+- Watch for a defined production version, independently repeatable tests and concrete delivery terms. The calendar has had enough test drives
 
-*Korean launch prices converted to approximate USD, not US MSRP; no new-generation US price verified. FX: 1 USD = KRW 1,354.81, [Xe](https://www.xe.com/en-gb/currencyconverter/convert/?Amount=1&From=USD&To=KRW), September 26, 2026, 23:08 UTC. Whole-dollar rounding*
+## The countdown is real. It measures time to a presentation
 
-## The cheap entry point disappeared, even if Modern barely moved
+- Tesla first unveiled the next-generation Roadster in 2017, originally targeting deliveries in 2020. The newly announced October 1, 2026 event follows years of delays ([Reuters, September 12](https://www.reuters.com/business/autos-transportation/tesla-signals-oct-1-launch-long-delayed-roadster-2026-09-12/))
+- As checked on September 28, the [official Roadster page](https://www.tesla.com/roadster) sets its countdown to **October 2, 00:30 UTC — October 2, 09:30 in Korea**. That is the page's current event target, subject to change, rather than a promised delivery slot
+- This is a pre-event analysis of published information, not a road test. The notebook cover is a conceptual illustration, not an image of a confirmed 2026 production design
+- A live demonstration can show something worth watching. It cannot, by itself, establish the equipment on a customer's car or how often that performance can be repeated. A stage and a driveway remain different delivery addresses
 
-| Comparison | Previous 2026 model | New model | Difference |
-| :--- | ---: | ---: | ---: |
-| Cheapest gasoline model | Smart 1.6: $15,220 | Modern 2.0: $17,700 | +$2,480 |
-| Modern badge to Modern badge | Modern 1.6: $17,626 | Modern 2.0: $17,700 | +$74 |
+## The old numbers deserve a date stamp
 
-*Sources: [previous price sheet](https://www.hyundai.com/contents/repn-car/catalog/avante-2026-price.pdf), [new price sheet](https://www.hyundai.com/contents/repn-car/catalog/the-all-new-avante_price.pdf). All amounts in this article use the conversion above*
+| Figure | What Tesla previously stated | What still needs checking for the new car |
+| :--- | :--- | :--- |
+| Acceleration | 0–60 mph in 1.9 seconds | Production configuration, tires, surface and timing method |
+| Top speed | More than 250 mph | Measured result and the configuration used |
+| Range | 620 miles, described as 1,000 km | Applicable test cycle and production-car result |
 
-![Old Smart and Modern prices compared with the new Modern entry price](/images/posts/mobility/all-new-avante-price-entry-usd.webp)
+*Source: [Tesla Q4 2017 update, issued February 2018, page 4](https://ir.tesla.com/_flysystem/s3/sec/000156459018001521/tsla-8k_20180207-gen_0.pdf). Historical manufacturer claims, not independently verified 2026 specifications*
 
-- The first row answers how much you need to enter the range; the second compares like-named trims with different engines and equipment. Neither is an identical-car comparison
-- Hyundai adds equipment including Pleos Connect, ten airbags and Lane Following Assist 2 ([announcement](https://www.hyundaimotorgroup.com/ko/news/hyundai-motor-company-all-new-avante)). There is more car here, but a buyer with a fixed budget cannot pay the difference in appreciation
-- My view is that the buying burden grew more than the improvements justify for me. That is a value judgment; the measurable point is that the cheaper Smart choice is gone
+- **0–60 mph is not 0–100 km/h**: 60 mph is about 96.6 km/h. Copying the same time into a different speed interval quietly makes the claim stronger
+- The old range statement is not identified here as an EPA or WLTP result. Until the test basis is clear, putting it beside certified competitor ranges would make the table neater and the comparison worse
+- One spectacular launch does not answer repeatability. For the new car, I would look for successive runs, battery state and temperature, plus whether any special equipment is used. These are questions to check, not failures I have measured
+- If the event presents extraordinary features, the useful follow-up is whether the customer version includes them, under what operating conditions and with what restrictions. Applause is a poor substitute for a configuration sheet
 
-## Pick the features first. Then meet their traveling companions
+## The $50,000 figure buys a reservation, not the car
 
-These are **Korean gasoline 2.0 Modern** options, not a US Elantra specification.
+![US general Roadster reservation: $5,000 initial card payment plus $45,000 wire transfer within 10 days](/images/posts/mobility/tesla-roadster-reservation-usd.webp)
 
-| Wanted feature | How it is supplied | Additional cost |
-| :--- | :--- | ---: |
-| 12.9-inch center screen and wireless phone projection | Standard | $0 |
-| Front heated seats | Convenience I, also including climate control, synthetic leather and toll pass | $480 |
-| Built-in navigation | SmartSense I, also including driver assists and Gleo AI | $709 |
-| 9.9-inch driver display | Separate option | $258 |
+*Source: [Tesla US reservation page](https://www.tesla.com/roadster/reserve), checked September 28, 2026; chart by HSL*
 
-*Source: [official price sheet, pages 1–2](https://www.hyundai.com/contents/repn-car/catalog/the-all-new-avante_price.pdf)*
+- The general US reservation is **$5,000 by card plus $45,000 by wire within 10 days**, totaling **$50,000**. Tesla's page says the reservation is not final until the wire arrives
+- This is a reservation amount, not a new US MSRP, an all-in vehicle quote or a Korean price. I would not recycle an old headline price into a current purchase estimate
+- Before committing, read the applicable reservation agreement: cancellation and refund conditions, the exact version, final price and delivery terms all matter. The payment schedule is considerably more specific than “coming soon”
 
-- Heated seats do not force you to buy navigation or the cluster. Each wanted feature has its own selection; my objection is paying for its accompanying package
-- The center screen, built-in maps and driver display are three different things. Standard wireless Android Auto and Apple CarPlay still provide phone navigation without the built-in map option
-- The 9.9-inch cluster is optional on Modern; Premium pairs it with a 14.6-inch center screen for about $613, while Inspiration includes it. A cabin photograph is very good at showing equipment and remarkably quiet about trim names
+| What to look for at the event | Evidence that would change the buying decision |
+| :--- | :--- |
+| A production version | Clear distinction between the demonstrator and customer equipment |
+| Performance with a method | Timing protocol, test conditions and repeated results |
+| Range with a basis | Named test cycle and applicable vehicle configuration |
+| A purchase you can plan | Final pricing, production/delivery schedule and written terms |
 
-| Modern configuration | Approximate total |
-| :--- | ---: |
-| Base | $17,700 |
-| Plus heated-seat bundle only | $18,180 |
-| Plus heated-seat and map bundles | $18,888 |
-| Both bundles plus 9.9-inch cluster | $19,147 |
-
-![Modern option totals in approximate USD converted from Korean prices](/images/posts/mobility/all-new-avante-option-total.webp)
-
-- Totals are converted from the unrounded Korean amounts, so summing rounded dollar components can differ by $1. Registration, insurance and extra-cost paint are excluded
-- This example does not include ventilated seats. Heated and ventilated are different features, however optimistic the shopping mood
-- Some buyers will use the whole package. I dislike the bundling when I want one feature and have to adopt its entire family
-
-## The extra room deserves credit, not a blank check
-
-- Hyundai publishes rear legroom increasing from **964 to 993mm** and headroom from **940 to 958mm**, with slimmer front seatbacks helping the packaging ([Tech Day](https://www.hyundaimotorgroup.com/ko/story/the-all-new-avante-tech-day))
-
-![Hyundai's published changes in rear legroom and headroom](/images/posts/mobility/all-new-avante-rear-space.webp)
-
-- Those are useful dimensions, not a substitute for sitting in the car. Check your driving position, rear-seat clearance and the controls you use frequently
-- I welcome retained physical controls; adjusting the cabin temperature need not become a small software project
-- My buying order would be: set a budget, list essential features, price that configuration, then inspect the cabin. The car improved; that does not give its option sheet unlimited spending authority
+- My decision rule: enjoy the reveal, then update the assessment when those details are published. Interest can be immediate; a purchase judgment needs more paperwork
 
 ## Community Reactions
 
-- In the r/Hyundai reveal thread, some liked the exterior but disliked the tablet-like display, preferring the previous screen integration ([Reddit discussion](https://www.reddit.com/r/Hyundai/comments/1uftasb/the_cn8_elantraavante_has_been_unveiled/))
-- Another commenter welcomed the large screen because physical buttons remained for basic tasks. The disagreement is about cabin design; these reveal reactions do not establish Korean pricing or driving quality ([Reddit discussion](https://www.reddit.com/r/Hyundai/comments/1uftasb/the_cn8_elantraavante_has_been_unveiled/))
+- In the r/electricvehicles thread, commenters ask whether the car was already revealed years ago and joke about which year October refers to. That is skepticism about the schedule, not evidence about the car's performance ([Reddit discussion](https://www.reddit.com/r/electricvehicles/comments/1weluif/tesla_teases_roadster_reveal_for_october_1/))
+- A reply points out that there is an actual countdown. That answers the narrower question of whether a reveal is being scheduled; it does not establish customer deliveries. These are a few reactions in one thread, not a survey of buyers ([Reddit discussion](https://www.reddit.com/r/electricvehicles/comments/1weluif/tesla_teases_roadster_reveal_for_october_1/))
 
 ## Q&A (Field Notes)
 
-- **Q: Did every Avante become $2,480 more expensive?**
-  - No; that compares the old cheapest Smart 1.6 with the new Modern 2.0. Trim, engine and standard equipment differ
-- **Q: Do heated seats alone require the $19,147 configuration?**
-  - No; Modern plus the heated-seat bundle is about $18,180. The higher example also adds built-in maps and the cluster
-- **Q: Can I use these prices for an American Elantra order?**
-  - No; these are converted Korean-market figures. Use the matching US model year's official trims and prices when available
+- **Q: Should Korean viewers mark October 1?**
+  - The official page's countdown checked September 28 corresponds to October 2 at 09:30 KST. Recheck the page near the event because schedules can change
+- **Q: Is 1.9 seconds a confirmed 2026 0–100 km/h result?**
+  - No; the cited historical claim is 0–60 mph. This article has no independently verified 2026 production-car test establishing either interval
+- **Q: Does $50,000 fix the final price or delivery date?**
+  - The verified figure is the general US reservation amount. It does not supply a final vehicle quote or customer delivery commitment
+- **Q: What would make the reveal more than another presentation?**
+  - A defined customer specification, reproducible performance evidence and a concrete production/delivery plan would materially strengthen the case
