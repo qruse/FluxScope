@@ -1,0 +1,27 @@
+{
+  "lang": "ko",
+  "slug": "gpt-6-astra-minor-naming",
+  "category": "ai",
+  "title": "GPT-6 Astra Minor, 태양은 강등되고 별엔 미니까지?",
+  "description": "Astra Minor는 Azure 파일에서 사라진 한 줄뿐이고, Sol은 플래그십에서 중간 등급으로 내려갔음. Opus 5.5는 Astra 가격 40%로 Anthropic 표 대부분을 이김",
+  "tags": [
+    "gpt-6-astra-minor",
+    "gpt-6-astra",
+    "gpt-6-sol",
+    "gpt-6-luna",
+    "openai",
+    "model-naming",
+    "claude-opus-5-5",
+    "api-pricing",
+    "ai-rumors",
+    "openai-devday"
+  ],
+  "imageUrl": "/images/posts/ai/gpt-6-astra-minor-naming-notebook.webp",
+  "imageAlt": "GPT-6 Astra Minor, 강등된 Sol, 사라진 Terra, Astra 가격 $10 / $50을 적은 노트 스케치",
+  "visualTypes": [
+    "sketch",
+    "architecture",
+    "chart"
+  ],
+  "body": "## 3줄 요약\n\n- GPT-6 Astra Minor는 Azure 설정 파일에 한 줄 보인 미발표 이름이고, 가격·스펙·날짜 없이 9월 28일 확인 때는 그 줄마저 사라져 있었음\n- 진짜 얘깃거리는 네이밍임: Sol은 GPT-5.6 플래그십에서 GPT-6 중간 등급으로 내려갔고, Terra는 사라지고 그 설명 문구만 Sol이 물려받음\n- Anthropic 자체 표에서 Opus 5.5가 5개 중 3개 항목을 Astra 가격의 40%로 이겼으니 OpenAI도 답이 필요하고, 다음 볼 곳은 9월 29일 DevDay임\n\n## Astra Minor는 Azure 파일 속 한 줄임\n\n- 9월 22일 중국 개발자 포럼 locdd.com 사용자가 Azure 공개 플레이그라운드 설정에서 미발표 OpenAI 모델 경로 세 개를 찾음 ([OrcaRouter](https://www.orcarouter.ai/blog/gpt-6-astra-minor-leak))\n- 이름은 `gpt-6-sol`, `gpt-6-luna`, `gpt-6-astra-minor`였음\n- Sol과 Luna는 지금 OpenAI API에 정식 모델로 올라와 있음 ([OpenAI 모델](https://developers.openai.com/api/docs/models))\n- Astra Minor는 가격, 컨텍스트, 벤치마크, 발표 전부 없음\n- Microsoft도 OpenAI도 확인해준 적 없음\n- 9월 28일 같은 Azure 파일을 직접 열어보니 `gpt-6-astra`, `gpt-6-sol`, `gpt-6-luna`만 있고 `astra-minor`는 없었음\n- 줄이 빠진 건 취소일 수도, 이름 변경일 수도, 그냥 설정 파일 정리일 수도 있음\n\n## 태양이 플래그십에서 가운데 자리로 내려옴\n\n![GPT-5.6 Sol·Terra·Luna와 GPT-6 Astra·Sol·Luna 비교, Sol이 최상위에서 중간으로 내려가고 Astra Minor는 점선 칸으로 표시](/images/posts/ai/gpt-6-astra-minor-naming-ladder.webp)\n\n*출처: [OpenAI 모델](https://developers.openai.com/api/docs/models), [OpenAI 가격](https://developers.openai.com/api/docs/pricing), 표준 단기 컨텍스트 요금 2026년 9월 28일 확인 — 도식 HSL*\n\n| 등급 | GPT-5.6 | GPT-6 |\n| :--- | :--- | :--- |\n| 최상위 | Sol, \"플래그십\", $4 / $20 | Astra, \"가장 뛰어난 모델\", $10 / $50 |\n| 중간 | Terra, $2 / $12 | Sol, $2 / $10 |\n| 하위 | Luna, $0.20 / $1.20 | Luna, $0.10 / $0.50 |\n\n- GPT-5.6은 태양·지구·달로 깔끔하게 나뉜 라인업이었음\n- OpenAI 문서는 GPT-5.6 Sol을 \"복잡한 전문 작업용 플래그십 모델\"이라 불렀음 ([OpenAI](https://developers.openai.com/api/docs/models/gpt-5.6-sol))\n- GPT-5.6 Terra 설명은 \"지능과 비용의 균형이 필요한 작업용\"이었음 ([OpenAI](https://developers.openai.com/api/docs/models/gpt-5.6-terra))\n- GPT-6에선 OpenAI 가이드가 \"지능과 비용의 균형엔 GPT-6 Sol을 고르라\"고 함\n- Terra의 직무 설명은 살아남았고 Terra는 못 살아남음\n- 태양은 이제 별 밑에 앉았고, 그 별엔 작은 버전까지 붙을 판임\n- 내 생각엔 Sol·Terra·Luna를 그대로 두고 위에 Astra만 얹었으면 \"Astra Minor\"보다 훨씬 알아보기 쉬웠음\n- 가격은 내려감: GPT-6 Sol은 $2 / $10로 GPT-5.6 Sol $4 / $20의 절반임\n- Anthropic Sonnet 5와 똑같은 $2 / $10이기도 함 ([Anthropic](https://platform.claude.com/docs/en/about-claude/models/overview))\n- Astra와 GPT-6 Sol 사이는 입력·출력 모두 표시가격이 5배 차이 남\n- 그 사이를 메우는 모델이면 장사는 될 것 같음\n- 다만 이건 내 추론이고, OpenAI가 한 말은 아님\n\n## Opus 5.5가 3주도 안 돼 Astra 우위를 가져감\n\n![벤치마크 5개 막대 차트: Opus 5.5가 Humanity's Last Exam, Terminal-Bench 4.0, FrontierCode에서 앞서고 Astra가 2개 항목에서 앞섬](/images/posts/ai/gpt-6-astra-minor-opus-vs-astra.webp)\n\n*출처: [Anthropic](https://www.anthropic.com/claude-opus-5-5) — Claude Opus 5.5 벤치마크 표, 제조사 발표 수치 — 차트 HSL*\n\n- Astra는 9월 3일, Opus 5.5는 9월 22일에 나옴\n- Anthropic 표에서 Opus 5.5는 Humanity's Last Exam 10.5점, Terminal-Bench 4.0 8.5점 앞섬\n- FrontierCode는 54.4% 대 53.3%로 거의 비김\n- Astra는 AutomationBench 1.4점, Terminal-Bench-Science 5.9점 앞섬\n- GDPval-AA v2.1은 Opus가 1846 대 1542로 앞섬\n- 벤치마크 선택도 자기 쪽 측정도 Anthropic이 했으니, 중립 시험이 아니라 제조사 성적표임\n- 가격 차이는 크게 남: Astra $10 / $50, Opus $4 / $20\n- OpenAI 최신 최상위 모델이, 그 표 대부분에서 이긴 경쟁 모델보다 2.5배 비쌈\n- 같은 프롬프트 게임 테스트에선 두 라운드 중 한 번은 Opus 청구서가 더 컸음, [Astra vs Opus 5.5 테스트](/posts/gpt-6-sol-luna-opus-5-5-cost-per-success/) 참고\n\n## 9월 29일 DevDay 무대는 있는데 6.1은 목록에 없음\n\n- 내 생각엔 OpenAI에 필요한 건 새 등급 이름이 아니라 빠른 GPT-6.1임\n- 믿을 만한 GPT-6.1 보도는 못 찾았고, 보이는 건 이 Astra Minor 유출뿐임\n- OpenAI DevDay는 9월 29일 화요일 샌프란시스코 Fort Mason에서 열리고, Sam Altman 기조연설은 오전 10시임 ([DevDay](https://devday.openai.com/))\n- 행사 페이지엔 \"OpenAI 팀이 만드는 것을 더 가까이\"라는 말뿐이고 모델 이름은 없음\n- Anthropic도 Sonnet 5.5와 Haiku 5.5가 \"몇 주 안에\" 나온다고 예고함 ([Anthropic](https://www.anthropic.com/claude-opus-5-5))\n- Sonnet 5.5 가격이 Sonnet 5를 따르면 GPT-6 Sol과 같은 $2 / $10 자리에서 붙게 됨\n\n| 내 상황 | 내가 할 일 |\n| :--- | :--- |\n| 어려운 백엔드·과학 작업에 Astra를 씀 | 유지, 자동화·과학 항목은 아직 Astra가 앞섬 |\n| 일상 코딩에 Astra 요금을 냄 | 같은 작업을 Opus 5.5로 돌려 완료 작업당 비용 비교 |\n| 싸질까 봐 Astra Minor를 기다림 | 가격·날짜 없는 모델 대신 지금 GPT-6 Sol부터 테스트 |\n| 아직 GPT-5.6 Sol을 씀 | 표시가격이 절반인 GPT-6 Sol부터 확인 |\n\n## Q&A 또 궁금한 것은?\n\n- **Q. Astra Minor를 API로 부를 수 있음?**\n  - 안 됨, OpenAI 모델 목록에 없고 9월 28일 확인 때는 Azure 항목도 사라져 있었음\n- **Q. GPT-6 Sol이 GPT-5.6 Sol의 후속임?**\n  - 이름으로는 맞는데 역할로는 아님, GPT-6 Sol은 Astra 아래 중간 등급임\n- **Q. Terra는 어디 감?**\n  - GPT-6엔 Terra가 없고, OpenAI 목록은 Terra의 옛 \"지능과 비용의 균형\" 설명을 이제 Sol에 붙임\n- **Q. DevDay에서 GPT-6.1 나옴?**\n  - 그렇다는 근거는 없고, 행사 페이지에도 모델 이름은 없음"
+}
