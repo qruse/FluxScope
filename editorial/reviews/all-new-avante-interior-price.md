@@ -29,8 +29,8 @@
 
 ## Review
 - Both live Avante editions read before editing and agree with repository revision
-- English master drafted first, natural Korean counterpart follows; figures, dates and limits must match
+- English master drafted first; Korean counterpart reviewed for matching figures, dates, units and qualifications. Restrained cynical voice and no invented ownership/test history confirmed
 - Current catalog offers AI pricing and iPhone gaming articles, neither directly answers this Roadster question; no forced cross-category internal link
 - Automatic checks: `npm run check` passed: editorial regression tests, 3 bilingual reference pairs, Astro, build, 43 HTML link checks and image/performance budgets
-- Mobile/desktop checks: local browser unavailable (Chromium installation download failed, cloud browser rejects localhost); production browser inspection pending. No responsive template changes made
-- Production verification: pending
+- Mobile/desktop checks: local browser unavailable (Chromium installation download failed, cloud browser rejects localhost); production desktop browser reviewed in both languages: title, thumbnail, spec table and language switch render correctly, with no page-wide overflow. Exact 390px mobile viewport remains unverified because the available browser cannot resize. No responsive template changes made
+- Production verification: Cloudflare Workers Builds and GitHub integrity check succeeded for commit b4ac353c630fae9de5cfe6e3eb5a4237b84484eb (Worker version 5279a5c5-588b-4b45-b4a7-430a8f41d5db). Both article URLs, both home/category listings, RSS, sitemap and two image URLs returned 200; all article/listing/feed checks show Roadster and no old Avante title. Image bytes match local assets. Canonical and hreflang pairs use hslblog.com. Existing URL and September 26 publication date preserved, updated September 28. Public domain, HTTPS, www and workers.dev redirects verified; robots lists both sitemaps. No account/DNS changes were needed
