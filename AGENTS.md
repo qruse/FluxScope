@@ -53,7 +53,7 @@ The defining voice is **cynical AND humorous**, not optional seasoning. Question
 Korean is primarily short bullets with natural 반말/음슴체. **One point, one short sentence per bullet** — split a second sentence into its own bullet or cut it; keep each bullet readable in one breath. Do not force all sentences into the same ending. English bullets follow the same one-sentence rhythm as natural concise field notes, not literal Korean syntax.
 
 - Titles are headlines, not memo lines. Put the model/product near the start, then a sharp hook: a pointed question, a blunt contrast, a decisive number or a verdict some readers will dispute. The article must pay the hook off with evidence; no bait the body does not answer, no implied test results or defects
-- Korean titles do **not** use 음슴체; write them as natural headline phrasing (question, contrast, noun ending). Korean descriptions and narrative headings still use natural 음슴체 (e.g. `검수는 내 몫임`, `예산도 커짐`). English titles use punchy headline phrasing, not artificial Korean grammar
+- Korean titles do **not** use 음슴체; write them as natural headline phrasing (question, contrast, noun ending). Wrong: `출시 베팅만 벌써 네 번 틀림`; right: `출시 베팅은 벌써 4연패`. Korean descriptions and narrative headings still use natural 음슴체 (e.g. `검수는 내 몫임`, `예산도 커짐`). English titles use punchy headline phrasing, not artificial Korean grammar
 - Rebuild a confused draft around ONE reader question before polishing sentences. Every section must advance that question; delete tangents, repeated caveats and jokes that need their own explanation
 - Humor follows the concrete fact. Prefer 2–4 restrained observations over an analogy in every bullet; never let sarcasm imply unsupported test results or product defects
 - The description gives the actual angle and substance, not “a comprehensive analysis”
@@ -69,6 +69,15 @@ Line-by-line cut pass (do it on both languages before publishing; delete every b
 - Cut meta lines about the article's own method or honesty ("still better than calling screenshots science", "a reason to investigate, not to skip investigating"); a caveat is stated once, where it applies
 - Cut strawman comparisons and abstract punchlines that need a second read ("the paperwork gets creative"). A joke must be understood in one pass without its own explanation
 - Humor comes from a concrete number or contrast in the evidence: 60% cheaper tokens vs 7× the output, "none of it was requested", "the calendar moved faster than the Roadster". Aim for 1–2 such lines per section, not a quip after every bullet
+
+Sound like a person, not a model (do it on both languages after the cut pass; these are the patterns that made published drafts read as machine-written):
+- Write the Korean from the facts, not by translating the English sentences. Then read the Korean alone, without the English beside it, and rewrite any line a Korean reader would stumble on or would not say out loud to a friend
+- Korean translationese to rewrite: `~라고 못 박음`, `대놓고`, `~인 셈임`, `~할 판임`, `진짜 얘깃거리는`, `~까지 들고 옴`, `사실상 ~임` used as a punchline, objects acting like people (`서류가 정함`, `싼 모델이 더 먹겠다고 공지함`), mirrored punchlines (`설명은 살아남았고 Terra는 못 살아남음`), and verdicts about sources (`만장일치 퇴장 선언은 아니었음`, `한쪽의 전승으로 끝난 얘기는 아님`)
+- Korean structure: no English colon reveals (`사다리였음: 맨 위…`), no comma-spliced verdicts (`아님, 에세이가 말한 건…`), no `X 대 Y` score lists where `X점으로 Y보다 높음` or a table reads better. Vary the endings (`-음/-임/-함/-됨`, noun endings); do not end every bullet in `임`. Quote translated English only when the exact wording matters
+- English tells to rewrite: more than one `not X, but Y` / `X, not Y` per article; colon reveals (`My take:`, `The catch:`); bullets opening with `So`; personified abstractions (`the paperwork decides`, `the cheap model politely announces`); `the real story`, `a useful dissent`, `worth noting`, `quietly`; meta tails judging a source (`a sarcastic interpretation`, `so even that thread was not unanimous`)
+- A joke must work in the language it is written in. If wordplay only works in English (sun/star, Minor/minor), rewrite it for Korean or drop it there
+- Logic check: every `so` / `그래서` / `그러니` must follow from the line above. Delete inferences that only sound clever (`only worth limiting if it happens`, `a leak of the price list`) and unsupported feelings (`기다림이 더 길게 느껴짐`)
+- Keep a section to about ten bullets. Past that, merge, split into a table, or cut
 
 Section headings (H2):
 - A heading is the section's point in natural spoken phrasing: a specific claim with a number, a blunt contrast, or the reader's question (e.g. `토큰은 60% 싼데 청구서는 두 배`, `그래서 뭘 누구한테 시킴?`, `1.9초는 2017년산 숫자임`)
