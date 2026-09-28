@@ -13,6 +13,6 @@ export async function getStaticPaths() {
 const { tag, posts } = Astro.props as { tag: string; posts: Post[] };
 ---
 <BaseLayout lang="en" title={`#${tag}`} description={`Articles tagged ${tag} on ${site.name}.`}>
-  <header class="page-top"><div class="shell"><div class="section-kicker">Tag archive</div><h1>#{tag}<span class="brand-dot">.</span></h1><p>All articles filed under {tag}.</p></div></header>
+  <header class="page-top"><div class="shell"><div class="section-kicker">Tag archive</div><h1>#{tag}<span class="brand-dot" aria-hidden="true"></span></h1><p>All articles filed under {tag}.</p></div></header>
   <section class="listing"><div class="shell"><div class="post-grid">{posts.map((post) => <PostCard post={post} />)}</div></div></section>
 </BaseLayout>

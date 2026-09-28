@@ -580,7 +580,7 @@ async function article(post, env, request) {
       image: imageSize ? { '@type': 'ImageObject', url: image, width: imageSize[0], height: imageSize[1] } : image,
       datePublished: post.published_at, dateModified: post.updated_at,
       author: { '@type': 'Person', name: 'HSL', url: `${origin}${lang === 'ko' ? '/about/' : '/en/about/'}` },
-      publisher: { '@type': 'Organization', name: lang === 'ko' ? 'HSL의 블로그' : "HSL's Blog", url: `${origin}${home}` },
+      publisher: { '@type': 'Organization', name: lang === 'ko' ? 'HSL의 블로그' : "HSL's Blog", url: `${origin}${home}`, logo: { '@type': 'ImageObject', url: `${origin}/images/logo.png`, width: 512, height: 512 } },
       articleSection: categoryName, keywords: tags.join(', '),
     },
     {
@@ -619,6 +619,25 @@ async function article(post, env, request) {
     .on(`.lang-switcher a[hreflang="${lang}"]`, new SetAttribute('href', pathFor(post)))
     .on(`.lang-switcher a[hreflang="${alternateLang}"]`, new SetAttribute('href', alternate.replace(origin, '')));
   return rewriter.transform(new Response(shell.body, { headers: responseHeaders }));
+}
+
+// The static sitemap lists home and category pages; their lastmod is the newest D1 post they show.
+async function staticSitemap(request, env) {
+  const response = await env.ASSETS.fetch(request);
+  if (!response.ok) return response;
+  const { results } = await env.DB.prepare('SELECT lang, category, updated_at FROM posts').all();
+  const newest = new Map();
+  const bump = (key, date) => { if (!newest.has(key) || newest.get(key) < date) newest.set(key, date); };
+  for (const post of results) {
+    const home = post.lang === 'ko' ? '/' : '/en/';
+    bump(home, post.updated_at);
+    bump(`${home}${normalizeCategory(post.category)}/`, post.updated_at);
+  }
+  const body = (await response.text()).replace(/<url><loc>([^<]+)<\/loc>(?!<lastmod>)/g, (entry, loc) => {
+    const date = newest.get(new URL(loc).pathname);
+    return date ? `${entry}<lastmod>${xml(date)}</lastmod>` : entry;
+  });
+  return new Response(body, { headers: { 'Content-Type': 'application/xml; charset=utf-8', 'Cache-Control': 'public, max-age=300' } });
 }
 
 async function dynamicSitemap(env) {
@@ -689,6 +708,7 @@ async function handle(request, env, ctx) {
       if (request.method !== 'GET' && request.method !== 'HEAD') return new Response('Method not allowed', { status: 405 });
       if (!env.DB) return env.ASSETS.fetch(request);
       if (url.pathname === '/dynamic-sitemap.xml') return dynamicSitemap(env);
+      if (url.pathname === '/sitemap-0.xml') return staticSitemap(request, env);
       if (url.pathname === '/rss.xml' || url.pathname === '/en/rss.xml') return rssFeed(env, url.pathname === '/rss.xml' ? 'ko' : 'en');
       // Search engine ownership files are served verbatim; the asset handler would redirect *.html to an extensionless URL.
       if (Object.hasOwn(verificationFiles, url.pathname)) return new Response(verificationFiles[url.pathname], { headers: { 'Content-Type': 'text/html; charset=utf-8' } });
@@ -696,6 +716,8 @@ async function handle(request, env, ctx) {
         const original = await (await env.ASSETS.fetch(request)).text();
         return new Response(`${original.trim()}\nSitemap: ${origin}/dynamic-sitemap.xml\n`, { headers: { 'Content-Type': 'text/plain; charset=utf-8' } });
       }
+      // One URL per page: every extensionless path without a trailing slash redirects permanently (the asset handler would answer 307 or 200).
+      if (!url.pathname.endsWith('/') && !/\.[a-z0-9]+$/i.test(url.pathname)) return Response.redirect(`${origin}${url.pathname}/${url.search}`, 301);
       const oldGptPost = url.pathname.match(/^\/(en\/)?agi\/gpt-6-sol-luna-opus-5-5-cost-performance\/?$/);
       if (oldGptPost) return Response.redirect(`${origin}/${oldGptPost[1] || ''}posts/gpt-6-sol-luna-opus-5-5-cost-per-success/`, 301);
       const oldAiCategory = url.pathname.match(/^\/(en\/)?(?:agi|physical-ai|other-ai)(?:\/.*)?$/);
@@ -703,8 +725,6 @@ async function handle(request, env, ctx) {
       const listingRoute = url.pathname.match(/^\/(en\/)?(?:(ai|mobility|it-devices)\/?)?$/);
       if (listingRoute) return listingPage(request, env, listingRoute[1] ? 'en' : 'ko');
       const match = url.pathname.match(/^\/(en\/)?posts\/([a-z0-9]+(?:-[a-z0-9]+)*)\/?$/);
-      // One URL per article: the slash-less form redirects to the canonical trailing-slash URL.
-      if (match && !url.pathname.endsWith('/')) return Response.redirect(`${origin}${url.pathname}/${url.search}`, 301);
       if (!match) {
         // Articles that moved from the static build to D1 keep their old category URL as a permanent redirect.
         const legacy = url.pathname.match(/^\/(en\/)?(?:ai|mobility|it-devices)\/([a-z0-9]+(?:-[a-z0-9]+)*)\/?$/);

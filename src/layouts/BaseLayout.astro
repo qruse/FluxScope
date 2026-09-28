@@ -62,6 +62,10 @@ const websiteJsonLd = pathname === '/' || pathname === '/en' ? {
   '@context': 'https://schema.org', '@type': 'WebSite', name: defaultTitle,
   alternateName: [...new Set(['HSL의 블로그', "HSL's Blog", 'HSL Blog', 'hslblog'])].filter((name) => name !== defaultTitle),
   url: new URL(withBase(currentLang === 'en' ? '/en/' : '/'), Astro.site).href, inLanguage: currentLang,
+  publisher: {
+    '@type': 'Organization', name: defaultTitle, url: new URL(withBase(currentLang === 'en' ? '/en/' : '/'), Astro.site).href,
+    logo: { '@type': 'ImageObject', url: new URL(withBase('/images/logo.png'), Astro.site).href, width: 512, height: 512 },
+  },
 } : undefined;
 
 if (pathname === '/404' || pathname === '/404.html') {
@@ -93,6 +97,8 @@ const searchUrl = withBase(currentLang === 'en' ? '/en/search/' : '/search/');
     <link rel="alternate" hreflang="en" href={new URL(enUrl, Astro.site).href} />
     <link rel="alternate" hreflang="x-default" href={new URL(koUrl, Astro.site).href} />
     <link rel="icon" href={withBase('/favicon.svg')} type="image/svg+xml" />
+    <link rel="icon" href={withBase('/images/logo.png')} type="image/png" sizes="512x512" />
+    <link rel="apple-touch-icon" href={withBase('/images/logo.png')} />
     <link rel="alternate" type="application/rss+xml" title={`${defaultTitle} RSS`} href={rssUrl} />
     <link rel="sitemap" href={withBase('/sitemap-index.xml')} />
     <meta property="og:type" content={type} />
@@ -176,7 +182,7 @@ const searchUrl = withBase(currentLang === 'en' ? '/en/search/' : '/search/');
     <footer class="site-footer">
       <div class="shell footer-grid">
         <div>
-          <a class="footer-brand" href={homeUrl}>{t('site.title')}<span class="brand-dot">.</span></a>
+          <a class="footer-brand" href={homeUrl}>{t('site.title')}<span class="brand-dot" aria-hidden="true"></span></a>
           <p>{t('footer.motto')}</p>
         </div>
         <div class="footer-links">
