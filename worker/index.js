@@ -349,6 +349,11 @@ async function images(request, env, url) {
   return new Response(request.method === 'HEAD' ? null : object.body, { headers });
 }
 
+// Ownership verification files from search consoles (Naver Search Advisor, Google, Bing).
+const verificationFiles = {
+  '/naver49434ef5de4a3b4c10115bc34e752ef6.html': 'naver-site-verification: naver49434ef5de4a3b4c10115bc34e752ef6.html',
+};
+
 // IndexNow: tell Naver, Bing and other participating engines about new or changed URLs.
 const indexNowKey = 'ec644d7e01fcc3492c6211c1805fd628';
 const indexNowEndpoints = ['https://api.indexnow.org/indexnow', 'https://www.bing.com/indexnow', 'https://searchadvisor.naver.com/indexnow'];
@@ -680,6 +685,8 @@ async function handle(request, env, ctx) {
       if (!env.DB) return env.ASSETS.fetch(request);
       if (url.pathname === '/dynamic-sitemap.xml') return dynamicSitemap(env);
       if (url.pathname === '/rss.xml') return rssFeed(env, request);
+      // Search engine ownership files are served verbatim; the asset handler would redirect *.html to an extensionless URL.
+      if (Object.hasOwn(verificationFiles, url.pathname)) return new Response(verificationFiles[url.pathname], { headers: { 'Content-Type': 'text/html; charset=utf-8' } });
       if (url.pathname === '/robots.txt') {
         const original = await (await env.ASSETS.fetch(request)).text();
         return new Response(`${original.trim()}\nSitemap: ${origin}/dynamic-sitemap.xml\n`, { headers: { 'Content-Type': 'text/plain; charset=utf-8' } });

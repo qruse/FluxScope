@@ -212,6 +212,7 @@ Template-owned (keep working when editing layouts or the Worker):
 - `robots` meta: `index, follow, max-image-preview:large` for content; `noindex, follow` for search, 404 and other utility pages, which also stay out of the sitemaps
 - Open Graph/Twitter tags with real image dimensions and `og:locale`; `BlogPosting` + `BreadcrumbList` JSON-LD with `inLanguage`, image size and author/publisher URLs
 - Sitemaps: `/sitemap-index.xml` (static, with hreflang and article `lastmod`) and `/dynamic-sitemap.xml` (API posts), both listed in `robots.txt`
+- Search engines: Google Search Console, Naver Search Advisor and Bing Webmaster Tools. Ownership files are served by the Worker from `verificationFiles` in `worker/index.js`. Every API publish and a daily cron ping IndexNow (Naver, Bing); Google relies on the sitemaps
 - The LCP hero image loads eagerly with `fetchpriority="high"`; body images carry width/height and load lazily; unknown URLs return the bilingual 404 page with status 404
 
 Author checklist (validated where marked):
