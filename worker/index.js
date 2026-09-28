@@ -23,7 +23,7 @@ function listingCard(post, lang, variant = '') {
   const category = normalizeCategory(post.category);
   const read = lang === 'ko' ? '글 읽기' : 'Read article';
   const image = post.image_url ? `<img class="card-visual" src="${escape(post.image_url)}" alt="${escape(post.image_alt || post.title)}" loading="${variant === 'featured' ? 'eager' : 'lazy'}" decoding="async" />` : '';
-  const date = new Date(post.published_at).toLocaleDateString(lang === 'ko' ? 'ko-KR' : 'en-US', { year: 'numeric', month: 'long', day: 'numeric', timeZone: 'Asia/Seoul' });
+  const date = new Date(post.published_at).toLocaleDateString(lang === 'ko' ? 'ko-KR' : 'en-US', { year: 'numeric', month: lang === 'ko' ? 'long' : 'short', day: 'numeric', timeZone: 'Asia/Seoul' });
   return `<article class="post-card${variant ? ` ${variant}` : ''}"><a class="card-link" href="${escape(pathFor(post))}" aria-label="${escape(`${read}: ${post.title}`)}"><div class="card-media">${image}</div><div class="card-copy"><div class="eyebrow"><span class="category-pip"></span>${escape(categoryNames[lang][category])}<span class="eyebrow-sep">/</span><time datetime="${escape(post.published_at)}">${escape(date)}</time></div><h3>${escape(post.title)}</h3><p>${escape(post.description)}</p><span class="read-link">${read} <span aria-hidden="true">↗</span></span></div></a></article>`;
 }
 
@@ -55,6 +55,12 @@ async function listingPage(request, env, lang) {
         const staticDate = Date.parse(element.getAttribute('data-published') || '');
         if (!post || Date.parse(post.published_at) <= staticDate) return;
         element.setInnerContent(listingCard(post, lang, element.getAttribute('data-lead-variant') || ''), { html: true });
+      },
+    })
+    .on('[data-dynamic-count]', {
+      element(element) {
+        const staticCount = Number(element.getAttribute('data-static-count')) || 0;
+        element.setInnerContent(String(staticCount + (byCategory.get(element.getAttribute('data-dynamic-count'))?.length || 0)));
       },
     })
     .on('[data-dynamic-empty]', {
