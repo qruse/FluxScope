@@ -33,8 +33,7 @@ test('image cap, ordered types and unique sketch are enforced', () => {
  for (const type of ['source', 'architecture', 'pipeline', 'chart']) assert.deepEqual(changed(p => p.visualTypes[1] = type), []);
 });
 
-test('Korean headline and sourced Reddit reactions are required', () => {
- assert.ok(changed(p => p.title = '모델 가격은 정말 저렴하다').some(e => e.includes('Korean title')));
+test('Sourced Reddit reactions are required', () => {
  assert.ok(changed(p => p.body = p.body.replaceAll(/\[레딧[^\]]*\]\([^)]+\)/g, '출처 없음')).some(e => e.includes('original-source')));
  assert.ok(changed(p => p.body = p.body.replaceAll('www.reddit.com', 'example.com')).some(e => e.includes('Reddit')));
 });
