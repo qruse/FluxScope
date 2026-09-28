@@ -580,7 +580,7 @@ async function article(post, env, request) {
       image: imageSize ? { '@type': 'ImageObject', url: image, width: imageSize[0], height: imageSize[1] } : image,
       datePublished: post.published_at, dateModified: post.updated_at,
       author: { '@type': 'Person', name: 'HSL', url: `${origin}${lang === 'ko' ? '/about/' : '/en/about/'}` },
-      publisher: { '@type': 'Organization', name: "HSL's Blog", url: `${origin}${home}` },
+      publisher: { '@type': 'Organization', name: lang === 'ko' ? 'HSL의 블로그' : "HSL's Blog", url: `${origin}${home}` },
       articleSection: categoryName, keywords: tags.join(', '),
     },
     {
@@ -634,12 +634,17 @@ async function dynamicSitemap(env) {
   return new Response(`<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">${entries}</urlset>`, { headers: { 'Content-Type': 'application/xml; charset=utf-8', 'Cache-Control': 'public, max-age=300' } });
 }
 
-async function rssFeed(env, request) {
-  const staticFeed = await env.ASSETS.fetch(request);
-  const feed = await staticFeed.text();
-  const { results } = await env.DB.prepare('SELECT lang, slug, title, description, published_at FROM posts ORDER BY published_at DESC LIMIT 50').all();
-  const items = results.map((post) => `<item><title>${xml(post.title)}</title><link>${xml(urlFor(post))}</link><guid>${xml(urlFor(post))}</guid><description>${xml(post.description)}</description><pubDate>${new Date(post.published_at).toUTCString()}</pubDate></item>`).join('');
-  return new Response(feed.replace('</channel>', `${items}</channel>`), { headers: { 'Content-Type': 'application/rss+xml; charset=utf-8', 'Cache-Control': 'public, max-age=300' } });
+// One feed per language (/rss.xml Korean, /en/rss.xml English) so Naver and readers get a single-language channel.
+async function rssFeed(env, lang) {
+  const { results } = await env.DB.prepare('SELECT lang, slug, category, title, description, published_at, updated_at FROM posts WHERE lang = ? ORDER BY published_at DESC LIMIT 50').bind(lang).all();
+  const home = `${origin}${lang === 'ko' ? '/' : '/en/'}`;
+  const self = `${home}rss.xml`;
+  const name = lang === 'ko' ? 'HSL의 블로그' : "HSL's Blog";
+  const description = lang === 'ko' ? 'AI 모델, 자동차, IT 기기의 가격·성능·마케팅 주장을 원문으로 따져보는 HSL의 기록' : 'HSL checks prices, benchmarks and marketing claims for AI models, cars and devices against the original sources';
+  const built = results.reduce((latest, post) => (post.updated_at > latest ? post.updated_at : latest), results[0]?.updated_at || new Date().toISOString());
+  const items = results.map((post) => `<item><title>${xml(post.title)}</title><link>${xml(urlFor(post))}</link><guid isPermaLink="true">${xml(urlFor(post))}</guid><description>${xml(post.description)}</description><category>${xml(categoryNames[lang][normalizeCategory(post.category)])}</category><pubDate>${new Date(post.published_at).toUTCString()}</pubDate></item>`).join('');
+  const feed = `<?xml version="1.0" encoding="UTF-8"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>${xml(name)}</title><link>${xml(home)}</link><description>${xml(description)}</description><language>${lang}</language><lastBuildDate>${new Date(built).toUTCString()}</lastBuildDate><atom:link href="${xml(self)}" rel="self" type="application/rss+xml"/>${items}</channel></rss>`;
+  return new Response(feed, { headers: { 'Content-Type': 'application/rss+xml; charset=utf-8', 'Cache-Control': 'public, max-age=300' } });
 }
 
 // Mirrors public/_headers for responses the Worker builds itself.
@@ -684,7 +689,7 @@ async function handle(request, env, ctx) {
       if (request.method !== 'GET' && request.method !== 'HEAD') return new Response('Method not allowed', { status: 405 });
       if (!env.DB) return env.ASSETS.fetch(request);
       if (url.pathname === '/dynamic-sitemap.xml') return dynamicSitemap(env);
-      if (url.pathname === '/rss.xml') return rssFeed(env, request);
+      if (url.pathname === '/rss.xml' || url.pathname === '/en/rss.xml') return rssFeed(env, url.pathname === '/rss.xml' ? 'ko' : 'en');
       // Search engine ownership files are served verbatim; the asset handler would redirect *.html to an extensionless URL.
       if (Object.hasOwn(verificationFiles, url.pathname)) return new Response(verificationFiles[url.pathname], { headers: { 'Content-Type': 'text/html; charset=utf-8' } });
       if (url.pathname === '/robots.txt') {
@@ -698,6 +703,8 @@ async function handle(request, env, ctx) {
       const listingRoute = url.pathname.match(/^\/(en\/)?(?:(ai|mobility|it-devices)\/?)?$/);
       if (listingRoute) return listingPage(request, env, listingRoute[1] ? 'en' : 'ko');
       const match = url.pathname.match(/^\/(en\/)?posts\/([a-z0-9]+(?:-[a-z0-9]+)*)\/?$/);
+      // One URL per article: the slash-less form redirects to the canonical trailing-slash URL.
+      if (match && !url.pathname.endsWith('/')) return Response.redirect(`${origin}${url.pathname}/${url.search}`, 301);
       if (!match) {
         // Articles that moved from the static build to D1 keep their old category URL as a permanent redirect.
         const legacy = url.pathname.match(/^\/(en\/)?(?:ai|mobility|it-devices)\/([a-z0-9]+(?:-[a-z0-9]+)*)\/?$/);

@@ -10,7 +10,7 @@ export const defaultLang: Lang = 'ko';
 export const ui = {
   ko: {
     'site.title': 'HSL의 블로그',
-    'site.description': 'AI, 자동차, IT 기기 등 궁금한 것을 찾아보고 기록하는 블로그.',
+    'site.description': 'AI 모델, 자동차, IT 기기의 가격·성능·마케팅 주장을 원문으로 따져보고, 쓸지 살지 판단을 돕는 HSL의 기록.',
     'nav.home': '홈',
     'nav.ai': 'AI',
     'nav.mobility': '모빌리티',
@@ -50,7 +50,7 @@ export const ui = {
   },
   en: {
     'site.title': "HSL's Blog",
-    'site.description': 'Notes on AI, cars, devices, and whatever else sparks my curiosity.',
+    'site.description': 'HSL checks prices, benchmarks and marketing claims for AI models, cars and devices against the original sources, so you can decide what to use or buy.',
     'nav.home': 'Home',
     'nav.ai': 'AI',
     'nav.mobility': 'Mobility',
