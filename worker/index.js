@@ -392,6 +392,12 @@ async function api(request, env, url, ctx) {
   if (url.pathname === '/api/posts' && request.method === 'GET') {
     const lang = url.searchParams.get('lang') || 'ko';
     if (!['ko', 'en'].includes(lang)) return json({ error: 'Invalid language' }, 400);
+    const slug = url.searchParams.get('slug');
+    if (slug !== null) {
+      const row = await env.DB.prepare('SELECT * FROM posts WHERE lang = ? AND slug = ?').bind(lang, slug).first();
+      if (!row) return json({ error: 'Not found' }, 404);
+      return json({ ...rowToSummary(row), body: row.body });
+    }
     const category = url.searchParams.get('category');
     if (category && !categories.has(category)) return json({ error: 'Invalid category' }, 400);
     const filter = category === 'ai' ? " AND category IN ('ai', 'agi', 'physical-ai', 'other-ai')" : category ? ' AND category = ?' : '';
@@ -410,7 +416,7 @@ async function api(request, env, url, ctx) {
   }
   if (url.pathname === '/api/posts' && request.method === 'POST') {
     if (!authorized(request, env.PUBLISH_TOKEN)) return json({ error: 'Unauthorized' }, 401);
-    if (Number(request.headers.get('Content-Length')) > 150000) return json({ error: 'Payload too large' }, 413);
+    if (Number(request.headers.get('Content-Length')) > 300000) return json({ error: 'Payload too large' }, 413);
     let payload;
     try {
       const reader = request.body?.getReader();
@@ -421,7 +427,7 @@ async function api(request, env, url, ctx) {
         const { done, value } = await reader.read();
         if (done) break;
         bytes += value.byteLength;
-        if (bytes > 150000) { await reader.cancel(); return json({ error: 'Payload too large' }, 413); }
+        if (bytes > 300000) { await reader.cancel(); return json({ error: 'Payload too large' }, 413); }
         chunks.push(value);
       }
       const body = new Uint8Array(bytes);
@@ -429,19 +435,29 @@ async function api(request, env, url, ctx) {
       for (const chunk of chunks) { body.set(chunk, offset); offset += chunk.byteLength; }
       payload = JSON.parse(new TextDecoder().decode(body));
     } catch { return json({ error: 'Invalid JSON' }, 400); }
-    const post = parsePost(payload);
-    if (!post) return json({ error: 'Invalid post. Required: lang, slug, category, title, description, body.' }, 400);
-    const editorialErrors = [...validateEditorial(post), ...validateRendered(micromark(post.body, { extensions: [gfm()], htmlExtensions: [gfmHtml()] }))];
-    if (editorialErrors.length) return json({ error: 'Editorial validation failed', details: editorialErrors }, 422);
-    const current = await env.DB.prepare('SELECT published_at FROM posts WHERE lang = ? AND slug = ?').bind(post.lang, post.slug).first();
-    if (current && request.headers.get('If-Match') !== 'update') return json({ error: 'Post exists. Set If-Match: update to replace it.' }, 409);
-    if (current) post.publishedAt = current.published_at;
-    await env.DB.prepare(`INSERT INTO posts (lang, slug, category, title, description, body, image_url, image_alt, tags, published_at, updated_at)
+    // A bundle { posts: [ko, en] } is validated in full and written in one D1 batch, so both languages publish together or not at all.
+    const bundle = Array.isArray(payload?.posts);
+    const payloads = bundle ? payload.posts : [payload];
+    if (!payloads.length || payloads.length > 2) return json({ error: 'A bundle holds one or two language versions' }, 400);
+    const posts = payloads.map(parsePost);
+    if (posts.some((post) => !post)) return json({ error: 'Invalid post. Required: lang, slug, category, title, description, body.' }, 400);
+    if (bundle && (new Set(posts.map((post) => post.lang)).size !== posts.length || new Set(posts.map((post) => post.slug)).size !== 1 || new Set(posts.map((post) => post.category)).size !== 1)) {
+      return json({ error: 'Bundle versions must share slug and category and use different languages' }, 400);
+    }
+    const details = posts.flatMap((post) => [...validateEditorial(post), ...validateRendered(micromark(post.body, { extensions: [gfm()], htmlExtensions: [gfmHtml()] }))].map((error) => (bundle ? `${post.lang}: ${error}` : error)));
+    if (details.length) return json({ error: 'Editorial validation failed', details }, 422);
+    const existing = await env.DB.batch(posts.map((post) => env.DB.prepare('SELECT published_at FROM posts WHERE lang = ? AND slug = ?').bind(post.lang, post.slug)));
+    const current = existing.map((result) => result.results[0]);
+    if (current.some(Boolean) && request.headers.get('If-Match') !== 'update') return json({ error: 'Post exists. Set If-Match: update to replace it.' }, 409);
+    const updatedAt = new Date().toISOString();
+    posts.forEach((post, i) => { if (current[i]) post.publishedAt = current[i].published_at; post.updatedAt = updatedAt; });
+    await env.DB.batch(posts.map((post) => env.DB.prepare(`INSERT INTO posts (lang, slug, category, title, description, body, image_url, image_alt, tags, published_at, updated_at)
       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       ON CONFLICT(lang, slug) DO UPDATE SET category=excluded.category, title=excluded.title, description=excluded.description, body=excluded.body, image_url=excluded.image_url, image_alt=excluded.image_alt, tags=excluded.tags, updated_at=excluded.updated_at`)
-      .bind(post.lang, post.slug, post.category, post.title, post.description, post.body, post.imageUrl || null, post.imageAlt || null, JSON.stringify(post.tags), post.publishedAt, post.updatedAt).run();
-    ctx?.waitUntil(submitIndexNow([urlFor(post)]));
-    return json({ url: pathFor(post), publishedAt: post.publishedAt, updatedAt: post.updatedAt }, current ? 200 : 201);
+      .bind(post.lang, post.slug, post.category, post.title, post.description, post.body, post.imageUrl || null, post.imageAlt || null, JSON.stringify(post.tags), post.publishedAt, post.updatedAt)));
+    ctx?.waitUntil(submitIndexNow(posts.map(urlFor)));
+    const written = posts.map((post) => ({ lang: post.lang, url: pathFor(post), publishedAt: post.publishedAt, updatedAt: post.updatedAt }));
+    return json(bundle ? { posts: written } : written[0], current.every(Boolean) ? 200 : 201);
   }
   if (url.pathname === '/api/posts' && request.method === 'DELETE') {
     if (!authorized(request, env.PUBLISH_TOKEN)) return json({ error: 'Unauthorized' }, 401);
@@ -489,6 +505,43 @@ async function loadImageDimensions(env, request) {
 }
 const sizeAttributes = (dimensions, src) => (dimensions[src] ? ` width="${dimensions[src][0]}" height="${dimensions[src][1]}"` : '');
 
+// Width and height from the first bytes of a PNG, JPEG or WebP file.
+function headerSize(bytes) {
+  const v = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
+  const ascii = (start, text) => [...text].every((c, i) => bytes[start + i] === c.charCodeAt(0));
+  if (bytes.length > 24 && ascii(1, 'PNG')) return [v.getUint32(16), v.getUint32(20)];
+  if (bytes.length > 30 && ascii(0, 'RIFF') && ascii(8, 'WEBP')) {
+    if (ascii(12, 'VP8X')) return [1 + (bytes[24] | bytes[25] << 8 | bytes[26] << 16), 1 + (bytes[27] | bytes[28] << 8 | bytes[29] << 16)];
+    if (ascii(12, 'VP8 ')) return [v.getUint16(26, true) & 0x3fff, v.getUint16(28, true) & 0x3fff];
+    if (ascii(12, 'VP8L')) { const b = v.getUint32(21, true); return [(b & 0x3fff) + 1, ((b >> 14) & 0x3fff) + 1]; }
+  }
+  if (bytes[0] === 0xff && bytes[1] === 0xd8) {
+    for (let i = 2; i + 9 < bytes.length;) {
+      if (bytes[i] !== 0xff) { i++; continue; }
+      const marker = bytes[i + 1];
+      if (marker >= 0xc0 && marker <= 0xcf && ![0xc4, 0xc8, 0xcc].includes(marker)) return [v.getUint16(i + 7), v.getUint16(i + 5)];
+      i += 2 + v.getUint16(i + 2);
+    }
+  }
+  return null;
+}
+const mediaSizes = new Map();
+// Adds sizes for /media/ images (uploaded through the API after the last build) to the static manifest.
+async function withMediaSizes(env, dimensions, sources) {
+  const missing = [...new Set(sources)].filter((src) => src?.startsWith('/media/') && !dimensions[src]);
+  if (!missing.length || !env.IMAGES) return dimensions;
+  const result = { ...dimensions };
+  await Promise.all(missing.map(async (src) => {
+    if (!mediaSizes.has(src)) {
+      mediaSizes.set(src, env.IMAGES.get(`images/${src.slice('/media/'.length)}`, { range: { offset: 0, length: 65536 } })
+        .then(async (object) => (object ? headerSize(new Uint8Array(await object.arrayBuffer())) : null)).catch(() => null));
+    }
+    const size = await mediaSizes.get(src);
+    if (size) result[src] = size;
+  }));
+  return result;
+}
+
 class RemoveElement {
   element(element) { element.remove(); }
 }
@@ -505,7 +558,8 @@ async function article(post, env, request) {
   const alternate = `${origin}${lang === 'ko' ? '/en' : ''}/posts/${post.slug}/`;
   const image = post.image_url ? (post.image_url.startsWith('/') ? `${origin}${post.image_url}` : post.image_url) : `${origin}/images/og-default.png`;
   const imageAlt = post.image_alt || post.title;
-  const dimensions = await loadImageDimensions(env, request);
+  const bodyImages = [...post.body.matchAll(/!\[[^\]]*\]\(([^\s)]+)\)/g)].map((m) => m[1]);
+  const dimensions = await withMediaSizes(env, await loadImageDimensions(env, request), [post.image_url, ...bodyImages]);
   const imageSize = post.image_url ? dimensions[post.image_url] : [1200, 630];
   const koUrl = lang === 'ko' ? canonical : alternate;
   const date = new Date(post.published_at).toLocaleDateString(lang === 'ko' ? 'ko-KR' : 'en-US', { timeZone: 'Asia/Seoul', year: 'numeric', month: 'long', day: 'numeric' });
@@ -637,7 +691,15 @@ async function handle(request, env, ctx) {
       const listingRoute = url.pathname.match(/^\/(en\/)?(?:(ai|mobility|it-devices)\/?)?$/);
       if (listingRoute) return listingPage(request, env, listingRoute[1] ? 'en' : 'ko');
       const match = url.pathname.match(/^\/(en\/)?posts\/([a-z0-9]+(?:-[a-z0-9]+)*)\/?$/);
-      if (!match) return env.ASSETS.fetch(request);
+      if (!match) {
+        // Articles that moved from the static build to D1 keep their old category URL as a permanent redirect.
+        const legacy = url.pathname.match(/^\/(en\/)?(?:ai|mobility|it-devices)\/([a-z0-9]+(?:-[a-z0-9]+)*)\/?$/);
+        if (legacy) {
+          const moved = await env.DB.prepare('SELECT lang, slug FROM posts WHERE lang = ? AND slug = ?').bind(legacy[1] ? 'en' : 'ko', legacy[2]).first();
+          if (moved) return Response.redirect(`${origin}${pathFor(moved)}`, 301);
+        }
+        return env.ASSETS.fetch(request);
+      }
       const post = await env.DB.prepare('SELECT * FROM posts WHERE lang = ? AND slug = ?').bind(match[1] ? 'en' : 'ko', match[2]).first();
       return post ? article(post, env, request) : notFound(env, request);
     } catch (error) {

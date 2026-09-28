@@ -6,12 +6,12 @@ This is the single authoritative project rulebook. Read it completely before edi
 
 1. Read this file and `editorial/QUALITY.md`
 2. Read the relevant reference article listed in `editorial/QUALITY.md`, both languages, and its review record
-3. Read the current live article before editing; a D1 article can be newer than Git
+3. Read the current live article before editing (`GET /api/posts?lang=&slug=`); D1 is the source of truth
 4. Write a one-sentence reader question and conclusion, then collect sources **before** drafting
 5. Create `editorial/reviews/<slug>.md` using the evidence and review template in `editorial/QUALITY.md`
 6. Draft English as the primary edition, verify every material claim, then adapt naturally into Korean with identical facts and qualifications
 7. Run the automatic checks, then the manual rubric — a passing build does not certify facts or good prose
-8. Publish by the existing storage route, verify both live URLs, images, category listings and language switch, then report exactly what is live
+8. Publish with `scripts/publish-post.mjs` (no build or merge), verify both live URLs, images, category listings and language switch, then report exactly what is live
 
 Do not stop after writing advice when asked to edit. Do not report an API response, commit, build, or preview as a verified production deployment.
 
@@ -159,7 +159,7 @@ Landscape 3:2, 1536x1024.
 - Exact metrics, labels and architecture must use code/vector/chart tools, not image generation. Generate raster art only for the sketch or illustration that benefits from it
 - Read each image visually. Verify title, units, series, labels and meaning against the text. Reusing a wrong chart is a factual error
 - Width 800–1600 px recommended, hard maximum 1600 px; target <250 KiB, hard cap 500 KiB per image
-- Static images go in `public/images/posts/<category>/`; API images normally upload through `/api/images` to `/media/`; reference samples may reuse deployed static assets. Existing legacy asset paths may remain to avoid broken links
+- New article images are uploaded to `/media/` by `scripts/publish-post.mjs`; reference a local file path in the payload and the script rewrites it. Existing `/images/` assets may stay to avoid broken links
 - Supply descriptive alt text; static frontmatter dimensions must match the actual file
 - For an externally sourced figure, place `*출처: [기관](URL) — 자료명*` / `*Source: [Organization](URL) — title*` immediately below it
 - An API's 5 MB upload ceiling is a transport limit, **not** editorial permission for a 5 MB image
@@ -175,17 +175,22 @@ Landscape 3:2, 1536x1024.
 
 ## 9. Storage and publication
 
-- Existing static articles: `src/content/posts/{ko,en}/<category>/<slug>.md`; changes go through Git and the connected Cloudflare build
-- Existing D1/API articles: modify via authenticated `POST /api/posts` with `If-Match: update`; do not duplicate them under `src/content/posts`
-- `editorial/api-posts/*.json` stores versioned reference payloads outside the static content tree. It does **not** automatically synchronize or publish D1
-- New ordinary API posts do not require rebuilding the website. Keep local source/evidence; only the chosen reference samples require Git-versioned payloads
-- Never write a static article to D1 just to avoid waiting for the build; it would create duplicate listings and ambiguous ownership
+Every article lives in D1 and is published through the API. Publishing an article never needs a site build, a PR or a merge.
+
+- Publish or update with one command: `PUBLISH_TOKEN=… node scripts/publish-post.mjs editorial/api-posts/en-<slug>.json editorial/api-posts/ko-<slug>.json`
+  - It uploads any image that is a local file or a not-yet-deployed `/images/` path to `/media/` and rewrites both payloads
+  - It validates both languages with the API's own rules, backs up the live version to the OS temp directory and keeps the original `publishedAt`
+  - It writes both languages in one atomic request (`POST /api/posts` with `{ "posts": [en, ko] }`), then checks both live pages and every image
+  - Run it with `--dry-run` first; it validates without uploading or writing
+- Read the current live article before editing with `GET /api/posts?lang=<ko|en>&slug=<slug>`; D1 is the source of truth
+- `editorial/api-posts/*.json` holds the working payloads. Commit them for history when convenient, but publication never waits for Git
+- Article URLs are `/posts/<slug>/` and `/en/posts/<slug>/`. Old static category URLs (`/<category>/<slug>/`) redirect 301 to the D1 post with the same slug
+- `src/content/posts/` stays empty. Do not add articles there: a static copy of a D1 article creates duplicate listings, and the quality check rejects it
+- Git, PRs and builds are only for code, templates, rules and static site assets
 - Credentials stay in ignored local configuration or secrets; never include them in Git, examples, logs or review notes
-- Keep both language payloads ready and validated before publishing either. Current API writes one language at a time; if the second fails, retry it or restore the first from its pre-edit backup. Do not claim atomic bilingual publication
 - Tags: 5–15 distinct lowercase English kebab-case keywords
-- Required static fields: `title`, `description` (50–180 characters), `category`, `lang`, `publishedAt`, `updatedAt`, `author`, `image` with src/alt/width/height, `draft`, `tags`, `visualTypes`
-- Required API fields: `lang`, `slug`, `category`, `title`, `description` (50–180 characters), `body`, `tags`, `imageUrl`, `imageAlt`, `visualTypes`; preserve `publishedAt` on update
-- New static drafts stay `draft: true` until reviewed. API has no draft mode; never POST unfinished work
+- Required payload fields: `lang`, `slug`, `category`, `title`, `description` (50–180 characters), `body`, `tags`, `imageUrl`, `imageAlt`, `visualTypes`; `publishedAt` is kept automatically on update
+- The API has no draft mode; never publish unfinished work. Keep drafts as local payload files and use `--dry-run`
 
 ## 10. SEO
 
