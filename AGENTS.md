@@ -224,13 +224,14 @@ Every article lives in D1 and is published through the API. Publishing an articl
 Technical SEO lives in the templates and Worker, not in article text. Do not hand-add canonical, hreflang, robots, Open Graph or JSON-LD tags to a post; change the template instead so every page stays consistent.
 
 Template-owned (keep working when editing layouts or the Worker):
-- One canonical URL per page; `hreflang` ko/en pairs plus `x-default` pointing to the Korean version of the same page
+- One canonical URL per page; `hreflang` ko/en pairs plus `x-default` pointing to the English version of the same page (global readers are the primary audience)
 - `robots` meta: `index, follow, max-image-preview:large` for content; `noindex, follow` for search, 404 and other utility pages, which also stay out of the sitemaps
 - Open Graph/Twitter tags with real image dimensions and `og:locale`; `BlogPosting` + `BreadcrumbList` JSON-LD with `inLanguage`, image size and author/publisher URLs; the publisher and the home `WebSite` carry the 512 px `/images/logo.png`. Decorative heading dots are CSS, not text
 - RSS per language: `/rss.xml` (Korean) and `/en/rss.xml` (English), built by the Worker from D1
 - Never redirect by browser language or IP: crawlers render with en-US, so an automatic redirect hides the Korean pages. Only a language the visitor chose may be remembered
 - One URL per page: every extensionless path without a trailing slash redirects 301 to the canonical form
 - Sitemaps: `/sitemap-index.xml` (static pages with hreflang; the Worker adds `lastmod` to home and category pages from the newest D1 post) and `/dynamic-sitemap.xml` (API posts), both listed in `robots.txt`
+- `/ads.txt` is served by the Worker only when the `ADSENSE_PUBLISHER_ID` variable (`pub-…`) is set; otherwise it returns 404
 - Search engines: Google Search Console, Naver Search Advisor and Bing Webmaster Tools. Ownership files are served by the Worker from `verificationFiles` in `worker/index.js`. Every API publish and a daily cron ping IndexNow (Naver, Bing); Google relies on the sitemaps
 - The LCP hero image loads eagerly with `fetchpriority="high"`; body images carry width/height and load lazily; unknown URLs return the bilingual 404 page with status 404
 
