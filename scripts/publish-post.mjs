@@ -1,6 +1,8 @@
 // Publish one article (both languages) to D1 without a site build.
 // Usage: PUBLISH_TOKEN=... node scripts/publish-post.mjs <en.json> <ko.json> [--dry-run | --preview]
 // --preview uploads an unlisted, noindexed draft to /preview/<token>/ instead: missing images and editorial problems are warnings
+// --pull <slug> downloads the saved working files (both payloads and editorial/reviews/<slug>.md) from D1
+// Previews and publishes save those working files to D1 (/api/drafts), so article handoffs never need Git
 // 1. Any image that is not already live is uploaded to /api/images and the payload files are rewritten to the /media URL
 // 2. Both payloads are validated with the same rules as the API
 // 3. The live versions are backed up to the OS temp directory
@@ -22,6 +24,30 @@ const fail = (message) => { console.error(`✘ ${message}`); process.exit(1); };
 if (files.length < 1 || files.length > 2) fail('Pass one or two payload files (en and ko)');
 if (!dryRun && !token) fail('Set PUBLISH_TOKEN');
 
+const auth = { Authorization: `Bearer ${token}` };
+if (args.includes('--pull')) {
+  const slug = args[args.indexOf('--pull') + 1] || '';
+  if (!token) fail('Set PUBLISH_TOKEN');
+  const response = await fetch(`${site}/api/drafts?slug=${encodeURIComponent(slug)}`, { headers: auth });
+  const draft = await response.json().catch(() => ({}));
+  if (!response.ok) fail(`Pull failed: ${response.status} ${JSON.stringify(draft)}`);
+  for (const post of draft.posts) {
+    const file = path.join('editorial/api-posts', `${post.lang}-${slug}.json`);
+    fs.writeFileSync(file, `${JSON.stringify(post, null, 2)}\n`);
+    console.log(`• ${file}`);
+  }
+  if (draft.review) { fs.writeFileSync(path.join('editorial/reviews', `${slug}.md`), draft.review); console.log(`• editorial/reviews/${slug}.md`); }
+  console.log(`✔ pulled ${slug} (saved ${draft.updatedAt})`);
+  process.exit(0);
+}
+const saveDraft = async () => {
+  const review = path.join('editorial/reviews', `${posts[0].slug}.md`);
+  const response = await fetch(`${site}/api/drafts?slug=${posts[0].slug}`, {
+    method: 'PUT', headers: { ...auth, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ posts: files.map((file) => JSON.parse(fs.readFileSync(file, 'utf8'))), review: fs.existsSync(review) ? fs.readFileSync(review, 'utf8') : '' }),
+  });
+  console.log(response.ok ? '• working files saved to D1 (pull with --pull)' : `! working files not saved: ${response.status}`);
+};
 const posts = files.map((file) => JSON.parse(fs.readFileSync(file, 'utf8')));
 if (new Set(posts.map((p) => p.lang)).size !== posts.length) fail('Payloads must use different languages');
 if (new Set(posts.map((p) => p.slug)).size !== 1 || new Set(posts.map((p) => p.category)).size !== 1) fail('Payloads must share slug and category');
@@ -29,7 +55,6 @@ if (new Set(posts.map((p) => p.slug)).size !== 1 || new Set(posts.map((p) => p.c
 const imageRefs = (post) => [post.imageUrl, ...[...post.body.matchAll(/!\[[^\]]*\]\(([^\s)]+)\)/g)].map((m) => m[1])];
 if (posts.length === 2 && JSON.stringify(imageRefs(posts[0])) !== JSON.stringify(imageRefs(posts[1]))) fail('Both languages must use the same images in the same order');
 
-const auth = { Authorization: `Bearer ${token}` };
 const live = async (url) => (await fetch(`${site}${url}`, { method: 'HEAD' })).ok;
 const mime = { '.png': 'image/png', '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.webp': 'image/webp', '.gif': 'image/gif', '.avif': 'image/avif' };
 
@@ -69,6 +94,7 @@ if (replacements.size) {
 const errors = posts.flatMap((post) => [...validateEditorial(post), ...validateRendered(micromark(post.body, { extensions: [gfm()], htmlExtensions: [gfmHtml()] }))].map((e) => `${post.lang}: ${e}`));
 if (preview) {
   for (const post of posts) if (missing.has(post.imageUrl)) delete post.imageUrl;
+  await saveDraft();
   if (errors.length) console.log(`! not publishable yet:\n  ${errors.join('\n  ')}`);
   const response = await fetch(`${site}/api/previews`, { method: 'POST', headers: { ...auth, 'Content-Type': 'application/json' }, body: JSON.stringify({ posts }) });
   const result = await response.json().catch(() => ({}));
@@ -104,6 +130,7 @@ const response = await fetch(`${site}/api/posts`, {
 });
 const result = await response.json().catch(() => ({}));
 if (!response.ok) fail(`Publish failed: ${response.status} ${JSON.stringify(result)}`);
+await saveDraft();
 console.log(`✔ published ${result.posts.map((p) => `${p.lang} ${p.url}`).join(', ')} at ${result.posts[0].updatedAt}`);
 
 let broken = 0;

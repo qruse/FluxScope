@@ -142,6 +142,12 @@ const commentSchema = [
     PRIMARY KEY (token, lang)
   )`,
   'CREATE INDEX IF NOT EXISTS previews_slug ON previews(slug)',
+  // Working files per slug (both payloads and the internal review record), so article handoffs never go through Git.
+  `CREATE TABLE IF NOT EXISTS drafts (
+    slug TEXT PRIMARY KEY,
+    data TEXT NOT NULL,
+    updated_at TEXT NOT NULL
+  )`,
 ];
 
 // Guest comments: nickname + password per comment, one reply level, @mention of the replied-to nickname.
@@ -482,6 +488,7 @@ async function api(request, env, url, ctx) {
     return json(bundle ? { posts: written } : written[0], current.every(Boolean) ? 200 : 201);
   }
   if (url.pathname === '/api/previews') return previews(request, env, url);
+  if (url.pathname === '/api/drafts') return drafts(request, env, url);
   if (url.pathname === '/api/posts' && request.method === 'DELETE') {
     if (!authorized(request, env.PUBLISH_TOKEN)) return json({ error: 'Unauthorized' }, 401);
     const lang = url.searchParams.get('lang');
@@ -520,6 +527,24 @@ async function previews(request, env, url) {
       .bind(token, post.lang, post.slug, post.category, post.title, post.description, post.body, post.imageUrl || null, post.imageAlt || null, JSON.stringify(post.tags), now)),
   ]);
   return json({ posts: posts.map((post) => ({ lang: post.lang, url: previewPath(post.lang, token) })), warnings }, 201);
+}
+
+async function drafts(request, env, url) {
+  if (!authorized(request, env.PUBLISH_TOKEN)) return json({ error: 'Unauthorized' }, 401);
+  const slug = url.searchParams.get('slug') || '';
+  if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug)) return json({ error: 'Invalid slug' }, 400);
+  if (request.method === 'GET') {
+    const row = await env.DB.prepare('SELECT data, updated_at FROM drafts WHERE slug = ?').bind(slug).first();
+    return row ? json({ ...JSON.parse(row.data), updatedAt: row.updated_at }) : json({ error: 'Not found' }, 404);
+  }
+  if (request.method !== 'PUT') return json({ error: 'Not found' }, 404);
+  const payload = await readJson(request, 600000);
+  if (!Array.isArray(payload?.posts) || !payload.posts.length || payload.posts.length > 2 || payload.posts.some((post) => post?.slug !== slug)) return json({ error: 'Send { posts: [en, ko], review } for this slug' }, 400);
+  if (payload.review !== undefined && typeof payload.review !== 'string') return json({ error: 'review must be Markdown text' }, 400);
+  const updatedAt = new Date().toISOString();
+  await env.DB.prepare('INSERT INTO drafts (slug, data, updated_at) VALUES (?, ?, ?) ON CONFLICT(slug) DO UPDATE SET data = excluded.data, updated_at = excluded.updated_at')
+    .bind(slug, JSON.stringify({ posts: payload.posts, review: payload.review ?? '' }), updatedAt).run();
+  return json({ slug, updatedAt });
 }
 
 class ReplaceMain {

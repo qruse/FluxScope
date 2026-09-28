@@ -8,3 +8,6 @@ __pycache__/
 *.pyc
 .wrangler/
 .dev.vars*
+# Article working files live in D1 (/api/drafts); restore with `publish-post.mjs --pull <slug>`. Tracked reference files stay tracked.
+editorial/api-posts/*.json
+editorial/reviews/*.md
