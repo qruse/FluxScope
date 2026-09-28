@@ -213,7 +213,10 @@ Every article lives in D1 and is published through the API. Publishing an articl
 - Credentials stay in ignored local configuration or secrets; never include them in Git, examples, logs or review notes
 - Tags: 5–15 distinct lowercase English kebab-case keywords
 - Required payload fields: `lang`, `slug`, `category`, `title`, `description` (50–180 characters), `body`, `tags`, `imageUrl`, `imageAlt`, `visualTypes`; `publishedAt` is kept automatically on update
-- The API has no draft mode; never publish unfinished work. Keep drafts as local payload files and use `--dry-run`
+- Never publish unfinished work. To show a draft, add `--preview`: it uploads both languages to an unlisted `/preview/<token>/` and `/en/preview/<token>/` page (noindex, no comments, absent from listings, feeds, sitemaps and search) and prints the URLs
+  - A missing thumbnail or editorial problem is only a warning in preview mode; the real publish still enforces every rule
+  - Re-running `--preview` replaces that slug's preview under a new token; publishing the slug deletes it; previews expire after 30 days; `DELETE /api/previews?slug=<slug>` removes one early
+  - A preview is not a publication: never report it as live
 
 ## 10. SEO
 

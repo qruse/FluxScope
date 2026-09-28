@@ -126,6 +126,22 @@ const commentSchema = [
     views INTEGER NOT NULL DEFAULT 0,
     PRIMARY KEY (day, page)
   )`,
+  // Unlisted drafts: one bilingual preview per slug under a random token, never in listings, feeds, sitemaps or search.
+  `CREATE TABLE IF NOT EXISTS previews (
+    token TEXT NOT NULL,
+    lang TEXT NOT NULL,
+    slug TEXT NOT NULL,
+    category TEXT NOT NULL,
+    title TEXT NOT NULL,
+    description TEXT NOT NULL,
+    body TEXT NOT NULL,
+    image_url TEXT,
+    image_alt TEXT,
+    tags TEXT NOT NULL DEFAULT '[]',
+    created_at TEXT NOT NULL,
+    PRIMARY KEY (token, lang)
+  )`,
+  'CREATE INDEX IF NOT EXISTS previews_slug ON previews(slug)',
 ];
 
 // Guest comments: nickname + password per comment, one reply level, @mention of the replied-to nickname.
@@ -461,9 +477,11 @@ async function api(request, env, url, ctx) {
       ON CONFLICT(lang, slug) DO UPDATE SET category=excluded.category, title=excluded.title, description=excluded.description, body=excluded.body, image_url=excluded.image_url, image_alt=excluded.image_alt, tags=excluded.tags, updated_at=excluded.updated_at`)
       .bind(post.lang, post.slug, post.category, post.title, post.description, post.body, post.imageUrl || null, post.imageAlt || null, JSON.stringify(post.tags), post.publishedAt, post.updatedAt)));
     ctx?.waitUntil(submitIndexNow(posts.map(urlFor)));
+    ctx?.waitUntil(env.DB.prepare('DELETE FROM previews WHERE slug = ?').bind(posts[0].slug).run());
     const written = posts.map((post) => ({ lang: post.lang, url: pathFor(post), publishedAt: post.publishedAt, updatedAt: post.updatedAt }));
     return json(bundle ? { posts: written } : written[0], current.every(Boolean) ? 200 : 201);
   }
+  if (url.pathname === '/api/previews') return previews(request, env, url);
   if (url.pathname === '/api/posts' && request.method === 'DELETE') {
     if (!authorized(request, env.PUBLISH_TOKEN)) return json({ error: 'Unauthorized' }, 401);
     const lang = url.searchParams.get('lang');
@@ -474,6 +492,34 @@ async function api(request, env, url, ctx) {
     return json({ deleted: result.meta.changes > 0 });
   }
   return json({ error: 'Not found' }, 404);
+}
+
+const previewPath = (lang, token) => `${lang === 'en' ? '/en' : ''}/preview/${token}/`;
+// Previews hold unfinished drafts: editorial problems come back as warnings instead of blocking the write.
+async function previews(request, env, url) {
+  if (!authorized(request, env.PUBLISH_TOKEN)) return json({ error: 'Unauthorized' }, 401);
+  if (request.method === 'DELETE') {
+    const slug = url.searchParams.get('slug') || '';
+    if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug)) return json({ error: 'Invalid slug' }, 400);
+    const result = await env.DB.prepare('DELETE FROM previews WHERE slug = ?').bind(slug).run();
+    return json({ deleted: result.meta.changes > 0 });
+  }
+  if (request.method !== 'POST') return json({ error: 'Not found' }, 404);
+  const payload = await readJson(request, 300000);
+  const payloads = Array.isArray(payload?.posts) ? payload.posts : [];
+  if (!payloads.length || payloads.length > 2) return json({ error: 'Send { posts: [en, ko] }' }, 400);
+  const posts = payloads.map(parsePost);
+  if (posts.some((post) => !post)) return json({ error: 'Invalid post. Required: lang, slug, category, title, description, body.' }, 400);
+  if (new Set(posts.map((post) => post.lang)).size !== posts.length || new Set(posts.map((post) => post.slug)).size !== 1) return json({ error: 'Versions must share slug and use different languages' }, 400);
+  const warnings = posts.flatMap((post) => [...validateEditorial(post), ...validateRendered(micromark(post.body, { extensions: [gfm()], htmlExtensions: [gfmHtml()] }))].map((error) => `${post.lang}: ${error}`));
+  const token = [...crypto.getRandomValues(new Uint8Array(16))].map((b) => b.toString(16).padStart(2, '0')).join('');
+  const now = new Date().toISOString();
+  await env.DB.batch([
+    env.DB.prepare('DELETE FROM previews WHERE slug = ? OR created_at < ?').bind(posts[0].slug, new Date(Date.now() - 30 * 86400000).toISOString()),
+    ...posts.map((post) => env.DB.prepare('INSERT INTO previews (token, lang, slug, category, title, description, body, image_url, image_alt, tags, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)')
+      .bind(token, post.lang, post.slug, post.category, post.title, post.description, post.body, post.imageUrl || null, post.imageAlt || null, JSON.stringify(post.tags), now)),
+  ]);
+  return json({ posts: posts.map((post) => ({ lang: post.lang, url: previewPath(post.lang, token) })), warnings }, 201);
 }
 
 class ReplaceMain {
@@ -556,7 +602,7 @@ async function notFound(env, request) {
   return new Response(page.body, { status: 404, headers: { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-store' } });
 }
 
-async function article(post, env, request) {
+async function article(post, env, request, token) {
   const lang = post.lang;
   const title = `${post.title} | ${lang === 'ko' ? 'HSL의 블로그' : "HSL's Blog"}`;
   const canonical = urlFor(post);
@@ -593,7 +639,7 @@ async function article(post, env, request) {
     },
   ];
   const head = `<meta property="article:published_time" content="${escape(post.published_at)}"><meta property="article:modified_time" content="${escape(post.updated_at)}"><script type="application/ld+json">${JSON.stringify(jsonLd).replace(/</g, '\\u003c')}</script>`;
-  const html = `<article><header class="article-header article-shell"><nav class="breadcrumbs" aria-label="Breadcrumb"><a href="${home}">${lang === 'ko' ? '홈' : 'Home'}</a><span>/</span><a href="${home}${escape(category)}/">${escape(categoryName)}</a><span>/</span><span aria-current="page">${lang === 'ko' ? '글' : 'Article'}</span></nav><h1>${escape(post.title)}</h1><p class="article-dek">${escape(post.description)}</p><div class="article-meta"><span>${lang === 'ko' ? '작성자' : 'By'}: <strong>HSL</strong></span><span>${lang === 'ko' ? '발행일' : 'Published'}: <time datetime="${escape(post.published_at)}">${escape(date)}</time></span><span>${lang === 'ko' ? '수정일' : 'Updated'}: <time datetime="${escape(post.updated_at)}">${escape(updatedDate)}</time></span></div></header>${post.image_url ? `<div class="article-shell"><img class="article-visual" src="${escape(post.image_url)}" alt="${escape(imageAlt)}"${sizeAttributes(dimensions, post.image_url)} loading="eager" fetchpriority="high" decoding="async" /></div>` : ''}<div class="article-body article-shell">${micromark(post.body, { extensions: [gfm()], htmlExtensions: [gfmHtml()] }).replace(/<img src="([^"]+)"/g, (tag, src) => `<img src="${src}"${sizeAttributes(dimensions, src.replace(/&amp;/g, '&'))} loading="lazy" decoding="async"`)}</div><div class="article-end article-shell"><div class="tag-list">${tags.map((tag) => `<span>#${escape(tag)}</span>`).join('')}</div></div></article><section class="comments article-shell" id="comments" data-comments data-lang="${lang}" data-page="${escape(pathFor(post))}"></section><script src="/comments.js" defer></script>`;
+  const html = `<article><header class="article-header article-shell">${token ? `<p class="preview-banner" role="note"><strong>${lang === 'ko' ? '미리보기' : 'Preview'}</strong> — ${lang === 'ko' ? '아직 발행 전인 글이며 목록·검색에 나오지 않음' : 'not published; hidden from listings and search'}</p>` : ''}<nav class="breadcrumbs" aria-label="Breadcrumb"><a href="${home}">${lang === 'ko' ? '홈' : 'Home'}</a><span>/</span><a href="${home}${escape(category)}/">${escape(categoryName)}</a><span>/</span><span aria-current="page">${lang === 'ko' ? '글' : 'Article'}</span></nav><h1>${escape(post.title)}</h1><p class="article-dek">${escape(post.description)}</p><div class="article-meta"><span>${lang === 'ko' ? '작성자' : 'By'}: <strong>HSL</strong></span><span>${lang === 'ko' ? '발행일' : 'Published'}: <time datetime="${escape(post.published_at)}">${escape(date)}</time></span><span>${lang === 'ko' ? '수정일' : 'Updated'}: <time datetime="${escape(post.updated_at)}">${escape(updatedDate)}</time></span></div></header>${post.image_url ? `<div class="article-shell"><img class="article-visual" src="${escape(post.image_url)}" alt="${escape(imageAlt)}"${sizeAttributes(dimensions, post.image_url)} loading="eager" fetchpriority="high" decoding="async" /></div>` : ''}<div class="article-body article-shell">${micromark(post.body, { extensions: [gfm()], htmlExtensions: [gfmHtml()] }).replace(/<img src="([^"]+)"/g, (tag, src) => `<img src="${src}"${sizeAttributes(dimensions, src.replace(/&amp;/g, '&'))} loading="lazy" decoding="async"`)}</div><div class="article-end article-shell"><div class="tag-list">${tags.map((tag) => `<span>#${escape(tag)}</span>`).join('')}</div></div></article>${token ? '' : `<section class="comments article-shell" id="comments" data-comments data-lang="${lang}" data-page="${escape(pathFor(post))}"></section><script src="/comments.js" defer></script>`}`;
   const shell = await env.ASSETS.fetch(new Request(new URL(lang === 'ko' ? '/about/' : '/en/about/', request.url)));
   if (!shell.ok) return new Response('Template unavailable', { status: 503 });
   const alternateLang = lang === 'ko' ? 'en' : 'ko';
@@ -616,9 +662,10 @@ async function article(post, env, request) {
     .on('meta[name="twitter:title"]', new SetAttribute('content', title))
     .on('meta[name="twitter:description"]', new SetAttribute('content', post.description))
     .on('meta[name="twitter:image"]', new SetAttribute('content', image))
-    .on(`.lang-switcher a[hreflang="${lang}"]`, new SetAttribute('href', pathFor(post)))
-    .on(`.lang-switcher a[hreflang="${alternateLang}"]`, new SetAttribute('href', alternate.replace(origin, '')));
-  return rewriter.transform(new Response(shell.body, { headers: responseHeaders }));
+    .on(`.lang-switcher a[hreflang="${lang}"]`, new SetAttribute('href', token ? previewPath(lang, token) : pathFor(post)))
+    .on(`.lang-switcher a[hreflang="${alternateLang}"]`, new SetAttribute('href', token ? previewPath(alternateLang, token) : alternate.replace(origin, '')));
+  if (token) rewriter.on('meta[name="robots"]', new SetAttribute('content', 'noindex, nofollow'));
+  return rewriter.transform(new Response(shell.body, { headers: token ? { ...responseHeaders, 'Cache-Control': 'no-store', 'X-Robots-Tag': 'noindex, nofollow' } : responseHeaders }));
 }
 
 // The static sitemap lists home and category pages; their lastmod is the newest D1 post they show.
@@ -724,6 +771,11 @@ async function handle(request, env, ctx) {
       if (oldAiCategory) return Response.redirect(`${origin}/${oldAiCategory[1] || ''}ai/`, 301);
       const listingRoute = url.pathname.match(/^\/(en\/)?(?:(ai|mobility|it-devices)\/?)?$/);
       if (listingRoute) return listingPage(request, env, listingRoute[1] ? 'en' : 'ko');
+      const preview = url.pathname.match(/^\/(en\/)?preview\/([a-f0-9]{32})\/$/);
+      if (preview) {
+        const row = await env.DB.prepare('SELECT *, created_at AS published_at, created_at AS updated_at FROM previews WHERE token = ? AND lang = ?').bind(preview[2], preview[1] ? 'en' : 'ko').first();
+        return row ? article(row, env, request, preview[2]) : notFound(env, request);
+      }
       const match = url.pathname.match(/^\/(en\/)?posts\/([a-z0-9]+(?:-[a-z0-9]+)*)\/?$/);
       if (!match) {
         // Articles that moved from the static build to D1 keep their old category URL as a permanent redirect.
