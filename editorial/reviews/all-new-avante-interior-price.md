@@ -1,54 +1,36 @@
-# Review: All-new Avante price and options
-- Checked: 2026-09-27, Asia/Seoul
-- Route: static; `/mobility/all-new-avante-interior-price/` and `/en/mobility/all-new-avante-interior-price/`
-- Reader question: what does the improved car actually cost with the features I want?
-- Conclusion: acknowledge better equipment and space while retaining the author's criticism of the higher entry price and option bundling
-- User opinion: prior explicit request says the product improved but the price increased more than the value, and the option packaging feels particularly harsh; preserve as opinion, not an objective value measurement or test drive
+# Review: Tesla Roadster reveal versus delivery
+- Checked: 2026-09-28, Asia/Seoul
+- Static replacement of the Avante article at existing `/mobility/all-new-avante-interior-price/` and `/en/mobility/all-new-avante-interior-price/`; original publication date and URL retained per AGENTS.md
+- Reader question: does the new reveal date make the Roadster a car ready to buy, and what evidence should change that judgment?
+- Conclusion: watch the reveal, separate historical claims from new production specifications, and distinguish the $50,000 US reservation from the final vehicle price and delivery commitment
+- Scope: next-generation Roadster; US reservation page; historical 2017 announcement versus September 28, 2026 pre-event information
+- User experience: unavailable; analysis of published material, not a road test. No Avante opinion transferred to Tesla
 
 ## Claim ledger
-| Claim | Kind | Original source/location | Checked qualification |
-| --- | --- | --- | --- |
-| Old Smart 20.62m and Modern 23.88m KRW | Official price | https://www.hyundai.com/contents/repn-car/catalog/avante-2026-price.pdf — p1 gasoline | Old 1.6; distinguish entry vs same-named trim |
-| New Modern 23.98m; Convenience I 0.65m; SmartSense I 0.96m; cluster 0.35m | Official price | https://www.hyundai.com/contents/repn-car/catalog/the-all-new-avante_price.pdf — pp1–2 | Korean gasoline 2.0 Modern; screen and phone projection standard, built-in maps optional |
-| Premium screens 0.83m; Inspiration cluster standard | Official price | Same new price PDF, p1 | Do not generalize Modern option pricing to other trims |
-| 25.59m / 25.94m | Calculation | 23.98 + .65 + .96 [+ .35] | Vehicle + listed options only, not registration/insurance/paint; no ventilated seats in this configuration |
-| Improvements and hybrid 30.42m before benefits | Maker announcement | https://www.hyundaimotorgroup.com/ko/news/hyundai-motor-company-all-new-avante | Hybrid is not the gasoline quote; preserve tax qualification |
-| Rear legroom 964→993mm and headroom 940→958mm | Maker technical description | https://www.hyundaimotorgroup.com/ko/story/the-all-new-avante-tech-day | Published geometry, not a personal comfort trial |
+| Claim | Kind | Source | Checked | Qualification |
+| --- | --- | --- | --- | --- |
+| Official countdown points to October 2 00:30 UTC / 09:30 KST | Official page data + timezone conversion | https://www.tesla.com/roadster | Page's targetTime and livestream link retrieved directly with curl | Scheduled countdown as of check, subject to change; October 1 US announcement date |
+| 2017 original reveal and planned October 1, 2026 unveiling | Historical event / reporting | https://www.reuters.com/business/autos-transportation/tesla-signals-oct-1-launch-long-delayed-roadster-2026-09-12/ | Opened full article lines 174–186 | Announcement is not delivery; Reuters-derived portion kept short |
+| 1.9s 0–60 mph, >250 mph, 620 miles / approximately 1,000 km | Historical official claim | https://ir.tesla.com/_flysystem/s3/sec/000156459018001521/tsla-8k_20180207-gen_0.pdf | Downloaded original PDF, pdftotext page 4 | Q4 2017 update issued February 2018; not 2026 measured specs, EPA or WLTP result |
+| $5,000 initial + $45,000 wire within 10 days = $50,000 general US reservation | Official reservation / arithmetic | https://www.tesla.com/roadster/reserve | Downloaded page's amount_general and Roadster-specific payment description | USD reservation, not MSRP; no founder-series assumption or blanket refund assurance |
+| Production, repeatable measurements, purchase terms are separate evidence | Editorial analysis | Reasoning from the evidence above | Concrete event checklist | Does not claim a new regulation or unverified performance defect |
 
 ## Community evidence
-| Paraphrase | Exact source | Context |
-| --- | --- | --- |
-| Dislike of floating screen; others like big screen plus physical buttons | https://www.reddit.com/r/Hyundai/comments/1uftasb/the_cn8_elantraavante_has_been_unveiled/ | Reveal-photo reactions; not evidence about Korean trim prices, driving or ownership |
+| Published paraphrase | Exact thread | Context | Checked |
+| --- | --- | --- | --- |
+| Comments joke that it was already revealed and ask which year October means | https://www.reddit.com/r/electricvehicles/comments/1weluif/tesla_teases_roadster_reveal_for_october_1/ | Opened original; lines 54,62; skepticism about schedule, not a test | 2026-09-28 |
+| A reply points out that there is a countdown | Same original thread, lines 94–101 | Narrow factual pushback, not invented enthusiasm or consensus | 2026-09-28 |
 
 ## Images
-- `all-new-avante-price-options-scribble.webp`: rough conceptual price/options notebook
-- `all-new-avante-price-entry.webp`: old entry and Modern comparison; values checked against published prices
-- `all-new-avante-rear-space.webp`: four dimension labels match Hyundai technical explanation
+| Asset | Purpose/type | Provenance | Validation |
+| --- | --- | --- | --- |
+| tesla-roadster-reveal-notebook.webp | Exactly one generated sketch thumbnail | Built-in imagegen: rough grid-paper car, 2017 → 2026, reveal ≠ delivery, specs need proof; conceptual illustration | Generated and optimized outputs visually inspected; 1536×1024, 168468 bytes |
+| tesla-roadster-reservation-usd.webp | Deterministic reservation breakdown chart | Official general US $5,000 + $45,000; not MSRP | Code-rendered and visually inspected; 1440×810, 49112 bytes; exact 10%/90% segment widths |
 
 ## Review
-- Reader value: each article now answers a specific purchase/workflow question with a concrete next step
-- Voice: short Korean notes retained; Avante criticism preserved; no invented hands-on experience added
-- Bilingual review: amounts, units, conditional recommendations and limitations compared manually
-- Related articles: current catalog has one AI, one phone and one car topic; none directly extends the other article's specific question, so no forced internal link
-- Automated checks: `npm run check` passed; 8 editorial regression cases passed, 40 generated pages checked, no broken internal links, image and performance budgets passed
-- API integration: authenticated invalid article returned 422 in a local Worker test with an isolated DB stub
-- Visual assets: all existing reference sketches and charts viewed; numeric labels checked against the article; no chart regenerated
-- Production and browser verification: pending deployment; record the result in `editorial/release-2026-09-27.md`
-- Limits: automatic checks cover structure, not factual truth or image meaning; community accounts are anecdotes; full mobile viewport check remains a manual gate
-
-## Final voice/image/currency revision — 2026-09-27 KST
-- English master with natural Korean counterpart; cynical, humorous observations grounded in pricing, marketing and verification friction; no invented hands-on experience
-- Exactly one generated notebook thumbnail; approved information density preserved, slightly less polished lines/lettering; all image text English
-- Images: AI 3 (sketch/chart/pipeline), iPhone 3 (sketch/chart/chart), Avante 4 (sketch/3 charts). All factual plots produced by code, not generation
-- No new-generation US official price sheet verified after checking Hyundai USA and searching Hyundai USA Media Center (2026-09-27 KST). Existing 2026 US model is not substituted for the new Korean model
-- Per user fallback: Korean launch-price figures converted at 1 USD = KRW 1,354.81. Xe quote timestamp 2026-09-26 23:08 UTC (2026-09-27 08:08 KST): https://www.xe.com/en-gb/currencyconverter/convert/?Amount=1&From=USD&To=KRW. Small nearby note explicitly says converted Korean prices, not US MSRP
-- Source KRW inputs: 20,620,000; 23,880,000; 23,980,000; bundles 650,000/960,000; cluster 350,000; Premium option 830,000. Totals 24,630,000/25,590,000/25,940,000. Divide unrounded inputs/totals by 1,354.81 then round to whole USD: 15,220/17,626/17,700; 480/709/258/613; totals 18,180/18,888/19,147. Differences 3,360,000→2,480 and 100,000→74. Rounding may differ by $1 from summing displayed components
-- Final checks: 10 regression tests and full build passed; six bilingual live articles and ten unique images verified; desktop browser checked. 390px browser/real-device inspection not performed (viewport control unavailable in current browser interface)
-
-## Full editorial rebuild — 2026-09-27 afternoon KST
-- Read latest main d790b08 and all six live pages. Live AI at 07:18 UTC was newer than versioned prose; reviewed that version before replacing it
-- Rebuilt the argument from scratch around one reader question, in both languages. Korean title uses 음슴체; dry humor supports the explanation
-- Images and image order preserved byte-for-byte; only Avante Korean alt text corrected to remove leftover unlabeled 65/96 figures
-- Reopened Reddit originals and linked every reaction publicly. AI: omissions report and ten tasks × three runs; iPhone: longevity vs battery/camera upgrade priorities with verified comment permalinks; Avante: screen integration vs retained buttons in the reveal thread
-- Removed unsupported implications: a cheap rate does not require equal token use to save money; equal cache-read rates do not determine the whole bill; ratio similarity does not imply equal absolute performance; heated seats do not require all optional packages
-- Preserved USD policy and frozen Avante FX to match unchanged charts. No image regeneration or asset modification
+- Both live Avante editions read before editing and agree with repository revision
+- English master drafted first, natural Korean counterpart follows; figures, dates and limits must match
+- Current catalog offers AI pricing and iPhone gaming articles, neither directly answers this Roadster question; no forced cross-category internal link
+- Automatic checks: `npm run check` passed: editorial regression tests, 3 bilingual reference pairs, Astro, build, 43 HTML link checks and image/performance budgets
+- Mobile/desktop checks: local browser unavailable (Chromium installation download failed, cloud browser rejects localhost); production browser inspection pending. No responsive template changes made
+- Production verification: pending
