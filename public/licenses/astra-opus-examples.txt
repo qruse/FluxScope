@@ -1,0 +1,179 @@
+Actual output screenshots: provenance and licenses
+
+Sunward: https://github.com/yjrocks712/Sunward-by-GPT-6-Astra
+Image: docs/images/driving.png; resized and WebP encoded, no retouching
+MIT License
+
+Copyright (c) 2026 Sunward contributors
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+
+# Sunward: licenses and credits
+
+## Original project material
+
+The root **MIT license** applies to the original Sunward code, procedural world and vehicle definitions, original shader code, project documentation, screenshots, and included generated radio recordings, to the extent rights in that material are held by the project’s contributors. Existing third-party material is excluded from that grant and retains the terms below. No trademark rights or endorsement are granted.
+
+The initial game implementation and public-facing development notes were created by **GPT-6 Astra**, an AI coding agent, during an interactive Codex session. That attribution does not claim ownership of Unity, third-party tools, fonts, model weights, or service software.
+
+## Unity, uGUI, and TextMeshPro
+
+Unity is a separate development platform and runtime, licensed by Unity Technologies. Package dependencies are declared in `Packages/manifest.json` and `Packages/packages-lock.json`; their licenses are supplied with the respective Unity packages. The MIT license here does not relicense the Unity Editor or runtime.
+
+The imported TextMeshPro resources and shaders under `Assets/TextMesh Pro` are Unity-supplied material. The uGUI package’s copyright and Unity Companion License notice are preserved in [ThirdParty/Unity-uGUI-LICENSE.md](ThirdParty/Unity-uGUI-LICENSE.md). Refer to the [Unity Companion License](https://unity.com/legal/licenses/unity-companion-license) for Unity-dependent source redistribution and modification terms.
+
+## Liberation Sans
+
+Liberation Sans and the associated font-derived resources retain the **SIL Open Font License 1.1**, including its reserved-font-name conditions. The full copyright and license are included in [ThirdParty/LiberationSans-OFL.txt](ThirdParty/LiberationSans-OFL.txt) and `Assets/TextMesh Pro/Fonts/LiberationSans - OFL.txt`. They are not relicensed under MIT.
+
+## Generated radio music
+
+The six included instrumental recordings were generated for Sunward using **ACE Music / ACE-Step V1.5 XL Turbo**. No third-party reference audio or artist imitation was requested. Processing and source hashes are recorded in `Assets/Sunward/Audio/Radio/provenance.json`.
+
+ACE Music’s Terms of Service, dated **January 30, 2026**, were checked on **September 14, 2026**. Section 5.1 assigns the generated work product to the generating user and allows publication, distribution, commercial use, and derivative works without an additional ACE Music license. Attribution is voluntary. Those permissions support inclusion of the recordings here; they do not license the underlying service or model software. The service does not guarantee output uniqueness or absence of third-party claims.
+
+Source: [ACE Music](https://acemusic.ai), **Terms of Service → sections 5.1 and 6.2**. This is a project provenance summary, not a replacement for the service’s terms. The project’s MIT grant covers only rights its contributors can grant.
+
+| Station | Tracks |
+| --- | --- |
+| Tideglass 88.4 | Saltlight; Coastline Colour |
+| Current 102.6 | Nightbeat Pulse; Night Road Echo |
+| Stillwater 94.0 | Juniper Hours; Soft Horizons |
+
+— **Gpt-6 Astra**
+
+
+Tidewater: https://github.com/dgreenheck/tidewater
+Image: docs/screenshot.jpg; resized and WebP encoded, no retouching
+MIT License
+
+Copyright (c) 2026 DRG Software Solutions LLC
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+# Credits
+
+The code in this repository is released under the MIT license (see `LICENSE`). The third-party
+assets below keep their own licences.
+
+## Audio: `public/audio/`
+
+42 field recordings from [Freesound](https://freesound.org), all released under
+[CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/). No attribution is required, but every file is
+credited with its author and source link in [`public/audio/CREDITS.md`](public/audio/CREDITS.md).
+
+Recordists: YevgVerh, straget, Alex_hears_things, chris_dagorne, bruno.auzet, felix.blume, hdfreema,
+richardemoore, KaleidacousticsAudio, AugustSandberg, kyles, Pfannkuchn, 200221-WeanBekker, florianreichelt,
+Nox_Sound, ryansitz, SilentStrikeZ, SecureSubset, tbsounddesigns, qubodup, blaukreuz, wormer2, roboroo,
+squashy555, Soojay, coalcon, dubminister, nathankwright, SorenF109, LaScienceMusicale, KEVOY, mikewest,
+tosha73, paulprit, Mrthenoronha, mwchristian95, MrFossy, BranndyBottle, JoelMcDaniel, khenshom, ramattahatta,
+RatBird and Anthousai.
+
+## Scanned beach debris: `public/models/debris/`
+
+Photogrammetry models from [Poly Haven](https://polyhaven.com), under
+[CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/):
+
+- Dead Quiver Trunk
+- Dead Quiver Branch 01
+- Dead Quiver Branch 02
+- Lambis Shell
+
+The meshes were decimated into levels of detail, and the textures are unchanged. Details are in
+[`public/models/debris/CREDITS.md`](public/models/debris/CREDITS.md).
+
+## Vendor stalls: `public/models/props/`
+
+Joe's fish stand and Marta's chandlery are built from [Poly Haven](https://polyhaven.com) textures and
+models under [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/):
+
+- Textures: Weathered Brown Planks, Weathered Planks, Worn Corrugated Iron, Weathered Peeling Timber
+- Models: Wooden Crate 01 and 02, Wooden Bucket 01, Fish Knife, Wooden Cutting Board, Lifebuoy, Wooden
+  Lantern 01, Fisherman's Hat, Wooden Table 03, Metal Jerrycan (green), Plastic Jerrycan, Life Jacket, Metal
+  Toolbox, Wooden Display Shelves 01
+
+The models were decimated and the textures downsized by `tools/props/`. The signs, the chalkboard and the
+scale dial were lettered with [Permanent Marker](https://fonts.google.com/specimen/Permanent+Marker) (Apache
+2.0), [Cabin Sketch](https://fonts.google.com/specimen/Cabin+Sketch) (SIL OFL 1.1) and
+[Oswald](https://fonts.google.com/specimen/Oswald) (SIL OFL 1.1); the font files and their licences are in
+`tools/props/fonts/`. Details are in [`public/models/props/CREDITS.md`](public/models/props/CREDITS.md).
+
+## Humpback whale: `public/models/whale/`
+
+This is an original procedural model, generated by our own scripts. Its proportions follow
+published humpback anatomy, and its side profile was traced from a NOAA Fisheries illustration, a
+US government work in the public domain. The reference photographs used while modelling are not included.
+
+## Characters: `public/models/characters/`
+
+The vendors (`joe.glb`, `marta.glb`) are avatars `Wood_Male_01` and `Female_Adult_04` and their
+idle, talk, wave and shrug animations from the [Microsoft Rocketbox Avatar Library](https://github.com/microsoft/Microsoft-Rocketbox)
+(© Microsoft Corporation, MIT license, included as `LICENSE-Rocketbox.md`), converted with
+`tools/characters/` (textures resized, animations retargeted and baked). Paper: M. Gonzalez-Franco
+et al., "The Rocketbox Library and the Utility of Freely Available Rigged Avatars", Frontiers in
+Virtual Reality, 2020.
+
+## Fonts
+
+[Inter](https://rsms.me/inter/) and [JetBrains Mono](https://www.jetbrains.com/lp/mono/) are both under the
+SIL Open Font License 1.1. They are loaded from Google Fonts at runtime and are not part of this repository.
+
+## Libraries
+
+The SMAA area and search lookup textures (`public/textures/smaa/`) are from three.js (MIT), which ships
+them from J. Jimenez et al.'s SMAA reference implementation (MIT).
+
+[Vite](https://vite.dev) (MIT) is an npm dependency and is not vendored here.
+
+## Techniques and references
+
+These are published techniques. No code from the papers is included.
+
+| Technique | Source |
+|---|---|
+| FFT ocean spectra | J. Tessendorf, *Simulating Ocean Water* |
+| Atmosphere | S. Hillaire, *A Scalable and Production Ready Sky and Atmosphere Rendering Technique* (2020) |
+| Volumetric cloud modelling | A. Schneider (Guerrilla Games), the *Nubis* talks |
+| Motion blur | M. McGuire et al., *A Reconstruction Filter for Plausible Motion Blur* (2012); J. Jimenez, *Next Generation Post Processing in Call of Duty: Advanced Warfare* (2014) |
+| Bloom | J. Jimenez (2014) |
+| Sharpening (RCAS) | AMD FidelityFX Super Resolution 1 |
+| SMAA / FXAA | J. Jimenez et al., *SMAA: Enhanced Subpixel Morphological Antialiasing* (2012); T. Lottes, *FXAA* (2009); ported from three.js' SMAANode / FXAANode (MIT) |
+| Rasterized caustics | Evan Wallace's *WebGL Water* approach |
+| Breaking waves | Guerrilla Games, *Horizon Forbidden West* water (SIGGRAPH 2022) |
+
+The cloud noise, lighting and sampling scheme (`src/sky/Clouds.js`) is adapted from DRG Software Solutions'
+own *Sky Pro WebGPU*. It is published here under this repository's MIT license by its copyright holder.
+
