@@ -6,7 +6,7 @@ These are maintained quality references, not immutable facts or text to paraphra
 
 | Reference | Source of truth for editing | Transferable technique | Mistake to avoid |
 | --- | --- | --- | --- |
-| AI: GPT-6 Luna/Sol/Opus | Live `/posts/gpt-6-sol-luna-opus-5-5-cost-per-success/`; versioned bilingual payloads in `editorial/api-posts/` | Separate official rate, illustrative math, personal impression and a proposed workflow; give an actionable acceptance check | Add dollars, minutes and retry counts; treat ten tasks repeated three times as 30 distinct tasks; infer context limits from aggregate usage |
+| AI: Astra vs Opus 5.5 | Live `/posts/gpt-6-sol-luna-opus-5-5-cost-per-success/`; versioned bilingual payloads in `editorial/api-posts/`; current review `editorial/reviews/astra-opus-rewrite-2026-09-28.md` | Separate user preference, official rates, maker evaluations and real licensed project screenshots | Present unmatched showcases as a controlled model contest; call token-rate savings measured project savings; omit creator and asset credits |
 | IT: iPhone 18 Pro gaming | `src/content/posts/{ko,en}/it-devices/iphone-18-pro-gaming-performance.md` | Define a benchmark before interpreting it; make the buying decision conditional on the reader's actual problem | Treat similar retention ratios as equal sustained speed; mix Solar Bay fps with Wild Life stability; use Pro Max results for Pro |
 | Mobility: Roadster reveal/delivery | `src/content/posts/{ko,en}/mobility/all-new-avante-interior-price.md` | Separate a reveal date from delivery, historical claims from tested production specs, and a reservation from MSRP | Call 0–60 mph a 0–100 km/h result; treat the deposit as the car price; invent a confirmed delivery date |
 
