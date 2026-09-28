@@ -31,6 +31,27 @@ const headPost = latestIn('ai');
     </div>
   </section>
 
+  <!-- Category shortcuts; the full topic sliders below appear once a category has three posts -->
+  <section class="topics home-topics">
+    <div class="shell">
+      <div class="topic-grid">
+        {Object.entries(majorCategories).map(([slug, major], index) => {
+          const majorKey = slug as keyof typeof majorCategories;
+          const count = allKoPosts.filter((post) => post.data.category === majorKey).length;
+          return (
+            <a class="topic" href={majorCategoryPath(majorKey, 'ko')}>
+              <div class="topic-top"><span>0{index + 1} / TOPIC</span><span aria-hidden="true">↗</span></div>
+              <div>
+                <h3>{major.nameKo}</h3>
+                <p class="topic-count">글 <span data-dynamic-count={majorKey} data-static-count={count}>{count}</span>개</p>
+              </div>
+            </a>
+          );
+        })}
+      </div>
+    </div>
+  </section>
+
   <!-- 2. 대분류별(AI / 모빌리티 / IT기기) 포스트 가로 스크롤 섹션 -->
   {Object.entries(majorCategories).map(([slug, major], index) => {
     const majorKey = slug as keyof typeof majorCategories;

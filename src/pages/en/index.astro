@@ -31,6 +31,27 @@ const headPost = latestIn('ai');
     </div>
   </section>
 
+  <!-- Category shortcuts; the full topic sliders below appear once a category has three posts -->
+  <section class="topics home-topics">
+    <div class="shell">
+      <div class="topic-grid">
+        {Object.entries(majorCategories).map(([slug, major], index) => {
+          const majorKey = slug as keyof typeof majorCategories;
+          const count = allEnPosts.filter((post) => post.data.category === majorKey).length;
+          return (
+            <a class="topic" href={majorCategoryPath(majorKey, 'en')}>
+              <div class="topic-top"><span>0{index + 1} / TOPIC</span><span aria-hidden="true">↗</span></div>
+              <div>
+                <h3>{major.name}</h3>
+                <p class="topic-count">Posts: <span data-dynamic-count={majorKey} data-static-count={count}>{count}</span></p>
+              </div>
+            </a>
+          );
+        })}
+      </div>
+    </div>
+  </section>
+
   <!-- 2. Major Category Horizontal Scroll Slider (AI, Mobility, IT Devices) -->
   {Object.entries(majorCategories).map(([slug, major], index) => {
     const majorKey = slug as keyof typeof majorCategories;
