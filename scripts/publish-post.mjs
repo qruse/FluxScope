@@ -1,5 +1,6 @@
 // Publish one article (both languages) to D1 without a site build.
-// Usage: PUBLISH_TOKEN=... node scripts/publish-post.mjs <en.json> <ko.json> [--dry-run]
+// Usage: PUBLISH_TOKEN=... node scripts/publish-post.mjs <en.json> <ko.json> [--dry-run | --preview]
+// --preview uploads an unlisted, noindexed draft to /preview/<token>/ instead: missing images and editorial problems are warnings
 // 1. Any image that is not already live is uploaded to /api/images and the payload files are rewritten to the /media URL
 // 2. Both payloads are validated with the same rules as the API
 // 3. The live versions are backed up to the OS temp directory
@@ -13,6 +14,7 @@ import { validateEditorial, validateRendered } from '../shared/editorial.mjs';
 
 const args = process.argv.slice(2);
 const dryRun = args.includes('--dry-run');
+const preview = args.includes('--preview');
 const files = args.filter((arg) => !arg.startsWith('--'));
 const site = (process.env.SITE_URL || 'https://hslblog.com').replace(/\/$/, '');
 const token = process.env.PUBLISH_TOKEN;
@@ -33,11 +35,17 @@ const mime = { '.png': 'image/png', '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg',
 
 // Upload images that are local files or /images/ paths not yet deployed, so no build is needed.
 const replacements = new Map();
+const missing = new Set();
 for (const ref of new Set(imageRefs(posts[0]))) {
   if (!ref || ref.startsWith('https://') || ref.startsWith('/media/')) continue;
   if (ref.startsWith('/images/') && (dryRun || await live(ref))) continue;
   const file = ref.startsWith('/images/') ? path.join('public', ref) : ref;
-  if (!fs.existsSync(file)) fail(`Image not found locally or live: ${ref}`);
+  if (!fs.existsSync(file)) {
+    if (!preview) fail(`Image not found locally or live: ${ref}`);
+    console.log(`! preview without ${ref} (not found locally or live)`);
+    missing.add(ref);
+    continue;
+  }
   const size = fs.statSync(file).size;
   if (size > 500 * 1024) fail(`${ref} is ${Math.round(size / 1024)} KiB; the editorial cap is 500 KiB`);
   if (dryRun) { console.log(`• would upload ${file}`); continue; }
@@ -59,6 +67,15 @@ if (replacements.size) {
 }
 
 const errors = posts.flatMap((post) => [...validateEditorial(post), ...validateRendered(micromark(post.body, { extensions: [gfm()], htmlExtensions: [gfmHtml()] }))].map((e) => `${post.lang}: ${e}`));
+if (preview) {
+  for (const post of posts) if (missing.has(post.imageUrl)) delete post.imageUrl;
+  if (errors.length) console.log(`! not publishable yet:\n  ${errors.join('\n  ')}`);
+  const response = await fetch(`${site}/api/previews`, { method: 'POST', headers: { ...auth, 'Content-Type': 'application/json' }, body: JSON.stringify({ posts }) });
+  const result = await response.json().catch(() => ({}));
+  if (!response.ok) fail(`Preview failed: ${response.status} ${JSON.stringify(result)}`);
+  console.log(`✔ preview (unlisted, noindex) ${result.posts.map((p) => `${p.lang} ${site}${p.url}`).join(', ')}`);
+  process.exit(0);
+}
 if (errors.length) fail(`Validation failed:\n  ${errors.join('\n  ')}`);
 console.log('✔ validation passed');
 if (dryRun) process.exit(0);
