@@ -50,7 +50,7 @@ Classify material claims in the internal review record:
 
 The defining voice is **cynical AND humorous**, not optional seasoning. Question marketing promises, inconvenient bundles and hidden work; make the reader smile at a specific absurdity. A neutral specification digest fails the voice gate. Use several well-placed dry observations across the article, not a joke after every number. Aim at sales tactics and workflow friction, never at ordinary buyers or unsupported motives. State the useful fact before twisting the knife.
 
-Korean is primarily short bullets with natural 반말/음슴체. One point per bullet; normally one or two short sentences. Do not force all sentences into the same ending. English is natural concise field notes, not literal Korean syntax.
+Korean is primarily short bullets with natural 반말/음슴체. **One point, one short sentence per bullet** — split a second sentence into its own bullet or cut it; keep each bullet readable in one breath. Do not force all sentences into the same ending. English bullets follow the same one-sentence rhythm as natural concise field notes, not literal Korean syntax.
 
 - Titles are headlines, not memo lines. Put the model/product near the start, then a sharp hook: a pointed question, a blunt contrast, a decisive number or a verdict some readers will dispute. The article must pay the hook off with evidence; no bait the body does not answer, no implied test results or defects
 - Korean titles do **not** use 음슴체; write them as natural headline phrasing (question, contrast, noun ending). Korean descriptions and narrative headings still use natural 음슴체 (e.g. `검수는 내 몫임`, `예산도 커짐`). English titles use punchy headline phrasing, not artificial Korean grammar
@@ -111,6 +111,42 @@ The thumbnail must contain the product/model AND 2–4 core facts or a meaningfu
 
 Declare `visualTypes` in static frontmatter and API payloads, ordered **thumbnail first, then inline body images in reading order**. Length must match the image count; first and only sketch must be index 0. Use inline Markdown images with distinct URLs; raw HTML/reference-style images are rejected to keep validation unambiguous. These types are source/preflight metadata; they are not displayed publicly or persisted in D1.
 
+
+Division of work (Claude cannot generate raster images or open Reddit from its environment):
+- Claude writes the article, body visuals and review record, then adds to `editorial/reviews/<slug>.md` a `## Sketch brief` (product/model, 2–4 exact facts or the relationship, every English word/number to appear, USD labels, 3:2 at 1536×1024) and a `## Reddit brief` (reader question, 2–3 search queries, subreddits)
+- Codex does the Reddit research: opens the originals, writes the 2–4 `## 커뮤니티 반응` / `## Community Reactions` bullets for both languages in the one-sentence style, and records exact URLs and checked paraphrases in the review record
+- Codex generates the sketch from that brief, saves it as `public/images/posts/<category>/<slug>-notebook.webp` (≤1600 px, <250 KiB target, 500 KiB cap) on a branch and reports the path; apart from the community bullets it does not edit article text
+- Claude reads the image, checks every word and number against the brief, rejects or re-requests it on any error, then wires it in and publishes
+
+Sketch brief format (Claude fills it; values only, no prose):
+
+```
+Product: <exact product/model name, as it should be lettered>
+Hero doodle: <one object: the product itself or a simple stand-in>
+Callouts (2–4, exact text): "<callout 1>" | "<callout 2>" | "<callout 3>"
+Bottom mini-flow (optional, ≤3 icons + arrows): <icon> -> <icon> -> <icon>
+Red accent on: <one thing to shade/mark in red>
+Output: public/images/posts/<category>/<slug>-notebook.webp
+```
+
+Codex sketch prompt — paste as is, replacing only the `{…}` fields from the brief. Reference look: `public/images/posts/mobility/tesla-roadster-reveal-notebook.webp`
+
+```
+A casual phone photo, taken from straight above in soft daylight, of one page of cheap cream grid notebook paper (faint grey 5 mm grid, paper fills the whole frame, no desk, no props, no hands).
+Everything is drawn freehand with a blue ballpoint pen, with one red pen used only for shading {red accent}.
+Top center: the title "{Product}" in large, slightly uneven hand-lettered capitals, underlined twice with a wobbly line.
+Center: one quick crude sketch of {hero doodle}, loose hatching, a few retraced lines, slightly lopsided, clearly a notebook doodle rather than a technical drawing.
+Below it, one row of short hand-lettered notes, each underlined once, spaced apart: {callout 1} | {callout 2} | {callout 3}
+Bottom center (small): {mini-flow as simple doodle icons joined by hand-drawn arrows}
+All text is English, spelled exactly as given, with no other words, numbers, labels or watermarks anywhere (a maker badge drawn on the product itself is fine). Every word and number must be clearly legible.
+Plenty of empty grid space; slightly uneven baselines; imperfect but neat handwriting.
+Avoid: polished infographic cards, symmetric panels, printed fonts, calligraphy, 3D, glossy rendering, stickers, color fills beyond the red accent, blur or heavy grunge.
+Landscape 3:2, 1536x1024.
+```
+
+- Generate 2–4 candidates, keep the one whose text matches the brief character for character; regenerate rather than hand-fixing text. Currency always `$`
+- Convert with Pillow: `Image.open(src).convert('RGB').resize((1536,1024)).save(out,'WEBP',quality=82,method=6)`; lower quality until ≤250 KiB target (500 KiB cap)
+- Commit only the `.webp` on a branch, report path, pixel size and file size; do not touch Markdown, payloads or D1
 
 - Exactly **one rough paper-notebook sketch per topic**, always the thumbnail (`image.src` for static, `imageUrl` for API)
 - Use the same sketch for both languages. Never repeat it in the body

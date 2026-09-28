@@ -51,3 +51,20 @@
 - Clicked EN language switch and confirmed matching English headline, summary and dates
 - Home and AI category in both languages, both API search results and RSS contain the new title. Dynamic sitemap includes the existing slug; license text is public at /licenses/astra-opus-examples.txt
 - Mobile visual limitation remains as recorded above; not a full cross-device test
+
+## Rewrite 2 — same-prompt outputs (2026-09-28, Claude)
+- User request: keep title, rewrite body in one-sentence bullets, replace unrelated project screenshots with outputs from the same prompt; add user's felt impression that Opus 5.5 is roomier to use (impression only, no measured limit)
+- Removed: Sunward/Tidewater screenshots and the OpenAI AutomationBench Astra-vs-Fable number (openai.com returned 403 to this session; could not reopen)
+
+| Claim | Kind | Opened source | Scope |
+| --- | --- | --- | --- |
+| Same prompt twice, no fixes, empty folders, Astra in Codex, Opus in Claude Code | Third-party test | https://moelueker.com/blog/claude-opus-5-5-vs-gpt-6-astra (Sep 25, 2026), full text read | One tester, one build per model per round; prompt not published |
+| Runner: Opus features, 2,405 vs 358 lines; 256K vs 36K output; $15.25/62 min vs $7.09/24 min | Third-party measurement | Same | Build turn only, list API rates, follow-ups excluded |
+| Island: Opus $5.40/~30 min vs Astra $6.88/27 min; features; Astra plainer than Sol but more tree/house types | Third-party measurement/observation | Same | Same |
+| Totals $20.65 vs $13.97; tester uses Astra for back end | Third-party | Same | Individual workflow |
+| $10/$50 Astra, $4/$20 Opus, 60% lower | Official rate + calculation | OpenAI pricing page, Anthropic Opus 5.5 page (WebFetch, 2026-09-28) | Standard API, Astra short context |
+| FrontierCode 54.6% default medium vs Astra 53.3% at ~1/5 cost; AutomationBench Astra 41.4 vs Opus 40.0 | Maker-reported | Anthropic Opus 5.5 page quote | Maker claim, settings differ |
+
+- Images: thumbnail unchanged (still accurate: lower token rates, my pick for finished work); island lineup from Moe Lueker's article with source line (user instructed news-style use with attribution); cost chart code-rendered by `scripts/visuals/astra_opus_same_prompt.py` from the figures above, 1440×810, 40 KB, visually checked
+- Community: kept the two r/codex items verified by Codex earlier today; Reddit returned 403 to this session, so not re-opened by Claude
+- Checks: shared validator passed both payloads; `npm run check` passed
