@@ -117,6 +117,36 @@ Division of work for the sketch (Claude cannot generate raster images):
 - Codex generates only the sketch from that brief, saves it as `public/images/posts/<category>/<slug>-notebook.webp` (≤1600 px, <250 KiB target, 500 KiB cap) on a branch and reports the path; it does not edit article text
 - Claude reads the image, checks every word and number against the brief, rejects or re-requests it on any error, then wires it in and publishes
 
+Sketch brief format (Claude fills it; values only, no prose):
+
+```
+Product: <exact product/model name, as it should be lettered>
+Hero doodle: <one object: the product itself or a simple stand-in>
+Callouts (2–4, exact text): "<callout 1>" | "<callout 2>" | "<callout 3>"
+Bottom mini-flow (optional, ≤3 icons + arrows): <icon> -> <icon> -> <icon>
+Red accent on: <one thing to shade/mark in red>
+Output: public/images/posts/<category>/<slug>-notebook.webp
+```
+
+Codex sketch prompt — paste as is, replacing only the `{…}` fields from the brief. Reference look: `public/images/posts/mobility/tesla-roadster-reveal-notebook.webp`
+
+```
+A casual phone photo, taken from straight above in soft daylight, of one page of cheap cream grid notebook paper (faint grey 5 mm grid, paper fills the whole frame, no desk, no props, no hands).
+Everything is drawn freehand with a blue ballpoint pen, with one red pen used only for shading {red accent}.
+Top center: the title "{Product}" in large, slightly uneven hand-lettered capitals, underlined twice with a wobbly line.
+Center: one quick crude sketch of {hero doodle}, loose hatching, a few retraced lines, slightly lopsided, clearly a notebook doodle rather than a technical drawing.
+Below it, one row of short hand-lettered notes, each underlined once, spaced apart: {callout 1} | {callout 2} | {callout 3}
+Bottom center (small): {mini-flow as simple doodle icons joined by hand-drawn arrows}
+All text is English, spelled exactly as given, with no other words, numbers, labels or watermarks anywhere (a maker badge drawn on the product itself is fine). Every word and number must be clearly legible.
+Plenty of empty grid space; slightly uneven baselines; imperfect but neat handwriting.
+Avoid: polished infographic cards, symmetric panels, printed fonts, calligraphy, 3D, glossy rendering, stickers, color fills beyond the red accent, blur or heavy grunge.
+Landscape 3:2, 1536x1024.
+```
+
+- Generate 2–4 candidates, keep the one whose text matches the brief character for character; regenerate rather than hand-fixing text. Currency always `$`
+- Convert with Pillow: `Image.open(src).convert('RGB').resize((1536,1024)).save(out,'WEBP',quality=82,method=6)`; lower quality until ≤250 KiB target (500 KiB cap)
+- Commit only the `.webp` on a branch, report path, pixel size and file size; do not touch Markdown, payloads or D1
+
 - Exactly **one rough paper-notebook sketch per topic**, always the thumbnail (`image.src` for static, `imageUrl` for API)
 - Use the same sketch for both languages. Never repeat it in the body
 - Preserve the approved information density; lower polish only slightly (roughly 10–15%): uneven baselines, wobbly shapes and occasional retraced lines. Keep every key word and number legible. Never blur, heavily distress or remove facts to imitate amateur work
