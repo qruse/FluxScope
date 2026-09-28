@@ -75,6 +75,7 @@ const homeUrl = withBase(currentLang === 'en' ? '/en/' : '/');
 const aiUrl = withBase(currentLang === 'en' ? '/en/ai/' : '/ai/');
 const mobilityUrl = withBase(currentLang === 'en' ? '/en/mobility/' : '/mobility/');
 const itDevicesUrl = withBase(currentLang === 'en' ? '/en/it-devices/' : '/it-devices/');
+const rssUrl = withBase(currentLang === 'en' ? '/en/rss.xml' : '/rss.xml');
 const searchUrl = withBase(currentLang === 'en' ? '/en/search/' : '/search/');
 ---
 <!doctype html>
@@ -92,7 +93,7 @@ const searchUrl = withBase(currentLang === 'en' ? '/en/search/' : '/search/');
     <link rel="alternate" hreflang="en" href={new URL(enUrl, Astro.site).href} />
     <link rel="alternate" hreflang="x-default" href={new URL(koUrl, Astro.site).href} />
     <link rel="icon" href={withBase('/favicon.svg')} type="image/svg+xml" />
-    <link rel="alternate" type="application/rss+xml" title={`${site.name} RSS`} href={withBase('/rss.xml')} />
+    <link rel="alternate" type="application/rss+xml" title={`${defaultTitle} RSS`} href={rssUrl} />
     <link rel="sitemap" href={withBase('/sitemap-index.xml')} />
     <meta property="og:type" content={type} />
     <meta property="og:site_name" content={defaultTitle} />
@@ -123,7 +124,8 @@ const searchUrl = withBase(currentLang === 'en' ? '/en/search/' : '/search/');
       } catch (_) {}
 
       try {
-        // 자동 언어 감지 및 리다이렉트 (루트 홈 접속 시 적용)
+        // Only a language the visitor chose is remembered. Never redirect by browser language:
+        // crawlers render with en-US and would never see the Korean home page.
         const currentPath = window.location.pathname;
         const normalizedBase = base.replace(/\/$/, '');
         const relativePath = normalizedBase ? currentPath.replace(normalizedBase, '') : currentPath;
@@ -137,12 +139,6 @@ const searchUrl = withBase(currentLang === 'en' ? '/en/search/' : '/search/');
             window.location.replace(`${normalizedBase}/en/`);
           } else if (savedLang === 'ko' && trimmed === '/en') {
             window.location.replace(`${normalizedBase}/`);
-          } else if (!savedLang) {
-            const navLang = (navigator.language || navigator.userLanguage || '').toLowerCase();
-            const isKo = navLang.startsWith('ko');
-            if (!isKo && trimmed === '/') {
-              window.location.replace(`${normalizedBase}/en/`);
-            }
           }
         }
       } catch (_) {}
@@ -184,7 +180,7 @@ const searchUrl = withBase(currentLang === 'en' ? '/en/search/' : '/search/');
           <p>{t('footer.motto')}</p>
         </div>
         <div class="footer-links">
-          <a href={withBase('/rss.xml')}>{t('footer.rss')}</a>
+          <a href={rssUrl}>{t('footer.rss')}</a>
           <a href={searchUrl}>{t('footer.search')}</a>
           <a href={withBase(currentLang === 'en' ? '/en/privacy/' : '/privacy/')}>{t('footer.privacy')}</a>
         </div>

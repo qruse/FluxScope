@@ -211,6 +211,9 @@ Template-owned (keep working when editing layouts or the Worker):
 - One canonical URL per page; `hreflang` ko/en pairs plus `x-default` pointing to the Korean version of the same page
 - `robots` meta: `index, follow, max-image-preview:large` for content; `noindex, follow` for search, 404 and other utility pages, which also stay out of the sitemaps
 - Open Graph/Twitter tags with real image dimensions and `og:locale`; `BlogPosting` + `BreadcrumbList` JSON-LD with `inLanguage`, image size and author/publisher URLs
+- RSS per language: `/rss.xml` (Korean) and `/en/rss.xml` (English), built by the Worker from D1
+- Never redirect by browser language or IP: crawlers render with en-US, so an automatic redirect hides the Korean pages. Only a language the visitor chose may be remembered
+- One URL per page: article URLs without a trailing slash redirect 301 to the canonical form
 - Sitemaps: `/sitemap-index.xml` (static, with hreflang and article `lastmod`) and `/dynamic-sitemap.xml` (API posts), both listed in `robots.txt`
 - Search engines: Google Search Console, Naver Search Advisor and Bing Webmaster Tools. Ownership files are served by the Worker from `verificationFiles` in `worker/index.js`. Every API publish and a daily cron ping IndexNow (Naver, Bing); Google relies on the sitemaps
 - The LCP hero image loads eagerly with `fetchpriority="high"`; body images carry width/height and load lazily; unknown URLs return the bilingual 404 page with status 404
