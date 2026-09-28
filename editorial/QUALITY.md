@@ -46,6 +46,9 @@ Every row must pass. A polished title cannot compensate for fabricated experienc
 | “Luna 성공률 96.7%” | “한 사용자의 10개 코딩 작업 × 3회 시험에서 29/30 통과” | Keep sample and attribution together |
 | “써보니 발열이 확 줄었음” without supplied experience | “제조사는 냉각 개선을 설명함. 직접 측정한 온도 자료는 없음” | Do not invent hands-on evidence |
 | “API 요금 + 재시도 + 검수 시간” as a numeric cost formula | “모든 시도의 API 요금 / 합격 작업 수; 검수 분은 별도 기록” | Quantities need compatible units |
+| “그래도 서로 무관한 스크린샷 두 장을 붙여놓고 과학이라 부르는 것보다는 훨씬 나음” | Delete; the limit was already stated once | Meta self-defense against a strawman adds nothing |
+| “그 마음을 벤치 점수로 필수품처럼 포장하려는 순간 서류가 창의적으로 변함” | “그 마음을 굳이 33%로 정당화할 필요는 없음” | A joke must land in one read and point at the article's own number |
+| `## GPU는 빨라졌고, 내 게임이 알아채는지는 별개임` | `## 벤치는 33% 빨라졌는데 게임은?` | Headings are short, natural and carry the section's point |
 
 ## Per-article review record template
 
@@ -75,6 +78,7 @@ If omitted: list searches, date and why no usable reaction was found
 
 ## Review
 - Reader value/evidence/reasoning/voice:
+- Line-by-line cut pass (AGENTS §4): bullets deleted, headings read alone in order:
 - Korean-English parity:
 - Related article search and selected link, or reason no link helps:
 - Automatic check command and actual result:

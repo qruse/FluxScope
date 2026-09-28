@@ -64,6 +64,17 @@ Korean is primarily short bullets with natural 반말/음슴체. **One point, on
 - No trailing period on memo/bullet lines, including English. Decimal points, domains and punctuation inside a sentence are allowed
 - Do not pad to a word count, repeat the conclusion in each section, or add code/architecture just to look technical
 
+Line-by-line cut pass (do it on both languages before publishing; delete every bullet that fails):
+- Every bullet carries a new fact, a decision, or a joke about the fact directly above it. If deleting it loses nothing, delete it
+- Cut meta lines about the article's own method or honesty ("still better than calling screenshots science", "a reason to investigate, not to skip investigating"); a caveat is stated once, where it applies
+- Cut strawman comparisons and abstract punchlines that need a second read ("the paperwork gets creative"). A joke must be understood in one pass without its own explanation
+- Humor comes from a concrete number or contrast in the evidence: 60% cheaper tokens vs 7× the output, "none of it was requested", "the calendar moved faster than the Roadster". Aim for 1–2 such lines per section, not a quip after every bullet
+
+Section headings (H2):
+- A heading is the section's point in natural spoken phrasing: a specific claim with a number, a blunt contrast, or the reader's question (e.g. `토큰은 60% 싼데 청구서는 두 배`, `그래서 뭘 누구한테 시킴?`, `1.9초는 2017년산 숫자임`)
+- No translated-sounding or two-clause memo headings (`GPU는 빨라졌고, 내 게임이 알아채는지는 별개임`), no generic labels (`분석`, `결론`, `교체 판단은 지금 폰에서 시작함`)
+- Read the headings alone in order: they should tell the story of the article
+
 ## 5. Required article shape
 
 1. First H2: `## 3줄 요약` / `## 3-Line TL;DR`
