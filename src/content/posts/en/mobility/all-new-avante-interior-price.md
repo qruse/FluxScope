@@ -1,8 +1,8 @@
 ---
 title: "Tesla Roadster: 1.9 Seconds to 60, Nine Years and Counting to Delivery"
-description: "Tesla has a new Roadster reveal countdown. Separate the old performance claims, the $50,000 US reservation and the evidence that would make this a production car"
+description: "The Roadster finally has a reveal date, after at least eight delays and zero deliveries. What the $50,000 reservation buys, and what October 1 must prove"
 publishedAt: 2026-09-26
-updatedAt: 2026-09-28T05:00:14Z
+updatedAt: 2026-09-28T06:00:00Z
 category: mobility
 tags: [tesla, roadster, electric-sports-car, ev-performance, vehicle-launch, reservation]
 author: HSL
@@ -16,65 +16,73 @@ lang: en
 visualTypes: [sketch, chart]
 ---
 
+
 ## 3-Line TL;DR
 
-- Tesla has announced another Roadster unveiling for October 1 in the US; a reveal date still does not tell you when a customer gets the keys
-- The famous 1.9-second acceleration and 620-mile range come from earlier Tesla claims, while the US general reservation totals $50,000; neither is a verified new production specification or final purchase price
-- Watch for a defined production version, independently repeatable tests and concrete delivery terms. The calendar has had enough test drives
+- The Roadster now has a reveal date, but a reveal date is still not a delivery date
+- The famous 1.9-second, 620-mile numbers are 2017 promises, and the $50,000 you can wire today is a reservation, not a price
+- Watch October 1 for a production spec, repeatable tests and delivery terms before treating this as a car you can plan around
 
-## The countdown is real. It measures time to a presentation
+## Nine years of "soon"
 
-- Tesla first unveiled the next-generation Roadster in 2017, originally targeting deliveries in 2020. The newly announced October 1, 2026 event follows years of delays ([Reuters, September 12](https://www.reuters.com/business/autos-transportation/tesla-signals-oct-1-launch-long-delayed-roadster-2026-09-12/))
-- As checked on September 28, the [official Roadster page](https://www.tesla.com/roadster) sets its countdown to **October 2, 00:30 UTC — October 2, 09:30 in Korea**. That is the page's current event target, subject to change, rather than a promised delivery slot
-- This is a pre-event analysis of published information, not a road test. The notebook cover is a conceptual illustration, not an image of a confirmed 2026 production design
-- A live demonstration can show something worth watching. It cannot, by itself, establish the equipment on a customer's car or how often that performance can be repeated. A stage and a driveway remain different delivery addresses
+- Tesla first showed the next-generation Roadster in November 2017 and promised production in 2020 ([Electrek](https://electrek.co/2026/09/20/tesla-reopens-50000-roadster-reservations-october-1-unveil/))
+- Electrek counts at least eight delays and not a single delivered car since then
+- In 2026 alone the reveal slid from April to May, June, summer and August before landing on October 1 ([Not a Tesla App](https://www.notateslaapp.com/news/4681/tesla-sets-october-1-event-for-roadster-reveal-sends-invites))
+- The event is set for 8:30 p.m. Eastern on October 1 near Waco, Texas, which is 9:30 a.m. on October 2 in Korea
+- The countdown is real, but it counts down to a presentation, not to your garage
 
-## The old numbers deserve a date stamp
+## The old numbers need a date stamp
 
-| Figure | What Tesla previously stated | What still needs checking for the new car |
+| Figure | What Tesla promised in 2017 | What October 1 needs to show |
 | :--- | :--- | :--- |
-| Acceleration | 0–60 mph in 1.9 seconds | Production configuration, tires, surface and timing method |
-| Top speed | More than 250 mph | Measured result and the configuration used |
-| Range | 620 miles, described as 1,000 km | Applicable test cycle and production-car result |
+| Acceleration | 0–60 mph in 1.9 seconds | Production spec, tires, surface and timing method |
+| Top speed | Over 250 mph | A measured run and the configuration used |
+| Range | 620 miles | The test cycle and a production-car result |
+| Price | $200,000 base | A current US price with options |
 
-*Source: [Tesla Q4 2017 update, issued February 2018, page 4](https://ir.tesla.com/_flysystem/s3/sec/000156459018001521/tsla-8k_20180207-gen_0.pdf). Historical manufacturer claims, not independently verified 2026 specifications*
+*Historical claims as reported by [Electrek](https://electrek.co/2026/09/20/tesla-reopens-50000-roadster-reservations-october-1-unveil/), not verified 2026 specifications*
 
-- **0–60 mph is not 0–100 km/h**: 60 mph is about 96.6 km/h. Copying the same time into a different speed interval quietly makes the claim stronger
-- The old range statement is not identified here as an EPA or WLTP result. Until the test basis is clear, putting it beside certified competitor ranges would make the table neater and the comparison worse
-- One spectacular launch does not answer repeatability. For the new car, I would look for successive runs, battery state and temperature, plus whether any special equipment is used. These are questions to check, not failures I have measured
-- If the event presents extraordinary features, the useful follow-up is whether the customer version includes them, under what operating conditions and with what restrictions. Applause is a poor substitute for a configuration sheet
+- 0–60 mph is not 0–100 km/h, since 60 mph is about 96.6 km/h
+- Keeping the time and swapping the unit quietly makes the claim stronger than Tesla's own
+- The 620-mile figure has no EPA or WLTP label attached, so it does not belong next to certified rivals yet
+- One launch is not the same as repeating it on a warm battery
+- Musk previewed the event as "Excitement guaranteed. Success is not guaranteed"
+- He also mentioned SpaceX-designed cold gas thrusters for the demonstration
+- Whether thrusters reach a customer car is exactly the kind of detail a stage cannot answer
 
-## The $50,000 figure buys a reservation, not the car
+## $50,000 buys a place in line
 
-![US general Roadster reservation: $5,000 initial card payment plus $45,000 wire transfer within 10 days](/images/posts/mobility/tesla-roadster-reservation-usd.webp)
+![Tesla Roadster US general reservation: $5,000 by card plus $45,000 by wire within 10 days](/images/posts/mobility/tesla-roadster-reservation-usd.webp)
 
-*Source: [Tesla US reservation page](https://www.tesla.com/roadster/reserve), checked September 28, 2026; chart by HSL*
+*Source: [Tesla US reservation page](https://www.tesla.com/roadster/reserve) as reported by [Electrek](https://electrek.co/2026/09/20/tesla-reopens-50000-roadster-reservations-october-1-unveil/) — chart by HSL*
 
-- The general US reservation is **$5,000 by card plus $45,000 by wire within 10 days**, totaling **$50,000**. Tesla's page says the reservation is not final until the wire arrives
-- This is a reservation amount, not a new US MSRP, an all-in vehicle quote or a Korean price. I would not recycle an old headline price into a current purchase estimate
-- Before committing, read the applicable reservation agreement: cancellation and refund conditions, the exact version, final price and delivery terms all matter. The payment schedule is considerably more specific than “coming soon”
+- The general US reservation is $5,000 by card now and $45,000 by wire within 10 days
+- Tesla calls the card payment fully refundable, and the spot is confirmed only after the wire arrives
+- The $50,000 total is a deposit, not the car's price, a tax-inclusive quote or a delivery date
+- The 2017 depositors paid the same $50,000 and are still waiting
+- The payment schedule is the most precise date in the whole program
 
-| What to look for at the event | Evidence that would change the buying decision |
+| October 1 item | Why it matters for buying |
 | :--- | :--- |
-| A production version | Clear distinction between the demonstrator and customer equipment |
-| Performance with a method | Timing protocol, test conditions and repeated results |
-| Range with a basis | Named test cycle and applicable vehicle configuration |
-| A purchase you can plan | Final pricing, production/delivery schedule and written terms |
+| Production version | Separates the stage car from the customer car |
+| Measured performance | Needs timing rules, test conditions and repeat runs |
+| Range with a standard | Needs the test cycle and configuration |
+| Price and delivery terms | Turns a reveal into a plan you can budget for |
 
-- My decision rule: enjoy the reveal, then update the assessment when those details are published. Interest can be immediate; a purchase judgment needs more paperwork
+- Enjoy the show, then update the verdict only when those four boxes are filled
 
 ## Community Reactions
 
-- In the r/electricvehicles thread, commenters ask whether the car was already revealed years ago and joke about which year October refers to. That is skepticism about the schedule, not evidence about the car's performance ([Reddit discussion](https://www.reddit.com/r/electricvehicles/comments/1weluif/tesla_teases_roadster_reveal_for_october_1/))
-- A reply points out that there is an actual countdown. That answers the narrower question of whether a reveal is being scheduled; it does not establish customer deliveries. These are a few reactions in one thread, not a survey of buyers ([Reddit discussion](https://www.reddit.com/r/electricvehicles/comments/1weluif/tesla_teases_roadster_reveal_for_october_1/))
+- In r/electricvehicles, commenters joked that the car was already revealed years ago and asked which year's October this is ([Reddit](https://www.reddit.com/r/electricvehicles/comments/1weluif/tesla_teases_roadster_reveal_for_october_1/))
+- A reply in the same thread pointed out that there really is a countdown, which answers the date question but not the delivery one ([Reddit](https://www.reddit.com/r/electricvehicles/comments/1weluif/tesla_teases_roadster_reveal_for_october_1/))
 
 ## Q&A (Field Notes)
 
-- **Q: Should Korean viewers mark October 1?**
-  - The official page's countdown checked September 28 corresponds to October 2 at 09:30 KST. Recheck the page near the event because schedules can change
-- **Q: Is 1.9 seconds a confirmed 2026 0–100 km/h result?**
-  - No; the cited historical claim is 0–60 mph. This article has no independently verified 2026 production-car test establishing either interval
-- **Q: Does $50,000 fix the final price or delivery date?**
-  - The verified figure is the general US reservation amount. It does not supply a final vehicle quote or customer delivery commitment
-- **Q: What would make the reveal more than another presentation?**
-  - A defined customer specification, reproducible performance evidence and a concrete production/delivery plan would materially strengthen the case
+- **Q. When can I watch it from Korea?**
+  - The 8:30 p.m. Eastern slot on October 1 is 9:30 a.m. on October 2 in Korea, so recheck Tesla's page just before
+- **Q. Is 1.9 seconds the new car's 0–100 km/h time?**
+  - No, it is a 2017 0–60 mph claim that no one has measured on a 2026 production car
+- **Q. Does $50,000 lock in a price and a delivery date?**
+  - No, it is a reservation, and the final price and delivery terms are what October 1 has to announce
+- **Q. What would change the verdict?**
+  - A defined customer spec, independently repeatable tests and a written production and delivery plan
