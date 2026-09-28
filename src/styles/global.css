@@ -161,6 +161,8 @@ img { max-width: 100%; height: auto; }
 .footer-grid { display: grid; grid-template-columns: 1fr auto; gap: 3rem; }
 .footer-brand { font-size: 1.4rem; font-weight: 850; letter-spacing: -.055em; }
 .brand-dot { color: var(--accent); }
+/* The dot is decorative: drawn by CSS so headings and titles read as plain words to crawlers. */
+.brand-dot::after { content: '.'; }
 .site-footer p { margin: .55rem 0 0; color: var(--muted); font-size: .8rem; }
 .footer-links { display: flex; gap: 1.4rem; font-size: .78rem; font-weight: 700; }
 .footer-copy { grid-column: 1 / -1; border-top: 1px solid var(--line); padding-top: 1.2rem; }
