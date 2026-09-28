@@ -598,7 +598,9 @@ export default {
 async function handle(request, env, ctx) {
     const url = new URL(request.url);
     // One canonical host: the old workers.dev address and www redirect permanently; the API stays reachable on both.
-    if ((url.hostname.endsWith('.workers.dev') || url.hostname === `www.${new URL(origin).hostname}`) && !url.pathname.startsWith('/api/') && (request.method === 'GET' || request.method === 'HEAD')) {
+    const wrongHost = url.hostname.endsWith('.workers.dev') || url.hostname === `www.${new URL(origin).hostname}`;
+    const insecure = url.protocol === 'http:' && url.hostname === new URL(origin).hostname;
+    if ((wrongHost || insecure) && !url.pathname.startsWith('/api/') && (request.method === 'GET' || request.method === 'HEAD')) {
       return Response.redirect(`${origin}${url.pathname}${url.search}`, 301);
     }
     try {
