@@ -4,7 +4,7 @@
   "type": "module",
   "scripts": {
     "dev": "astro dev",
-    "build": "npm run test:editorial && node scripts/check-eeat.mjs && astro check && astro build && node scripts/image-manifest.mjs && pagefind --site dist && node scripts/check-links.mjs && node scripts/check-performance.mjs",
+    "build": "npm run test:editorial && node scripts/check-eeat.mjs && astro check && astro build && node scripts/image-manifest.mjs && node scripts/check-links.mjs && node scripts/check-performance.mjs",
     "preview": "astro preview",
     "check": "npm run build",
     "worker:dev": "wrangler dev",

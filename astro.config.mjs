@@ -9,8 +9,9 @@ import path from 'node:path';
 function postUpdatedDates() {
   const dates = new Map();
   const root = 'src/content/posts';
-  for (const lang of fs.existsSync(root) ? fs.readdirSync(root) : []) {
-    for (const category of fs.readdirSync(path.join(root, lang))) {
+  const dirs = (dir) => (fs.existsSync(dir) ? fs.readdirSync(dir, { withFileTypes: true }).filter((entry) => entry.isDirectory()).map((entry) => entry.name) : []);
+  for (const lang of dirs(root)) {
+    for (const category of dirs(path.join(root, lang))) {
       for (const file of fs.readdirSync(path.join(root, lang, category)).filter((name) => /\.mdx?$/.test(name))) {
         const text = fs.readFileSync(path.join(root, lang, category, file), 'utf8');
         const updated = text.match(/^updatedAt:\s*["']?([^"'\n]+)/m)?.[1];
