@@ -12,16 +12,16 @@ Node.js 22.19 이상에서 `npm ci`, `npm run check`를 실행합니다. 로컬 
 2. Worker `fluxscope`의 **Settings → Variables and Secrets**에서 `PUBLISH_TOKEN`을 **Secret**으로 추가합니다. 길고 고유한 문자열을 사용하고 Git에는 넣지 않습니다.
 3. **R2 object storage → Overview → Create bucket**에서 `hsl-blog-images` 버킷을 Standard 저장 클래스로 만듭니다. `wrangler.jsonc`의 `IMAGES` 바인딩이 이 버킷에 연결됩니다. 버킷을 공개하거나 별도 R2 API 키를 만들 필요는 없습니다.
 4. GitHub `main`에 연결된 Workers Builds에서 빌드 명령 `npm run build`, 배포 명령 `npx wrangler deploy`를 사용합니다. D1 테이블은 Worker의 첫 요청에서 자동으로 생성됩니다. 이후 스키마 변경이 필요할 때는 Cloudflare 인증된 환경에서 `npm run db:remote`를 사용할 수 있습니다.
-5. Worker 설정을 한 번 배포하면 이후 API 글과 새 이미지는 빌드 없이 게시됩니다. 공개 주소는 `https://fluxscope.coolwin200.workers.dev`입니다.
+5. Worker 설정을 한 번 배포하면 이후 API 글과 새 이미지는 빌드 없이 게시됩니다. 공개 주소는 `https://hslblog.com`입니다.
 
-도메인을 바꾸면 `worker/index.js`의 공개 origin과 `SITE_URL`을 함께 바꿔야 합니다.
+공개 도메인은 `hslblog.com`(Cloudflare Registrar)입니다. `wrangler.jsonc`의 `routes`가 `hslblog.com`과 `www.hslblog.com`을 Worker 커스텀 도메인으로 연결하며 DNS·인증서는 배포 때 자동으로 만들어집니다. 옛 `fluxscope.coolwin200.workers.dev`와 `www` 주소의 페이지 요청은 Worker가 같은 경로의 `https://hslblog.com`으로 301 이동시키고, `/api/*`는 두 주소 모두에서 그대로 동작합니다. 도메인을 바꾸면 `worker/index.js`의 `origin`, `astro.config.mjs`·CI의 `SITE_URL`, `routes`를 함께 바꿔야 합니다.
 
 ## 글 게시 API
 
 `POST /api/posts`에 `Authorization: Bearer <PUBLISH_TOKEN>`과 JSON 본문을 전송합니다. 언어별로 한 번씩 게시합니다. `lang`은 `ko` 또는 `en`, `slug`는 영문 소문자·숫자·하이픈, `category`는 `ai`, `mobility`, `it-devices` 중 하나입니다. 기존 AI 하위 분류 주소는 `/ai/`로 이동합니다.
 
 ```bash
-curl -X POST 'https://fluxscope.coolwin200.workers.dev/api/posts' \
+curl -X POST 'https://hslblog.com/api/posts' \
   -H "Authorization: Bearer $HSL_PUBLISH_TOKEN" \
   -H 'Content-Type: application/json' \
   --data-binary @post.json
@@ -40,7 +40,7 @@ curl -X POST 'https://fluxscope.coolwin200.workers.dev/api/posts' \
 `POST /api/images`에 기존 `PUBLISH_TOKEN`과 이미지 파일을 원본 바이너리로 전송합니다. PNG, JPEG, WebP, GIF, AVIF를 지원하며 최대 5 MB입니다. 브라우저에서 붙여넣은 이미지 `Blob`도 `fetch`의 본문에 그대로 넣을 수 있습니다. SVG와 실행 가능한 파일은 받지 않습니다.
 
 ```bash
-curl -X POST 'https://fluxscope.coolwin200.workers.dev/api/images' \
+curl -X POST 'https://hslblog.com/api/images' \
   -H "Authorization: Bearer $HSL_PUBLISH_TOKEN" \
   -H 'Content-Type: image/webp' \
   --data-binary @figure.webp

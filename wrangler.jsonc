@@ -7,8 +7,13 @@
     "directory": "./dist",
     "binding": "ASSETS",
     "not_found_handling": "404-page",
-    "run_worker_first": ["/", "/en", "/en/", "/ai", "/ai/", "/en/ai", "/en/ai/", "/mobility", "/mobility/", "/en/mobility", "/en/mobility/", "/it-devices", "/it-devices/", "/en/it-devices", "/en/it-devices/", "/api/*", "/media/*", "/posts/*", "/en/posts/*", "/agi", "/agi/*", "/physical-ai", "/physical-ai/*", "/other-ai", "/other-ai/*", "/en/agi", "/en/agi/*", "/en/physical-ai", "/en/physical-ai/*", "/en/other-ai", "/en/other-ai/*", "/rss.xml", "/dynamic-sitemap.xml", "/robots.txt"]
+    "run_worker_first": ["/*", "!/_astro/*", "!/images/*", "!/pagefind/*", "!/favicon.svg", "!/comments.js", "!/image-dimensions.json"]
   },
+  "workers_dev": true,
+  "routes": [
+    { "pattern": "hslblog.com", "custom_domain": true },
+    { "pattern": "www.hslblog.com", "custom_domain": true }
+  ],
   "triggers": { "crons": ["17 0 * * *"] },
   "d1_databases": [{
     "binding": "DB",

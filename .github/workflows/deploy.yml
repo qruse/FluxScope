@@ -16,7 +16,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       ASTRO_TELEMETRY_DISABLED: 1
-      SITE_URL: https://fluxscope.coolwin200.workers.dev
+      SITE_URL: https://hslblog.com
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4

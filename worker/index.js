@@ -9,7 +9,7 @@ const categoryNames = {
   ko: { ai: 'AI', mobility: '모빌리티', 'it-devices': 'IT기기' },
   en: { ai: 'AI', mobility: 'Mobility', 'it-devices': 'IT Devices' },
 };
-const origin = 'https://fluxscope.coolwin200.workers.dev';
+const origin = 'https://hslblog.com';
 const json = (value, status = 200) => new Response(JSON.stringify(value), {
   status, headers: { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store' },
 });
@@ -597,6 +597,10 @@ export default {
 
 async function handle(request, env, ctx) {
     const url = new URL(request.url);
+    // One canonical host: the old workers.dev address and www redirect permanently; the API stays reachable on both.
+    if ((url.hostname.endsWith('.workers.dev') || url.hostname === `www.${new URL(origin).hostname}`) && !url.pathname.startsWith('/api/') && (request.method === 'GET' || request.method === 'HEAD')) {
+      return Response.redirect(`${origin}${url.pathname}${url.search}`, 301);
+    }
     try {
       if (env.DB) await ensureSchema(env.DB);
       if (url.pathname.startsWith('/media/')) return images(request, env, url);
