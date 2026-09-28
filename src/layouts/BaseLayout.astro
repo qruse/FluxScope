@@ -189,6 +189,7 @@ const searchUrl = withBase(currentLang === 'en' ? '/en/search/' : '/search/');
           <a href={rssUrl}>{t('footer.rss')}</a>
           <a href={searchUrl}>{t('footer.search')}</a>
           <a href={withBase(currentLang === 'en' ? '/en/privacy/' : '/privacy/')}>{t('footer.privacy')}</a>
+          <a href={withBase(currentLang === 'en' ? '/en/contact/' : '/contact/')}>{t('footer.contact')}</a>
         </div>
         <p class="footer-copy">© {new Date().getFullYear()} {t('site.title')}</p>
       </div>
