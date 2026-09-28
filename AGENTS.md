@@ -112,6 +112,11 @@ The thumbnail must contain the product/model AND 2–4 core facts or a meaningfu
 Declare `visualTypes` in static frontmatter and API payloads, ordered **thumbnail first, then inline body images in reading order**. Length must match the image count; first and only sketch must be index 0. Use inline Markdown images with distinct URLs; raw HTML/reference-style images are rejected to keep validation unambiguous. These types are source/preflight metadata; they are not displayed publicly or persisted in D1.
 
 
+Division of work for the sketch (Claude cannot generate raster images):
+- Claude writes the article, body visuals and review record, then adds a `## Sketch brief` to `editorial/reviews/<slug>.md`: product/model, 2–4 exact facts or the relationship, every English word/number to appear, USD labels, 3:2 at 1536×1024
+- Codex generates only the sketch from that brief, saves it as `public/images/posts/<category>/<slug>-notebook.webp` (≤1600 px, <250 KiB target, 500 KiB cap) on a branch and reports the path; it does not edit article text
+- Claude reads the image, checks every word and number against the brief, rejects or re-requests it on any error, then wires it in and publishes
+
 - Exactly **one rough paper-notebook sketch per topic**, always the thumbnail (`image.src` for static, `imageUrl` for API)
 - Use the same sketch for both languages. Never repeat it in the body
 - Preserve the approved information density; lower polish only slightly (roughly 10–15%): uneven baselines, wobbly shapes and occasional retraced lines. Keep every key word and number legible. Never blur, heavily distress or remove facts to imitate amateur work
