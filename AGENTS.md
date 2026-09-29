@@ -234,6 +234,7 @@ Template-owned (keep working when editing layouts or the Worker):
 - Sitemaps: `/sitemap-index.xml` (static pages with hreflang; the Worker adds `lastmod` to home and category pages from the newest D1 post) and `/dynamic-sitemap.xml` (API posts), both listed in `robots.txt`
 - `/ads.txt` is served by the Worker only when the `ADSENSE_PUBLISHER_ID` variable (`pub-…`) is set; otherwise it returns 404
 - Search engines: Google Search Console, Naver Search Advisor and Bing Webmaster Tools. Ownership files are served by the Worker from `verificationFiles` in `worker/index.js`. Every API publish and a daily cron ping IndexNow (Naver, Bing); Google relies on the sitemaps
+- Visit counts (`/api/views`) skip bots, automation and preview pages; the owner opts a browser out by opening any page with `?nocount=1` once (`?nocount=0` re-enables counting)
 - The LCP hero image loads eagerly with `fetchpriority="high"`; body images carry width/height and load lazily; unknown URLs return the bilingual 404 page with status 404
 
 Author checklist (validated where marked):
