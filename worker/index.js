@@ -766,7 +766,12 @@ async function edgeCached(request, env, ctx) {
   if (bypass || !cache) return withSecurityHeaders(await handle(request, env, ctx));
   const key = new Request(`${url.origin}${url.pathname}`);
   const hit = await cache.match(key);
-  if (hit) return hit;
+  if (hit) {
+    // The zone's Browser Cache TTL (4 h) would otherwise replace the stored max-age on cache hits and keep old pages in browsers.
+    const fresh = new Response(hit.body, hit);
+    fresh.headers.set('Cache-Control', 'public, max-age=0, must-revalidate');
+    return fresh;
+  }
   const response = withSecurityHeaders(await handle(request, env, ctx));
   if (response.status === 200) {
     const stored = new Response(response.clone().body, response);
