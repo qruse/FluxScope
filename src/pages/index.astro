@@ -31,7 +31,7 @@ const headPost = latestIn('ai');
     </div>
   </section>
 
-  <!-- Category shortcuts; the full topic sliders below appear once a category has three posts -->
+  <!-- Category shortcuts -->
   <section class="topics home-topics">
     <div class="shell">
       <div class="topic-grid">
@@ -51,34 +51,4 @@ const headPost = latestIn('ai');
       </div>
     </div>
   </section>
-
-  <!-- 2. 대분류별(AI / 모빌리티 / IT기기) 포스트 가로 스크롤 섹션 -->
-  {Object.entries(majorCategories).map(([slug, major], index) => {
-    const majorKey = slug as keyof typeof majorCategories;
-    const categoryPosts = allKoPosts.filter((post) => post.data.category === majorKey);
-    return (
-      <section class="topic-scroll-section">
-        <div class="shell">
-          <div class="section-head">
-            <div>
-              <div class="section-kicker">0{index + 1} / TOPIC</div>
-              <h2>{major.nameKo}</h2>
-            </div>
-            <a class="quiet-link" href={majorCategoryPath(majorKey, 'ko')}>
-              전체보기 ↗
-            </a>
-          </div>
-          <div class="horizontal-scroll-container">
-            <div class="horizontal-scroll-track" data-dynamic-category={majorKey}>
-              {categoryPosts.map((post) => (
-                <div class="scroll-item">
-                  <PostCard post={post} />
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
-    );
-  })}
 </BaseLayout>

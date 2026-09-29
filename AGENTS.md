@@ -19,6 +19,7 @@ Do not stop after writing advice when asked to edit. Do not report an API respon
 
 - The repository is FluxScope; the displayed brand remains **HSL의 블로그 / HSL's Blog** unless the user asks to rename it
 - Purpose: useful notes by someone curious about AI, cars and devices, for readers deciding what to use, buy or investigate
+- **This is an international blog.** Write for a global reader first: pick topics, markets, prices, sources and examples that matter across major markets (US, EU/UK, China, Japan, Korea). Korea-only facts (Korean prices, laws, insurers, dealers, subsidies) enter only as one clearly labeled market example or when the topic itself is Korean; never frame a global question around the Korean market alone. The Korean edition is a translation of that global article, not a Korea-specific version
 - Categories are **only** `ai`, `mobility`, `it-devices` — never add AI subcategories
 - Publish Korean and English counterparts with the same slug, category, numbers, scope, images and factual confidence
 - Preserve existing slugs and original publication dates when editing; advance the update date. Store API timestamps in UTC and display dates in Asia/Seoul consistently
@@ -192,9 +193,9 @@ Landscape 3:2, 1536x1024.
 
 - English is the master edition; Korean is fully supported, with identical evidence and qualifications
 - Prices lead with **USD ($)** in both editions. **Use the official US price first**, matched to model, storage/trim, date, tax basis and purchase conditions
-- Only if no official US price is available, convert the verified Korean launch price to USD. Add a small nearby note: “Korean launch price converted; approximate USD; FX rate and date.” Never present that fallback as US MSRP
+- Only if no official US price is available, convert the verified official price from the market that best represents the product for a global reader (usually the maker's main export market such as the EU/UK, otherwise its home market; Korea only when it is that market or the topic is Korean). Add a small nearby note: “<market> price converted; approximate USD; tax basis, FX rate and date.” Never present that fallback as US MSRP, and when comparing products use the same market and tax basis for all of them
 - Use one frozen, linked FX rate per article; retain original amounts in the internal evidence record. Convert totals from unrounded source amounts, then round. State material exclusions. No repeated conversion boilerplate in every bullet
-- Never attach Korean trim/option costs to a US configuration. If US pricing exists but a Korean-specific option has no equivalent, identify the Korean-market scope and conversion explicitly
+- Never attach one market's trim/option costs to another market's configuration. If US pricing exists but a market-specific option has no equivalent, identify that market's scope and conversion explicitly
 - API token prices already quoted in USD need no FX conversion. Discounts, trade-ins and financing are not the official cash starting price
 
 ## 9. Storage and publication
@@ -233,6 +234,7 @@ Template-owned (keep working when editing layouts or the Worker):
 - Sitemaps: `/sitemap-index.xml` (static pages with hreflang; the Worker adds `lastmod` to home and category pages from the newest D1 post) and `/dynamic-sitemap.xml` (API posts), both listed in `robots.txt`
 - `/ads.txt` is served by the Worker only when the `ADSENSE_PUBLISHER_ID` variable (`pub-…`) is set; otherwise it returns 404
 - Search engines: Google Search Console, Naver Search Advisor and Bing Webmaster Tools. Ownership files are served by the Worker from `verificationFiles` in `worker/index.js`. Every API publish and a daily cron ping IndexNow (Naver, Bing); Google relies on the sitemaps
+- Visit counts (`/api/views`) skip bots, automation and preview pages; the owner opts a browser out by opening any page with `?nocount=1` once (`?nocount=0` re-enables counting)
 - The LCP hero image loads eagerly with `fetchpriority="high"`; body images carry width/height and load lazily; unknown URLs return the bilingual 404 page with status 404
 
 Author checklist (validated where marked):
