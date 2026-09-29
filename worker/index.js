@@ -756,9 +756,29 @@ function withSecurityHeaders(response) {
   return new Response(response.body, { status: response.status, statusText: response.statusText, headers });
 }
 
+// Pages are rendered from D1 on every request, and a slow D1 read made the home page stall for over a second.
+// Public pages are kept in the edge cache for a minute; a request with Cache-Control: no-cache (hard refresh, publish script) skips it.
+const edgeCachedPath = /^\/(?:en\/)?(?:(?:ai|mobility|it-devices)\/|posts\/[a-z0-9]+(?:-[a-z0-9]+)*\/)?$|^\/(?:en\/)?rss\.xml$|^\/dynamic-sitemap\.xml$/;
+async function edgeCached(request, env, ctx) {
+  const url = new URL(request.url);
+  const bypass = request.method !== 'GET' || !edgeCachedPath.test(url.pathname) || /no-cache|max-age=0/i.test(`${request.headers.get('Cache-Control')} ${request.headers.get('Pragma')}`);
+  const cache = globalThis.caches?.default;
+  if (bypass || !cache) return withSecurityHeaders(await handle(request, env, ctx));
+  const key = new Request(`${url.origin}${url.pathname}`);
+  const hit = await cache.match(key);
+  if (hit) return hit;
+  const response = withSecurityHeaders(await handle(request, env, ctx));
+  if (response.status === 200) {
+    const stored = new Response(response.clone().body, response);
+    stored.headers.set('Cache-Control', 'public, max-age=60');
+    ctx.waitUntil(cache.put(key, stored));
+  }
+  return response;
+}
+
 export default {
   async fetch(request, env, ctx) {
-    return withSecurityHeaders(await handle(request, env, ctx));
+    return edgeCached(request, env, ctx);
   },
   async scheduled(event, env, ctx) {
     ctx.waitUntil(submitRecentlyChanged(env));
