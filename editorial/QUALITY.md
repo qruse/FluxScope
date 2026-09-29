@@ -89,7 +89,7 @@ If omitted: list searches, date and why no usable reaction was found
 - Reader value/evidence/reasoning/voice:
 - Line-by-line cut pass (AGENTS §4): bullets deleted, headings read alone in order:
 - Korean-English parity:
-- Related article search and selected link, or reason no link helps:
+- Related live article search, prior experience/prediction passage, selected same-language link and why it helps (or reason no link helps):
 - Automatic check command and actual result:
 - Mobile/desktop visual check and actual result:
 - Live URLs/listings/images/language switch/search/feed checks:

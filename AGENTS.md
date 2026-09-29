@@ -55,6 +55,7 @@ Classify material claims in the internal review record:
 - Never multiply measurements from different tests to invent a real-world result
 - Use direct primary links beside important factual claims or immediately below their table/chart. Original measurement publishers count as primary sources for their own tests
 - Related internal links: add 1–2 only when an already published, same-language post directly helps answer the reader's question; verify URL, explain relevance, no forced cross-category links or self-links
+- Before drafting a follow-up, comparison or rumor update, search the live post catalog for the same models/topic and read relevant prior articles, including the author's earlier experience and predictions. Connect that history in the body with 1–2 same-language links and explain what has changed or what question remains; do not leave useful previous coverage only in an automatic related-post box. When the user names a prior mention, locate the actual passage and record its live URL and meaning in the review. Treat past rumors as dated claims and recheck current specifications from primary sources
 
 ## 4. Voice — cynical and humorous, without bargaining away accuracy
 
