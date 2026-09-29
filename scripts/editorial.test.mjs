@@ -23,6 +23,8 @@ test('periods fail in prose, decimals do not', () => assert.ok(changed(p => p.bo
 
 test('rendered emphasis leakage fails while code samples are allowed', () => {
  assert.equal(validateRendered('<p>**65.2% → 79.4%**로</p>').length, 1);
+ assert.equal(validateRendered('<p>5<del>45개, Luna는 350</del>3,000개</p>').length, 1);
+ assert.deepEqual(validateRendered('<p>5~45개, Luna는 350~3,000개</p>'), []);
  assert.deepEqual(validateRendered('<p><strong>65.2%에서 79.4%로 상승</strong>했음</p><code>**literal**</code>'), []);
 });
 

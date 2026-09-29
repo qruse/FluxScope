@@ -64,5 +64,8 @@ export function validateEditorial(post) {
 
 export function validateRendered(html) {
   const prose = html.replace(/<(pre|code)\b[^>]*>[\s\S]*?<\/\1>/gi, '').replace(/<[^>]*>/g, '');
-  return /\*\*[^\n]*\*\*/.test(prose) ? ['unrendered ** emphasis markers remain; rewrite punctuation next to the closing marker'] : [];
+  const errors = /\*\*[^\n]*\*\*/.test(prose) ? ['unrendered ** emphasis markers remain; rewrite punctuation next to the closing marker'] : [];
+  // Two single tildes in one paragraph ("5~45 ... 350~3,000") render as strikethrough between them.
+  if (/<del>/i.test(html)) errors.push('unintended strikethrough: a pair of ~ characters was rendered as <del>; write ranges with an en dash (5–45) or escape the tilde as \\~');
+  return errors;
 }
