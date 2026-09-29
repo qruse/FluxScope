@@ -1,8 +1,17 @@
 # Reference articles and release rubric
 
-## What to copy from the three samples
+## Start with the latest published article
 
-These are maintained quality references, not immutable facts or text to paraphrase mechanically. Recheck changing prices and specifications for every new article. Read the relevant sample in full before drafting.
+Follow the source-of-truth workflow in `AGENTS.md`: read the newest relevant live
+article in both languages, then its saved review if available. This establishes
+current structure, voice and visual treatment. Record its slug and the checked
+revision in the new review. A saved draft may be newer but is not a publication.
+Do not substitute a tracked JSON example when live retrieval fails; record the
+limitation instead. New articles still need newly verified factual sources.
+
+## Technique references (not the latest-post catalog)
+
+These are maintained quality references, not immutable facts or text to paraphrase mechanically. Recheck changing prices and specifications for every new article. Use them for the techniques below, after checking the latest published baseline. Git copies may be older than the live articles; never republish them as a way to restore the current version.
 
 | Reference | Source of truth for editing | Transferable technique | Mistake to avoid |
 | --- | --- | --- | --- |
@@ -57,7 +66,7 @@ Create `editorial/reviews/<slug>.md` before drafting. Replace every placeholder 
 ```markdown
 # Review: <slug>
 - Checked date/time and timezone:
-- Live URLs and storage route (static/API):
+- Live URLs (D1/API) and latest published style reference (slug, checked revision):
 - Reader question:
 - Supported conclusion:
 - Scope: market/model/version/trim or test environment:
@@ -89,4 +98,4 @@ If omitted: list searches, date and why no usable reaction was found
 
 ## Prompt for the next writing agent
 
-“Read AGENTS.md, editorial/QUALITY.md, the closest of the three reference articles, and its review record. State the reader question internally. Verify sources and fill the claim ledger before drafting. Preserve only the user's actual experience. Write the English master and natural Korean counterpart with matching facts, USD prices and English-only shared images. Apply every release gate; fix failures instead of relaxing checks. Publish through the existing static/API route and verify the live result. Report changes, checks and any unfinished publication separately.”
+“Read AGENTS.md and editorial/QUALITY.md. Retrieve the newest relevant published bilingual article and its available review; use the three technique references as supplements. State the reader question internally. Verify sources and fill the claim ledger before drafting. Preserve only the user's actual experience. Write the English master and natural Korean counterpart with matching facts, USD prices and English-only shared images. Apply every release gate; fix failures instead of relaxing checks. Publish the paired payloads with scripts/publish-post.mjs through D1/API and verify the live result. Report changes, checks and any unfinished publication separately.”

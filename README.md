@@ -1,6 +1,8 @@
 # HSL의 블로그
 
-Astro 정적 사이트와 Cloudflare Worker 게시 API를 함께 사용합니다. 기존 Markdown 글은 빌드 시 포함되고, API로 발행한 글은 D1에서 즉시 읽습니다. 새 글마다 Git 커밋이나 재빌드가 필요하지 않습니다.
+Astro가 사이트 화면을 제공하고 Cloudflare Worker가 D1의 글을 읽습니다. 모든 글은 게시 API로 발행하며, 원고·이미지·검수 기록을 다루는 데 Git 커밋이나 재빌드가 필요하지 않습니다. 코드·템플릿·규칙 변경만 Git으로 관리합니다.
+
+작성 규칙의 단일 기준은 `AGENTS.md`이며 `editorial/QUALITY.md`는 검수표입니다. 작성 전 최신 관련 게시글의 한영 본문을 API에서 확인합니다. Git에 남은 예시·과거 검수 기록은 최신 게시본을 대신하지 않습니다.
 
 ## 개발
 
@@ -16,24 +18,39 @@ Node.js 22.19 이상에서 `npm ci`, `npm run check`를 실행합니다. 로컬 
 
 공개 도메인은 `hslblog.com`(Cloudflare Registrar)입니다. `wrangler.jsonc`의 `routes`가 `hslblog.com`과 `www.hslblog.com`을 Worker 커스텀 도메인으로 연결하며 DNS·인증서는 배포 때 자동으로 만들어집니다. 옛 `fluxscope.coolwin200.workers.dev`와 `www` 주소의 페이지 요청은 Worker가 같은 경로의 `https://hslblog.com`으로 301 이동시키고, `/api/*`는 두 주소 모두에서 그대로 동작합니다. 도메인을 바꾸면 `worker/index.js`의 `origin`, `astro.config.mjs`·CI의 `SITE_URL`, `routes`를 함께 바꿔야 합니다.
 
-## 글 게시 API
+## 글 작성·미리보기·게시
 
-`POST /api/posts`에 `Authorization: Bearer <PUBLISH_TOKEN>`과 JSON 본문을 전송합니다. 언어별로 한 번씩 게시합니다. `lang`은 `ko` 또는 `en`, `slug`는 영문 소문자·숫자·하이픈, `category`는 `ai`, `mobility`, `it-devices` 중 하나입니다. 기존 AI 하위 분류 주소는 `/ai/`로 이동합니다.
+현재 작성자는 조사부터 한영 집필, 이미지, Reddit 원문 확인, 게시와 검증까지 맡습니다. 특정 모델 간 인계는 필수가 아닙니다. 실제 원본은 D1의 공개 게시본이며 저장된 초안은 별도입니다.
+
+- 최신 목록: `GET /api/posts?lang=en`, `GET /api/posts?lang=ko`
+- 게시 본문: `GET /api/posts?lang=<en|ko>&slug=<slug>`
+- 저장된 작업 원고와 검수 기록: 인증된 `/api/drafts`; 아래 `--pull`로 가져옵니다
+- 공개 주소: `/posts/<slug>/`, `/en/posts/<slug>/`; 예전 분류별 글 주소는 같은 slug의 새 주소로 이동합니다
+
+`PUBLISH_TOKEN`은 환경변수나 비밀 설정으로 제공하고 명령 기록·로그·Git에 넣지 않습니다. 아래 명령은 저장소 루트에서 실행합니다. 기존 글을 수정하거나 저장된 초안을 이어 쓸 때 먼저 가져옵니다.
 
 ```bash
-curl -X POST 'https://hslblog.com/api/posts' \
-  -H "Authorization: Bearer $HSL_PUBLISH_TOKEN" \
-  -H 'Content-Type: application/json' \
-  --data-binary @post.json
+node scripts/publish-post.mjs --pull <slug>
 ```
 
-게시 JSON을 처음부터 임의로 만들지 말고 `editorial/api-posts/`의 검수된 한영 샘플을 구조 참고용으로 읽습니다. 가격·후기·경험은 새 주제의 출처로 다시 확인해야 합니다. 작성·검수 기준은 `AGENTS.md`와 `editorial/QUALITY.md`가 기준입니다.
+가져온 초안은 미게시 수정본일 수 있으므로 현재 공개 본문과 대조합니다. 원고 경로는 `editorial/api-posts/{en,ko}-<slug>.json`, 검수 기록은 `editorial/reviews/<slug>.md`입니다. 새 파일은 git-ignored이며 `--preview`와 게시 시 `/api/drafts`에 저장됩니다. 기존 tracked JSON은 예시·회귀 검사 자료로 남아 있을 뿐, 자동으로 D1과 동기화되지 않습니다. `src/content/posts/`에 글을 추가하지 않습니다.
 
-필수 필드: `lang`, `slug`, `category`, `title`, `description`(50~180자), `body`, `tags`(서로 다른 소문자 kebab-case 5~15개), `imageUrl`, `imageAlt`, `visualTypes`(썸네일부터 이미지 순서대로 `sketch/source/architecture/pipeline/chart`). 총 2~10장의 이미지, 정확히 한 장의 생성 스케치 썸네일과 별도의 본문 이미지, 정확히 세 항목인 요약, 마지막 Q&A가 필요합니다. 인증된 게시 요청도 구조 검사를 통과하지 못하면 `422`와 `details`를 반환합니다. 구조 검사는 사실관계를 보증하지 않으므로 출처 대조는 별도로 수행합니다.
+```bash
+# 구조 검사: 업로드·게시 없음
+node scripts/publish-post.mjs editorial/api-posts/en-<slug>.json editorial/api-posts/ko-<slug>.json --dry-run
 
-샘플 JSON은 Git에서 검수·보존하는 원고이며 D1과 자동 동기화되지 않습니다. 원고를 수정한 뒤 아래 API로 실제 게시하고 공개 URL에서 확인해야 합니다. 정적 글은 기존 Markdown을 수정하여 Git 배포하며, 같은 글을 API에 중복 생성하지 않습니다.
+# 초안 공유가 필요한 경우: 목록에서 제외된 noindex 미리보기 생성
+node scripts/publish-post.mjs editorial/api-posts/en-<slug>.json editorial/api-posts/ko-<slug>.json --preview
 
-영어판은 `lang: "en"`과 같은 `slug`로 별도 요청합니다. `publishedAt`(ISO 8601 UTC)을 생략하면 게시 시각이 저장됩니다. 수정할 때는 `If-Match: update` 헤더를 추가하며 원래 발행일은 유지됩니다. 삭제는 인증 헤더와 함께 `DELETE /api/posts?lang=ko&slug=example-post`를 호출합니다. 반환된 `url`에서 글을 확인할 수 있습니다. 공개 조회는 `GET /api/posts?lang=ko`, 검색은 `GET /api/search?lang=ko&q=검색어`입니다. Worker가 홈의 각 주제 구역과 분류 전체보기에 D1 글을 서버에서 넣으므로 새 글마다 재빌드할 필요가 없습니다. 검색, RSS, `/dynamic-sitemap.xml`에도 새 글이 반영됩니다.
+# 한영 동시 게시
+node scripts/publish-post.mjs editorial/api-posts/en-<slug>.json editorial/api-posts/ko-<slug>.json
+```
+
+게시 스크립트는 로컬 이미지를 `/media/`로 업로드하고, 두 언어를 `{ "posts": [en, ko] }` 형태의 단일 요청으로 원자적으로 저장합니다. 기존 본문을 백업하고 원래 발행일을 유지하며 공개 페이지와 이미지도 검사합니다. 최신 썸네일과 다른 오래된 작업본이나 사라진 `/media/` 이미지는 게시를 차단하므로 최신 원고를 다시 가져와 수정합니다.
+
+필수 필드는 `lang`, `slug`, `category`, `title`, `description`, `body`, `tags`, `imageUrl`, `imageAlt`, `visualTypes`입니다. 카테고리는 `ai`, `mobility`, `it-devices`만 사용합니다. 형식·길이·이미지·문체 기준은 `AGENTS.md`, 수동 검수는 `editorial/QUALITY.md`를 따릅니다. 구조 검사 통과가 사실 검증을 대신하지 않습니다.
+
+미리보기는 목록·검색·피드·사이트맵에서 제외되고 30일 후 만료되며 실제 게시 시 삭제됩니다. 공개 페이지는 엣지 캐시 때문에 최대 60초 늦게 갱신될 수 있습니다. 한영 페이지, 이미지, 언어 전환, 홈·분류·검색·피드까지 확인한 뒤 완료로 보고합니다. 검색은 `GET /api/search?lang=ko&q=검색어`, API 글 사이트맵은 `/dynamic-sitemap.xml`입니다.
 
 ## 이미지 업로드 API
 
@@ -72,18 +89,18 @@ curl -X POST 'https://hslblog.com/api/images' \
 글이 바뀌면 네이버·Bing 등 IndexNow 참여 검색엔진에 바로 알립니다. 키 파일은 `public/<키>.txt`, 같은 키가 `worker/index.js`의 `indexNowKey`에 있습니다(공개 값). 키를 바꾸면 두 곳을 함께 바꿉니다.
 
 - API 글: 게시·수정·삭제 직후 해당 URL을 `api.indexnow.org`, `www.bing.com/indexnow`, `searchadvisor.naver.com/indexnow`에 전송합니다(한 곳이 요청 제한으로 거절해도 전달되도록)
-- 정적 글: Worker 크론(`wrangler.jsonc`의 `triggers.crons`, 매일 00:17 UTC)이 최근 26시간 안에 `lastmod`가 바뀐 사이트맵 URL과 API 글을 전송합니다
+- 정기 재알림: Worker 크론(`wrangler.jsonc`의 `triggers.crons`, 매일 00:17 UTC)이 최근 26시간 안에 `lastmod`가 바뀐 사이트맵 URL과 API 글을 전송합니다
 - 수동 전송: `POST /api/indexnow`에 `Authorization: Bearer <PUBLISH_TOKEN>`. 본문 없이 보내면 전체 사이트맵과 API 글을, `{ "urls": [...] }`를 보내면 해당 URL만 전송합니다
 
 ## 품질 기준과 검증
 
-- `AGENTS.md`: 단일 작성 규칙 (`GEMINI.md`는 이 문서만 참조)
-- `editorial/QUALITY.md`: 기준 글 3개, 실패 예시, 검수표, 다음 작성자용 프롬프트
+- `AGENTS.md`: 단일 작성 규칙 (`CLAUDE.md`, `GEMINI.md`, `.agents/rules/blog-writing-rules.md`는 이 문서만 참조)
+- `editorial/QUALITY.md`: 최신 게시본 확인 절차, 기법 참고 글 3개, 실패 예시, 검수표
 - `editorial/reviews/`: 글별 사실·계산·커뮤니티 출처와 검수 기록
 - `shared/editorial.mjs`: 정적 빌드와 Worker 게시 API의 공통 구조 검사
 - `npm run test:editorial`: 정상 원고와 잘못된 입력의 회귀 검사
 - `npm run check`: 위 검사와 한영 짝 검사, Astro·검색·링크·성능 검사
 
-API는 언어별로 별도 요청합니다. 두 원고를 모두 검수한 뒤 게시하고, 두 번째 언어에 실패하면 재시도하거나 첫 번째를 원래 원고로 복구합니다. 두 언어가 모두 확인되기 전에는 발행 완료로 보고하지 않습니다.
+글 작업은 게시 스크립트의 `--dry-run`과 수동 검수·라이브 확인으로 검증합니다. 코드·템플릿·규칙을 커밋할 때는 `npm run check`를 실행합니다. 한영 원고는 반드시 묶어서 게시하고, 두 공개 페이지를 모두 확인해야 완료입니다.
 
-영어판을 기준으로 쓰고 한국어판을 함께 유지합니다. 냉소적이면서 유머러스한 문체가 기본이며, 이미지 내부 문구는 영어로 고정합니다. 가격은 미국 공식 USD 가격을 우선합니다. 없을 때만 한국 출시가를 달러로 환산하고 작은 주석에 기준을 남깁니다. 자세한 예외와 검수 절차는 AGENTS.md를 따릅니다.
+영어판을 기준으로 쓰고 한국어판을 함께 유지합니다. 냉소적이면서 유머러스한 문체가 기본이며, 이미지 내부 문구는 영어로 고정합니다. 가격은 미국 공식 USD 가격을 우선합니다. 미국 공식 가격이 없으면 제품을 대표하는 시장의 공식 가격을 환산하고 시장·세금·환율·기준일을 밝힙니다. 자세한 예외와 검수 절차는 AGENTS.md를 따릅니다.

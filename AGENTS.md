@@ -1,11 +1,20 @@
 # FluxScope editorial and development contract
 
-This is the single authoritative project rulebook. Read it completely before editing or publishing. `GEMINI.md` only points here; never maintain a second copy. Explicit current user instructions take precedence. Do not guess away a conflict: preserve unaffected work and identify the exact unresolved point.
+This is the single authoritative project rulebook. Read it completely before editing or publishing. `CLAUDE.md`, `GEMINI.md` and `.agents/rules/blog-writing-rules.md` only point here; never maintain a second copy. Explicit current user instructions take precedence. Do not guess away a conflict: preserve unaffected work and identify the exact unresolved point.
+
+## Source of truth and latest published baseline
+
+- Current user instructions take precedence, then this rulebook, then the review rubric in `editorial/QUALITY.md`. README is an operational guide; agent entry files are pointers, not competing rules
+- Published content and images come from the current D1 response at `/api/posts`, not Git snapshots, old previews, local files or conversation memory
+- Before drafting, list current posts with `GET /api/posts?lang=en` and `lang=ko`; select the newest relevant published bilingual article, then read both full payloads with `&slug=<slug>`. Use `publishedAt` for the newest publication and `updatedAt` for its revision
+- For an existing article or saved draft, `--pull <slug>` restores working payloads, briefs and review records. Compare these with the live article: `/api/drafts` may contain an unpublished revision and does not silently supersede the published baseline
+- Tracked reference payloads and old release/review records preserve examples and evidence, not today's publication state. The three technique references in `editorial/QUALITY.md` supplement the latest published style
+- If live access fails, state what could not be verified and continue research or rule/code maintenance from checked sources. Never call a local snapshot the latest published article or overwrite an existing article from it
 
 ## 1. Start here — execute in order
 
 1. Read this file and `editorial/QUALITY.md`
-2. Read the relevant reference article listed in `editorial/QUALITY.md`, both languages, and its review record
+2. Read the newest relevant published article in both languages and its available review record; consult the technique references in `editorial/QUALITY.md` as needed
 3. Read the current live article before editing (`GET /api/posts?lang=&slug=`); D1 is the source of truth
 4. Write a one-sentence reader question and conclusion, then collect sources **before** drafting
 5. Create `editorial/reviews/<slug>.md` using the evidence and review template in `editorial/QUALITY.md`
@@ -57,6 +66,7 @@ Korean is primarily short bullets with natural 반말/음슴체. **One point, on
 - Korean titles do **not** use 음슴체; write them as natural headline phrasing (question, contrast, noun ending). Wrong: `출시 베팅만 벌써 네 번 틀림`; right: `출시 베팅은 벌써 4연패`. Korean descriptions and narrative headings still use natural 음슴체 (e.g. `검수는 내 몫임`, `예산도 커짐`). English titles use punchy headline phrasing, not artificial Korean grammar
 - Rebuild a confused draft around ONE reader question before polishing sentences. Every section must advance that question; delete tangents, repeated caveats and jokes that need their own explanation
 - Humor follows the concrete fact. Prefer 2–4 restrained observations over an analogy in every bullet; never let sarcasm imply unsupported test results or product defects
+- Keep the humor free of profanity, insults and degrading slang; aim criticism at verified claims, sales tactics and workflow friction
 - The description gives the actual angle and substance, not “a comprehensive analysis”
 - Explain what a number measures and why it changes the decision. A table full of unexplained numbers is not depth
 - Keep humor rooted in a verified inconvenience. Do not add invented war stories or pretend to have tested the product
@@ -132,20 +142,19 @@ Before drafting, plan visuals using the five supported types. Select actively ac
 
 The thumbnail must contain the product/model AND 2–4 core facts or a meaningful relationship. Product name plus decorative doodles is insufficient. Short fact callouts are permitted; precise plotted charts belong in code. Label hypothetical/converted information clearly. Plan each body's visual job in the review record; remove redundant decoration.
 
-Declare `visualTypes` in static frontmatter and API payloads, ordered **thumbnail first, then inline body images in reading order**. Length must match the image count; first and only sketch must be index 0. Use inline Markdown images with distinct URLs; raw HTML/reference-style images are rejected to keep validation unambiguous. These types are source/preflight metadata; they are not displayed publicly or persisted in D1.
+Declare `visualTypes` in API payloads, ordered **thumbnail first, then inline body images in reading order**. Length must match the image count; first and only sketch must be index 0. Use inline Markdown images with distinct URLs; raw HTML/reference-style images are rejected to keep validation unambiguous. These types are preflight metadata retained in saved working payloads (`/api/drafts`), not displayed publicly or stored in the published post row.
 
 
-Division of work (Claude cannot generate raster images or open Reddit from its environment). **Writing, handing off and publishing an article never touches Git, a PR or a build.** Articles, images and working files travel only through `scripts/publish-post.mjs` and the API: D1 holds the payloads and review record (`/api/drafts`), R2 holds images (`/media/`). Git is only for code, templates and rules (section 9).
+End-to-end ownership: **Codex now handles research, writing, visuals, community research, publication and verification.** A Claude-to-Codex handoff is optional when the user requests one; no model is permanently restricted to adding a sketch or community bullets. Honor the scope of an explicitly requested handoff. **Writing, handing off and publishing an article never touches Git, a PR or a build.** D1 stores working payloads and review records (`/api/drafts`), R2 stores images (`/media/`), and Git is for code, templates and rules (section 9).
 
-1. **Claude — draft.** Writes the article (without the community section), body visuals, both payloads and `editorial/reviews/<slug>.md` with a `## Sketch brief` (product/model, 2–4 exact facts or the relationship, every English word/number to appear, USD labels, 3:2 at 1536×1024) and a `## Reddit brief` (reader question, 2–3 search queries, subreddits). The payload's `imageUrl` names the sketch's future local path `/images/posts/<category>/<slug>-notebook.webp`; that file does not exist yet. Runs `publish-post.mjs … --preview`: it uploads the body images, saves both payloads and the review record to D1 and prints the preview URLs. Tells the user the slug(s) and preview URLs. No commit, no push
-2. **Codex — pull.** `PUBLISH_TOKEN=… node scripts/publish-post.mjs --pull <slug>` writes both payloads and the review record locally. No checkout or branch needed
-3. **Codex — sketch.** Generates the sketch from the brief with the prompt below and saves it locally at exactly the `imageUrl` path under `public/`
-4. **Codex — community.** Opens the Reddit originals and inserts `## 커뮤니티 반응` / `## Community Reactions` immediately before the Q&A heading in both payloads: 2–4 bullets, same reactions in the same order in both languages, one sentence each, link at the end. Records each exact URL and what it says in the review record's Community evidence. Apart from these bullets, do not edit article text, title, description, tags, alt text or `visualTypes`
-5. **Codex — publish.** Runs `PUBLISH_TOKEN=… node scripts/publish-post.mjs editorial/api-posts/en-<slug>.json editorial/api-posts/ko-<slug>.json --dry-run`, then the same command without `--dry-run`. The script uploads the sketch to `/media/`, writes D1, saves the final working files to D1 and deletes the preview
-6. **Codex — report**, in one message: the slugs published; each sketch's `/media/` URL, pixel size and bytes; and for every community bullet the exact Reddit URL and what the original post or comment actually says. Nothing to commit
-7. **Claude — verify and record.** `--pull <slug>`, reads each live sketch from its `/media/` URL and checks every word and number against the brief. On any error, requests a new sketch; the fix is republished with the same command and the replaced upload removed with `DELETE /media/<uuid>.webp`. Runs the section 11 live checks, fills the review record's Images and live-check rows and saves it by republishing (or `--preview` before publication). Nothing to commit
+1. **Read and research.** Resolve the live baseline above. For an existing article or saved draft, run `node scripts/publish-post.mjs --pull <slug>` with `PUBLISH_TOKEN` set securely. Collect primary sources and open Reddit originals
+2. **Draft both languages.** Write both payloads and `editorial/reviews/<slug>.md`, including a `## Sketch brief` with exact English labels and a `## Reddit brief` with the reader question, queries and subreddits. Add matching community reactions immediately before Q&A and record the exact source URLs
+3. **Create and inspect visuals.** Produce body visuals and the single sketch below. Save the sketch at `public/images/posts/<category>/<slug>-notebook.webp`, referenced by `imageUrl` as `/images/posts/<category>/<slug>-notebook.webp`. Check every word and number visually against the brief before publication
+4. **Review.** Apply the bilingual rubric and run `node scripts/publish-post.mjs editorial/api-posts/en-<slug>.json editorial/api-posts/ko-<slug>.json --dry-run`. Use `--preview` when a reviewable draft or handoff is needed; it saves working files and creates unlisted preview URLs, not a publication
+5. **Publish and verify.** Run the paired command without `--dry-run`. It uploads images, writes both languages atomically, saves working files and removes the preview. Perform section 11 live checks yourself; no second agent is required to finish them
+6. **Record and report.** Record actual source, image and live checks in the review. To save review-only changes after publication, use authenticated `PUT /api/drafts?slug=<slug>` with both current working payloads and the review; do not recreate a preview or republish unchanged article text merely to save notes. Report both live URLs and remaining limitations. Keep detailed image dimensions/bytes and community evidence in the review; include them in the response when requested for a handoff
 
-Sketch brief format (Claude fills it; values only, no prose):
+Sketch brief format (the current author fills it; values only, no prose):
 
 ```
 Product: <exact product/model name, as it should be lettered>
@@ -156,7 +165,7 @@ Red accent on: <one thing to shade/mark in red>
 Output: public/images/posts/<category>/<slug>-notebook.webp (local file only; uploaded by publish-post.mjs)
 ```
 
-Codex sketch prompt — paste as is, replacing only the `{…}` fields from the brief. Quality baseline: the Grok 5 (`/media/da169d17-f27c-475a-a0f9-93fdbbaf4f4e.webp`) and second-tier AI (`/media/accced3f-9e07-425c-bc0d-1b09e40bf31c.webp`) thumbnails. Keep their legibility and information density, but draw noticeably rougher, like a real person's quick pen notes (user feedback, 2026-09-29)
+Sketch prompt — paste as is, replacing only the `{…}` fields from the brief. Quality baseline: the current live thumbnails for Grok 5 (`grok-5-terafab-space-data-centers`) and second-tier AI (`second-tier-ai-us-vs-china`); resolve their current `imageUrl` through `/api/posts` rather than reusing an old upload URL. Keep their legibility and information density, but draw noticeably rougher, like a real person's quick pen notes (user feedback, 2026-09-29)
 
 ```
 A casual phone photo, taken from straight above in soft daylight, of one page of cheap cream grid notebook paper (faint grey 5 mm grid, paper fills the whole frame, no desk, no props, no hands).
@@ -173,9 +182,9 @@ Landscape 3:2, 1536x1024.
 
 - Generate 2–4 candidates, keep the one whose text matches the brief character for character; regenerate rather than hand-fixing text. Currency always `$`
 - Convert with Pillow: `Image.open(src).convert('RGB').resize((1536,1024)).save(out,'WEBP',quality=82,method=6)`; lower quality until ≤250 KiB target (500 KiB cap)
-- Never commit the `.webp`; `publish-post.mjs` uploads it to `/media/`. Report the `/media/` URL, pixel size and file size (handoff step 6)
+- Never commit the `.webp`; `publish-post.mjs` uploads it to `/media/`. Record the final `/media/` URL, pixel size and file size in the review
 
-- Exactly **one rough paper-notebook sketch per topic**, always the thumbnail (`image.src` for static, `imageUrl` for API)
+- Exactly **one rough paper-notebook sketch per topic**, always the thumbnail (`imageUrl`)
 - Use the same sketch for both languages. Never repeat it in the body
 - Preserve the approved information density; draw it rougher than the quality baseline above (roughly 20–30% less polish): hurried lettering, wobbly overshooting lines, imperfect perspective, scribbled hatching and retraced lines. Keep every key word and number legible. Never blur, heavily distress or remove facts to imitate amateur work
 - Look: an ordinary phone photograph of cheap grid paper, two or three crude pen doodles, uneven lines, short legible words and plenty of empty space
@@ -186,7 +195,7 @@ Landscape 3:2, 1536x1024.
 - Read each image visually. Verify title, units, series, labels and meaning against the text. Reusing a wrong chart is a factual error
 - Width 800–1600 px recommended, hard maximum 1600 px; target <250 KiB, hard cap 500 KiB per image
 - New article images are uploaded to `/media/` by `scripts/publish-post.mjs`; reference a local file path in the payload and the script rewrites it. Existing `/images/` assets may stay to avoid broken links
-- Supply descriptive alt text; static frontmatter dimensions must match the actual file
+- Supply descriptive alt text; dimensions recorded in the review must match the actual file
 - For an externally sourced figure, place `*출처: [기관](URL) — 자료명*` / `*Source: [Organization](URL) — title*` immediately below it
 - An API's 5 MB upload ceiling is a transport limit, **not** editorial permission for a 5 MB image
 
@@ -210,7 +219,7 @@ Every article lives in D1 and is published through the API. Publishing an articl
   - Run it with `--dry-run` first; it validates without uploading or writing
   - It refuses to publish when a `/media/` image is not live or when the working copy's thumbnail differs from the live article (a stale copy); run `--pull <slug>` first and reapply the edit. Never republish a local file that was pulled before someone else's republish
 - Read the current live article before editing with `GET /api/posts?lang=<ko|en>&slug=<slug>`; D1 is the source of truth
-- `editorial/api-posts/*.json` and `editorial/reviews/*.md` are local working copies. They are git-ignored and saved to D1 by every `--preview` and publish; `--pull <slug>` restores them. Only the reference articles named in `editorial/QUALITY.md` stay tracked
+- `editorial/api-posts/*.json` and `editorial/reviews/*.md` are local working copies. New files are git-ignored and saved to D1 by every `--preview` and publish; `--pull <slug>` restores them. Existing tracked examples remain historical/regression fixtures; do not commit article edits merely because an old example is tracked
 - Article URLs are `/posts/<slug>/` and `/en/posts/<slug>/`. Old static category URLs (`/<category>/<slug>/`) redirect 301 to the D1 post with the same slug
 - `src/content/posts/` stays empty. Do not add articles there: a static copy of a D1 article creates duplicate listings, and the quality check rejects it
 - Git, PRs and builds are only for code, templates, rules and static site assets. Never commit, push, open a PR or build to write, hand off or publish an article
