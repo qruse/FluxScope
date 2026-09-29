@@ -63,6 +63,7 @@ Korean is primarily short bullets with natural 반말/음슴체. **One point, on
 - Avoid stock drama: “판도를 바꾼다”, “혁신의 이면”, “마케팅의 민낯”, “영수증이 말해준다”, “포기하기 어렵다” without stating precisely why
 - Do not turn every bullet into `fact — caveat`; mix a clear assertion, a useful table and a short explanation
 - No trailing period on memo/bullet lines, including English. Decimal points, domains and punctuation inside a sentence are allowed
+- Write numeric ranges with an en dash (`5–45`) or escape the tilde (`\~`); two `~` in one paragraph render as strikethrough between them (the validator rejects `<del>`)
 - Do not pad to a word count, repeat the conclusion in each section, or add code/architecture just to look technical
 
 Line-by-line cut pass (do it on both languages before publishing; delete every bullet that fails):
@@ -207,6 +208,7 @@ Every article lives in D1 and is published through the API. Publishing an articl
   - It validates both languages with the API's own rules, backs up the live version to the OS temp directory and keeps the original `publishedAt`
   - It writes both languages in one atomic request (`POST /api/posts` with `{ "posts": [en, ko] }`), then checks both live pages and every image
   - Run it with `--dry-run` first; it validates without uploading or writing
+  - It refuses to publish when a `/media/` image is not live or when the working copy's thumbnail differs from the live article (a stale copy); run `--pull <slug>` first and reapply the edit. Never republish a local file that was pulled before someone else's republish
 - Read the current live article before editing with `GET /api/posts?lang=<ko|en>&slug=<slug>`; D1 is the source of truth
 - `editorial/api-posts/*.json` and `editorial/reviews/*.md` are local working copies. They are git-ignored and saved to D1 by every `--preview` and publish; `--pull <slug>` restores them. Only the reference articles named in `editorial/QUALITY.md` stay tracked
 - Article URLs are `/posts/<slug>/` and `/en/posts/<slug>/`. Old static category URLs (`/<category>/<slug>/`) redirect 301 to the D1 post with the same slug

@@ -103,6 +103,10 @@ if (preview) {
   process.exit(0);
 }
 if (errors.length) fail(`Validation failed:\n  ${errors.join('\n  ')}`);
+// A stale working copy can point at an image that was replaced and deleted; refuse before anything is written.
+for (const ref of new Set(imageRefs(posts[0]))) {
+  if (ref?.startsWith('/media/') && !(await live(ref))) fail(`Image is not live: ${ref}. The working copy may be stale: run --pull ${posts[0].slug} and reapply your edit`);
+}
 console.log('✔ validation passed');
 if (dryRun) process.exit(0);
 
@@ -121,6 +125,10 @@ if (backups.length) {
     const old = backups.find((b) => b.lang === post.lang);
     if (old) post.publishedAt = old.publishedAt;
   }
+  // The thumbnail only changes through a fresh upload; a different existing /media/ URL means the working copy is older than the live article.
+  const uploaded = new Set(replacements.values());
+  const stale = posts.filter((post) => { const old = backups.find((b) => b.lang === post.lang); return old && old.imageUrl !== post.imageUrl && !uploaded.has(post.imageUrl); });
+  if (stale.length) fail(`The live thumbnail differs from the working copy (${stale.map((p) => p.lang).join(', ')}). Run --pull ${slug} to get the latest version, reapply your edit, then publish again`);
 }
 
 const response = await fetch(`${site}/api/posts`, {
