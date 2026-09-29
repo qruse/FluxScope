@@ -58,3 +58,5 @@
 - Re-opened Apple Newsroom: 7-core GPU up to 40% faster than A19 Pro; redesigned vapor chamber up to 40% sustained gain; $1,199 for 256GB
 - Community bullets unchanged in substance (Codex-verified comment permalinks); Reddit not reachable from this session
 - `npm run check` passed
+
+- Search-title and internal-link update (2026-09-29, user request "톤은 유지하고 앞부분에 검색어 넣기", "관련 글끼리 내부 링크"): en title: "iPhone 18 Pro Is 33% Faster. A Reason to Spend $1,199? Hmm.." -> "iPhone 18 Pro Gaming Performance: 33% Faster GPU, Worth $1,199? Hmm.."; ko title: "33% 빨라진 아이폰 18 Pro, $1,199 결제 사유는? 음.." -> "아이폰 18 Pro 게임 성능, GPU 33% 빨라진 게 $1,199 결제 사유? 음..". Slug, publishedAt, description, images unchanged

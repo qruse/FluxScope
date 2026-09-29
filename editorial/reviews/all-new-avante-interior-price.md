@@ -43,3 +43,5 @@
 - 8:30 p.m. EDT October 1 = 00:30 UTC October 2 = 09:30 KST October 2, matching the earlier countdown check
 - Community items unchanged (Codex-verified earlier today); Reddit returned 403 to this session
 - `npm run check` passed
+
+- Search-title and internal-link update (2026-09-29, user request "톤은 유지하고 앞부분에 검색어 넣기", "관련 글끼리 내부 링크"): en title: "Tesla Roadster: 1.9 Seconds to 60, Nine Years and Counting to Delivery" -> "Tesla Roadster Release Date: 1.9s to 60, Nine Years and Counting"; ko title: "1.9초라던 테슬라 로드스터, 출고까지는 9년째 달리는 중" -> "테슬라 로드스터 출시일, 1.9초라더니 출고까지 9년째". Slug, publishedAt, description, images unchanged

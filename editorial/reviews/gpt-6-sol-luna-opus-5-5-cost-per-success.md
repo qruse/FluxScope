@@ -99,3 +99,5 @@
 - Reopened Reddit originals and linked every reaction publicly. AI: omissions report and ten tasks × three runs; iPhone: longevity vs battery/camera upgrade priorities with verified comment permalinks; Avante: screen integration vs retained buttons in the reveal thread
 - Removed unsupported implications: a cheap rate does not require equal token use to save money; equal cache-read rates do not determine the whole bill; ratio similarity does not imply equal absolute performance; heated seats do not require all optional packages
 - Preserved USD policy and frozen Avante FX to match unchanged charts. No image regeneration or asset modification
+
+- Search-title and internal-link update (2026-09-29, user request "톤은 유지하고 앞부분에 검색어 넣기", "관련 글끼리 내부 링크"): en title: "Why I Switched from GPT-6 Astra to Opus 5.5" -> "GPT-6 Astra vs Opus 5.5: Why I Switched to Opus"; ko title: "GPT-6 Astra 쓰다가 Opus 5.5로 갈아탄 이유?" -> "GPT-6 Astra vs Opus 5.5, Opus로 갈아탄 이유는?"; en body: internal link/Q&A update; ko body: internal link/Q&A update. Slug, publishedAt, description, images unchanged

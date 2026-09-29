@@ -67,3 +67,5 @@ Output: public/images/posts/ai/gemini-4-release-date-notebook.webp
 - Language revision (2026-09-28 12:21 UTC, republished with `publish-post.mjs`): both languages rewritten against AGENTS §4 "Sound like a person, not a model" (Korean translationese, colon reveals, personified punchlines, source-judging tails, overlong sections). Facts, numbers, links, images and alt text unchanged; live body equals the local payload; `publishedAt` preserved; titles changed: en "Gemini 4 Release Date: Bettors Have Already Missed Four Deadlines", ko "Gemini 4 언제 나오나? '곧 출시' 베팅은 벌써 4연패" (old ko title used 음슴체)
 
 Naturalness pass (2026-09-28 12:25 UTC): replaced forced jokes, metaphors and Korean calques with plain phrasing (e.g. "작업 하나당 비용", "정가", "실제 비용"); facts, numbers, links and images unchanged; titles/descriptions revised where listed in the payloads; republished, live bodies equal local payloads, publishedAt preserved
+
+- Search-title and internal-link update (2026-09-29, user request "톤은 유지하고 앞부분에 검색어 넣기", "관련 글끼리 내부 링크"): ko title: "Gemini 4 언제 나오나? 출시 예측은 벌써 네 번 빗나갔다" -> "Gemini 4 출시일 언제? 출시 예측은 벌써 네 번 빗나갔다". Slug, publishedAt, description, images unchanged
