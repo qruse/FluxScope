@@ -173,9 +173,9 @@ const searchUrl = withBase(currentLang === 'en' ? '/en/search/' : '/search/');
         </nav>
         <div class="header-actions">
           <div class="lang-switcher" aria-label="Language selection">
-            <a href={koUrl} class:list={[{ active: currentLang === 'ko' }]} hreflang="ko">KO</a>
-            <span class="lang-divider" aria-hidden="true">/</span>
             <a href={enUrl} class:list={[{ active: currentLang === 'en' }]} hreflang="en">EN</a>
+            <span class="lang-divider" aria-hidden="true">/</span>
+            <a href={koUrl} class:list={[{ active: currentLang === 'ko' }]} hreflang="ko">KO</a>
           </div>
           <a class="icon-link" href={searchUrl} aria-label={t('nav.search')} title={t('nav.search')}>
             <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.6"></circle><path d="m16 16 5 5"></path></svg>
