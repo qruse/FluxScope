@@ -137,12 +137,12 @@ Before drafting, plan visuals using the five supported types. Select actively ac
 | `visualTypes` value | Use when | Production method / rejection condition |
 | --- | --- | --- |
 | `source` | The reader needs to see an actual product, UI, or primary document | Obtain an authorized/reusable primary image or own screenshot; source credit and link below; never generate a fake screenshot |
-| `sketch` | Explain the article's central tension at a glance | Image generation, exactly once as thumbnail; rough notebook style |
+| `sketch` | Capture the article's thesis or central tension in one witty metaphor or scene | Image generation, exactly once as thumbnail; rough human-drawn notebook style |
 | `architecture` | Components or relationships need explaining | Clear presentation-style diagram rendered with code/vector tools; verified labels and connections |
 | `pipeline` | Order, acceptance, retry or escalation is the point | Code-rendered process diagram; label decisions and stopping rules |
 | `chart` | Quantities or comparisons change the reader's decision | Code-rendered chart from verified data; units, zero-baseline where appropriate, date and scope |
 
-The thumbnail must contain the product/model AND 2–4 core facts or a meaningful relationship. Product name plus decorative doodles is insufficient. Short fact callouts are permitted; precise plotted charts belong in code. Label hypothetical/converted information clearly. Plan each body's visual job in the review record; remove redundant decoration.
+The thumbnail is a conceptual editorial sketch: encapsulate the article's thesis or central tension in one witty, immediately understandable visual metaphor or scene. Make the product/topic recognizable through the scene, a simple stand-in or minimal text when needed. Favor an idea that lands at a glance over an informational sketch-note, specification summary or a row of numbers and labels. A product name with unrelated decorative doodles is insufficient; the visual idea must be specific to the article. Text is optional: use only the few short English words needed to make the idea work, with no mandatory title, fact-callout count or mini-flow. Do not force a joke or imply unverified product behavior, internals or results. Put detailed facts, comparisons and exact plotted data in body visuals made with code/vector tools; label hypothetical/converted information clearly there. Plan each body's visual job in the review record; remove redundant decoration.
 
 Declare `visualTypes` in API payloads, ordered **thumbnail first, then inline body images in reading order**. Length must match the image count; first and only sketch must be index 0. Use inline Markdown images with distinct URLs; raw HTML/reference-style images are rejected to keep validation unambiguous. These types are preflight metadata retained in saved working payloads (`/api/drafts`), not displayed publicly or stored in the published post row.
 
@@ -150,46 +150,47 @@ Declare `visualTypes` in API payloads, ordered **thumbnail first, then inline bo
 End-to-end ownership: **Codex now handles research, writing, visuals, community research, publication and verification.** A Claude-to-Codex handoff is optional when the user requests one; no model is permanently restricted to adding a sketch or community bullets. Honor the scope of an explicitly requested handoff. **Writing, handing off and publishing an article never touches Git, a PR or a build.** D1 stores working payloads and review records (`/api/drafts`), R2 stores images (`/media/`), and Git is for code, templates and rules (section 9).
 
 1. **Read and research.** Resolve the live baseline above. For an existing article or saved draft, run `node scripts/publish-post.mjs --pull <slug>` with `PUBLISH_TOKEN` set securely. Collect primary sources and open Reddit originals
-2. **Draft both languages.** Write both payloads and `editorial/reviews/<slug>.md`, including a `## Sketch brief` with exact English labels and a `## Reddit brief` with the reader question, queries and subreddits. Add matching community reactions immediately before Q&A and record the exact source URLs
-3. **Create and inspect visuals.** Produce body visuals and the single sketch below. Save the sketch at `public/images/posts/<category>/<slug>-notebook.webp`, referenced by `imageUrl` as `/images/posts/<category>/<slug>-notebook.webp`. Check every word and number visually against the brief before publication
+2. **Draft both languages.** Write both payloads and `editorial/reviews/<slug>.md`, including a `## Sketch brief` with the thesis, visual metaphor/scene and any exact English text (or `none`), and a `## Reddit brief` with the reader question, queries and subreddits. Add matching community reactions immediately before Q&A and record the exact source URLs
+3. **Create and inspect visuals.** Produce body visuals and the single sketch below. Save the sketch at `public/images/posts/<category>/<slug>-notebook.webp`, referenced by `imageUrl` as `/images/posts/<category>/<slug>-notebook.webp`. Check that the visual idea matches the thesis and any words or numbers match the brief before publication
 4. **Review.** Apply the bilingual rubric and run `node scripts/publish-post.mjs editorial/api-posts/en-<slug>.json editorial/api-posts/ko-<slug>.json --dry-run`. Use `--preview` when a reviewable draft or handoff is needed; it saves working files and creates unlisted preview URLs, not a publication
 5. **Publish and verify.** Run the paired command without `--dry-run`. It uploads images, writes both languages atomically, saves working files and removes the preview. Perform section 11 live checks yourself; no second agent is required to finish them
 6. **Record and report.** Record actual source, image and live checks in the review. To save review-only changes after publication, use authenticated `PUT /api/drafts?slug=<slug>` with both current working payloads and the review; do not recreate a preview or republish unchanged article text merely to save notes. Report both live URLs and remaining limitations. Keep detailed image dimensions/bytes and community evidence in the review; include them in the response when requested for a handoff
 
-Sketch brief format (the current author fills it; values only, no prose):
+Sketch brief format (the current author fills it; concise values):
 
 ```
-Product: <exact product/model name, as it should be lettered>
-Hero doodle: <one object: the product itself or a simple stand-in>
-Callouts (2–4, exact text): "<callout 1>" | "<callout 2>" | "<callout 3>"
-Bottom mini-flow (optional, ≤3 icons + arrows): <icon> -> <icon> -> <icon>
+Topic: <product/model or subject; not automatically visible text>
+Thesis: <the article's supported point in one sentence>
+Visual idea: <one witty, readily understood metaphor or scene that encapsulates the thesis>
+Scene: <the simple objects/characters, action and composition that make the idea clear>
+Visible text (optional, exact English): <only essential short words/labels, or none>
 Red accent on: <one thing to shade/mark in red>
 Output: public/images/posts/<category>/<slug>-notebook.webp (local file only; uploaded by publish-post.mjs)
 ```
 
-Sketch prompt — paste as is, replacing only the `{…}` fields from the brief. Quality baseline: the current live thumbnails for Grok 5 (`grok-5-terafab-space-data-centers`) and second-tier AI (`second-tier-ai-us-vs-china`); resolve their current `imageUrl` through `/api/posts` rather than reusing an old upload URL. Keep their legibility and information density, but draw noticeably rougher, like a real person's quick pen notes (user feedback, 2026-09-29)
+Sketch prompt — paste as is, replacing only the `{…}` fields from the brief. Use the current live thumbnails for Grok 5 (`grok-5-terafab-space-data-centers`) and second-tier AI (`second-tier-ai-us-vs-china`) only as paper/pen style references; resolve their current `imageUrl` through `/api/posts` rather than reusing an old upload URL. Do not copy their information density or callout layout. Keep the noticeably rough, imperfect human-drawn look (user feedback, 2026-09-29), with the conceptual, witty visual direction below (user feedback, 2026-09-30)
 
 ```
 A casual phone photo, taken from straight above in soft daylight, of one page of cheap cream grid notebook paper (faint grey 5 mm grid, paper fills the whole frame, no desk, no props, no hands).
 Everything is drawn freehand with a blue ballpoint pen, with one red pen used only for shading {red accent}.
-Top center: the title "{Product}" in large, hurried hand-lettered capitals of slightly different sizes, a couple of letters leaning, underlined twice with a wobbly line that overshoots.
-Center: one quick crude sketch of {hero doodle}, drawn fast in under a minute: wobbly lines that overshoot corners, slightly wrong perspective, scribbled uneven hatching, a few retraced lines, clearly a notebook doodle rather than a technical drawing.
-Below it, one row of short hand-lettered notes, each underlined once, spaced apart: {callout 1} | {callout 2} | {callout 3}
-Bottom center (small): {mini-flow as simple doodle icons joined by hand-drawn arrows}
-All text is English, spelled exactly as given, with no other words, numbers, labels or watermarks anywhere (a maker badge drawn on the product itself is fine). Every word and number must be clearly legible.
-Plenty of empty grid space; drifting baselines; hurried, imperfect but fully legible handwriting with uneven letter sizes and stroke pressure.
-Avoid: polished infographic cards, symmetric panels, printed fonts, calligraphy, ruler-straight lines, uniform stroke weight, perfect perspective, even hatching, 3D, glossy rendering, stickers, color fills beyond the red accent, blur or heavy grunge.
+Create one witty conceptual sketch about {Topic}, expressing this supported point: {Thesis}.
+Visual idea: {Visual idea}. Scene and composition: {Scene}.
+Let the scene carry the idea through a clear visual metaphor or small human observation; it should make sense at a glance without a list of facts. Keep the humor natural and specific to the topic, with no invented product claims or test results.
+Draw it like a person's quick crude doodle, made in under a minute: wobbly lines that overshoot corners, slightly wrong perspective, scribbled uneven hatching, a few retraced lines, uneven stroke pressure, clearly a notebook sketch rather than a technical drawing.
+Optional visible text: {Visible text}. If none, add no text. Otherwise use only these exact English words, small and sparse, in hurried but legible handwriting with uneven letter sizes and drifting baselines. Do not invent extra titles, fact-callout rows, specification labels, numbers, flowcharts or watermarks beyond the brief.
+Leave plenty of empty grid space around the simple scene. One coherent visual idea matters more than information density.
+Avoid: informational sketch-note layouts, spec sheets, polished infographic cards, symmetric panels, printed fonts, calligraphy, ruler-straight lines, uniform stroke weight, perfect perspective, even hatching, 3D, glossy rendering, stickers, color fills beyond the red accent, blur or heavy grunge.
 Landscape 3:2, 1536x1024.
 ```
 
-- Generate 2–4 candidates, keep the one whose text matches the brief character for character; regenerate rather than hand-fixing text. Currency always `$`
+- Generate 2–4 candidates; choose the one whose visual idea best captures the thesis with natural wit and a rough human-drawn feel. Any visible text must match the brief character for character; regenerate rather than hand-fixing text. Currency always `$`
 - Convert with Pillow: `Image.open(src).convert('RGB').resize((1536,1024)).save(out,'WEBP',quality=82,method=6)`; lower quality until ≤250 KiB target (500 KiB cap)
 - Never commit the `.webp`; `publish-post.mjs` uploads it to `/media/`. Record the final `/media/` URL, pixel size and file size in the review
 
 - Exactly **one rough paper-notebook sketch per topic**, always the thumbnail (`imageUrl`)
 - Use the same sketch for both languages. Never repeat it in the body
-- Preserve the approved information density; draw it rougher than the quality baseline above (roughly 20–30% less polish): hurried lettering, wobbly overshooting lines, imperfect perspective, scribbled hatching and retraced lines. Keep every key word and number legible. Never blur, heavily distress or remove facts to imitate amateur work
-- Look: an ordinary phone photograph of cheap grid paper, two or three crude pen doodles, uneven lines, short legible words and plenty of empty space
+- Prioritize a clever visual idea over information density. Preserve the deliberately rough human-drawn character: wobbly overshooting lines, imperfect perspective, scribbled hatching, retraced lines and uneven pressure; any lettering is hurried but legible. Roughness comes from the drawing, never blur or heavy distress
+- Look: an ordinary phone photograph of cheap grid paper, a simple scene made from crude pen doodles, uneven lines, sparse optional words and plenty of empty space
 - Avoid polished card layouts, symmetric infographic panels, studio props, beautiful calligraphy, glossy 3D art and generic AI decoration
 - The sketch explains a concept, not unverified product internals or measurements. Add a nearby qualification if it could be mistaken for a real device drawing or test
 - Within the total cap of 10, include at least **one additional distinct useful body visual**: original sourced figure, deterministic diagram or data chart
