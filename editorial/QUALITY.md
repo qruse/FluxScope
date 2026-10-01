@@ -29,6 +29,7 @@ Every row must pass. A polished title cannot compensate for fabricated experienc
 | --- | --- | --- |
 | Title approval | Final bilingual titles match the user's recorded confirmation; changed titles require confirmation again | Human workflow check |
 | Reader value | One clear question; an answer and an actionable choice; each section adds a new fact or decision | Human review |
+| Readability | Familiar words and short sentences; essential jargon explained once; repeated conclusions and captions cut; decision-changing evidence and qualifications retained | Human review |
 | Evidence | Core claims traceable to opened original sources; market/model/date/units stated; calculations reproducible | Human review |
 | Reasoning | Conclusion follows from the actual metric; opinion, calculation and observation remain distinct | Human review |
 | Voice | One coherent question per article; headline titles with a hook the article answers (Korean titles not in 음슴체); natural witty humor grounded in facts; no fake experience, forced drama or repetitive filler | Human review |
@@ -97,6 +98,7 @@ If omitted: list searches, date and why no usable reaction was found
 ## Review
 - Reader value/evidence/reasoning/voice:
 - Line-by-line cut pass (AGENTS §4): bullets deleted, headings read alone in order:
+- Plain-language pass (AGENTS §4): terms explained, repeated text cut, decision-changing limits retained:
 - Korean-English parity:
 - Related live article search, prior experience/prediction passage, selected same-language link and why it helps (or reason no link helps):
 - Automatic check command and actual result:

@@ -75,6 +75,16 @@ The defining voice is **witty and humorous**. Make the reader smile at a concret
 
 Korean is primarily short bullets with natural 반말/음슴체. **One point, one short sentence per bullet** — split a second sentence into its own bullet or cut it; keep each bullet readable in one breath. Do not force all sentences into the same ending. English bullets follow the same one-sentence rhythm as natural concise field notes, not literal Korean syntax.
 
+### Plain language and brevity
+
+- **Make the body easy to understand on the first read.** Prefer familiar words and short, direct sentences in both languages; clarity takes priority over a clever phrase
+- Explain an unfamiliar term briefly when it first matters. Say what a benchmark measures and why the result affects the reader's choice; do not stack technical names, settings and caveats into one bullet
+- Put the useful answer first, then only the evidence needed to understand it. Let tables and charts carry detailed comparisons instead of repeating every number in the surrounding text
+- State each limitation once beside the relevant claim. Keep the conditions that change the decision, including test scope, temporary prices, projected costs and uncertain availability; brevity must not make a qualified claim sound certain
+- Cut repeated conclusions, background that does not affect the choice, long source captions and explanations of our writing process. Keep direct source links and essential attribution
+- Preserve natural wit where it reads easily; remove a joke or metaphor that needs an explanation. Use no fixed length target that encourages padding or deletion of necessary facts
+- Read each edition alone after shortening: a reader should be able to explain the main point without decoding jargon or rereading a sentence. For an existing text-only edit, preserve the confirmed title, images, URL and original publication date
+
 - Titles are headlines, not memo lines. Put the model/product near the start, then a sharp hook: a pointed question, a blunt contrast, a decisive number or a verdict some readers will dispute. The article must pay the hook off with evidence; no bait the body does not answer, no implied test results or defects
 - **Natural, witty humor is especially important in the title.** Give the headline a natural, immediately understandable witty twist tied to the article's concrete situation; avoid bland product summaries such as "the AI bot I have been waiting for". For an article about a persistent assistant, "OpenAI Dots, 이제 AI도 출근은 해야지" is an appropriate expectation-led hook, not a claim of tested performance. Do not make the author sound lazy or imply that the product has already completed work the author has not tested. Offer 3–5 distinct headline candidates when proposing a title, with one recommendation; use a specific user-supplied title directly when requested. Obtain confirmation under section 1.1, and never force wordplay or sacrifice factual accuracy
 - Korean titles do **not** use 음슴체; write them as natural headline phrasing (question, contrast, noun ending). Wrong: `출시 베팅만 벌써 네 번 틀림`; right: `출시 베팅은 벌써 4연패`. Korean descriptions and narrative headings still use natural 음슴체 (e.g. `검수는 내 몫임`, `예산도 커짐`). English titles use punchy headline phrasing, not artificial Korean grammar
