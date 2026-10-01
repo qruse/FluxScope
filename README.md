@@ -27,6 +27,8 @@ Node.js 22.19 이상에서 `npm ci`, `npm run check`를 실행합니다. 로컬 
 - 저장된 작업 원고와 검수 기록: 인증된 `/api/drafts`; 아래 `--pull`로 가져옵니다
 - 공개 주소: `/posts/<slug>/`, `/en/posts/<slug>/`; 예전 분류별 글 주소는 같은 slug의 새 주소로 이동합니다
 
+게시 전에는 최종 한영 제목을 보여주고 사용자 컨펌을 검수 기록에 남깁니다. 제목이 바뀌면 다시 컨펌받고, 초안과 미리보기는 컨펌 전에도 준비할 수 있습니다(`AGENTS.md` §1.1).
+
 `PUBLISH_TOKEN`은 환경변수나 비밀 설정으로 제공하고 명령 기록·로그·Git에 넣지 않습니다. 아래 명령은 저장소 루트에서 실행합니다. 기존 글을 수정하거나 저장된 초안을 이어 쓸 때 먼저 가져옵니다.
 
 ```bash
@@ -42,7 +44,7 @@ node scripts/publish-post.mjs editorial/api-posts/en-<slug>.json editorial/api-p
 # 초안 공유가 필요한 경우: 목록에서 제외된 noindex 미리보기 생성
 node scripts/publish-post.mjs editorial/api-posts/en-<slug>.json editorial/api-posts/ko-<slug>.json --preview
 
-# 한영 동시 게시
+# 사용자가 최종 한영 제목을 컨펌한 뒤에만 한영 동시 게시
 node scripts/publish-post.mjs editorial/api-posts/en-<slug>.json editorial/api-posts/ko-<slug>.json
 ```
 
@@ -103,4 +105,4 @@ curl -X POST 'https://hslblog.com/api/images' \
 
 글 작업은 게시 스크립트의 `--dry-run`과 수동 검수·라이브 확인으로 검증합니다. 코드·템플릿·규칙을 커밋할 때는 `npm run check`를 실행합니다. 한영 원고는 반드시 묶어서 게시하고, 두 공개 페이지를 모두 확인해야 완료입니다.
 
-영어판을 기준으로 쓰고 한국어판을 함께 유지합니다. 냉소적이면서 유머러스한 문체가 기본이며, 이미지 내부 문구는 영어로 고정합니다. 가격은 미국 공식 USD 가격을 우선합니다. 미국 공식 가격이 없으면 제품을 대표하는 시장의 공식 가격을 환산하고 시장·세금·환율·기준일을 밝힙니다. 자세한 예외와 검수 절차는 AGENTS.md를 따릅니다.
+영어판을 기준으로 쓰고 한국어판을 함께 유지합니다. 자연스럽고 위트 있는 유머러스한 문체가 기본이며, 이미지 내부 문구는 영어로 고정합니다. 가격은 미국 공식 USD 가격을 우선합니다. 미국 공식 가격이 없으면 제품을 대표하는 시장의 공식 가격을 환산하고 시장·세금·환율·기준일을 밝힙니다. 자세한 예외와 검수 절차는 AGENTS.md를 따릅니다.

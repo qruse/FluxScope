@@ -27,10 +27,11 @@ Every row must pass. A polished title cannot compensate for fabricated experienc
 
 | Gate | Pass only if | Automatic coverage |
 | --- | --- | --- |
+| Title approval | Final bilingual titles match the user's recorded confirmation; changed titles require confirmation again | Human workflow check |
 | Reader value | One clear question; an answer and an actionable choice; each section adds a new fact or decision | Human review |
 | Evidence | Core claims traceable to opened original sources; market/model/date/units stated; calculations reproducible | Human review |
 | Reasoning | Conclusion follows from the actual metric; opinion, calculation and observation remain distinct | Human review |
-| Voice | One coherent question per article; headline titles with a hook the article answers (Korean titles not in 음슴체); restrained cynical humor grounded in facts; no fake experience, forced drama or repetitive filler | Human review |
+| Voice | One coherent question per article; headline titles with a hook the article answers (Korean titles not in 음슴체); natural witty humor grounded in facts; no fake experience, forced drama or repetitive filler | Human review |
 | Structure | Exactly 3 summary bullets; final Q&A with 3–5 answered questions; community immediately before it when present, each reaction linked and Reddit represented | Shared validator |
 | Metadata | Correct category; 5–15 unique kebab-case tags; useful title/description/alt; original date/URL preserved | Validator plus human |
 | SEO | Title ≤ 70 chars with the product first; description states the answer; stable slug; body starts at H2; alt text 5–150 chars; no manual SEO tags | Validator plus human |
@@ -40,6 +41,7 @@ Every row must pass. A polished title cannot compensate for fabricated experienc
 
 ### Stop publishing immediately when
 
+- The final title has not been confirmed by the user, or a payload title differs from the confirmed bilingual pair (AGENTS §1.1)
 - A core claim has no checked source, a supplied experience has been embellished, or a diagram contradicts the text
 - A key price/spec is disputed and the disagreement changes the conclusion
 - One language is missing, a required image is broken, or a core build/check fails
@@ -72,6 +74,13 @@ Create `editorial/reviews/<slug>.md` before drafting. Replace every placeholder 
 - Scope: market/model/version/trim or test environment:
 - User experience: actual supplied wording and provenance, or unavailable/published-material analysis
 
+## Title confirmation (AGENTS §1.1)
+- Final Korean title:
+- Final English title:
+- User's exact confirming message and date/context:
+- Status: pending / confirmed / invalidated
+- Pre-publication payload titles match:
+
 ## Claim ledger
 | Claim | Kind | Source URL and location | What was checked | Qualification/calculation |
 | --- | --- | --- | --- | --- |
@@ -98,4 +107,4 @@ If omitted: list searches, date and why no usable reaction was found
 
 ## Prompt for the next writing agent
 
-“Read AGENTS.md and editorial/QUALITY.md. Retrieve the newest relevant published bilingual article and its available review; use the three technique references as supplements. State the reader question internally. Verify sources and fill the claim ledger before drafting. Preserve only the user's actual experience. Write the English master and natural Korean counterpart with matching facts, USD prices and English-only shared images. Apply every release gate; fix failures instead of relaxing checks. Publish the paired payloads with scripts/publish-post.mjs through D1/API and verify the live result. Report changes, checks and any unfinished publication separately.”
+“Read AGENTS.md and editorial/QUALITY.md. Retrieve the newest relevant published bilingual article and its available review; use the three technique references as supplements. State the reader question internally. Verify sources and fill the claim ledger before drafting. Preserve only the user's actual experience. Write the English master and natural Korean counterpart with matching facts, USD prices and English-only shared images. Apply every release gate; fix failures instead of relaxing checks. Present the final bilingual title pair and obtain user confirmation under AGENTS §1.1 before publication; save drafts or unlisted previews while awaiting the decision. Publish the paired payloads with scripts/publish-post.mjs through D1/API and verify the live result. Report changes, checks and any unfinished publication separately.”

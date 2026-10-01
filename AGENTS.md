@@ -20,7 +20,19 @@ This is the single authoritative project rulebook. Read it completely before edi
 5. Create `editorial/reviews/<slug>.md` using the evidence and review template in `editorial/QUALITY.md`
 6. Draft English as the primary edition, verify every material claim, then adapt naturally into Korean with identical facts and qualifications
 7. Run the automatic checks, then the manual rubric — a passing build does not certify facts or good prose
-8. Publish with `scripts/publish-post.mjs` (no build or merge), verify both live URLs, images, category listings and language switch, then report exactly what is live
+8. Show the completed draft and final bilingual title pair; obtain and record user title confirmation under section 1.1 before any public write
+9. Publish with `scripts/publish-post.mjs` (no build or merge), verify both live URLs, images, category listings and language switch, then report exactly what is live
+
+### 1.1 Mandatory user title confirmation
+
+- **Do not publish an article until the user has explicitly confirmed its final title.** Apply this to new articles and title changes on existing articles; a previously confirmed, unchanged title can retain that confirmation for later body edits
+- Finish the research, bilingual draft, visuals and checks before requesting confirmation, so the user is choosing a concrete title for a reviewable article. While waiting, continue authorized preparation, draft saving and unlisted preview work; do not run a public article write
+- When proposing a title, offer 3–5 distinct candidates and one recommendation; a specific title supplied by the user may be used directly. Show the final Korean title and its English counterpart before publication; selecting the Korean candidate approves the corresponding English title if that pair was already shown
+- A clear selection such as “1번”, “이 제목으로”, or “ㄱㄱ” after the specific final title/pair was shown counts as confirmation. Silence, the author's recommendation, or a generic “write and publish immediately” request made before any title was shown does not
+- Publish the confirmed wording exactly. If either title changes afterward, or the article's angle changes so the approved headline no longer fits, show the revised pair and obtain confirmation again; do not replace it with another “better” title unilaterally
+- Record the exact approved Korean/English titles, the user's confirming message and date/context in the review. Verify the payload titles against that record immediately before public publication; do not infer missing approval from an old published page
+- Without confirmation, report “draft ready; awaiting title confirmation” with the candidates or preview. This gate applies to public article publication, not to requested rule/code maintenance or draft/image preparation
+- This is a human workflow gate: structural validation and a successful API request cannot prove that the user approved a title
 
 Do not stop after writing advice when asked to edit. Do not report an API response, commit, build, or preview as a verified production deployment.
 
@@ -57,17 +69,17 @@ Classify material claims in the internal review record:
 - Related internal links: add 1–2 only when an already published, same-language post directly helps answer the reader's question; verify URL, explain relevance, no forced cross-category links or self-links
 - Before drafting a follow-up, comparison or rumor update, search the live post catalog for the same models/topic and read relevant prior articles, including the author's earlier experience and predictions. Connect that history in the body with 1–2 same-language links and explain what has changed or what question remains; do not leave useful previous coverage only in an automatic related-post box. When the user names a prior mention, locate the actual passage and record its live URL and meaning in the review. Treat past rumors as dated claims and recheck current specifications from primary sources
 
-## 4. Voice — cynical and humorous, without bargaining away accuracy
+## 4. Voice — witty and humorous, without bargaining away accuracy
 
-The defining voice is **cynical AND humorous**, not optional seasoning. Question marketing promises, inconvenient bundles and hidden work; make the reader smile at a specific absurdity. A neutral specification digest fails the voice gate. Use several well-placed dry observations across the article, not a joke after every number. Aim at sales tactics and workflow friction, never at ordinary buyers or unsupported motives. State the useful fact before twisting the knife. **Natural beats clever:** a plain, correct sentence always beats a forced joke, metaphor or twist. If a line needs a second read to land, write it plainly; a section with no joke is fine, a forced one is not.
+The defining voice is **witty and humorous**. Make the reader smile at a concrete, supported situation. Use several well-placed observations across the article, not a joke after every number. Keep criticism proportional to verified claims and the user's actual experience, never ordinary buyers or unsupported motives. State the useful fact before the joke. **Natural beats clever:** a plain, correct sentence always beats a forced joke, metaphor or twist. If a line needs a second read to land, write it plainly; a section with no joke is fine, a forced one is not.
 
 Korean is primarily short bullets with natural 반말/음슴체. **One point, one short sentence per bullet** — split a second sentence into its own bullet or cut it; keep each bullet readable in one breath. Do not force all sentences into the same ending. English bullets follow the same one-sentence rhythm as natural concise field notes, not literal Korean syntax.
 
 - Titles are headlines, not memo lines. Put the model/product near the start, then a sharp hook: a pointed question, a blunt contrast, a decisive number or a verdict some readers will dispute. The article must pay the hook off with evidence; no bait the body does not answer, no implied test results or defects
-- **Cynical, witty humor is especially important in the title.** Give the headline a natural, immediately understandable dry twist tied to the article's concrete situation; avoid bland product summaries such as "the AI bot I have been waiting for". For an article about a persistent assistant, "OpenAI Dots, 이제 AI도 출근은 해야지" is an appropriate expectation-led hook, not a claim of tested performance. Do not make the author sound lazy or imply that the product has already completed work the author has not tested. Offer 3–5 distinct headline candidates when the user requests recommendations; keep the strongest natural option, never force wordplay or sacrifice factual accuracy
+- **Natural, witty humor is especially important in the title.** Give the headline a natural, immediately understandable witty twist tied to the article's concrete situation; avoid bland product summaries such as "the AI bot I have been waiting for". For an article about a persistent assistant, "OpenAI Dots, 이제 AI도 출근은 해야지" is an appropriate expectation-led hook, not a claim of tested performance. Do not make the author sound lazy or imply that the product has already completed work the author has not tested. Offer 3–5 distinct headline candidates when proposing a title, with one recommendation; use a specific user-supplied title directly when requested. Obtain confirmation under section 1.1, and never force wordplay or sacrifice factual accuracy
 - Korean titles do **not** use 음슴체; write them as natural headline phrasing (question, contrast, noun ending). Wrong: `출시 베팅만 벌써 네 번 틀림`; right: `출시 베팅은 벌써 4연패`. Korean descriptions and narrative headings still use natural 음슴체 (e.g. `검수는 내 몫임`, `예산도 커짐`). English titles use punchy headline phrasing, not artificial Korean grammar
 - Rebuild a confused draft around ONE reader question before polishing sentences. Every section must advance that question; delete tangents, repeated caveats and jokes that need their own explanation
-- Humor follows the concrete fact. Prefer 2–4 restrained observations over an analogy in every bullet; never let sarcasm imply unsupported test results or product defects
+- Humor follows the concrete fact. Prefer 2–4 restrained observations over an analogy in every bullet; never let a joke imply unsupported test results or product defects
 - Keep the humor free of profanity, insults and degrading slang; aim criticism at verified claims, sales tactics and workflow friction
 - The description gives the actual angle and substance, not “a comprehensive analysis”
 - Explain what a number measures and why it changes the decision. A table full of unexplained numbers is not depth
@@ -152,8 +164,8 @@ End-to-end ownership: **Codex now handles research, writing, visuals, community 
 1. **Read and research.** Resolve the live baseline above. For an existing article or saved draft, run `node scripts/publish-post.mjs --pull <slug>` with `PUBLISH_TOKEN` set securely. Collect primary sources and open Reddit originals
 2. **Draft both languages.** Write both payloads and `editorial/reviews/<slug>.md`, including a `## Sketch brief` with the thesis, visual metaphor/scene and any exact English text (or `none`), and a `## Reddit brief` with the reader question, queries and subreddits. Add matching community reactions immediately before Q&A and record the exact source URLs
 3. **Create and inspect visuals.** Produce body visuals and the single sketch below. Save the sketch at `public/images/posts/<category>/<slug>-notebook.webp`, referenced by `imageUrl` as `/images/posts/<category>/<slug>-notebook.webp`. Check that the visual idea matches the thesis and any words or numbers match the brief before publication
-4. **Review.** Apply the bilingual rubric and run `node scripts/publish-post.mjs editorial/api-posts/en-<slug>.json editorial/api-posts/ko-<slug>.json --dry-run`. Use `--preview` when a reviewable draft or handoff is needed; it saves working files and creates unlisted preview URLs, not a publication
-5. **Publish and verify.** Run the paired command without `--dry-run`. It uploads images, writes both languages atomically, saves working files and removes the preview. Perform section 11 live checks yourself; no second agent is required to finish them
+4. **Review and title confirmation.** Apply the bilingual rubric and run `node scripts/publish-post.mjs editorial/api-posts/en-<slug>.json editorial/api-posts/ko-<slug>.json --dry-run`. Use `--preview` when a reviewable draft or handoff is needed; it saves working files and creates unlisted preview URLs, not a publication
+5. **Publish and verify.** After the user has confirmed the final bilingual title pair under section 1.1, run the paired command without `--dry-run`. It uploads images, writes both languages atomically, saves working files and removes the preview. Perform section 11 live checks yourself; no second agent is required to finish them
 6. **Record and report.** Record actual source, image and live checks in the review. To save review-only changes after publication, use authenticated `PUT /api/drafts?slug=<slug>` with both current working payloads and the review; do not recreate a preview or republish unchanged article text merely to save notes. Report both live URLs and remaining limitations. Keep detailed image dimensions/bytes and community evidence in the review; include them in the response when requested for a handoff
 
 Sketch brief format (the current author fills it; concise values):
@@ -229,7 +241,7 @@ Every article lives in D1 and is published through the API. Publishing an articl
 - Credentials stay in ignored local configuration or secrets; never include them in Git, examples, logs or review notes
 - Tags: 5–15 distinct lowercase English kebab-case keywords
 - Required payload fields: `lang`, `slug`, `category`, `title`, `description` (50–180 characters), `body`, `tags`, `imageUrl`, `imageAlt`, `visualTypes`; `publishedAt` is kept automatically on update
-- Never publish unfinished work. To show a draft, add `--preview`: it uploads both languages to an unlisted `/preview/<token>/` and `/en/preview/<token>/` page (noindex, no comments, absent from listings, feeds, sitemaps and search) and prints the URLs
+- Never publish before the final title is confirmed under section 1.1, or publish unfinished work. To show a draft, add `--preview`: it uploads both languages to an unlisted `/preview/<token>/` and `/en/preview/<token>/` page (noindex, no comments, absent from listings, feeds, sitemaps and search) and prints the URLs
   - A missing thumbnail or editorial problem is only a warning in preview mode; the real publish still enforces every rule
   - Re-running `--preview` replaces that slug's preview under a new token; publishing the slug deletes it; previews expire after 30 days; `DELETE /api/previews?slug=<slug>` removes one early
   - A preview is not a publication: never report it as live
@@ -253,7 +265,7 @@ Template-owned (keep working when editing layouts or the Worker):
 - The LCP hero image loads eagerly with `fetchpriority="high"`; body images carry width/height and load lazily; unknown URLs return the bilingual 404 page with status 404
 
 Author checklist (validated where marked):
-- Title: model/product first, a real question or judgment, **≤ 70 characters** (validated), unique across the site. No clickbait that the article does not answer
+- Title: final bilingual wording confirmed and recorded under section 1.1; model/product first, a real question or judgment, **≤ 70 characters** (validated), unique across the site. No clickbait that the article does not answer
 - Description: 50–180 characters (validated), states the actual answer or angle; it becomes the search snippet
 - Slug: lowercase English kebab-case, short, the same for both languages, and **never changed after publication**
 - Headings: the template renders the only H1; the body starts at H2 (validated: no `# ` headings) and does not skip levels
