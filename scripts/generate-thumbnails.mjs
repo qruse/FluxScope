@@ -91,58 +91,20 @@ const images = [
       <circle cx="990" cy="390" r="7" fill="#d8593a" />
       <circle cx="1130" cy="400" r="7" fill="#d8593a" />
     `
-  },
-  {
-    filename: 'og-default.png',
-    alias: null,
-    bg: '#233238',
-    ink: '#ffffff',
-    accent: '#e66043',
-    lineColor: '#4f6870',
-    kicker: "HSL'S BLOG",
-    title: "HSL's Blog",
-    titleSize: 110,
-    subtitle: 'AI / CARS / DEVICES',
-    footerText: 'AGI / PHYSICAL AI / OTHER AI',
-    circles: [
-      { r: 90, stroke: '#4f6870', width: 2.5, fill: 'none' },
-      { r: 180, stroke: '#4f6870', width: 2.5, fill: 'none' },
-      { r: 290, stroke: '#4f6870', width: 2.5, fill: 'none' },
-      { r: 420, stroke: '#4f6870', width: 2.5, fill: 'none' },
-      { r: 560, stroke: '#4f6870', width: 2.5, fill: 'none' },
-    ],
-    decorations: `
-      <!-- Radar Crosshairs -->
-      <line x1="680" y1="315" x2="920" y2="315" stroke="#e66043" stroke-width="2.5" />
-      <line x1="1080" y1="315" x2="1200" y2="315" stroke="#e66043" stroke-width="2.5" />
-      <line x1="1000" y1="0" x2="1000" y2="235" stroke="#e66043" stroke-width="2.5" />
-      <line x1="1000" y1="395" x2="1000" y2="630" stroke="#e66043" stroke-width="2.5" />
-      <!-- Center Dot -->
-      <circle cx="1000" cy="315" r="18" fill="#e66043" />
-    `
   }
 ];
 
 async function generateAll() {
   for (const item of images) {
-    const isOg = item.filename === 'og-default.png';
-    const titleSvg = isOg 
-      ? `<text x="75" y="325" fill="${item.ink}" font-family="${fontStack}" font-size="${item.titleSize}" font-weight="850" letter-spacing="-3">HSL<tspan fill="${item.accent}">'s Blog</tspan></text>`
-      : `<text x="75" y="360" fill="${item.ink}" font-family="${fontStack}" font-size="${item.titleSize}" font-weight="850" letter-spacing="-2">${item.title}</text>`;
+    const titleSvg = `<text x="75" y="360" fill="${item.ink}" font-family="${fontStack}" font-size="${item.titleSize}" font-weight="850" letter-spacing="-2">${item.title}</text>`;
 
-    const bottomSection = isOg
-      ? `
-        <text x="75" y="515" fill="${item.ink}" font-family="${fontStack}" font-size="22" font-weight="800" letter-spacing="2">${item.subtitle}</text>
-        <line x1="75" y1="550" x2="1125" y2="550" stroke="${item.ink}" stroke-width="1.5" />
-        <text x="75" y="590" fill="${item.ink}" font-family="${fontStack}" font-size="16" font-weight="700" letter-spacing="3">${item.footerText}</text>
-      `
-      : `
+    const bottomSection = `
         <text x="75" y="515" fill="${item.ink}" font-family="${fontStack}" font-size="22" font-weight="800" letter-spacing="2">${item.subtitle}</text>
         <line x1="75" y1="550" x2="1125" y2="550" stroke="${item.ink}" stroke-width="1.5" />
       `;
 
     const circlesSvg = item.circles.map(c => 
-      `<circle cx="1000" cy="${isOg ? 315 : 350}" r="${c.r}" stroke="${c.stroke}" stroke-width="${c.width}" fill="${c.fill}" />`
+      `<circle cx="1000" cy="350" r="${c.r}" stroke="${c.stroke}" stroke-width="${c.width}" fill="${c.fill}" />`
     ).join('\n');
 
     const svg = `

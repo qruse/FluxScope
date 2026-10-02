@@ -38,7 +38,7 @@ Do not stop after writing advice when asked to edit. Do not report an API respon
 
 ## 2. Identity and hard requirements
 
-- The repository is FluxScope; the displayed brand remains **HSL의 블로그 / HSL's Blog** unless the user asks to rename it
+- The repository is FluxScope; the displayed brand remains **HSL의 블로그 / HSL's Blog** unless the user asks to rename it. The logo is the `hsl.` wordmark (header) and the `h.` mark (favicon, `/images/logo.png`); page titles, metadata and the footer keep the full name
 - Purpose: useful notes by someone curious about AI, cars and devices, for readers deciding what to use, buy or investigate
 - **This is an international blog.** Write for a global reader first: pick topics, markets, prices, sources and examples that matter across major markets (US, EU/UK, China, Japan, Korea). Korea-only facts (Korean prices, laws, insurers, dealers, subsidies) enter only as one clearly labeled market example or when the topic itself is Korean; never frame a global question around the Korean market alone. The Korean edition is a translation of that global article, not a Korea-specific version
 - Categories are **only** `ai`, `mobility`, `it-devices` — never add AI subcategories
@@ -263,7 +263,7 @@ Technical SEO lives in the templates and Worker, not in article text. Do not han
 Template-owned (keep working when editing layouts or the Worker):
 - One canonical URL per page; `hreflang` ko/en pairs plus `x-default` pointing to the English version of the same page (global readers are the primary audience)
 - `robots` meta: `index, follow, max-image-preview:large` for content; `noindex, follow` for search, 404 and other utility pages, which also stay out of the sitemaps
-- Open Graph/Twitter tags with real image dimensions and `og:locale`; `BlogPosting` + `BreadcrumbList` JSON-LD with `inLanguage`, image size and author/publisher URLs; the publisher and the home `WebSite` carry the 512 px `/images/logo.png`. Decorative heading dots are CSS, not text
+- Open Graph/Twitter tags with real image dimensions and `og:locale`; `BlogPosting` + `BreadcrumbList` JSON-LD with `inLanguage`, image size and author/publisher URLs; the publisher and the home `WebSite` carry the 512 px `/images/logo.png`. `node scripts/generate-brand.mjs` regenerates it with `/favicon.svg` and the default share card `/images/og-default.png`. Decorative heading dots are CSS, not text
 - RSS per language: `/rss.xml` (Korean) and `/en/rss.xml` (English), built by the Worker from D1
 - Never redirect by browser language or IP: crawlers render with en-US, so an automatic redirect hides the Korean pages. Only a language the visitor chose may be remembered
 - One URL per page: every extensionless path without a trailing slash redirects 301 to the canonical form

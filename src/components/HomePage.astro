@@ -1,0 +1,68 @@
+---
+import { getCollection } from 'astro:content';
+import PostCard from './PostCard.astro';
+import { categories, majorCategories, majorCategoryPath, publishedPosts } from '../lib/site';
+import type { Lang } from '../i18n/ui';
+
+interface Props { lang: Lang; }
+const { lang } = Astro.props;
+const isKo = lang === 'ko';
+const posts = publishedPosts(await getCollection('posts'), lang);
+
+// Lead: one slot per major category. The Worker swaps in a newer D1 post by category.
+const latestIn = (category: keyof typeof majorCategories) => posts.find((p) => p.data.category === category);
+const subSlots = (['mobility', 'it-devices'] as const).map((category) => ({ category, post: latestIn(category) }));
+const headPost = latestIn('ai');
+---
+<h1 class="sr-only">{isKo ? 'HSL의 블로그: AI, 자동차, IT 기기 노트' : "HSL's Blog: notes on AI, cars and devices"}</h1>
+<section class="home-intro">
+  <div class="shell">
+    <p class="home-kicker">{isKo ? 'HSL의 블로그' : "HSL's Blog"}</p>
+    <p class="home-intro-line">
+      {isKo ? 'AI·모빌리티·IT 발표를 쉬운 말로 풀고, 숫자는 다시 계산합니다.' : 'AI, mobility and tech launches in plain words, with the numbers checked again.'}
+    </p>
+  </div>
+</section>
+
+<section class="lead-section">
+  <div class="shell">
+    <div class="lead-grid">
+      <div class="head-post" data-dynamic-lead="ai" data-lead-variant="featured" data-published={headPost?.data.publishedAt.toISOString()}>
+        {headPost && <PostCard post={headPost} featured={true} />}
+      </div>
+      <div class="sub-posts">
+        {subSlots.map(({ category, post }) => (
+          <div class="sub-slot" data-dynamic-lead={category} data-lead-variant="compact" data-published={post?.data.publishedAt.toISOString()}>
+            {post && <PostCard post={post} compact={true} />}
+          </div>
+        ))}
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Filled by the Worker with recent D1 posts that are not already in the lead; stays hidden otherwise. -->
+<section class="home-section latest" data-dynamic-latest hidden>
+  <div class="shell">
+    <h2 class="home-section-title">{isKo ? '최신 글' : 'Latest'}</h2>
+    <ol class="latest-list" data-dynamic-latest-list></ol>
+  </div>
+</section>
+
+<section class="home-section home-topics">
+  <div class="shell">
+    <h2 class="home-section-title">{isKo ? '주제별로 보기' : 'Browse by topic'}</h2>
+    <div class="topic-list">
+      {Object.keys(majorCategories).map((slug) => {
+        const key = slug as keyof typeof majorCategories;
+        const info = categories[key];
+        return (
+          <a class="topic-row" href={majorCategoryPath(key, lang)}>
+            <span class="topic-name">{isKo ? info.nameKo : info.name}<span class="topic-arrow" aria-hidden="true">→</span></span>
+            <span class="topic-desc">{isKo ? info.descriptionKo : info.description}</span>
+          </a>
+        );
+      })}
+    </div>
+  </div>
+</section>

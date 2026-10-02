@@ -14,7 +14,9 @@ if (!fs.existsSync(distDir)) {
 const BUDGETS = {
   MAX_HTML_SIZE_KB: 100,      // Max individual HTML page size
   MAX_IMAGE_SIZE_KB: 500,     // Max single image file size
-  MAX_TOTAL_CSS_KB: 60,       // Max combined CSS bundle size
+  // Includes ~47 KB (~13 KB gzipped) of Pretendard @font-face rules: the dynamic subset
+  // needs one rule per Hangul slice so browsers download only the slices a page uses.
+  MAX_TOTAL_CSS_KB: 90,       // Max combined CSS bundle size
   MAX_CLIENT_JS_KB: 50,       // Max client JS bundle (excluding pagefind)
   MAX_BASE64_INLINE_BYTES: 1024, // Prevent heavy inlined data URIs
 };
