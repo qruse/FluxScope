@@ -40,10 +40,9 @@ img { max-width: 100%; height: auto; }
 
 .site-header { border-bottom: 1px solid var(--line); background: var(--bg); }
 .header-inner { min-height: 78px; display: flex; align-items: center; gap: 2.2rem; }
-.brand { display: inline-flex; align-items: center; gap: .8rem; font-weight: 800; font-size: 1.22rem; letter-spacing: -.055em; white-space: nowrap; }
-.brand-accent { color: var(--accent); }
-.brand-mark { position: relative; flex: none; width: 27px; height: 27px; border: 2px solid var(--accent); border-radius: 50%; background: linear-gradient(var(--accent), var(--accent)) center / 2px 100% no-repeat, linear-gradient(var(--accent), var(--accent)) center / 100% 2px no-repeat; }
-.brand-mark span { position: absolute; left: 50%; top: 50%; width: 7px; height: 7px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 0 3px var(--bg); transform: translate(-50%, -50%); }
+.brand { display: inline-flex; align-items: baseline; font-weight: 800; font-size: 2rem; line-height: 1; letter-spacing: -.055em; white-space: nowrap; text-decoration: none; }
+/* The "hsl." wordmark: the dot is a round accent mark sitting on the baseline. */
+.brand-mark { flex: none; width: .2em; height: .2em; margin-left: .045em; border-radius: 50%; background: var(--accent); }
 .main-nav { margin-left: auto; display: flex; align-items: center; gap: 1.8rem; font-size: .82rem; font-weight: 750; letter-spacing: .02em; }
 .main-nav a { text-decoration: none; transition: color .15s ease; }
 .main-nav a:hover, .footer-links a:hover { color: var(--accent); }
@@ -471,7 +470,7 @@ html[data-theme="dark"] .astro-code span {
 
 @media (max-width: 860px) {
   .header-inner { flex-wrap: wrap; gap: .4rem 1rem; padding-block: .75rem; min-height: auto; }
-  .brand { font-size: 1.15rem; }
+  .brand { font-size: 1.85rem; }
   .header-actions { margin-left: auto; gap: .4rem; }
   .main-nav { order: 3; width: 100%; margin: 0; display: flex; align-items: center; justify-content: space-between; gap: .5rem; border-top: 1px solid var(--line); padding-top: .5rem; padding-bottom: .2rem; font-size: .8rem; }
   .nav-link-major { padding: .4rem .6rem; min-height: 40px; display: inline-flex; align-items: center; border-radius: 6px; }
@@ -483,7 +482,7 @@ html[data-theme="dark"] .astro-code span {
 
 @media (max-width: 640px) {
   .shell, .article-shell { width: min(100% - 1.75rem, 1200px); }
-  .brand { font-size: 1.08rem; }
+  .brand { font-size: 1.7rem; }
   .header-actions { gap: .25rem; }
   .lang-switcher { padding: .15rem .3rem; font-size: .68rem; }
   .icon-link, .theme-toggle { width: 34px; height: 34px; }
@@ -580,8 +579,7 @@ html[data-theme="dark"] .astro-code span {
 
 @media (max-width: 380px) {
   .shell, .article-shell { width: min(100% - 1.25rem, 1200px); }
-  .brand { font-size: 1.02rem; }
-  .brand-mark { width: 23px; height: 23px; }
+  .brand { font-size: 1.6rem; }
   .header-actions { gap: .15rem; }
   .icon-link, .theme-toggle { width: 30px; height: 30px; }
   .main-nav { font-size: .72rem; }
