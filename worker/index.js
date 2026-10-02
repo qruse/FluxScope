@@ -24,7 +24,14 @@ function listingCard(post, lang, variant = '') {
   const read = lang === 'ko' ? '글 읽기' : 'Read article';
   const image = post.image_url ? `<img class="card-visual" src="${escape(post.image_url)}" alt="${escape(post.image_alt || post.title)}" loading="${variant === 'featured' ? 'eager' : 'lazy'}" decoding="async" />` : '';
   const date = new Date(post.published_at).toLocaleDateString(lang === 'ko' ? 'ko-KR' : 'en-US', { year: 'numeric', month: lang === 'ko' ? 'long' : 'short', day: 'numeric', timeZone: 'Asia/Seoul' });
-  return `<article class="post-card${variant ? ` ${variant}` : ''}"><a class="card-link" href="${escape(pathFor(post))}" aria-label="${escape(`${read}: ${post.title}`)}"><div class="card-media">${image}</div><div class="card-copy"><div class="eyebrow"><span class="category-pip"></span>${escape(categoryNames[lang][category])}<span class="eyebrow-sep">/</span><time datetime="${escape(post.published_at)}">${escape(date)}</time></div><h3>${escape(post.title)}</h3><p>${escape(post.description)}</p><span class="read-link">${read} <span aria-hidden="true">↗</span></span></div></a></article>`;
+  return `<article class="post-card${variant ? ` ${variant}` : ''}"><a class="card-link" href="${escape(pathFor(post))}" aria-label="${escape(`${read}: ${post.title}`)}"><div class="card-media">${image}</div><div class="card-copy"><div class="eyebrow"><span class="category-pip"></span>${escape(categoryNames[lang][category])}<span class="eyebrow-sep">/</span><time datetime="${escape(post.published_at)}">${escape(date)}</time></div><h3>${escape(post.title)}</h3><p>${escape(post.description)}</p></div></a></article>`;
+}
+
+// One row of the home page's latest list: date, topic and title.
+function latestRow(post, lang) {
+  const category = normalizeCategory(post.category);
+  const parts = Object.fromEntries(new Intl.DateTimeFormat('en-CA', { year: 'numeric', month: '2-digit', day: '2-digit', timeZone: 'Asia/Seoul' }).formatToParts(new Date(post.published_at)).map((part) => [part.type, part.value]));
+  return `<li><a class="latest-row" href="${escape(pathFor(post))}"><time datetime="${escape(post.published_at)}">${parts.year}.${parts.month}.${parts.day}</time><span class="latest-cat">${escape(categoryNames[lang][category])}</span><span class="latest-title">${escape(post.title)}</span></a></li>`;
 }
 
 async function listingPage(request, env, lang) {
@@ -39,6 +46,9 @@ async function listingPage(request, env, lang) {
   }
   if (!results.length) return asset;
   const byCategory = new Map([...categories].map((category) => [category, results.filter((post) => normalizeCategory(post.category) === category)]));
+  // Lead slots come first in the document, so the latest list can skip the posts they already show.
+  const inLead = new Set();
+  const latest = () => results.filter((post) => !inLead.has(post.slug)).slice(0, 10);
   const rewritten = new HTMLRewriter()
     .on('[data-dynamic-category]', {
       element(element) {
@@ -54,7 +64,18 @@ async function listingPage(request, env, lang) {
         const [post] = byCategory.get(element.getAttribute('data-dynamic-lead')) || [];
         const staticDate = Date.parse(element.getAttribute('data-published') || '');
         if (!post || Date.parse(post.published_at) <= staticDate) return;
+        inLead.add(post.slug);
         element.setInnerContent(listingCard(post, lang, element.getAttribute('data-lead-variant') || ''), { html: true });
+      },
+    })
+    .on('[data-dynamic-latest]', {
+      element(element) {
+        if (latest().length) element.removeAttribute('hidden');
+      },
+    })
+    .on('[data-dynamic-latest-list]', {
+      element(element) {
+        element.setInnerContent(latest().map((post) => latestRow(post, lang)).join(''), { html: true });
       },
     })
     .on('[data-dynamic-count]', {

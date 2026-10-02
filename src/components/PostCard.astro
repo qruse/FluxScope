@@ -27,7 +27,6 @@ const readMoreText = isKo ? '글 읽기' : 'Read article';
       <div class="eyebrow"><span class="category-pip"></span>{categoryName}<span class="eyebrow-sep">/</span><time datetime={post.data.publishedAt.toISOString()}>{formatDate(post.data.publishedAt, post.data.lang)}</time></div>
       <h3>{post.data.title}</h3>
       <p>{post.data.description}</p>
-      <span class="read-link">{readMoreText} <span aria-hidden="true">↗</span></span>
     </div>
   </a>
 </article>

@@ -4,7 +4,7 @@ import sharp from 'sharp';
 import fs from 'node:fs';
 import path from 'node:path';
 
-// Pretendard Std ExtraBold outlines (2048 units per em, y axis up), so the
+// Pretendard ExtraBold outlines (2048 units per em, y axis up), so the
 // assets render the same without the font installed.
 const UPM = 2048;
 const GLYPHS = {
@@ -56,15 +56,15 @@ function icon(size, dot) {
 `;
 }
 
-const fontDir = path.resolve('node_modules/pretendard-std/dist/public/static');
+const fontDir = path.resolve('node_modules/pretendard/dist/public/static');
 // Pango renders the text with the bundled Pretendard file, so the card does not depend on system fonts.
 // `text` is Pango markup; `color` sets the default foreground.
 async function textLayer(text, weight, sizePx, color) {
   const { data, info } = await sharp({
     text: {
       text: `<span foreground="${color}">${text}</span>`,
-      font: `Pretendard Std ${weight} ${sizePx}px`,
-      fontfile: path.join(fontDir, `PretendardStd-${weight}.otf`),
+      font: `Pretendard ${weight} ${sizePx}px`,
+      fontfile: path.join(fontDir, `Pretendard-${weight}.otf`),
       rgba: true,
     },
   }).png().toBuffer({ resolveWithObject: true });
