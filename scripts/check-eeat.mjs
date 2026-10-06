@@ -5,6 +5,28 @@ import path from 'node:path';
 import { validateEditorial, validateRendered } from '../shared/editorial.mjs';
 
 const postsDir = path.resolve('src/content/posts');
+// Preserve every pre-change regression/work-file fixture without editing old articles.
+// New filenames use the four-image rule; publication always checks the D1 date.
+const legacyImageFixtures = new Set([
+  'en-ai-assisted-hacking-defense.json',
+  'en-all-new-avante-interior-price.json',
+  'en-buick-e7-china-value.json',
+  'en-claude-sonnet-5-5-pacing-mythos.json',
+  'en-fable-5-5-3d-rumors.json',
+  'en-gemini-4-release-date.json',
+  'en-gpt-6-astra-minor-naming.json',
+  'en-gpt-6-sol-luna-opus-5-5-cost-per-success.json',
+  'en-iphone-18-pro-gaming-performance.json',
+  'ko-ai-assisted-hacking-defense.json',
+  'ko-all-new-avante-interior-price.json',
+  'ko-buick-e7-china-value.json',
+  'ko-claude-sonnet-5-5-pacing-mythos.json',
+  'ko-fable-5-5-3d-rumors.json',
+  'ko-gemini-4-release-date.json',
+  'ko-gpt-6-astra-minor-naming.json',
+  'ko-gpt-6-sol-luna-opus-5-5-cost-per-success.json',
+  'ko-iphone-18-pro-gaming-performance.json',
+]);
 
 function getPostFiles(dir) {
   let results = [];
@@ -95,7 +117,7 @@ function register(post, file) {
   if (group.has(post.lang)) errors.push(`${file}: duplicate language in ${key}`);
   group.set(post.lang, post);
   pairs.set(key, group);
-  errors.push(...[...validateEditorial(post), ...validateRendered(micromark(post.body, { extensions: [gfm()], htmlExtensions: [gfmHtml()] }))].map(e => `${file}: ${e}`));
+  errors.push(...[...validateEditorial(post, { existingPublishedAt: post.publishedAt, legacyImageFixture: legacyImageFixtures.has(path.basename(file)) }), ...validateRendered(micromark(post.body, { extensions: [gfm()], htmlExtensions: [gfmHtml()] }))].map(e => `${file}: ${e}`));
 }
 
 const PLACEHOLDER_TERMS = ['todo', 'lorem ipsum', '경험 코멘트', '경험 메모', 'placeholder', 'test comment'];

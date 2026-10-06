@@ -91,7 +91,16 @@ if (replacements.size) {
   console.log('• payload files updated with /media URLs');
 }
 
-const errors = posts.flatMap((post) => [...validateEditorial(post), ...validateRendered(micromark(post.body, { extensions: [gfm()], htmlExtensions: [gfmHtml()] }))].map((e) => `${post.lang}: ${e}`));
+// A payload's own publishedAt cannot exempt a new article from the four-image minimum.
+const imageContexts = await Promise.all(posts.map(async (post) => {
+  if (imageRefs(post).length >= 4) return {};
+  const response = await fetch(`${site}/api/posts?lang=${post.lang}&slug=${post.slug}`, { headers: { 'Cache-Control': 'no-cache' } });
+  if (response.status === 404) return {};
+  if (!response.ok) fail(`Cannot verify existing image policy (${post.lang}: ${response.status})`);
+  const current = await response.json();
+  return { existingPublishedAt: current.publishedAt };
+}));
+const errors = posts.flatMap((post, i) => [...validateEditorial(post, imageContexts[i]), ...validateRendered(micromark(post.body, { extensions: [gfm()], htmlExtensions: [gfmHtml()] }))].map((e) => `${post.lang}: ${e}`));
 if (preview) {
   for (const post of posts) if (missing.has(post.imageUrl)) delete post.imageUrl;
   await saveDraft();

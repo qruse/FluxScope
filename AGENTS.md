@@ -152,7 +152,9 @@ Section headings (H2):
 
 ## 7. Images
 
-Hard contract: **2–10 distinct images total per article, including exactly one generated sketch thumbnail**. Both language editions share the same assets. **All visible image text is English; all monetary labels use USD**. Alt text and surrounding explanations may follow the article language.
+Hard contract for new articles: **4–10 distinct images total per article: exactly one generated sketch thumbnail plus at least three useful body visuals**. Both language editions share the same assets. **All visible image text is English; all monetary labels use USD**. Alt text and surrounding explanations may follow the article language.
+
+The four-image minimum applies from **2026-10-06 07:44:30 Asia/Seoul** (`2026-10-05T22:44:30.000Z`). Articles already published before this change keep their current content and images; do not add images or republish them merely to meet the new minimum. For future edits to those articles, the image-count validator retains the prior 2–10 range using the original publication date read from D1, while every other gate still applies. An unpublished draft or a backdated new payload does not qualify for this exception. Historical regression fixtures retain their existing images and reference scope, including existing working payloads with no publication date. The offline checker records those pre-change fixture filenames explicitly; this fixture exception never authorizes a first publication with fewer than four images.
 
 Before drafting, plan visuals using the five supported types. Select actively according to the information gap; do not force all five into every post.
 
@@ -215,7 +217,7 @@ Landscape 3:2, 1536x1024.
 - Look: an ordinary phone photograph of cheap grid paper, a simple scene made from crude pen doodles, uneven lines, sparse optional words and plenty of empty space
 - Avoid polished card layouts, symmetric infographic panels, studio props, beautiful calligraphy, glossy 3D art and generic AI decoration
 - The sketch explains a concept, not unverified product internals or measurements. Add a nearby qualification if it could be mistaken for a real device drawing or test
-- Within the total cap of 10, include at least **one additional distinct useful body visual**: original sourced figure, deterministic diagram or data chart
+- Within the total cap of 10, new articles include at least **three distinct useful body visuals** in addition to the sketch thumbnail: original sourced figures, deterministic diagrams or data charts; each must answer a different reader need rather than duplicate another image to reach the count
 - Exact metrics, labels and architecture must use code/vector/chart tools, not image generation. Generate raster art only for the sketch or illustration that benefits from it
 - Read each image visually. Verify title, units, series, labels and meaning against the text. Reusing a wrong chart is a factual error
 - Width 800–1600 px recommended, hard maximum 1600 px; target <250 KiB, hard cap 500 KiB per image

@@ -1,5 +1,7 @@
 // Shared by the static build and authenticated API writes. Facts still require review.
-export function validateEditorial(post) {
+// Runtime exceptions use stored publication dates; offline checks also retain named historical fixtures.
+export const IMAGE_MINIMUM_CHANGED_AT = '2026-10-05T22:44:30.000Z';
+export function validateEditorial(post, { existingPublishedAt, legacyImageFixture = false } = {}) {
   const errors = [];
   const add = (condition, message) => { if (!condition) errors.push(message); };
   add(['ko', 'en'].includes(post.lang), 'lang must be ko or en');
@@ -53,7 +55,10 @@ export function validateEditorial(post) {
   add(bodyImages.every(m => m[1].trim().length >= 5 && [...m[1].trim()].length <= 150), 'body image alt text must be 5–150 characters');
   add(!/^# /m.test(prose), 'the template renders the H1; start body headings at ##');
   const urls = [imageUrl, ...bodyImages.map(m => m[2])];
-  add(urls.length >= 2 && urls.length <= 10, 'use 2–10 images including the thumbnail');
+  const existingDate = Date.parse(existingPublishedAt);
+  const legacyImages = legacyImageFixture === true || (Number.isFinite(existingDate) && existingDate < Date.parse(IMAGE_MINIMUM_CHANGED_AT));
+  const minimumImages = legacyImages ? 2 : 4;
+  add(urls.length >= minimumImages && urls.length <= 10, `use ${minimumImages}–10 images including the thumbnail`);
   add(new Set(urls).size === urls.length, 'all image URLs must be distinct');
   const types = post.visualTypes;
   add(Array.isArray(types) && types.length === urls.length && types.every(t => ['source', 'sketch', 'architecture', 'pipeline', 'chart'].includes(t)), 'visualTypes must match all images in order using the five supported types');

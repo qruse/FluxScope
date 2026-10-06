@@ -490,10 +490,11 @@ async function api(request, env, url, ctx) {
     if (bundle && (new Set(posts.map((post) => post.lang)).size !== posts.length || new Set(posts.map((post) => post.slug)).size !== 1 || new Set(posts.map((post) => post.category)).size !== 1)) {
       return json({ error: 'Bundle versions must share slug and category and use different languages' }, 400);
     }
-    const details = posts.flatMap((post) => [...validateEditorial(post), ...validateRendered(micromark(post.body, { extensions: [gfm()], htmlExtensions: [gfmHtml()] }))].map((error) => (bundle ? `${post.lang}: ${error}` : error)));
-    if (details.length) return json({ error: 'Editorial validation failed', details }, 422);
     const existing = await env.DB.batch(posts.map((post) => env.DB.prepare('SELECT published_at FROM posts WHERE lang = ? AND slug = ?').bind(post.lang, post.slug)));
     const current = existing.map((result) => result.results[0]);
+    // Grandfather only dates read from D1, never a backdated new payload.
+    const details = posts.flatMap((post, i) => [...validateEditorial(post, { existingPublishedAt: current[i]?.published_at }), ...validateRendered(micromark(post.body, { extensions: [gfm()], htmlExtensions: [gfmHtml()] }))].map((error) => (bundle ? `${post.lang}: ${error}` : error)));
+    if (details.length) return json({ error: 'Editorial validation failed', details }, 422);
     if (current.some(Boolean) && request.headers.get('If-Match') !== 'update') return json({ error: 'Post exists. Set If-Match: update to replace it.' }, 409);
     const updatedAt = new Date().toISOString();
     posts.forEach((post, i) => { if (current[i]) post.publishedAt = current[i].published_at; post.updatedAt = updatedAt; });
@@ -537,7 +538,8 @@ async function previews(request, env, url) {
   const posts = payloads.map(parsePost);
   if (posts.some((post) => !post)) return json({ error: 'Invalid post. Required: lang, slug, category, title, description, body.' }, 400);
   if (new Set(posts.map((post) => post.lang)).size !== posts.length || new Set(posts.map((post) => post.slug)).size !== 1) return json({ error: 'Versions must share slug and use different languages' }, 400);
-  const warnings = posts.flatMap((post) => [...validateEditorial(post), ...validateRendered(micromark(post.body, { extensions: [gfm()], htmlExtensions: [gfmHtml()] }))].map((error) => `${post.lang}: ${error}`));
+  const existing = await env.DB.batch(posts.map((post) => env.DB.prepare('SELECT published_at FROM posts WHERE lang = ? AND slug = ?').bind(post.lang, post.slug)));
+  const warnings = posts.flatMap((post, i) => [...validateEditorial(post, { existingPublishedAt: existing[i].results[0]?.published_at }), ...validateRendered(micromark(post.body, { extensions: [gfm()], htmlExtensions: [gfmHtml()] }))].map((error) => `${post.lang}: ${error}`));
   const token = [...crypto.getRandomValues(new Uint8Array(16))].map((b) => b.toString(16).padStart(2, '0')).join('');
   const now = new Date().toISOString();
   await env.DB.batch([
