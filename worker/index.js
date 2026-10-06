@@ -401,6 +401,7 @@ async function images(request, env, url) {
 // Ownership verification files from search consoles (Naver Search Advisor, Google, Bing).
 const verificationFiles = {
   '/naver49434ef5de4a3b4c10115bc34e752ef6.html': 'naver-site-verification: naver49434ef5de4a3b4c10115bc34e752ef6.html',
+  '/googlee85d47b6c7d3033e.html': 'google-site-verification: googlee85d47b6c7d3033e.html',
 };
 
 // IndexNow: tell Naver, Bing and other participating engines about new or changed URLs.
