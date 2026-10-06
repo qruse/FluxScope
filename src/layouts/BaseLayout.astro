@@ -1,6 +1,6 @@
 ---
 import '../styles/global.css';
-import { site, withBase } from '../lib/site';
+import { blogPath, lab, withBase } from '../lib/site';
 import { getLangFromUrl, useTranslations, type Lang } from '../i18n/ui';
 
 interface Props {
@@ -20,7 +20,7 @@ interface Props {
 
 const {
   image = '/images/og-default.png',
-  imageAlt = "HSL's Blog hsl. wordmark above the topics AI, Mobility and IT Devices",
+  imageAlt = 'HSL Lab hsl. wordmark above the topics AI, Mobility and IT Devices',
   imageWidth = image === '/images/og-default.png' ? 1200 : undefined,
   imageHeight = image === '/images/og-default.png' ? 630 : undefined,
   noindex = false,
@@ -34,17 +34,19 @@ const {
 const currentLang: Lang = lang || getLangFromUrl(Astro.url);
 const t = useTranslations(currentLang);
 
-const defaultTitle = t('site.title');
-const title = Astro.props.title || defaultTitle;
-const description = Astro.props.description || t('site.description');
-
-const canonical = new URL(Astro.url.pathname, Astro.site);
-const imageUrl = new URL(withBase(image), Astro.site);
-const fullTitle = !Astro.props.title || title === defaultTitle || title === site.name ? defaultTitle : `${title} | ${defaultTitle}`;
-
 // Language switcher link resolution
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 const pathname = Astro.url.pathname.slice(base.length).replace(/\/$/, '') || '/';
+// HSL Lab is the main site; the blog is its /blog/ section with its own name, navigation and feed.
+const inBlog = /^(?:\/en)?\/blog(?:\/|$)/.test(pathname);
+const defaultTitle = inBlog ? t('site.title') : t('lab.title');
+const title = Astro.props.title || defaultTitle;
+const description = Astro.props.description || (inBlog ? t('site.description') : t('lab.description'));
+
+const canonical = new URL(Astro.url.pathname, Astro.site);
+const imageUrl = new URL(withBase(image), Astro.site);
+const fullTitle = !Astro.props.title || title === defaultTitle ? defaultTitle : `${title} | ${defaultTitle}`;
+
 let koPath = '/';
 let enPath = '/en/';
 
@@ -57,15 +59,18 @@ if (currentLang === 'en') {
   enPath = pathname === '/' ? '/en/' : `/en${pathname}/`;
 }
 
-// Home pages declare the site name so search engines show and match "HSL의 블로그" / "HSL's Blog".
+// The lab home declares the site name (search engines read it per domain); the blog home declares the blog inside it.
+const publisher = {
+  '@type': 'Organization', name: lab.name, url: new URL(withBase('/'), Astro.site).href,
+  logo: { '@type': 'ImageObject', url: new URL(withBase('/images/logo.png'), Astro.site).href, width: 512, height: 512 },
+};
 const websiteJsonLd = pathname === '/' || pathname === '/en' ? {
-  '@context': 'https://schema.org', '@type': 'WebSite', name: defaultTitle,
-  alternateName: [...new Set(['HSL의 블로그', "HSL's Blog", 'HSL Blog', 'hslblog'])].filter((name) => name !== defaultTitle),
-  url: new URL(withBase(currentLang === 'en' ? '/en/' : '/'), Astro.site).href, inLanguage: currentLang,
-  publisher: {
-    '@type': 'Organization', name: defaultTitle, url: new URL(withBase(currentLang === 'en' ? '/en/' : '/'), Astro.site).href,
-    logo: { '@type': 'ImageObject', url: new URL(withBase('/images/logo.png'), Astro.site).href, width: 512, height: 512 },
-  },
+  '@context': 'https://schema.org', '@type': 'WebSite', name: lab.name, alternateName: ['hslab', 'hslab.space'],
+  url: new URL(withBase(currentLang === 'en' ? '/en/' : '/'), Astro.site).href, inLanguage: currentLang, publisher,
+} : pathname === '/blog' || pathname === '/en/blog' ? {
+  '@context': 'https://schema.org', '@type': 'Blog', name: defaultTitle,
+  alternateName: ['HSL의 블로그', "HSL's Blog", 'HSL Blog', 'hslblog'].filter((name) => name !== defaultTitle),
+  url: new URL(blogPath('/', currentLang), Astro.site).href, inLanguage: currentLang, publisher,
 } : undefined;
 
 if (pathname === '/404' || pathname === '/404.html') {
@@ -75,12 +80,14 @@ if (pathname === '/404' || pathname === '/404.html') {
 
 const koUrl = withBase(koPath);
 const enUrl = withBase(enPath);
-const homeUrl = withBase(currentLang === 'en' ? '/en/' : '/');
-const aiUrl = withBase(currentLang === 'en' ? '/en/ai/' : '/ai/');
-const mobilityUrl = withBase(currentLang === 'en' ? '/en/mobility/' : '/mobility/');
-const itDevicesUrl = withBase(currentLang === 'en' ? '/en/it-devices/' : '/it-devices/');
-const rssUrl = withBase(currentLang === 'en' ? '/en/rss.xml' : '/rss.xml');
-const searchUrl = withBase(currentLang === 'en' ? '/en/search/' : '/search/');
+const labUrl = withBase(currentLang === 'en' ? '/en/' : '/');
+const blogUrl = blogPath('/', currentLang);
+const homeUrl = inBlog ? blogUrl : labUrl;
+const aiUrl = blogPath('/ai/', currentLang);
+const mobilityUrl = blogPath('/mobility/', currentLang);
+const itDevicesUrl = blogPath('/it-devices/', currentLang);
+const rssUrl = blogPath('/rss.xml', currentLang);
+const searchUrl = blogPath('/search/', currentLang);
 ---
 <!doctype html>
 <html lang={currentLang}>
@@ -144,16 +151,13 @@ const searchUrl = withBase(currentLang === 'en' ? '/en/search/' : '/search/');
         const normalizedBase = base.replace(/\/$/, '');
         const relativePath = normalizedBase ? currentPath.replace(normalizedBase, '') : currentPath;
         const trimmed = relativePath.replace(/\/$/, '') || '/';
-        const isRoot = trimmed === '/' || trimmed === '/en';
-
         const savedLang = localStorage.getItem('lang-pref');
 
-        if (isRoot) {
-          if (savedLang === 'en' && trimmed === '/') {
-            window.location.replace(`${normalizedBase}/en/`);
-          } else if (savedLang === 'ko' && trimmed === '/en') {
-            window.location.replace(`${normalizedBase}/`);
-          }
+        // Applies to the lab home and the blog home only.
+        if (savedLang === 'en' && (trimmed === '/' || trimmed === '/blog')) {
+          window.location.replace(`${normalizedBase}/en${trimmed === '/' ? '' : trimmed}/`);
+        } else if (savedLang === 'ko' && (trimmed === '/en' || trimmed === '/en/blog')) {
+          window.location.replace(`${normalizedBase}${trimmed.slice(3)}/`);
         }
       } catch (_) {}
     </script>
@@ -162,13 +166,22 @@ const searchUrl = withBase(currentLang === 'en' ? '/en/search/' : '/search/');
     <a class="skip-link" href="#content">Skip to content</a>
     <header class="site-header">
       <div class="shell header-inner">
-        <a class="brand" href={homeUrl} aria-label={`${t('site.title')} home`}>
-          <span>hsl</span><span class="brand-mark" aria-hidden="true"></span>
-        </a>
+        <div class="brand-group">
+          <a class="brand" href={labUrl} aria-label={`${t('lab.title')} home`}>
+            <span>hsl</span><span class="brand-mark" aria-hidden="true"></span>
+          </a>
+          {inBlog && <a class="brand-section" href={blogUrl} aria-label={`${t('site.title')} home`}>{currentLang === 'en' ? 'blog' : '블로그'}</a>}
+        </div>
         <nav class="main-nav" aria-label="Main navigation">
-          <a href={aiUrl} class="nav-link-major">{t('nav.ai')}</a>
-          <a href={mobilityUrl} class="nav-link-major">{t('nav.mobility')}</a>
-          <a href={itDevicesUrl} class="nav-link-major">{t('nav.it_devices')}</a>
+          {inBlog ? (
+            <>
+              <a href={aiUrl} class="nav-link-major">{t('nav.ai')}</a>
+              <a href={mobilityUrl} class="nav-link-major">{t('nav.mobility')}</a>
+              <a href={itDevicesUrl} class="nav-link-major">{t('nav.it_devices')}</a>
+            </>
+          ) : (
+            <a href={blogUrl} class="nav-link-major">{t('nav.blog')}</a>
+          )}
         </nav>
         <div class="header-actions">
           <div class="lang-switcher" aria-label="Language selection">
@@ -176,9 +189,11 @@ const searchUrl = withBase(currentLang === 'en' ? '/en/search/' : '/search/');
             <span class="lang-divider" aria-hidden="true">/</span>
             <a href={koUrl} class:list={[{ active: currentLang === 'ko' }]} hreflang="ko">KO</a>
           </div>
-          <a class="icon-link" href={searchUrl} aria-label={t('nav.search')} title={t('nav.search')}>
-            <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.6"></circle><path d="m16 16 5 5"></path></svg>
-          </a>
+          {inBlog && (
+            <a class="icon-link" href={searchUrl} aria-label={t('nav.search')} title={t('nav.search')}>
+              <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.6"></circle><path d="m16 16 5 5"></path></svg>
+            </a>
+          )}
           <button class="theme-toggle" type="button" aria-label="Toggle color theme" title="Toggle color theme">
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.2 15.2A8.8 8.8 0 0 1 8.8 3.8 8.8 8.8 0 1 0 20.2 15.2Z"></path></svg>
           </button>
@@ -189,16 +204,17 @@ const searchUrl = withBase(currentLang === 'en' ? '/en/search/' : '/search/');
     <footer class="site-footer">
       <div class="shell footer-grid">
         <div>
-          <a class="footer-brand" href={homeUrl}>{t('site.title')}<span class="brand-dot" aria-hidden="true"></span></a>
-          <p>{t('footer.motto')}</p>
+          <a class="footer-brand" href={homeUrl}>{defaultTitle}<span class="brand-dot" aria-hidden="true"></span></a>
+          <p>{inBlog ? t('footer.motto') : t('lab.motto')}</p>
         </div>
         <div class="footer-links">
+          {inBlog ? <a href={labUrl}>{t('lab.title')}</a> : <a href={blogUrl}>{t('nav.blog')}</a>}
           <a href={rssUrl}>{t('footer.rss')}</a>
-          <a href={searchUrl}>{t('footer.search')}</a>
+          {inBlog && <a href={searchUrl}>{t('footer.search')}</a>}
           <a href={withBase(currentLang === 'en' ? '/en/privacy/' : '/privacy/')}>{t('footer.privacy')}</a>
           <a href={withBase(currentLang === 'en' ? '/en/contact/' : '/contact/')}>{t('footer.contact')}</a>
         </div>
-        <p class="footer-copy">© {new Date().getFullYear()} {t('site.title')}</p>
+        <p class="footer-copy">© {new Date().getFullYear()} {t('lab.title')}</p>
       </div>
     </footer>
     <div id="image-lightbox" class="image-lightbox" role="dialog" aria-modal="true" aria-label="Image Zoom Preview" aria-hidden="true">

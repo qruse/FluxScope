@@ -18,7 +18,7 @@ const args = process.argv.slice(2);
 const dryRun = args.includes('--dry-run');
 const preview = args.includes('--preview');
 const files = args.filter((arg) => !arg.startsWith('--'));
-const site = (process.env.SITE_URL || 'https://hslblog.com').replace(/\/$/, '');
+const site = (process.env.SITE_URL || 'https://hslab.space').replace(/\/$/, '');
 const token = process.env.PUBLISH_TOKEN;
 const fail = (message) => { console.error(`✘ ${message}`); process.exit(1); };
 if (files.length < 1 || files.length > 2) fail('Pass one or two payload files (en and ko)');

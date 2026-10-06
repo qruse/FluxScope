@@ -38,7 +38,8 @@ Do not stop after writing advice when asked to edit. Do not report an API respon
 
 ## 2. Identity and hard requirements
 
-- The repository is FluxScope; the displayed brand remains **HSL의 블로그 / HSL's Blog** unless the user asks to rename it. The logo is the `hsl.` wordmark (header) and the `h.` mark (favicon, `/images/logo.png`); page titles, metadata and the footer keep the full name
+- The repository is FluxScope. The main site is **HSL Lab** at `https://hslab.space` (lab home `/` and `/en/`); the blog is one of its projects, served under `/blog/` and `/en/blog/`, and its displayed name remains **HSL의 블로그 / HSL's Blog** unless the user asks to rename it. The former domain `hslblog.com` only redirects (301) to the same page under `/blog/`. The logo is the `hsl.` wordmark (header; blog pages add a `블로그 / blog` section link) and the `h.` mark (favicon, `/images/logo.png`); blog page titles, metadata and the footer keep the blog's full name, lab pages use HSL Lab
+- New lab projects get their own section path (like `/blog/`) and an entry in the project list of `src/components/LabHome.astro`; site-wide pages (`/privacy/`, `/contact/`) cover every section
 - Purpose: useful notes by someone curious about AI, cars and devices, for readers deciding what to use, buy or investigate
 - **This is an international blog.** Write for a global reader first: pick topics, markets, prices, sources and examples that matter across major markets (US, EU/UK, China, Japan, Korea). Korea-only facts (Korean prices, laws, insurers, dealers, subsidies) enter only as one clearly labeled market example or when the topic itself is Korean; never frame a global question around the Korean market alone. The Korean edition is a translation of that global article, not a Korea-specific version
 - Categories are **only** `ai`, `mobility`, `it-devices` — never add AI subcategories
@@ -247,13 +248,13 @@ Every article lives in D1 and is published through the API. Publishing an articl
   - It refuses to publish when a `/media/` image is not live or when the working copy's thumbnail differs from the live article (a stale copy); run `--pull <slug>` first and reapply the edit. Never republish a local file that was pulled before someone else's republish
 - Read the current live article before editing with `GET /api/posts?lang=<ko|en>&slug=<slug>`; D1 is the source of truth
 - `editorial/api-posts/*.json` and `editorial/reviews/*.md` are local working copies. New files are git-ignored and saved to D1 by every `--preview` and publish; `--pull <slug>` restores them. Existing tracked examples remain historical/regression fixtures; do not commit article edits merely because an old example is tracked
-- Article URLs are `/posts/<slug>/` and `/en/posts/<slug>/`. Old static category URLs (`/<category>/<slug>/`) redirect 301 to the D1 post with the same slug
+- Article URLs are `/blog/posts/<slug>/` and `/en/blog/posts/<slug>/`. Pre-move blog URLs (`/posts/…`, `/ai/`, `/search/`, `/tags/…`, `/about/`, `/rss.xml`, also on `hslblog.com`) redirect 301 to the same page under `/blog/`; old static category URLs (`/blog/<category>/<slug>/`) redirect 301 to the D1 post with the same slug
 - `src/content/posts/` stays empty. Do not add articles there: a static copy of a D1 article creates duplicate listings, and the quality check rejects it
 - Git, PRs and builds are only for code, templates, rules and static site assets. Never commit, push, open a PR or build to write, hand off or publish an article
 - Credentials stay in ignored local configuration or secrets; never include them in Git, examples, logs or review notes
 - Tags: 5–15 distinct lowercase English kebab-case keywords
 - Required payload fields: `lang`, `slug`, `category`, `title`, `description` (50–180 characters), `body`, `tags`, `imageUrl`, `imageAlt`, `visualTypes`; `publishedAt` is kept automatically on update
-- Never publish before the final title is confirmed under section 1.1, or publish unfinished work. To show a draft, add `--preview`: it uploads both languages to an unlisted `/preview/<token>/` and `/en/preview/<token>/` page (noindex, no comments, absent from listings, feeds, sitemaps and search) and prints the URLs
+- Never publish before the final title is confirmed under section 1.1, or publish unfinished work. To show a draft, add `--preview`: it uploads both languages to an unlisted `/blog/preview/<token>/` and `/en/blog/preview/<token>/` page (noindex, no comments, absent from listings, feeds, sitemaps and search) and prints the URLs
   - A missing thumbnail or editorial problem is only a warning in preview mode; the real publish still enforces every rule
   - Re-running `--preview` replaces that slug's preview under a new token; publishing the slug deletes it; previews expire after 30 days; `DELETE /api/previews?slug=<slug>` removes one early
   - A preview is not a publication: never report it as live
@@ -266,7 +267,7 @@ Template-owned (keep working when editing layouts or the Worker):
 - One canonical URL per page; `hreflang` ko/en pairs plus `x-default` pointing to the English version of the same page (global readers are the primary audience)
 - `robots` meta: `index, follow, max-image-preview:large` for content; `noindex, follow` for search, 404 and other utility pages, which also stay out of the sitemaps
 - Open Graph/Twitter tags with real image dimensions and `og:locale`; `BlogPosting` + `BreadcrumbList` JSON-LD with `inLanguage`, image size and author/publisher URLs; the publisher and the home `WebSite` carry the 512 px `/images/logo.png`. `node scripts/generate-brand.mjs` regenerates it with `/favicon.svg` and the default share card `/images/og-default.png`. Decorative heading dots are CSS, not text
-- RSS per language: `/rss.xml` (Korean) and `/en/rss.xml` (English), built by the Worker from D1
+- RSS per language: `/blog/rss.xml` (Korean) and `/en/blog/rss.xml` (English), built by the Worker from D1
 - Never redirect by browser language or IP: crawlers render with en-US, so an automatic redirect hides the Korean pages. Only a language the visitor chose may be remembered
 - One URL per page: every extensionless path without a trailing slash redirects 301 to the canonical form
 - Sitemaps: `/sitemap-index.xml` (static pages with hreflang; the Worker adds `lastmod` to home and category pages from the newest D1 post) and `/dynamic-sitemap.xml` (API posts), both listed in `robots.txt`

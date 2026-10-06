@@ -1,6 +1,12 @@
 import type { CollectionEntry } from 'astro:content';
 import { defaultLang, type Lang } from '../i18n/ui';
 
+// HSL Lab (hslab.space) is the main site; the blog is one of its sections, served under /blog/.
+export const lab = {
+  name: 'HSL Lab',
+  url: 'https://hslab.space',
+};
+
 export const site = {
   name: "HSL's Blog",
   description: 'AI, 자동차, IT 기기 등 궁금한 것을 찾아보고 기록하는 개인 블로그.',
@@ -61,6 +67,11 @@ export function withBase(path: string): string {
   return `${base}${path.startsWith('/') ? path : `/${path}`}`;
 }
 
+// A path inside the blog section, e.g. blogPath('/ai/', 'en') -> /en/blog/ai/.
+export function blogPath(path: string, lang: Lang = defaultLang): string {
+  return withBase(`${lang === 'en' ? '/en' : ''}/blog${path.startsWith('/') ? path : `/${path}`}`);
+}
+
 export function getPostSlug(post: Post): string {
   const parts = post.id.split('/');
   const last = parts[parts.length - 1];
@@ -68,17 +79,15 @@ export function getPostSlug(post: Post): string {
 }
 
 export function postPath(post: Post): string {
-  const slug = getPostSlug(post);
-  const isEn = post.data.lang === 'en';
-  return withBase(isEn ? `/en/${post.data.category}/${slug}/` : `/${post.data.category}/${slug}/`);
+  return blogPath(`/${post.data.category}/${getPostSlug(post)}/`, post.data.lang);
 }
 
 export function categoryPath(category: Category, lang: Lang = defaultLang): string {
-  return withBase(lang === 'en' ? `/en/${category}/` : `/${category}/`);
+  return blogPath(`/${category}/`, lang);
 }
 
 export function majorCategoryPath(major: MajorCategory, lang: Lang = defaultLang): string {
-  return withBase(lang === 'en' ? `/en/${major}/` : `/${major}/`);
+  return blogPath(`/${major}/`, lang);
 }
 
 export function tagSlug(tag: string): string {
@@ -86,7 +95,7 @@ export function tagSlug(tag: string): string {
 }
 
 export function tagPath(tag: string, lang: Lang = defaultLang): string {
-  return withBase(lang === 'en' ? `/en/tags/${tagSlug(tag)}/` : `/tags/${tagSlug(tag)}/`);
+  return blogPath(`/tags/${tagSlug(tag)}/`, lang);
 }
 
 export function publishedPosts(posts: Post[], lang?: Lang): Post[] {

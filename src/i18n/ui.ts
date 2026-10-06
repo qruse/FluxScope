@@ -9,6 +9,10 @@ export const defaultLang: Lang = 'ko';
 
 export const ui = {
   ko: {
+    'lab.title': 'HSL Lab',
+    'lab.description': 'HSL이 궁금한 것을 찾아보고 만들고 기록하는 개인 연구실. 첫 프로젝트는 AI·자동차·IT 기기를 원문으로 따져보는 블로그.',
+    'lab.motto': '궁금한 것을 찾아보고, 만들고, 기록하는 곳.',
+    'nav.blog': '블로그',
     'site.title': 'HSL의 블로그',
     'site.description': 'AI 모델, 자동차, IT 기기의 가격·성능·마케팅 주장을 원문으로 따져보고, 쓸지 살지 판단을 돕는 HSL의 기록.',
     'nav.home': '홈',
@@ -50,6 +54,10 @@ export const ui = {
     'article.by': '작성자',
   },
   en: {
+    'lab.title': 'HSL Lab',
+    'lab.description': "HSL's personal lab for looking into, building and writing up whatever is interesting. The first project is a blog that checks AI, car and device claims against the original sources.",
+    'lab.motto': 'Looking into things, building things, writing them down.',
+    'nav.blog': 'Blog',
     'site.title': "HSL's Blog",
     'site.description': 'HSL checks prices, benchmarks and marketing claims for AI models, cars and devices against the original sources, so you can decide what to use or buy.',
     'nav.home': 'Home',
