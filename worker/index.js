@@ -9,13 +9,17 @@ const categoryNames = {
   ko: { ai: 'AI', mobility: '모빌리티', 'it-devices': 'IT기기' },
   en: { ai: 'AI', mobility: 'Mobility', 'it-devices': 'IT Devices' },
 };
-const origin = 'https://hslblog.com';
+// HSL Lab is the main site; the blog lives under /blog/ (Korean) and /en/blog/ (English).
+const origin = 'https://hslab.space';
+// The blog's former domain: every page there redirects permanently to the same page on the lab site.
+const legacyHosts = new Set(['hslblog.com', 'www.hslblog.com']);
 const json = (value, status = 200) => new Response(JSON.stringify(value), {
   status, headers: { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store' },
 });
 const escape = (value) => String(value ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
 const xml = escape;
-const pathFor = (post) => `${post.lang === 'en' ? '/en' : ''}/posts/${post.slug}/`;
+const blogHome = (lang) => `${lang === 'en' ? '/en' : ''}/blog/`;
+const pathFor = (post) => `${blogHome(post.lang)}posts/${post.slug}/`;
 const urlFor = (post) => `${origin}${pathFor(post)}`;
 const rowToSummary = (post) => ({ lang: post.lang, slug: post.slug, category: normalizeCategory(post.category), title: post.title, description: post.description, imageUrl: post.image_url, imageAlt: post.image_alt, tags: JSON.parse(post.tags), publishedAt: post.published_at, updatedAt: post.updated_at, url: pathFor(post) });
 
@@ -73,7 +77,8 @@ async function listingPage(request, env, lang) {
     })
     .on('[data-dynamic-latest-list]', {
       element(element) {
-        element.setInnerContent(latest().map((post) => latestRow(post, lang)).join(''), { html: true });
+        const limit = Number(element.getAttribute('data-limit')) || 10;
+        element.setInnerContent(latest().slice(0, limit).map((post) => latestRow(post, lang)).join(''), { html: true });
       },
     })
     .on('[data-dynamic-count]', {
@@ -161,6 +166,9 @@ const commentSchema = [
     PRIMARY KEY (token, lang)
   )`,
   'CREATE INDEX IF NOT EXISTS previews_slug ON previews(slug)',
+  // Comments written before the blog moved under /blog/ (or by an old Worker during a deploy) follow their article.
+  `UPDATE comments SET page = CASE WHEN page LIKE '/en/%' THEN '/en/blog/' || substr(page, 5) ELSE '/blog/' || substr(page, 2) END
+    WHERE page NOT LIKE '/blog/%' AND page NOT LIKE '/en/blog/%'`,
   // Working files per slug (both payloads and the internal review record), so article handoffs never go through Git.
   `CREATE TABLE IF NOT EXISTS drafts (
     slug TEXT PRIMARY KEY,
@@ -170,7 +178,7 @@ const commentSchema = [
 ];
 
 // Guest comments: nickname + password per comment, one reply level, @mention of the replied-to nickname.
-const commentPage = /^\/(en\/)?(?:(posts)|ai|mobility|it-devices)\/([a-z0-9]+(?:-[a-z0-9]+)*)\/$/;
+const commentPage = /^\/(en\/)?blog\/(?:(posts)|ai|mobility|it-devices)\/([a-z0-9]+(?:-[a-z0-9]+)*)\/$/;
 const reservedNicknames = /^(?:hsl|admin|administrator|관리자|운영자)$/i;
 const commentError = (code, status) => json({ error: code }, status);
 const toBase64 = (buffer) => btoa(String.fromCharCode(...new Uint8Array(buffer)));
@@ -283,14 +291,14 @@ async function comments(request, env, url) {
 }
 
 // Cookie-free visit counts: page path and daily total only, no IP or device data.
-const countedPage = /^\/(?:en\/)?(?:(?:ai|mobility|it-devices|posts|about|privacy)\/(?:[a-z0-9]+(?:-[a-z0-9]+)*\/)?)?$/;
+const countedPage = /^\/(?:en\/)?(?:blog\/(?:(?:ai|mobility|it-devices|posts|about)\/(?:[a-z0-9]+(?:-[a-z0-9]+)*\/)?)?|privacy\/|contact\/)?$/;
 const botAgent = /bot|crawl|spider|slurp|headless|lighthouse|preview|monitor|curl|wget|python|java\//i;
 
 async function views(request, env, url) {
   if (request.method === 'POST') {
     const page = String((await readJson(request, 500))?.page || '');
     if (!countedPage.test(page) || botAgent.test(request.headers.get('User-Agent') || '')) return new Response(null, { status: 204 });
-    if (/\/(?:posts|ai|mobility|it-devices)\/[a-z0-9-]+\/$/.test(page) && !(await commentPageExists(env, request, page))) return new Response(null, { status: 204 });
+    if (/\/blog\/(?:posts|ai|mobility|it-devices)\/[a-z0-9-]+\/$/.test(page) && !(await commentPageExists(env, request, page))) return new Response(null, { status: 204 });
     const day = new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Seoul' });
     await env.DB.prepare('INSERT INTO page_views (day, page, views) VALUES (?, ?, 1) ON CONFLICT(day, page) DO UPDATE SET views = views + 1').bind(day, page).run();
     return new Response(null, { status: 204 });
@@ -521,7 +529,7 @@ async function api(request, env, url, ctx) {
   return json({ error: 'Not found' }, 404);
 }
 
-const previewPath = (lang, token) => `${lang === 'en' ? '/en' : ''}/preview/${token}/`;
+const previewPath = (lang, token) => `${blogHome(lang)}preview/${token}/`;
 // Previews hold unfinished drafts: editorial problems come back as warnings instead of blocking the write.
 async function previews(request, env, url) {
   if (!authorized(request, env.PUBLISH_TOKEN)) return json({ error: 'Unauthorized' }, 401);
@@ -652,7 +660,7 @@ async function article(post, env, request, token) {
   const lang = post.lang;
   const title = `${post.title} | ${lang === 'ko' ? 'HSL의 블로그' : "HSL's Blog"}`;
   const canonical = urlFor(post);
-  const alternate = `${origin}${lang === 'ko' ? '/en' : ''}/posts/${post.slug}/`;
+  const alternate = urlFor({ lang: lang === 'ko' ? 'en' : 'ko', slug: post.slug });
   const image = post.image_url ? (post.image_url.startsWith('/') ? `${origin}${post.image_url}` : post.image_url) : `${origin}/images/og-default.png`;
   const imageAlt = post.image_alt || post.title;
   const bodyImages = [...post.body.matchAll(/!\[[^\]]*\]\(([^\s)]+)\)/g)].map((m) => m[1]);
@@ -663,7 +671,9 @@ async function article(post, env, request, token) {
   const updatedDate = new Date(post.updated_at).toLocaleDateString(lang === 'ko' ? 'ko-KR' : 'en-US', { timeZone: 'Asia/Seoul', year: 'numeric', month: 'long', day: 'numeric' });
   const category = normalizeCategory(post.category);
   const categoryName = categoryNames[lang][category];
-  const home = lang === 'ko' ? '/' : '/en/';
+  const labHome = lang === 'ko' ? '/' : '/en/';
+  const home = blogHome(lang);
+  const about = `${home}about/`;
   const tags = JSON.parse(post.tags);
   const jsonLd = [
     {
@@ -671,22 +681,24 @@ async function article(post, env, request, token) {
       description: post.description, mainEntityOfPage: canonical,
       image: imageSize ? { '@type': 'ImageObject', url: image, width: imageSize[0], height: imageSize[1] } : image,
       datePublished: post.published_at, dateModified: post.updated_at,
-      author: { '@type': 'Person', name: 'HSL', url: `${origin}${lang === 'ko' ? '/about/' : '/en/about/'}` },
-      publisher: { '@type': 'Organization', name: lang === 'ko' ? 'HSL의 블로그' : "HSL's Blog", url: `${origin}${home}`, logo: { '@type': 'ImageObject', url: `${origin}/images/logo.png`, width: 512, height: 512 } },
+      author: { '@type': 'Person', name: 'HSL', url: `${origin}${about}` },
+      publisher: { '@type': 'Organization', name: 'HSL Lab', url: `${origin}/`, logo: { '@type': 'ImageObject', url: `${origin}/images/logo.png`, width: 512, height: 512 } },
+      isPartOf: { '@type': 'Blog', name: lang === 'ko' ? 'HSL의 블로그' : "HSL's Blog", url: `${origin}${home}` },
       articleSection: categoryName, keywords: tags.join(', '),
     },
     {
       '@context': 'https://schema.org', '@type': 'BreadcrumbList',
       itemListElement: [
-        { '@type': 'ListItem', position: 1, name: lang === 'ko' ? '홈' : 'Home', item: `${origin}${home}` },
-        { '@type': 'ListItem', position: 2, name: categoryName, item: `${origin}${home}${category}/` },
-        { '@type': 'ListItem', position: 3, name: post.title, item: canonical },
+        { '@type': 'ListItem', position: 1, name: 'HSL Lab', item: `${origin}${labHome}` },
+        { '@type': 'ListItem', position: 2, name: lang === 'ko' ? '블로그' : 'Blog', item: `${origin}${home}` },
+        { '@type': 'ListItem', position: 3, name: categoryName, item: `${origin}${home}${category}/` },
+        { '@type': 'ListItem', position: 4, name: post.title, item: canonical },
       ],
     },
   ];
   const head = `<meta property="article:published_time" content="${escape(post.published_at)}"><meta property="article:modified_time" content="${escape(post.updated_at)}"><script type="application/ld+json">${JSON.stringify(jsonLd).replace(/</g, '\\u003c')}</script>`;
-  const html = `<article><header class="article-header article-shell">${token ? `<p class="preview-banner" role="note"><strong>${lang === 'ko' ? '미리보기' : 'Preview'}</strong> — ${lang === 'ko' ? '아직 발행 전인 글이며 목록·검색에 나오지 않음' : 'not published; hidden from listings and search'}</p>` : ''}<nav class="breadcrumbs" aria-label="Breadcrumb"><a href="${home}">${lang === 'ko' ? '홈' : 'Home'}</a><span>/</span><a href="${home}${escape(category)}/">${escape(categoryName)}</a><span>/</span><span aria-current="page">${lang === 'ko' ? '글' : 'Article'}</span></nav><h1>${escape(post.title)}</h1><p class="article-dek">${escape(post.description)}</p><div class="article-meta"><span>${lang === 'ko' ? '작성자' : 'By'}: <strong>HSL</strong></span><span>${lang === 'ko' ? '발행일' : 'Published'}: <time datetime="${escape(post.published_at)}">${escape(date)}</time></span><span>${lang === 'ko' ? '수정일' : 'Updated'}: <time datetime="${escape(post.updated_at)}">${escape(updatedDate)}</time></span></div></header>${post.image_url ? `<div class="article-shell"><img class="article-visual" src="${escape(post.image_url)}" alt="${escape(imageAlt)}"${sizeAttributes(dimensions, post.image_url)} loading="eager" fetchpriority="high" decoding="async" /></div>` : ''}<div class="article-body article-shell">${micromark(post.body, { extensions: [gfm()], htmlExtensions: [gfmHtml()] }).replace(/<img src="([^"]+)"/g, (tag, src) => `<img src="${src}"${sizeAttributes(dimensions, src.replace(/&amp;/g, '&'))} loading="lazy" decoding="async"`)}</div><div class="article-end article-shell"><div class="tag-list">${tags.map((tag) => `<span>#${escape(tag)}</span>`).join('')}</div><p class="author-note">${lang === 'ko' ? '글: <strong>HSL</strong> · 사실 주장엔 1차 출처 링크를 닮 · 안 써 본 제품을 써 본 척하지 않음 · <a href="/about/">검증 방식 보기</a>' : 'By <strong>HSL</strong> · Factual claims link to their primary sources · Nothing is written up as hands-on testing unless it was · <a href="/en/about/">How posts are checked</a>'}</p></div></article>${token ? '' : `<section class="comments article-shell" id="comments" data-comments data-lang="${lang}" data-page="${escape(pathFor(post))}"></section><script src="/comments.js" defer></script>`}`;
-  const shell = await env.ASSETS.fetch(new Request(new URL(lang === 'ko' ? '/about/' : '/en/about/', request.url)));
+  const html = `<article><header class="article-header article-shell">${token ? `<p class="preview-banner" role="note"><strong>${lang === 'ko' ? '미리보기' : 'Preview'}</strong> — ${lang === 'ko' ? '아직 발행 전인 글이며 목록·검색에 나오지 않음' : 'not published; hidden from listings and search'}</p>` : ''}<nav class="breadcrumbs" aria-label="Breadcrumb"><a href="${home}">${lang === 'ko' ? '블로그' : 'Blog'}</a><span>/</span><a href="${home}${escape(category)}/">${escape(categoryName)}</a><span>/</span><span aria-current="page">${lang === 'ko' ? '글' : 'Article'}</span></nav><h1>${escape(post.title)}</h1><p class="article-dek">${escape(post.description)}</p><div class="article-meta"><span>${lang === 'ko' ? '작성자' : 'By'}: <strong>HSL</strong></span><span>${lang === 'ko' ? '발행일' : 'Published'}: <time datetime="${escape(post.published_at)}">${escape(date)}</time></span><span>${lang === 'ko' ? '수정일' : 'Updated'}: <time datetime="${escape(post.updated_at)}">${escape(updatedDate)}</time></span></div></header>${post.image_url ? `<div class="article-shell"><img class="article-visual" src="${escape(post.image_url)}" alt="${escape(imageAlt)}"${sizeAttributes(dimensions, post.image_url)} loading="eager" fetchpriority="high" decoding="async" /></div>` : ''}<div class="article-body article-shell">${micromark(post.body, { extensions: [gfm()], htmlExtensions: [gfmHtml()] }).replace(/<img src="([^"]+)"/g, (tag, src) => `<img src="${src}"${sizeAttributes(dimensions, src.replace(/&amp;/g, '&'))} loading="lazy" decoding="async"`)}</div><div class="article-end article-shell"><div class="tag-list">${tags.map((tag) => `<span>#${escape(tag)}</span>`).join('')}</div><p class="author-note">${lang === 'ko' ? '글: <strong>HSL</strong> · 사실 주장엔 1차 출처 링크를 닮 · 안 써 본 제품을 써 본 척하지 않음 · <a href="${about}">검증 방식 보기</a>' : 'By <strong>HSL</strong> · Factual claims link to their primary sources · Nothing is written up as hands-on testing unless it was · <a href="${about}">How posts are checked</a>'}</p></div></article>${token ? '' : `<section class="comments article-shell" id="comments" data-comments data-lang="${lang}" data-page="${escape(pathFor(post))}"></section><script src="/comments.js" defer></script>`}`;
+  const shell = await env.ASSETS.fetch(new Request(new URL(about, request.url)));
   if (!shell.ok) return new Response('Template unavailable', { status: 503 });
   const alternateLang = lang === 'ko' ? 'en' : 'ko';
   const rewriter = new HTMLRewriter().on('html', new SetLanguage(lang)).on('head', new AppendHead(head)).on('main#content', new ReplaceMain(html)).on('title', new ReplaceText(title))
@@ -722,7 +734,8 @@ async function staticSitemap(request, env) {
   const newest = new Map();
   const bump = (key, date) => { if (!newest.has(key) || newest.get(key) < date) newest.set(key, date); };
   for (const post of results) {
-    const home = post.lang === 'ko' ? '/' : '/en/';
+    const home = blogHome(post.lang);
+    bump(post.lang === 'ko' ? '/' : '/en/', post.updated_at);
     bump(home, post.updated_at);
     bump(`${home}${normalizeCategory(post.category)}/`, post.updated_at);
   }
@@ -746,10 +759,10 @@ async function dynamicSitemap(env) {
   return new Response(`<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">${entries}</urlset>`, { headers: { 'Content-Type': 'application/xml; charset=utf-8', 'Cache-Control': 'public, max-age=300' } });
 }
 
-// One feed per language (/rss.xml Korean, /en/rss.xml English) so Naver and readers get a single-language channel.
+// One feed per language (/blog/rss.xml Korean, /en/blog/rss.xml English) so Naver and readers get a single-language channel.
 async function rssFeed(env, lang) {
   const { results } = await env.DB.prepare('SELECT lang, slug, category, title, description, published_at, updated_at FROM posts WHERE lang = ? ORDER BY published_at DESC LIMIT 50').bind(lang).all();
-  const home = `${origin}${lang === 'ko' ? '/' : '/en/'}`;
+  const home = `${origin}${blogHome(lang)}`;
   const self = `${home}rss.xml`;
   const name = lang === 'ko' ? 'HSL의 블로그' : "HSL's Blog";
   const description = lang === 'ko' ? 'AI 모델, 자동차, IT 기기의 가격·성능·마케팅 주장을 원문으로 따져보는 HSL의 기록' : 'HSL checks prices, benchmarks and marketing claims for AI models, cars and devices against the original sources';
@@ -779,7 +792,7 @@ function withSecurityHeaders(response) {
 
 // Pages are rendered from D1 on every request, and a slow D1 read made the home page stall for over a second.
 // Public pages are kept in the edge cache for a minute; a request with Cache-Control: no-cache (hard refresh, publish script) skips it.
-const edgeCachedPath = /^\/(?:en\/)?(?:(?:ai|mobility|it-devices)\/|posts\/[a-z0-9]+(?:-[a-z0-9]+)*\/)?$|^\/(?:en\/)?rss\.xml$|^\/dynamic-sitemap\.xml$/;
+const edgeCachedPath = /^\/(?:en\/)?(?:blog\/(?:(?:ai|mobility|it-devices)\/|posts\/[a-z0-9]+(?:-[a-z0-9]+)*\/)?)?$|^\/(?:en\/)?blog\/rss\.xml$|^\/dynamic-sitemap\.xml$/;
 async function edgeCached(request, env, ctx) {
   const url = new URL(request.url);
   const bypass = request.method !== 'GET' || !edgeCachedPath.test(url.pathname) || /no-cache|max-age=0/i.test(`${request.headers.get('Cache-Control')} ${request.headers.get('Pragma')}`);
@@ -811,13 +824,24 @@ export default {
   },
 };
 
+// Blog pages that lived at the site root before the blog moved under /blog/.
+const blogSection = /^(?:posts|preview|ai|mobility|it-devices|agi|physical-ai|other-ai|search|tags|about)(?:\/|$)|^rss\.xml$/;
+// The current path of a pre-move blog URL, or null. The bare home moves only from the old domain: on hslab.space it is the lab home.
+function movedBlogPath(pathname, fromLegacyHost = false) {
+  const [, en, rest] = pathname.match(/^\/(en(?:\/|$))?(.*)$/);
+  if (!blogSection.test(rest) && !(fromLegacyHost && rest === '')) return null;
+  const path = `${en ? '/en' : ''}/blog/${rest}`;
+  return path.endsWith('/') || /\.[a-z0-9]+$/i.test(path) ? path : `${path}/`;
+}
+
 async function handle(request, env, ctx) {
     const url = new URL(request.url);
-    // One canonical host: the old workers.dev address and www redirect permanently; the API stays reachable on both.
-    const wrongHost = url.hostname.endsWith('.workers.dev') || url.hostname === `www.${new URL(origin).hostname}`;
+    // One canonical host: hslblog.com, workers.dev and www redirect permanently, old blog paths to their /blog/ page; the API stays reachable on all of them.
+    const legacyHost = legacyHosts.has(url.hostname);
+    const wrongHost = legacyHost || url.hostname.endsWith('.workers.dev') || url.hostname === `www.${new URL(origin).hostname}`;
     const insecure = url.protocol === 'http:' && url.hostname === new URL(origin).hostname;
     if ((wrongHost || insecure) && !url.pathname.startsWith('/api/') && (request.method === 'GET' || request.method === 'HEAD')) {
-      return Response.redirect(`${origin}${url.pathname}${url.search}`, 301);
+      return Response.redirect(`${origin}${(legacyHost && movedBlogPath(url.pathname, true)) || url.pathname}${url.search}`, 301);
     }
     try {
       if (env.DB) await ensureSchema(env.DB);
@@ -827,7 +851,7 @@ async function handle(request, env, ctx) {
       if (!env.DB) return env.ASSETS.fetch(request);
       if (url.pathname === '/dynamic-sitemap.xml') return dynamicSitemap(env);
       if (url.pathname === '/sitemap-0.xml') return staticSitemap(request, env);
-      if (url.pathname === '/rss.xml' || url.pathname === '/en/rss.xml') return rssFeed(env, url.pathname === '/rss.xml' ? 'ko' : 'en');
+      if (url.pathname === '/blog/rss.xml' || url.pathname === '/en/blog/rss.xml') return rssFeed(env, url.pathname === '/blog/rss.xml' ? 'ko' : 'en');
       // Search engine ownership files are served verbatim; the asset handler would redirect *.html to an extensionless URL.
       if (Object.hasOwn(verificationFiles, url.pathname)) return new Response(verificationFiles[url.pathname], { headers: { 'Content-Type': 'text/html; charset=utf-8' } });
       // ads.txt lists the AdSense publisher once ADSENSE_PUBLISHER_ID (pub-…) is set as a Worker variable.
@@ -838,21 +862,24 @@ async function handle(request, env, ctx) {
       }
       // One URL per page: every extensionless path without a trailing slash redirects permanently (the asset handler would answer 307 or 200).
       if (!url.pathname.endsWith('/') && !/\.[a-z0-9]+$/i.test(url.pathname)) return Response.redirect(`${origin}${url.pathname}/${url.search}`, 301);
-      const oldGptPost = url.pathname.match(/^\/(en\/)?agi\/gpt-6-sol-luna-opus-5-5-cost-performance\/?$/);
-      if (oldGptPost) return Response.redirect(`${origin}/${oldGptPost[1] || ''}posts/gpt-6-sol-luna-opus-5-5-cost-per-success/`, 301);
-      const oldAiCategory = url.pathname.match(/^\/(en\/)?(?:agi|physical-ai|other-ai)(?:\/.*)?$/);
-      if (oldAiCategory) return Response.redirect(`${origin}/${oldAiCategory[1] || ''}ai/`, 301);
-      const listingRoute = url.pathname.match(/^\/(en\/)?(?:(ai|mobility|it-devices)\/?)?$/);
+      const oldGptPost = url.pathname.match(/^\/(en\/)?(?:blog\/)?agi\/gpt-6-sol-luna-opus-5-5-cost-performance\/?$/);
+      if (oldGptPost) return Response.redirect(`${origin}/${oldGptPost[1] || ''}blog/posts/gpt-6-sol-luna-opus-5-5-cost-per-success/`, 301);
+      const oldAiCategory = url.pathname.match(/^\/(en\/)?(?:blog\/)?(?:agi|physical-ai|other-ai)(?:\/.*)?$/);
+      if (oldAiCategory) return Response.redirect(`${origin}/${oldAiCategory[1] || ''}blog/ai/`, 301);
+      const moved = movedBlogPath(url.pathname);
+      if (moved) return Response.redirect(`${origin}${moved}${url.search}`, 301);
+      // The lab home and the blog's home and category pages list the newest D1 posts.
+      const listingRoute = url.pathname.match(/^\/(en\/)?(?:blog\/(?:(ai|mobility|it-devices)\/)?)?$/);
       if (listingRoute) return listingPage(request, env, listingRoute[1] ? 'en' : 'ko');
-      const preview = url.pathname.match(/^\/(en\/)?preview\/([a-f0-9]{32})\/$/);
+      const preview = url.pathname.match(/^\/(en\/)?blog\/preview\/([a-f0-9]{32})\/$/);
       if (preview) {
         const row = await env.DB.prepare('SELECT *, created_at AS published_at, created_at AS updated_at FROM previews WHERE token = ? AND lang = ?').bind(preview[2], preview[1] ? 'en' : 'ko').first();
         return row ? article(row, env, request, preview[2]) : notFound(env, request);
       }
-      const match = url.pathname.match(/^\/(en\/)?posts\/([a-z0-9]+(?:-[a-z0-9]+)*)\/?$/);
+      const match = url.pathname.match(/^\/(en\/)?blog\/posts\/([a-z0-9]+(?:-[a-z0-9]+)*)\/?$/);
       if (!match) {
         // Articles that moved from the static build to D1 keep their old category URL as a permanent redirect.
-        const legacy = url.pathname.match(/^\/(en\/)?(?:ai|mobility|it-devices)\/([a-z0-9]+(?:-[a-z0-9]+)*)\/?$/);
+        const legacy = url.pathname.match(/^\/(en\/)?blog\/(?:ai|mobility|it-devices)\/([a-z0-9]+(?:-[a-z0-9]+)*)\/?$/);
         if (legacy) {
           const moved = await env.DB.prepare('SELECT lang, slug FROM posts WHERE lang = ? AND slug = ?').bind(legacy[1] ? 'en' : 'ko', legacy[2]).first();
           if (moved) return Response.redirect(`${origin}${pathFor(moved)}`, 301);

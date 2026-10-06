@@ -11,6 +11,8 @@
   },
   "workers_dev": true,
   "routes": [
+    { "pattern": "hslab.space", "custom_domain": true },
+    { "pattern": "www.hslab.space", "custom_domain": true },
     { "pattern": "hslblog.com", "custom_domain": true },
     { "pattern": "www.hslblog.com", "custom_domain": true }
   ],

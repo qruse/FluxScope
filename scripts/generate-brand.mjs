@@ -78,9 +78,9 @@ async function ogDefault() {
   <line x1="80" y1="478" x2="1120" y2="478" stroke="${COLORS.muted}" stroke-opacity=".45" stroke-width="1.5"/>
 </svg>`;
   // Tracking suits the Latin capitals but would space out the Hangul.
-  const kicker = await textLayer(`<span letter_spacing="${Math.round(0.12 * 22 * 1024)}">HSL&#8217;S BLOG</span> · HSL의 블로그`, 'SemiBold', 22, COLORS.muted);
+  const kicker = await textLayer(`<span letter_spacing="${Math.round(0.12 * 22 * 1024)}">HSL LAB</span> · HSL의 블로그`, 'SemiBold', 22, COLORS.muted);
   const topics = await textLayer('AI · Mobility · IT Devices', 'SemiBold', 30, COLORS.ink);
-  const domain = await textLayer('hslblog.com', 'Medium', 24, COLORS.muted);
+  const domain = await textLayer('hslab.space', 'Medium', 24, COLORS.muted);
   return sharp(Buffer.from(svg))
     .composite([
       { input: kicker.input, left: 82, top: 72 },

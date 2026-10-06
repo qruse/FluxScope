@@ -16,7 +16,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       ASTRO_TELEMETRY_DISABLED: 1
-      SITE_URL: https://hslblog.com
+      SITE_URL: https://hslab.space
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4

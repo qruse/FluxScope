@@ -1,16 +1,16 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import { withBase } from '../lib/site';
+import { blogPath, withBase } from '../lib/site';
 ---
 <BaseLayout noindex lang="ko" title="페이지를 찾을 수 없음 / Page not found" description="요청한 페이지가 없거나 주소가 바뀌었음. The page you requested does not exist or has moved.">
   <section class="page-top not-found">
     <div class="shell">
       <div class="section-kicker">404</div>
       <h1>페이지를 찾을 수 없음<span class="brand-dot" aria-hidden="true"></span></h1>
-      <p>주소가 바뀌었거나 없는 페이지임. 홈이나 검색에서 찾아보세요.</p>
-      <p lang="en">This page does not exist or has moved. Try the home page or search.</p>
+      <p>주소가 바뀌었거나 없는 페이지임. 홈이나 블로그 검색에서 찾아보세요.</p>
+      <p lang="en">This page does not exist or has moved. Try the home page or the blog search.</p>
       <p class="not-found-links">
-        <a href={withBase('/')}>홈</a><a href={withBase('/search/')}>검색</a><a href={withBase('/en/')} lang="en">Home (English)</a><a href={withBase('/en/search/')} lang="en">Search</a>
+        <a href={withBase('/')}>홈</a><a href={blogPath('/')}>블로그</a><a href={blogPath('/search/')}>검색</a><a href={withBase('/en/')} lang="en">Home (English)</a><a href={blogPath('/', 'en')} lang="en">Blog</a><a href={blogPath('/search/', 'en')} lang="en">Search</a>
       </p>
     </div>
   </section>

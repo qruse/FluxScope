@@ -1,9 +1,9 @@
 ---
 import { getCollection, render } from 'astro:content';
-import BaseLayout from '../../../layouts/BaseLayout.astro';
-import PostCard from '../../../components/PostCard.astro';
-import { categories, categoryPath, getPostSlug, postPath, publishedPosts, site, tagPath, withBase, type Post } from '../../../lib/site';
-import { formatDate } from '../../../i18n/ui';
+import BaseLayout from '../../../../layouts/BaseLayout.astro';
+import PostCard from '../../../../components/PostCard.astro';
+import { categories, categoryPath, getPostSlug, blogPath, lab, postPath, publishedPosts, tagPath, withBase, type Post } from '../../../../lib/site';
+import { formatDate } from '../../../../i18n/ui';
 
 export async function getStaticPaths() {
   const posts = publishedPosts(await getCollection('posts'), 'en');
@@ -28,16 +28,17 @@ const jsonLd = [
     '@context': 'https://schema.org', '@type': 'BlogPosting',
     headline: post.data.title, description: post.data.description, mainEntityOfPage: url, inLanguage: 'en',
     image: { '@type': 'ImageObject', url: imageUrl, width: post.data.image.width, height: post.data.image.height }, datePublished: post.data.publishedAt.toISOString(), dateModified: post.data.updatedAt.toISOString(),
-    author: { '@type': 'Person', name: post.data.author, url: new URL(withBase('/en/about/'), Astro.site).href },
-    publisher: { '@type': 'Organization', name: site.name, url: new URL(withBase('/en/'), Astro.site).href },
+    author: { '@type': 'Person', name: post.data.author, url: new URL(blogPath('/about/', 'en'), Astro.site).href },
+    publisher: { '@type': 'Organization', name: lab.name, url: lab.url },
     articleSection: category.name, keywords: post.data.tags.join(', '),
   },
   {
     '@context': 'https://schema.org', '@type': 'BreadcrumbList',
     itemListElement: [
-      { '@type': 'ListItem', position: 1, name: 'Home', item: new URL(withBase('/en/'), Astro.site).href },
-      { '@type': 'ListItem', position: 2, name: category.name, item: new URL(categoryPath(post.data.category, 'en'), Astro.site).href },
-      { '@type': 'ListItem', position: 3, name: post.data.title, item: url },
+      { '@type': 'ListItem', position: 1, name: lab.name, item: new URL(withBase('/en/'), Astro.site).href },
+      { '@type': 'ListItem', position: 2, name: 'Blog', item: new URL(blogPath('/', 'en'), Astro.site).href },
+      { '@type': 'ListItem', position: 3, name: category.name, item: new URL(categoryPath(post.data.category, 'en'), Astro.site).href },
+      { '@type': 'ListItem', position: 4, name: post.data.title, item: url },
     ],
   },
 ];
@@ -45,7 +46,7 @@ const jsonLd = [
 <BaseLayout lang="en" title={post.data.seoTitle || post.data.title} description={post.data.description} image={post.data.image.src} imageAlt={post.data.image.alt} imageWidth={post.data.image.width} imageHeight={post.data.image.height} type="article" publishedAt={post.data.publishedAt} updatedAt={post.data.updatedAt} jsonLd={jsonLd}>
   <article data-pagefind-body>
     <header class="article-header article-shell">
-      <nav class="breadcrumbs" aria-label="Breadcrumb"><a href={withBase('/en/')}>Home</a><span>/</span><a href={categoryPath(post.data.category, 'en')}>{category.name}</a><span>/</span><span aria-current="page">Article</span></nav>
+      <nav class="breadcrumbs" aria-label="Breadcrumb"><a href={blogPath('/', 'en')}>Blog</a><span>/</span><a href={categoryPath(post.data.category, 'en')}>{category.name}</a><span>/</span><span aria-current="page">Article</span></nav>
       <h1>{post.data.title}</h1>
       <p class="article-dek">{post.data.description}</p>
       <div class="article-meta"><span>By <strong>{post.data.author}</strong></span><span>Published <time datetime={post.data.publishedAt.toISOString()}>{formatDate(post.data.publishedAt, 'en')}</time></span><span>Updated <time datetime={post.data.updatedAt.toISOString()}>{formatDate(post.data.updatedAt, 'en')}</time></span></div>

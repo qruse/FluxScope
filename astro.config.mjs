@@ -36,7 +36,7 @@ if (!site) {
       base = `/${repo}/`;
     }
   } else {
-    site = 'https://hslblog.com';
+    site = 'https://hslab.space';
   }
 }
 

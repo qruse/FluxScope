@@ -41,6 +41,9 @@ img { max-width: 100%; height: auto; }
 .site-header { border-bottom: 1px solid var(--line); background: var(--bg); }
 .header-inner { min-height: 78px; display: flex; align-items: center; gap: 2.2rem; }
 .brand { display: inline-flex; align-items: baseline; font-weight: 800; font-size: 2rem; line-height: 1; letter-spacing: -.055em; white-space: nowrap; text-decoration: none; }
+.brand-group { display: inline-flex; align-items: baseline; gap: .7rem; }
+.brand-section { padding-left: .7rem; border-left: 1px solid var(--line); color: var(--muted); font-size: .95rem; font-weight: 750; letter-spacing: -.01em; }
+.brand-section:hover { color: var(--accent); }
 /* The "hsl." wordmark: the dot is a round accent mark sitting on the baseline. */
 .brand-mark { flex: none; width: .2em; height: .2em; margin-left: .045em; border-radius: 50%; background: var(--accent); }
 .main-nav { margin-left: auto; display: flex; align-items: center; gap: 1.8rem; font-size: .82rem; font-weight: 750; letter-spacing: .02em; }
@@ -120,6 +123,11 @@ img { max-width: 100%; height: auto; }
 .topic-row:hover .topic-name { color: var(--accent); }
 .topic-desc { color: var(--muted); font-size: .9rem; line-height: 1.6; word-break: keep-all; }
 .home-topics { padding-bottom: 4.5rem; }
+.lab-top { border-bottom: 0; }
+.lab-top h1 { word-break: keep-all; }
+.lab-projects { padding-bottom: 3.5rem; }
+.lab-more { margin: 1.2rem 0 0; font-size: .85rem; font-weight: 750; }
+.latest:last-child { padding-bottom: 4.5rem; }
 
 .site-footer { border-top: 1px solid var(--line); padding: 3rem 0 2rem; background: var(--soft); }
 .footer-grid { display: grid; grid-template-columns: 1fr auto; gap: 3rem; }

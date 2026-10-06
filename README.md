@@ -1,4 +1,6 @@
-# HSL의 블로그
+# HSL Lab · HSL의 블로그
+
+메인 사이트는 HSL Lab(`https://hslab.space`)이고, 블로그는 그 안의 첫 프로젝트로 `/blog/`(한국어)·`/en/blog/`(영어) 아래에 있습니다. 랩 홈(`/`, `/en/`)은 프로젝트 목록과 블로그 최신 글을 보여줍니다.
 
 Astro가 사이트 화면을 제공하고 Cloudflare Worker가 D1의 글을 읽습니다. 모든 글은 게시 API로 발행하며, 원고·이미지·검수 기록을 다루는 데 Git 커밋이나 재빌드가 필요하지 않습니다. 코드·템플릿·규칙 변경만 Git으로 관리합니다.
 
@@ -14,9 +16,11 @@ Node.js 22.19 이상에서 `npm ci`, `npm run check`를 실행합니다. 로컬 
 2. Worker `fluxscope`의 **Settings → Variables and Secrets**에서 `PUBLISH_TOKEN`을 **Secret**으로 추가합니다. 길고 고유한 문자열을 사용하고 Git에는 넣지 않습니다.
 3. **R2 object storage → Overview → Create bucket**에서 `hsl-blog-images` 버킷을 Standard 저장 클래스로 만듭니다. `wrangler.jsonc`의 `IMAGES` 바인딩이 이 버킷에 연결됩니다. 버킷을 공개하거나 별도 R2 API 키를 만들 필요는 없습니다.
 4. GitHub `main`에 연결된 Workers Builds에서 빌드 명령 `npm run build`, 배포 명령 `npx wrangler deploy`를 사용합니다. D1 테이블은 Worker의 첫 요청에서 자동으로 생성됩니다. 이후 스키마 변경이 필요할 때는 Cloudflare 인증된 환경에서 `npm run db:remote`를 사용할 수 있습니다.
-5. Worker 설정을 한 번 배포하면 이후 API 글과 새 이미지는 빌드 없이 게시됩니다. 공개 주소는 `https://hslblog.com`입니다.
+5. Worker 설정을 한 번 배포하면 이후 API 글과 새 이미지는 빌드 없이 게시됩니다. 공개 주소는 `https://hslab.space`(블로그 `https://hslab.space/blog/`)입니다.
 
-공개 도메인은 `hslblog.com`(Cloudflare Registrar)입니다. `wrangler.jsonc`의 `routes`가 `hslblog.com`과 `www.hslblog.com`을 Worker 커스텀 도메인으로 연결하며 DNS·인증서는 배포 때 자동으로 만들어집니다. 옛 `fluxscope.coolwin200.workers.dev`와 `www` 주소의 페이지 요청은 Worker가 같은 경로의 `https://hslblog.com`으로 301 이동시키고, `/api/*`는 두 주소 모두에서 그대로 동작합니다. 도메인을 바꾸면 `worker/index.js`의 `origin`, `astro.config.mjs`·CI의 `SITE_URL`, `routes`를 함께 바꿔야 합니다.
+공개 도메인은 `hslab.space`입니다. `wrangler.jsonc`의 `routes`가 `hslab.space`·`www.hslab.space`와 옛 블로그 도메인 `hslblog.com`·`www.hslblog.com`을 Worker 커스텀 도메인으로 연결하며 DNS·인증서는 배포 때 자동으로 만들어집니다(두 도메인 모두 같은 Cloudflare 계정의 존이어야 함). `hslblog.com`의 페이지 요청은 Worker가 `https://hslab.space`의 `/blog/` 아래 같은 페이지로 301 이동시킵니다(예: `/posts/<slug>/` → `/blog/posts/<slug>/`, `/` → `/blog/`, `/privacy/`는 그대로). `hslab.space`에서도 옛 블로그 경로(`/posts/…`, `/ai/`, `/rss.xml` 등)는 `/blog/` 아래로 이동합니다. `fluxscope.coolwin200.workers.dev`와 `www` 주소도 `https://hslab.space`로 301 이동하고, `/api/*`는 모든 주소에서 그대로 동작합니다. 도메인을 바꾸면 `worker/index.js`의 `origin`·`legacyHosts`, `astro.config.mjs`·CI의 `SITE_URL`, `routes`를 함께 바꿔야 합니다.
+
+블로그를 `/blog/` 아래로 옮기기 전에 쌓인 댓글은 Worker가 시작할 때 새 글 주소로 자동 이전합니다. `page_views`의 이전 조회 기록은 옛 경로(`/posts/<slug>/`, 블로그 홈 `/`) 그대로 남아 있습니다.
 
 ## 글 작성·미리보기·게시
 
@@ -25,7 +29,7 @@ Node.js 22.19 이상에서 `npm ci`, `npm run check`를 실행합니다. 로컬 
 - 최신 목록: `GET /api/posts?lang=en`, `GET /api/posts?lang=ko`
 - 게시 본문: `GET /api/posts?lang=<en|ko>&slug=<slug>`
 - 저장된 작업 원고와 검수 기록: 인증된 `/api/drafts`; 아래 `--pull`로 가져옵니다
-- 공개 주소: `/posts/<slug>/`, `/en/posts/<slug>/`; 예전 분류별 글 주소는 같은 slug의 새 주소로 이동합니다
+- 공개 주소: `/blog/posts/<slug>/`, `/en/blog/posts/<slug>/`; 예전 주소(`/posts/<slug>/`, 분류별 글 주소, `hslblog.com`)는 같은 slug의 새 주소로 이동합니다
 
 게시 전에는 최종 한영 제목을 보여주고 사용자 컨펌을 검수 기록에 남깁니다. 제목이 바뀌면 다시 컨펌받고, 초안과 미리보기는 컨펌 전에도 준비할 수 있습니다(`AGENTS.md` §1.1).
 
@@ -59,7 +63,7 @@ node scripts/publish-post.mjs editorial/api-posts/en-<slug>.json editorial/api-p
 `POST /api/images`에 기존 `PUBLISH_TOKEN`과 이미지 파일을 원본 바이너리로 전송합니다. PNG, JPEG, WebP, GIF, AVIF를 지원하며 최대 5 MB입니다. 브라우저에서 붙여넣은 이미지 `Blob`도 `fetch`의 본문에 그대로 넣을 수 있습니다. SVG와 실행 가능한 파일은 받지 않습니다.
 
 ```bash
-curl -X POST 'https://hslblog.com/api/images' \
+curl -X POST 'https://hslab.space/api/images' \
   -H "Authorization: Bearer $HSL_PUBLISH_TOKEN" \
   -H 'Content-Type: image/webp' \
   --data-binary @figure.webp
@@ -73,7 +77,7 @@ curl -X POST 'https://hslblog.com/api/images' \
 
 모든 글 하단에 회원가입 없는 댓글창이 붙습니다. 작성자는 댓글마다 닉네임(2~20자)과 비밀번호(4~64자)를 입력하고, 비밀번호는 PBKDF2 해시로만 D1 `comments` 테이블에 저장됩니다. 답글은 한 단계까지 들여 쓰며, 답글을 달면 대상 댓글의 닉네임이 `@닉네임`으로 자동 태그됩니다. 태그는 서버가 원 댓글에서 가져오므로 위조할 수 없습니다.
 
-- 조회: `GET /api/comments?page=/it-devices/<slug>/` (글 페이지 경로 기준, 한·영 별도)
+- 조회: `GET /api/comments?page=/blog/posts/<slug>/` (글 페이지 경로 기준, 한·영 별도)
 - 작성: `POST /api/comments` — `page`, `nickname`, `password`, `body`(1~1,000자), 답글이면 `parentId`(원 댓글)와 `replyToId`(답하는 댓글)
 - 삭제: `DELETE /api/comments` — `{ "id": 1, "nickname": "...", "password": "..." }`. 작성 때와 같은 닉네임과 비밀번호가 모두 맞아야 합니다. 운영자는 `Authorization: Bearer <PUBLISH_TOKEN>`으로 비밀번호 없이 삭제할 수 있고, `HSL` 같은 운영자 닉네임도 이 토큰으로만 쓸 수 있습니다
 - 답글이 달린 댓글을 지우면 "삭제된 댓글"로 남고, 답글이 모두 지워지면 함께 정리됩니다

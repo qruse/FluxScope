@@ -1,0 +1,52 @@
+---
+import { blogPath, categories } from '../lib/site';
+import { useTranslations, type Lang } from '../i18n/ui';
+
+interface Props { lang: Lang; }
+const { lang } = Astro.props;
+const t = useTranslations(lang);
+const isKo = lang === 'ko';
+const topics = Object.values(categories).map((info) => (isKo ? info.nameKo : info.name)).join(' · ');
+// Projects of the lab; the blog is the first one. Add an entry here for each new project.
+const projects = [
+  {
+    name: t('site.title'),
+    href: blogPath('/', lang),
+    topics,
+    description: isKo
+      ? 'AI 모델, 자동차, IT 기기의 가격·성능·마케팅 주장을 원문으로 따져보고, 쓸지 살지 판단을 돕는 글.'
+      : 'Checks prices, benchmarks and marketing claims for AI models, cars and devices against the original sources.',
+  },
+];
+---
+<header class="page-top lab-top">
+  <div class="shell">
+    <div class="section-kicker">{t('lab.title')}</div>
+    <h1>{isKo ? '궁금한 걸 찾아보고, 만들고, 기록함' : 'Looking into things, building things, writing them down'}<span class="brand-dot" aria-hidden="true"></span></h1>
+    <p>{isKo ? 'HSL의 개인 연구실. 관심 가는 기술을 직접 파고든 결과물을 프로젝트 단위로 모아 둠.' : "HSL's personal lab. Each project here is something I dug into or built because I wanted to know."}</p>
+  </div>
+</header>
+
+<section class="home-section lab-projects">
+  <div class="shell">
+    <h2 class="home-section-title">{isKo ? '프로젝트' : 'Projects'}</h2>
+    <div class="topic-list">
+      {projects.map((project) => (
+        <a class="topic-row" href={project.href}>
+          <span class="topic-name">{project.name}<span class="topic-arrow" aria-hidden="true">→</span></span>
+          <span class="topic-desc">{project.description}</span>
+          <span class="latest-cat">{project.topics}</span>
+        </a>
+      ))}
+    </div>
+  </div>
+</section>
+
+<!-- Filled by the Worker with the newest blog posts from D1; hidden only when empty. -->
+<section class="home-section latest" data-dynamic-latest hidden>
+  <div class="shell">
+    <h2 class="home-section-title">{isKo ? '블로그 최신 글' : 'Latest from the blog'}</h2>
+    <ol class="latest-list" data-dynamic-latest-list data-limit="5"></ol>
+    <p class="lab-more"><a class="quiet-link" href={blogPath('/', lang)}>{isKo ? '블로그에서 전체 보기 →' : 'See all posts on the blog →'}</a></p>
+  </div>
+</section>

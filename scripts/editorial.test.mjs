@@ -110,7 +110,7 @@ async function imagePolicyRequest(count, existingPublishedAt) {
  // Untrusted payload fields must not activate either exception at the API boundary.
  p.publishedAt = original.publishedAt;
  p.legacyImageFixture = true;
- const request = new Request('https://hslblog.com/api/posts', {
+ const request = new Request('https://hslab.space/api/posts', {
   method: 'POST', headers: { Authorization: 'Bearer test-only', 'Content-Type': 'application/json', 'If-Match': 'update' },
   body: JSON.stringify({ posts: [p] }),
  });
