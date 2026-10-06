@@ -123,10 +123,18 @@ img { max-width: 100%; height: auto; }
 .topic-row:hover .topic-name { color: var(--accent); }
 .topic-desc { color: var(--muted); font-size: .9rem; line-height: 1.6; word-break: keep-all; }
 .home-topics { padding-bottom: 4.5rem; }
-.lab-hero { padding: clamp(2.8rem, 6vw, 4.6rem) 0 2.4rem; }
-.lab-hero h1 { max-width: 860px; margin: .7rem 0 .9rem; font-size: clamp(2.3rem, 5vw, 4.3rem); font-weight: 720; line-height: 1.08; letter-spacing: -.06em; word-break: keep-all; }
-.lab-hero p { max-width: 620px; margin: 0; color: var(--muted); font-size: 1.04rem; line-height: 1.65; }
-.lab-projects { padding: 1rem 0 3.5rem; }
+.lab-intro { position: relative; border-bottom: 1px solid var(--line); }
+.lab-intro.is-live { height: 300vh; height: 300svh; border-bottom: 0; }
+.lab-intro-stage { display: flex; flex-direction: column; padding: 2rem 0; }
+.is-live .lab-intro-stage { position: sticky; top: var(--intro-top, 0px); height: calc(100vh - var(--intro-top, 0px)); height: calc(100svh - var(--intro-top, 0px)); padding: 0; overflow: hidden; }
+.lab-intro-canvas { display: block; width: 100%; height: min(60vh, 520px); visibility: hidden; touch-action: pan-y; }
+.is-live .lab-intro-canvas { flex: 1; min-height: 0; height: auto; }
+.lab-intro.is-ready .lab-intro-canvas { visibility: visible; }
+.lab-intro-bar { display: none; }
+.is-live .lab-intro-bar { display: block; padding-bottom: 1.4rem; }
+.lab-intro-bar i { display: block; height: 2px; background: var(--line); border-radius: 2px; overflow: hidden; }
+.lab-intro-bar b { display: block; height: 100%; background: var(--accent); transform-origin: left; transform: scaleX(var(--p, 0)); }
+.lab-projects { padding: 3.2rem 0 3.5rem; }
 .lab-project { display: grid; grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr); gap: clamp(1.6rem, 4vw, 3.2rem); align-items: center; padding: clamp(1.25rem, 3vw, 2.2rem); background: var(--surface); border: 1px solid var(--line); border-radius: 16px; }
 .lab-project:not(:has(.lab-thumbs a)) { grid-template-columns: 1fr; }
 .lab-project-index { color: var(--accent); font-size: .78rem; font-weight: 850; letter-spacing: .14em; font-variant-numeric: tabular-nums; }
