@@ -46,9 +46,8 @@ async function listingPage(request, env, lang) {
   }
   if (!results.length) return asset;
   const byCategory = new Map([...categories].map((category) => [category, results.filter((post) => normalizeCategory(post.category) === category)]));
-  // Lead slots come first in the document, so the latest list can skip the posts they already show.
-  const inLead = new Set();
-  const latest = () => results.filter((post) => !inLead.has(post.slug)).slice(0, 10);
+  // Latest means publication order, including posts already featured in the lead.
+  const latest = () => results.slice(0, 10);
   const rewritten = new HTMLRewriter()
     .on('[data-dynamic-category]', {
       element(element) {
@@ -64,7 +63,6 @@ async function listingPage(request, env, lang) {
         const [post] = byCategory.get(element.getAttribute('data-dynamic-lead')) || [];
         const staticDate = Date.parse(element.getAttribute('data-published') || '');
         if (!post || Date.parse(post.published_at) <= staticDate) return;
-        inLead.add(post.slug);
         element.setInnerContent(listingCard(post, lang, element.getAttribute('data-lead-variant') || ''), { html: true });
       },
     })

@@ -32,7 +32,7 @@ const headPost = latestIn('ai');
   </div>
 </section>
 
-<!-- Filled by the Worker with recent D1 posts that are not already in the lead; stays hidden otherwise. -->
+<!-- Filled by the Worker with the ten newest D1 posts, including featured lead articles; hidden only when empty. -->
 <section class="home-section latest" data-dynamic-latest hidden>
   <div class="shell">
     <h2 class="home-section-title">{isKo ? '최신 글' : 'Latest'}</h2>

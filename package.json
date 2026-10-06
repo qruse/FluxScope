@@ -10,7 +10,7 @@
     "worker:dev": "wrangler dev",
     "db:local": "wrangler d1 migrations apply hsl-blog-posts --local",
     "db:remote": "wrangler d1 migrations apply hsl-blog-posts --remote",
-    "test:editorial": "node --test scripts/editorial.test.mjs"
+    "test:editorial": "node --test scripts/editorial.test.mjs scripts/home-listing.test.mjs"
   },
   "dependencies": {
     "@astrojs/mdx": "^4.3.0",
