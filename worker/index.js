@@ -20,6 +20,8 @@ const escape = (value) => String(value ?? '').replace(/[&<>"']/g, (c) => ({ '&':
 const xml = escape;
 const blogHome = (lang) => `${lang === 'en' ? '/en' : ''}/blog/`;
 const pathFor = (post) => `${blogHome(post.lang)}posts/${post.slug}/`;
+// Article bodies written before the move link to /posts/<slug>/; point them at /blog/ directly instead of through a redirect.
+const currentLinks = (html) => html.replace(/href="\/(en\/)?posts\//g, 'href="/$1blog/posts/');
 const urlFor = (post) => `${origin}${pathFor(post)}`;
 const rowToSummary = (post) => ({ lang: post.lang, slug: post.slug, category: normalizeCategory(post.category), title: post.title, description: post.description, imageUrl: post.image_url, imageAlt: post.image_alt, tags: JSON.parse(post.tags), publishedAt: post.published_at, updatedAt: post.updated_at, url: pathFor(post) });
 
@@ -43,7 +45,7 @@ async function listingPage(request, env, lang) {
   if (request.method !== 'GET' || !asset.ok || !env.DB) return asset;
   let results;
   try {
-    ({ results } = await env.DB.prepare('SELECT lang, slug, category, title, description, image_url, image_alt, published_at FROM posts WHERE lang = ? ORDER BY published_at DESC LIMIT 100').bind(lang).all());
+    ({ results } = await env.DB.prepare('SELECT lang, slug, category, title, description, image_url, image_alt, published_at, COUNT(*) OVER () AS total FROM posts WHERE lang = ? ORDER BY published_at DESC LIMIT 100').bind(lang).all());
   } catch (error) {
     console.error('Could not load dynamic listings', error);
     return asset;
@@ -79,6 +81,22 @@ async function listingPage(request, env, lang) {
       element(element) {
         const limit = Number(element.getAttribute('data-limit')) || 10;
         element.setInnerContent(latest().slice(0, limit).map((post) => latestRow(post, lang)).join(''), { html: true });
+      },
+    })
+    .on('[data-dynamic-thumbs]', {
+      element(element) {
+        const posts = results.filter((post) => post.image_url).slice(0, Number(element.getAttribute('data-dynamic-thumbs')) || 3);
+        element.setInnerContent(posts.map((post, i) => `<a href="${escape(pathFor(post))}" title="${escape(post.title)}"><img src="${escape(post.image_url)}" alt="${escape(post.image_alt || post.title)}" loading="${i ? 'lazy' : 'eager'}" decoding="async" /></a>`).join(''), { html: true });
+      },
+    })
+    .on('[data-dynamic-total]', {
+      element(element) {
+        element.setInnerContent(String(results[0].total));
+      },
+    })
+    .on('[data-dynamic-total-wrap]', {
+      element(element) {
+        element.removeAttribute('hidden');
       },
     })
     .on('[data-dynamic-count]', {
@@ -698,7 +716,7 @@ async function article(post, env, request, token) {
     },
   ];
   const head = `<meta property="article:published_time" content="${escape(post.published_at)}"><meta property="article:modified_time" content="${escape(post.updated_at)}"><script type="application/ld+json">${JSON.stringify(jsonLd).replace(/</g, '\\u003c')}</script>`;
-  const html = `<article><header class="article-header article-shell">${token ? `<p class="preview-banner" role="note"><strong>${lang === 'ko' ? '미리보기' : 'Preview'}</strong> — ${lang === 'ko' ? '아직 발행 전인 글이며 목록·검색에 나오지 않음' : 'not published; hidden from listings and search'}</p>` : ''}<nav class="breadcrumbs" aria-label="Breadcrumb"><a href="${home}">${lang === 'ko' ? '블로그' : 'Blog'}</a><span>/</span><a href="${home}${escape(category)}/">${escape(categoryName)}</a><span>/</span><span aria-current="page">${lang === 'ko' ? '글' : 'Article'}</span></nav><h1>${escape(post.title)}</h1><p class="article-dek">${escape(post.description)}</p><div class="article-meta"><span>${lang === 'ko' ? '작성자' : 'By'}: <strong>HSL</strong></span><span>${lang === 'ko' ? '발행일' : 'Published'}: <time datetime="${escape(post.published_at)}">${escape(date)}</time></span><span>${lang === 'ko' ? '수정일' : 'Updated'}: <time datetime="${escape(post.updated_at)}">${escape(updatedDate)}</time></span></div></header>${post.image_url ? `<div class="article-shell"><img class="article-visual" src="${escape(post.image_url)}" alt="${escape(imageAlt)}"${sizeAttributes(dimensions, post.image_url)} loading="eager" fetchpriority="high" decoding="async" /></div>` : ''}<div class="article-body article-shell">${micromark(post.body, { extensions: [gfm()], htmlExtensions: [gfmHtml()] }).replace(/<img src="([^"]+)"/g, (tag, src) => `<img src="${src}"${sizeAttributes(dimensions, src.replace(/&amp;/g, '&'))} loading="lazy" decoding="async"`)}</div><div class="article-end article-shell"><div class="tag-list">${tags.map((tag) => `<span>#${escape(tag)}</span>`).join('')}</div><p class="author-note">${lang === 'ko' ? '글: <strong>HSL</strong> · 사실 주장엔 1차 출처 링크를 닮 · 안 써 본 제품을 써 본 척하지 않음 · <a href="${about}">검증 방식 보기</a>' : 'By <strong>HSL</strong> · Factual claims link to their primary sources · Nothing is written up as hands-on testing unless it was · <a href="${about}">How posts are checked</a>'}</p></div></article>${token ? '' : `<section class="comments article-shell" id="comments" data-comments data-lang="${lang}" data-page="${escape(pathFor(post))}"></section><script src="/comments.js" defer></script>`}`;
+  const html = `<article><header class="article-header article-shell">${token ? `<p class="preview-banner" role="note"><strong>${lang === 'ko' ? '미리보기' : 'Preview'}</strong> — ${lang === 'ko' ? '아직 발행 전인 글이며 목록·검색에 나오지 않음' : 'not published; hidden from listings and search'}</p>` : ''}<nav class="breadcrumbs" aria-label="Breadcrumb"><a href="${home}">${lang === 'ko' ? '블로그' : 'Blog'}</a><span>/</span><a href="${home}${escape(category)}/">${escape(categoryName)}</a><span>/</span><span aria-current="page">${lang === 'ko' ? '글' : 'Article'}</span></nav><h1>${escape(post.title)}</h1><p class="article-dek">${escape(post.description)}</p><div class="article-meta"><span>${lang === 'ko' ? '작성자' : 'By'}: <strong>HSL</strong></span><span>${lang === 'ko' ? '발행일' : 'Published'}: <time datetime="${escape(post.published_at)}">${escape(date)}</time></span><span>${lang === 'ko' ? '수정일' : 'Updated'}: <time datetime="${escape(post.updated_at)}">${escape(updatedDate)}</time></span></div></header>${post.image_url ? `<div class="article-shell"><img class="article-visual" src="${escape(post.image_url)}" alt="${escape(imageAlt)}"${sizeAttributes(dimensions, post.image_url)} loading="eager" fetchpriority="high" decoding="async" /></div>` : ''}<div class="article-body article-shell">${currentLinks(micromark(post.body, { extensions: [gfm()], htmlExtensions: [gfmHtml()] })).replace(/<img src="([^"]+)"/g, (tag, src) => `<img src="${src}"${sizeAttributes(dimensions, src.replace(/&amp;/g, '&'))} loading="lazy" decoding="async"`)}</div><div class="article-end article-shell"><div class="tag-list">${tags.map((tag) => `<span>#${escape(tag)}</span>`).join('')}</div><p class="author-note">${lang === 'ko' ? '글: <strong>HSL</strong> · 사실 주장엔 1차 출처 링크를 닮 · 안 써 본 제품을 써 본 척하지 않음 · <a href="${about}">검증 방식 보기</a>' : 'By <strong>HSL</strong> · Factual claims link to their primary sources · Nothing is written up as hands-on testing unless it was · <a href="${about}">How posts are checked</a>'}</p></div></article>${token ? '' : `<section class="comments article-shell" id="comments" data-comments data-lang="${lang}" data-page="${escape(pathFor(post))}"></section><script src="/comments.js" defer></script>`}`;
   const shell = await env.ASSETS.fetch(new Request(new URL(about, request.url)));
   if (!shell.ok) return new Response('Template unavailable', { status: 503 });
   const alternateLang = lang === 'ko' ? 'en' : 'ko';

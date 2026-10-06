@@ -1,25 +1,21 @@
 ---
-import { blogPath, categories } from '../lib/site';
+import { blogPath, categories, categoryPath, type Category } from '../lib/site';
 import { useTranslations, type Lang } from '../i18n/ui';
 
 interface Props { lang: Lang; }
 const { lang } = Astro.props;
 const t = useTranslations(lang);
 const isKo = lang === 'ko';
-const topics = Object.values(categories).map((info) => (isKo ? info.nameKo : info.name)).join(' · ');
 // Projects of the lab; the blog is the first one. Add an entry here for each new project.
-const projects = [
-  {
-    name: t('site.title'),
-    href: blogPath('/', lang),
-    topics,
-    description: isKo
-      ? 'AI 모델, 자동차, IT 기기의 가격·성능·마케팅 주장을 원문으로 따져보고, 쓸지 살지 판단을 돕는 글.'
-      : 'Checks prices, benchmarks and marketing claims for AI models, cars and devices against the original sources.',
-  },
-];
+const blog = {
+  name: t('site.title'),
+  href: blogPath('/', lang),
+  description: isKo
+    ? 'AI 모델, 자동차, IT 기기의 가격·성능·마케팅 주장을 원문으로 따져보고, 쓸지 살지 판단을 돕는 글.'
+    : 'Checks prices, benchmarks and marketing claims for AI models, cars and devices against the original sources.',
+};
 ---
-<header class="page-top lab-top">
+<header class="lab-hero">
   <div class="shell">
     <div class="section-kicker">{t('lab.title')}</div>
     <h1>{isKo ? '궁금한 걸 찾아보고, 만들고, 기록함' : 'Looking into things, building things, writing them down'}<span class="brand-dot" aria-hidden="true"></span></h1>
@@ -27,18 +23,27 @@ const projects = [
   </div>
 </header>
 
-<section class="home-section lab-projects">
+<section class="lab-projects" aria-labelledby="lab-projects-title">
   <div class="shell">
-    <h2 class="home-section-title">{isKo ? '프로젝트' : 'Projects'}</h2>
-    <div class="topic-list">
-      {projects.map((project) => (
-        <a class="topic-row" href={project.href}>
-          <span class="topic-name">{project.name}<span class="topic-arrow" aria-hidden="true">→</span></span>
-          <span class="topic-desc">{project.description}</span>
-          <span class="latest-cat">{project.topics}</span>
-        </a>
-      ))}
-    </div>
+    <h2 class="home-section-title" id="lab-projects-title">{isKo ? '프로젝트' : 'Projects'}</h2>
+    <article class="lab-project">
+      <div class="lab-project-copy">
+        <div class="lab-project-index">01</div>
+        <h3><a href={blog.href}>{blog.name}</a></h3>
+        <p>{blog.description}</p>
+        <div class="lab-chips">
+          {(Object.keys(categories) as Category[]).map((key) => (
+            <a href={categoryPath(key, lang)}>{isKo ? categories[key].nameKo : categories[key].name}</a>
+          ))}
+        </div>
+        <!-- The Worker fills in the number of published posts from D1. -->
+        <p class="lab-project-meta" data-dynamic-total-wrap hidden>{isKo ? <>글 <span data-dynamic-total></span>편 · 한국어 / English</> : <><span data-dynamic-total></span> posts · English / 한국어</>}</p>
+        <a class="lab-project-cta" href={blog.href}>{isKo ? '블로그 열기' : 'Open the blog'}<span aria-hidden="true">→</span></a>
+      </div>
+      <!-- Filled by the Worker with the thumbnails of the three newest posts; hidden when empty. -->
+      <div class="lab-thumbs" data-dynamic-thumbs="3" aria-label={isKo ? '블로그 최신 글 썸네일' : 'Latest blog post thumbnails'}></div>
+    </article>
+    <p class="lab-next">{isKo ? '02 · 다음 프로젝트는 여기에 추가됨' : '02 · The next project will appear here'}</p>
   </div>
 </section>
 
@@ -47,6 +52,6 @@ const projects = [
   <div class="shell">
     <h2 class="home-section-title">{isKo ? '블로그 최신 글' : 'Latest from the blog'}</h2>
     <ol class="latest-list" data-dynamic-latest-list data-limit="5"></ol>
-    <p class="lab-more"><a class="quiet-link" href={blogPath('/', lang)}>{isKo ? '블로그에서 전체 보기 →' : 'See all posts on the blog →'}</a></p>
+    <p class="lab-more"><a class="quiet-link" href={blog.href}>{isKo ? '블로그에서 전체 보기 →' : 'See all posts on the blog →'}</a></p>
   </div>
 </section>

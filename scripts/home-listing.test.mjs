@@ -7,7 +7,7 @@ import { fileURLToPath } from 'node:url';
 const source = fileURLToPath(new URL('../worker/index.js', import.meta.url));
 const bundled = await build({ entryPoints: [source], bundle: true, write: false, format: 'esm', platform: 'neutral', target: 'es2022' });
 const blogTemplate = '<html><body><div data-dynamic-lead="ai"></div><div data-dynamic-lead="mobility"></div><div data-dynamic-lead="it-devices"></div><section data-dynamic-latest hidden><ol data-dynamic-latest-list></ol></section></body></html>';
-const labTemplate = '<html><body><section data-dynamic-latest hidden><ol data-dynamic-latest-list data-limit="5"></ol></section></body></html>';
+const labTemplate = '<html><body><p data-dynamic-total-wrap hidden><span data-dynamic-total></span></p><div data-dynamic-thumbs="3"></div><section data-dynamic-latest hidden><ol data-dynamic-latest-list data-limit="5"></ol></section></body></html>';
 
 async function withWorker(posts, lang, run) {
  const mf = new Miniflare(convertV4MiniflareOptions({
@@ -47,9 +47,12 @@ test('a homepage with no articles keeps its latest section hidden', async () => 
  assert.ok(/<section[^>]*data-dynamic-latest[^>]*\bhidden\b/.test(html));
 });
 
-test('lab home lists the five newest blog posts', async () => {
+test('lab home lists the five newest blog posts and the post count', async () => {
  const rows=Array.from({length:7},(_,i)=>({slug:`post-${i}`,category:'ai',title:`Article ${i}`,date:new Date(Date.UTC(2026,9,1+i)).toISOString()}));
- assert.deepEqual(latestSlugs(await homeWith(rows,'ko','/')),rows.slice(-5).reverse().map(p=>p.slug));
+ const html=await homeWith(rows,'ko','/');
+ assert.deepEqual(latestSlugs(html),rows.slice(-5).reverse().map(p=>p.slug));
+ assert.match(html,/<span data-dynamic-total>7<\/span>/);
+ assert.equal(/data-dynamic-total-wrap[^>]*hidden/.test(html),false);
 });
 test('old blog URLs redirect permanently to the /blog/ section of hslab.space', async () => {
  const cases = [
