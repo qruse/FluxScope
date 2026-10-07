@@ -1,6 +1,8 @@
 ---
 import { blogPath, categories, categoryPath, type Category } from '../lib/site';
 import { useTranslations, type Lang } from '../i18n/ui';
+import LabFace from './LabFace.astro';
+import LabSketch from './LabSketch.astro';
 
 interface Props { lang: Lang; }
 const { lang } = Astro.props;
@@ -14,19 +16,26 @@ const blog = {
     ? 'AI 모델, 자동차, IT 기기의 가격·성능·마케팅 주장을 원문으로 따져보고, 쓸지 살지 판단을 돕는 글.'
     : 'Checks prices, benchmarks and marketing claims for AI models, cars and devices against the original sources.',
 };
+// Announced but not built yet, so they have no page or link. Give each a section path when it launches.
+// Portfolio always stays last, so new projects go above it.
+const upcoming = [
+  { kind: 'projects', name: isKo ? '프로젝트' : 'Projects', status: isKo ? '설계 중' : 'Drafting' },
+  { kind: 'portfolio', name: isKo ? '포트폴리오' : 'Portfolio', status: isKo ? '작업물 모으는 중' : 'Collecting work' },
+] as const;
 ---
 <h1 class="sr-only">{t('lab.title')}</h1>
-<!-- Background layer behind the home content: scattered triangles and small fragments gather into two
-     tetrahedra at the left and right edges as the page scrolls. The script builds the SVG; with reduced
-     motion it draws the finished shapes, and without JS nothing is shown. -->
+<!-- Background layer behind the home content: scattered pen-drawn triangles gather into two hatched
+     tetrahedra at the left and right edges as the page scrolls. Each entry below owns one face
+     (data-face); that face turns forward and lights up while the entry is on screen. The script builds
+     the SVG; with reduced motion it draws the finished shapes, and without JS nothing is shown. -->
 <svg class="lab-backdrop" data-lab-backdrop aria-hidden="true"></svg>
 
-<section class="lab-projects" aria-labelledby="lab-projects-title">
+<section class="lab-index" aria-labelledby="lab-index-title">
   <div class="shell">
-    <h2 class="home-section-title" id="lab-projects-title">{isKo ? '프로젝트' : 'Projects'}</h2>
-    <article class="lab-project">
-      <div class="lab-project-copy">
-        <div class="lab-project-index">01</div>
+    <h2 class="home-section-title" id="lab-index-title">{isKo ? '프로젝트' : 'Projects'}</h2>
+    <article class="lab-entry is-active" data-face="0">
+      <div class="lab-entry-num">01<LabFace face={0} /></div>
+      <div class="lab-entry-copy">
         <h3><a href={blog.href}>{blog.name}</a></h3>
         <p>{blog.description}</p>
         <div class="lab-chips">
@@ -35,32 +44,29 @@ const blog = {
           ))}
         </div>
         <!-- The Worker fills in the number of published posts from D1. -->
-        <p class="lab-project-meta" data-dynamic-total-wrap hidden>{isKo ? <>글 <span data-dynamic-total></span>편 · 한국어 / English</> : <><span data-dynamic-total></span> posts · English / 한국어</>}</p>
-        <a class="lab-project-cta" href={blog.href}>{isKo ? '블로그 열기' : 'Open the blog'}<span aria-hidden="true">→</span></a>
+        <p class="lab-meta" data-dynamic-total-wrap hidden>{isKo ? <>글 <span data-dynamic-total></span>편 · 한국어 / English</> : <><span data-dynamic-total></span> posts · English / 한국어</>}</p>
+        <a class="lab-cta" href={blog.href}>{isKo ? '블로그 열기' : 'Open the blog'}<span aria-hidden="true">→</span></a>
       </div>
       <!-- Filled by the Worker with the thumbnails of the three newest posts; hidden when empty. -->
       <div class="lab-thumbs" data-dynamic-thumbs="3" aria-label={isKo ? '블로그 최신 글 썸네일' : 'Latest blog post thumbnails'}></div>
+      <!-- Filled by the Worker with the newest blog posts from D1; hidden only when empty. -->
+      <section class="lab-latest" data-dynamic-latest hidden aria-labelledby="lab-latest-title">
+        <h4 class="lab-latest-title" id="lab-latest-title">{isKo ? '블로그 최신 글' : 'Latest from the blog'}</h4>
+        <ol class="latest-list" data-dynamic-latest-list data-limit="5"></ol>
+        <p class="lab-more"><a class="quiet-link" href={blog.href}>{isKo ? '블로그에서 전체 보기 →' : 'See all posts on the blog →'}</a></p>
+      </section>
     </article>
-    <p class="lab-next">{isKo ? '02 · 프로젝트 · 준비 중.' : '02 · Projects · Coming soon.'}</p>
-    <!-- Portfolio: always the last project, so new projects go above it. Announced but not built yet, so it has no
-         page or link. Give it a section path when it launches. -->
-    <article class="lab-project is-soon">
-      <div class="lab-project-copy">
-        <div class="lab-project-index">03</div>
-        <h3>{isKo ? '포트폴리오' : 'Portfolio'}</h3>
-        <p>{isKo ? '준비 중.' : 'Coming soon.'}</p>
-      </div>
-      <div class="lab-tiles" aria-hidden="true"><i></i><i></i><i></i></div>
-    </article>
-  </div>
-</section>
-
-<!-- Filled by the Worker with the newest blog posts from D1; hidden only when empty. -->
-<section class="home-section latest" data-dynamic-latest hidden>
-  <div class="shell">
-    <h2 class="home-section-title">{isKo ? '블로그 최신 글' : 'Latest from the blog'}</h2>
-    <ol class="latest-list" data-dynamic-latest-list data-limit="5"></ol>
-    <p class="lab-more"><a class="quiet-link" href={blog.href}>{isKo ? '블로그에서 전체 보기 →' : 'See all posts on the blog →'}</a></p>
+    {upcoming.map((item, i) => (
+      <article class="lab-entry is-soon" data-face={i + 1}>
+        <div class="lab-entry-num">{String(i + 2).padStart(2, '0')}<LabFace face={i + 1} /></div>
+        <div class="lab-entry-copy">
+          <h3>{item.name}</h3>
+          <p>{isKo ? '준비 중.' : 'Coming soon.'}</p>
+          <p class="lab-status">{item.status}</p>
+        </div>
+        <LabSketch kind={item.kind} />
+      </article>
+    ))}
   </div>
 </section>
 
@@ -76,7 +82,7 @@ const blog = {
     const ease = (t: number) => 1 - (1 - t) ** 3;
     const add = <K extends keyof SVGElementTagNameMap>(tag: K, cls: string, parent: Element) => {
       const el = document.createElementNS(NS, tag);
-      el.setAttribute('class', cls);
+      if (cls) el.setAttribute('class', cls);
       parent.appendChild(el);
       return el;
     };
@@ -86,15 +92,31 @@ const blog = {
     const rotX = (v: V3, a: number): V3 => [v[0], v[1] * Math.cos(a) - v[2] * Math.sin(a), v[1] * Math.sin(a) + v[2] * Math.cos(a)];
     const rotY = (v: V3, a: number): V3 => [v[0] * Math.cos(a) + v[2] * Math.sin(a), v[1], -v[0] * Math.sin(a) + v[2] * Math.cos(a)];
     const rotZ = (v: V3, a: number): V3 => [v[0] * Math.cos(a) - v[1] * Math.sin(a), v[0] * Math.sin(a) + v[1] * Math.cos(a), v[2]];
+    const TAU = Math.PI * 2;
+    const turnTo = (from: number, to: number) => (((to - from) % TAU) + TAU * 1.5) % TAU - Math.PI; // shortest signed turn
+
+    // Pen hatching for the faces: sparse on lit faces, dense on shaded ones, each at its own angle.
+    const defs = add('defs', '', svg);
+    const hatch = [[7, -35], [4.6, 40], [3.2, -65]].map(([gap, angle], i) => {
+      const pattern = add('pattern', 'lab-hatch', defs);
+      pattern.id = `lab-hatch-${i}`;
+      const attrs = { patternUnits: 'userSpaceOnUse', width: gap, height: gap, patternTransform: `rotate(${angle})` };
+      for (const [key, value] of Object.entries(attrs)) pattern.setAttribute(key, String(value));
+      const paper = add('rect', '', pattern);
+      paper.setAttribute('width', String(gap)); paper.setAttribute('height', String(gap));
+      add('path', '', pattern).setAttribute('d', `M0 0V${gap}`);
+      return `url(#lab-hatch-${i})`;
+    });
 
     // Two regular tetrahedra (apex up, screen y points down), each face cut into 9 triangles.
     const corner = (k: number): V3 => [Math.cos(k * 2.0944) * Math.sqrt(8) / 3, 1 / 3, Math.sin(k * 2.0944) * Math.sqrt(8) / 3];
     const V: V3[] = [[0, -1, 0], corner(0), corner(1), corner(2)];
-    type Shard = { pts: V3[]; c: V3; sx: number; sy: number; spin: V3; delay: number; el: SVGPolygonElement };
+    const FACES = [[0, 1, 2], [0, 2, 3], [0, 3, 1], [1, 3, 2]];
+    type Shard = { pts: V3[]; c: V3; face: number; sx: number; sy: number; spin: V3; delay: number; el: SVGPolygonElement };
     const sides = [-1, 1].map((dir) => {
       const g = add('g', 'lab-backdrop-side', svg);
       const shards: Shard[] = [];
-      for (const [ia, ib, ic] of [[0, 1, 2], [0, 2, 3], [0, 3, 1], [1, 3, 2]]) {
+      FACES.forEach(([ia, ib, ic], face) => {
         const at = (i: number, j: number): V3 => {
           const u = i / 3, v = j / 3, w = 1 - u - v;
           return [0, 1, 2].map((k) => V[ia][k] * w + V[ib][k] * u + V[ic][k] * v) as V3;
@@ -103,7 +125,7 @@ const blog = {
           const tris = [[at(i, j), at(i + 1, j), at(i, j + 1)]];
           if (i + j < 2) tris.push([at(i + 1, j), at(i + 1, j + 1), at(i, j + 1)]);
           for (const pts of tris) shards.push({
-            pts,
+            pts, face,
             c: [0, 1, 2].map((k) => (pts[0][k] + pts[1][k] + pts[2][k]) / 3) as V3,
             // Scattered over the whole viewport, mostly on this tetrahedron's half.
             sx: dir * (rnd() * .55 - .05), sy: rnd() - .5,
@@ -112,7 +134,7 @@ const blog = {
             el: add('polygon', 'lab-backdrop-shard', g),
           });
         }
-      }
+      });
       return { dir, g, shards, x: 0, y: 0 };
     });
     // Loose fragments absorbed into the nearer tetrahedron before the faces lock in.
@@ -124,9 +146,26 @@ const blog = {
       return { g, x, y: rnd() - .5, side: sides[x < 0 ? 0 : 1], size: .8 + rnd() * .9, rot: rnd() * 360, spin: (rnd() - .5) * 540, delay: rnd() * .2 };
     });
 
+    // The pose that turns each face toward the viewer: side faces by yaw (slightly off-axis so the shape
+    // still reads as 3D), the base by tipping the tetrahedron forward.
+    const PITCH = .42;
+    const poses = FACES.map((ids, face) => {
+      const normal = unit([0, 1, 2].map((k) => ids.reduce((sum, id) => sum + V[id][k], 0)) as V3);
+      if (face === 3) return { yaw: 3.665, pitch: -.75 };
+      let best = 0, bestZ = Infinity;
+      for (let yaw = 0; yaw < TAU; yaw += .01) {
+        const z = rotX(rotY(normal, yaw), PITCH)[2];
+        if (z < bestZ) { bestZ = z; best = yaw; }
+      }
+      return { yaw: best + .9, pitch: PITCH };
+    });
+    const entries = Array.from(document.querySelectorAll<HTMLElement>('[data-face]'));
+
     const LIGHT = unit([-.6, -.7, -.9]);
-    let W = 0, H = 0, R = 0, queued = false, tiltX = 0, tiltY = 0, aimX = 0, aimY = 0;
-    let accent: V3 = [230, 96, 67], bg: V3 = [246, 245, 241], ink: V3 = [27, 38, 43];
+    let W = 0, H = 0, R = 0, queued = false, tiltX = 0, tiltY = 0, aimX = 0, aimY = 0, current = 0;
+    let turn = poses[0].yaw, pitch = poses[0].pitch;
+    const glow = [1, 0, 0, 0];
+    let accent: V3 = [230, 96, 67], bg: V3 = [246, 245, 241], pen: V3 = [52, 70, 163];
     const rgb = (value: string): V3 => {
       const hex = value.trim().replace('#', '');
       return [0, 2, 4].map((i) => parseInt(hex.slice(i, i + 2), 16) || 0) as V3;
@@ -135,7 +174,7 @@ const blog = {
     const css = (a: V3) => `rgb(${a.map(Math.round).join(',')})`;
     const colors = () => {
       const style = getComputedStyle(document.documentElement);
-      accent = rgb(style.getPropertyValue('--accent')); bg = rgb(style.getPropertyValue('--bg')); ink = rgb(style.getPropertyValue('--ink'));
+      accent = rgb(style.getPropertyValue('--accent')); bg = rgb(style.getPropertyValue('--bg')); pen = rgb(style.getPropertyValue('--pen'));
     };
     // Each tetrahedron sits in the margin beside the content column; where the margin is too narrow it
     // tucks half off-screen and fades so it never competes with the text.
@@ -152,32 +191,53 @@ const blog = {
         side.g.style.opacity = fits ? '1' : '.4';
       }
     };
+    // The entry whose top has passed 45% of the viewport is active; the last one once the page bottom is reached.
+    const pick = () => {
+      let k = 0;
+      entries.forEach((el, i) => { if (el.getBoundingClientRect().top < H * .45) k = i; });
+      if (innerHeight + scrollY >= document.documentElement.scrollHeight - 2) k = entries.length - 1;
+      if (k !== current) {
+        entries[current]?.classList.remove('is-active');
+        entries[k]?.classList.add('is-active');
+        current = k;
+      }
+      return Number(entries[k]?.dataset.face ?? 0);
+    };
 
     // p runs from 0 at the top of the page to 1 after 60% of a viewport of scrolling.
     function draw() {
       queued = false;
       const p = live ? clamp(scrollY / (H * .6)) : 1;
+      const face = pick(), pose = poses[face], k = live ? .1 : 1;
       tiltX += (aimX - tiltX) * .12; tiltY += (aimY - tiltY) * .12;
+      turn += turnTo(turn, pose.yaw) * k;
+      pitch += (pose.pitch - pitch) * k;
+      let moving = Math.abs(aimX - tiltX) + Math.abs(aimY - tiltY) + Math.abs(pose.pitch - pitch);
+      glow.forEach((g, i) => { glow[i] = g + ((i === face ? 1 : 0) - g) * k; moving += Math.abs((i === face ? 1 : 0) - glow[i]); });
+      moving += Math.abs(turnTo(turn, pose.yaw));
       const f = R * 5;
       for (const side of sides) {
-        const yaw = 3.665 + (p - 1) * 2.2 * side.dir + tiltX * .5 * side.dir, pitch = .42 + tiltY * .2;
-        const faces = side.shards.map((s) => {
+        const yaw = turn + (p - 1) * 2.2 * side.dir + tiltX * .5 * side.dir, tip = pitch + tiltY * .2;
+        const drawn = side.shards.map((s) => {
           const far = 1 - ease(clamp((p - s.delay) / .55));
-          const centre = rotX(rotY(s.c, yaw), pitch).map((x) => x * R) as V3;
+          const centre = rotX(rotY(s.c, yaw), tip).map((x) => x * R) as V3;
           const shift = [(s.sx * W - side.x - centre[0]) * far, (s.sy * H - side.y - centre[1]) * far, -centre[2] * far];
           const world = s.pts.map((v) => {
             const d = rotZ(rotY(rotX(sub(v, s.c), s.spin[0] * far), s.spin[1] * far), s.spin[2] * far);
-            const q = rotX(rotY([s.c[0] + d[0], s.c[1] + d[1], s.c[2] + d[2]], yaw), pitch);
+            const q = rotX(rotY([s.c[0] + d[0], s.c[1] + d[1], s.c[2] + d[2]], yaw), tip);
             return [q[0] * R + shift[0], q[1] * R + shift[1], q[2] * R + shift[2]] as V3;
           });
           const n = unit(cross(sub(world[1], world[0]), sub(world[2], world[0])));
           return { s, world, lock: clamp((.2 - far) / .2), lit: .1 + .9 * Math.abs(n[0] * LIGHT[0] + n[1] * LIGHT[1] + n[2] * LIGHT[2]), z: world[0][2] + world[1][2] + world[2][2] };
         }).sort((a, b) => b.z - a.z); // far faces first
-        for (const { s, world, lock, lit } of faces) {
+        for (const { s, world, lock, lit } of drawn) {
           s.el.setAttribute('points', world.map(([x, y, z]) => `${(side.x + x * f / (f + z)).toFixed(1)},${(side.y + y * f / (f + z)).toFixed(1)}`).join(' '));
+          const on = glow[s.face] * lock;
           const shade = mix(mix(accent, [0, 0, 0], .3), mix(accent, [255, 255, 255], .4), lit);
-          s.el.style.fill = lock ? css(mix(bg, shade, lock)) : 'none';
-          s.el.style.stroke = css(lock > .5 ? mix(shade, bg, .35) : mix(bg, ink, .3 + .4 * (1 - lock)));
+          // Loose: pen outline only. Locked: pen hatching, or the accent colour on the active entry's face.
+          s.el.style.fill = !lock ? 'none' : on > .02 ? css(mix(bg, shade, on)) : hatch[lit > .7 ? 0 : lit > .4 ? 1 : 2];
+          s.el.style.fillOpacity = String(on > .02 ? 1 : lock);
+          s.el.style.stroke = css(mix(mix(bg, pen, .35 + .55 * lock), mix(shade, bg, .35), on));
           side.g.appendChild(s.el);
         }
       }
@@ -186,17 +246,15 @@ const blog = {
         const x = b.side.x + (b.x * W - b.side.x) * far, y = b.side.y + (b.y * H - b.side.y) * far;
         b.g.setAttribute('transform', `translate(${x.toFixed(1)} ${y.toFixed(1)}) rotate(${(b.rot + b.spin * t).toFixed(1)}) scale(${Math.max(0, b.size * (1 - t * 1.05)).toFixed(3)})`);
       }
-      if (Math.abs(aimX - tiltX) + Math.abs(aimY - tiltY) > .002) schedule();
+      if (moving > .002) schedule();
     }
     const schedule = () => { if (!queued) { queued = true; requestAnimationFrame(draw); } };
 
     colors(); layout(); draw();
     svg.classList.add('is-ready');
     addEventListener('resize', () => { layout(); schedule(); });
+    addEventListener('scroll', schedule, { passive: true });
     new MutationObserver(() => { colors(); schedule(); }).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
-    if (live) {
-      addEventListener('scroll', schedule, { passive: true });
-      addEventListener('pointermove', (e) => { aimX = e.clientX / W - .5; aimY = e.clientY / H - .5; schedule(); }, { passive: true });
-    }
+    if (live) addEventListener('pointermove', (e) => { aimX = e.clientX / W - .5; aimY = e.clientY / H - .5; schedule(); }, { passive: true });
   }
 </script>
