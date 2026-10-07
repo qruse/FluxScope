@@ -126,8 +126,9 @@ img { max-width: 100%; height: auto; }
 /* The home backdrop sits behind the page, so the page colour moves from body to html there. */
 html:has(.lab-backdrop) { background: var(--bg); }
 body:has(.lab-backdrop) { background: transparent; }
-/* Only the blog card keeps a solid surface; everything else lets the backdrop show through. */
-body:has(.lab-backdrop) :is(.site-header, .site-footer, .lab-project.is-soon) { background: transparent; }
+/* The backdrop shows through the page; only the project copy sits on a frosted panel so it stays readable. */
+body:has(.lab-backdrop) :is(.site-header, .site-footer, .lab-project) { background: transparent; }
+.lab-project-copy { margin: -1rem; padding: 1rem; border-radius: 12px; background: color-mix(in srgb, var(--surface) 72%, transparent); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); }
 .lab-backdrop { position: fixed; inset: 0; z-index: -1; width: 100%; height: 100%; pointer-events: none; visibility: hidden; }
 .lab-backdrop.is-ready { visibility: visible; }
 .lab-backdrop-shard { stroke-width: 1.2; stroke-linejoin: round; }
