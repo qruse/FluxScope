@@ -41,9 +41,22 @@ const blog = {
       <!-- Filled by the Worker with the thumbnails of the three newest posts; hidden when empty. -->
       <div class="lab-thumbs" data-dynamic-thumbs="3" aria-label={isKo ? '블로그 최신 글 썸네일' : 'Latest blog post thumbnails'}></div>
     </article>
-    <p class="lab-next">{isKo ? '02 · 프로젝트 · 준비 중.' : '02 · Projects · Coming soon.'}</p>
-    <!-- Portfolio: always the last project, so new projects go above it. Announced but not built yet, so it has no
-         page or link. Give it a section path when it launches. -->
+    <!-- Filled by the Worker with the newest blog posts from D1; hidden only when empty. -->
+    <section class="lab-latest" data-dynamic-latest hidden aria-labelledby="lab-latest-title">
+      <h3 class="home-section-title" id="lab-latest-title">{isKo ? '블로그 최신 글' : 'Latest from the blog'}</h3>
+      <ol class="latest-list" data-dynamic-latest-list data-limit="5"></ol>
+      <p class="lab-more"><a class="quiet-link" href={blog.href}>{isKo ? '블로그에서 전체 보기 →' : 'See all posts on the blog →'}</a></p>
+    </section>
+    <!-- Projects: announced but not built yet, so it has no page or link. Give it a section path when it launches. -->
+    <article class="lab-project is-soon">
+      <div class="lab-project-copy">
+        <div class="lab-project-index">02</div>
+        <h3>{isKo ? '프로젝트' : 'Projects'}</h3>
+        <p>{isKo ? '준비 중.' : 'Coming soon.'}</p>
+      </div>
+      <div class="lab-tiles" aria-hidden="true"><i></i><i></i><i></i></div>
+    </article>
+    <!-- Portfolio: always the last project, so new projects go above it. Not built yet either. -->
     <article class="lab-project is-soon">
       <div class="lab-project-copy">
         <div class="lab-project-index">03</div>
@@ -52,15 +65,6 @@ const blog = {
       </div>
       <div class="lab-tiles" aria-hidden="true"><i></i><i></i><i></i></div>
     </article>
-  </div>
-</section>
-
-<!-- Filled by the Worker with the newest blog posts from D1; hidden only when empty. -->
-<section class="home-section latest" data-dynamic-latest hidden>
-  <div class="shell">
-    <h2 class="home-section-title">{isKo ? '블로그 최신 글' : 'Latest from the blog'}</h2>
-    <ol class="latest-list" data-dynamic-latest-list data-limit="5"></ol>
-    <p class="lab-more"><a class="quiet-link" href={blog.href}>{isKo ? '블로그에서 전체 보기 →' : 'See all posts on the blog →'}</a></p>
   </div>
 </section>
 
