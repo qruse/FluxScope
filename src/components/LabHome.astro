@@ -15,14 +15,11 @@ const blog = {
     : 'Checks prices, benchmarks and marketing claims for AI models, cars and devices against the original sources.',
 };
 ---
-<!-- Scroll-linked intro: scattered triangles and small fragments gather into one tetrahedron while the
-     page scrolls normally, then a stem drops onto the divider above the projects. The script builds the SVG;
-     with reduced motion it draws the finished shape, and without JS the section collapses. -->
-<section class="lab-intro" data-lab-intro aria-labelledby="lab-intro-title">
-  <h1 class="sr-only" id="lab-intro-title">{t('lab.title')}</h1>
-  <svg class="lab-intro-art" aria-hidden="true"></svg>
-  <div class="shell lab-intro-base" aria-hidden="true"><i></i></div>
-</section>
+<h1 class="sr-only">{t('lab.title')}</h1>
+<!-- Background layer behind the home content: scattered triangles and small fragments gather into two
+     tetrahedra at the left and right edges as the page scrolls. The script builds the SVG; with reduced
+     motion it draws the finished shapes, and without JS nothing is shown. -->
+<svg class="lab-backdrop" data-lab-backdrop aria-hidden="true"></svg>
 
 <section class="lab-projects" aria-labelledby="lab-projects-title">
   <div class="shell">
@@ -44,7 +41,17 @@ const blog = {
       <!-- Filled by the Worker with the thumbnails of the three newest posts; hidden when empty. -->
       <div class="lab-thumbs" data-dynamic-thumbs="3" aria-label={isKo ? '블로그 최신 글 썸네일' : 'Latest blog post thumbnails'}></div>
     </article>
-    <p class="lab-next">{isKo ? '02 · 다음 프로젝트는 여기에 추가됨' : '02 · The next project will appear here'}</p>
+    <p class="lab-next">{isKo ? '02 · 프로젝트 · 준비 중.' : '02 · Projects · Coming soon.'}</p>
+    <!-- Portfolio: always the last project, so new projects go above it. Announced but not built yet, so it has no
+         page or link. Give it a section path when it launches. -->
+    <article class="lab-project is-soon">
+      <div class="lab-project-copy">
+        <div class="lab-project-index">03</div>
+        <h3>{isKo ? '포트폴리오' : 'Portfolio'}</h3>
+        <p>{isKo ? '준비 중.' : 'Coming soon.'}</p>
+      </div>
+      <div class="lab-tiles" aria-hidden="true"><i></i><i></i><i></i></div>
+    </article>
   </div>
 </section>
 
@@ -58,9 +65,8 @@ const blog = {
 </section>
 
 <script>
-  const root = document.querySelector<HTMLElement>('[data-lab-intro]');
-  const svg = root?.querySelector<SVGSVGElement>('svg');
-  if (root && svg) {
+  const svg = document.querySelector<SVGSVGElement>('[data-lab-backdrop]');
+  if (svg) {
     type V3 = [number, number, number];
     const NS = 'http://www.w3.org/2000/svg';
     const live = !matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -68,7 +74,7 @@ const blog = {
     const rnd = () => ((seed = (seed * 16807) % 2147483647) - 1) / 2147483646;
     const clamp = (t: number) => Math.min(1, Math.max(0, t));
     const ease = (t: number) => 1 - (1 - t) ** 3;
-    const add = <K extends keyof SVGElementTagNameMap>(tag: K, cls: string, parent: Element = svg) => {
+    const add = <K extends keyof SVGElementTagNameMap>(tag: K, cls: string, parent: Element) => {
       const el = document.createElementNS(NS, tag);
       el.setAttribute('class', cls);
       parent.appendChild(el);
@@ -81,39 +87,45 @@ const blog = {
     const rotY = (v: V3, a: number): V3 => [v[0] * Math.cos(a) + v[2] * Math.sin(a), v[1], -v[0] * Math.sin(a) + v[2] * Math.cos(a)];
     const rotZ = (v: V3, a: number): V3 => [v[0] * Math.cos(a) - v[1] * Math.sin(a), v[0] * Math.sin(a) + v[1] * Math.cos(a), v[2]];
 
-    // A regular tetrahedron with its apex up (screen y points down); each face is cut into 9 triangles.
+    // Two regular tetrahedra (apex up, screen y points down), each face cut into 9 triangles.
     const corner = (k: number): V3 => [Math.cos(k * 2.0944) * Math.sqrt(8) / 3, 1 / 3, Math.sin(k * 2.0944) * Math.sqrt(8) / 3];
     const V: V3[] = [[0, -1, 0], corner(0), corner(1), corner(2)];
-    const stem = add('path', 'lab-intro-stem');
-    const shards: { pts: V3[]; c: V3; off: V3; spin: V3; delay: number; phase: number; el: SVGPolygonElement }[] = [];
-    for (const [ia, ib, ic] of [[0, 1, 2], [0, 2, 3], [0, 3, 1], [1, 3, 2]]) {
-      const at = (i: number, j: number): V3 => {
-        const u = i / 3, v = j / 3, w = 1 - u - v;
-        return [0, 1, 2].map((k) => V[ia][k] * w + V[ib][k] * u + V[ic][k] * v) as V3;
-      };
-      for (let i = 0; i < 3; i++) for (let j = 0; j < 3 - i; j++) {
-        const tris = [[at(i, j), at(i + 1, j), at(i, j + 1)]];
-        if (i + j < 2) tris.push([at(i + 1, j), at(i + 1, j + 1), at(i, j + 1)]);
-        for (const pts of tris) shards.push({
-          pts,
-          c: [0, 1, 2].map((k) => (pts[0][k] + pts[1][k] + pts[2][k]) / 3) as V3,
-          off: [(rnd() - .5) * 2, (rnd() - .5) * 2, (rnd() - .5) * 1.2],
-          spin: [(rnd() - .5) * 6, (rnd() - .5) * 6, (rnd() - .5) * 6],
-          delay: rnd() * .3, phase: rnd() * 6.28,
-          el: add('polygon', 'lab-intro-shard'),
-        });
+    type Shard = { pts: V3[]; c: V3; sx: number; sy: number; spin: V3; delay: number; el: SVGPolygonElement };
+    const sides = [-1, 1].map((dir) => {
+      const g = add('g', 'lab-backdrop-side', svg);
+      const shards: Shard[] = [];
+      for (const [ia, ib, ic] of [[0, 1, 2], [0, 2, 3], [0, 3, 1], [1, 3, 2]]) {
+        const at = (i: number, j: number): V3 => {
+          const u = i / 3, v = j / 3, w = 1 - u - v;
+          return [0, 1, 2].map((k) => V[ia][k] * w + V[ib][k] * u + V[ic][k] * v) as V3;
+        };
+        for (let i = 0; i < 3; i++) for (let j = 0; j < 3 - i; j++) {
+          const tris = [[at(i, j), at(i + 1, j), at(i, j + 1)]];
+          if (i + j < 2) tris.push([at(i + 1, j), at(i + 1, j + 1), at(i, j + 1)]);
+          for (const pts of tris) shards.push({
+            pts,
+            c: [0, 1, 2].map((k) => (pts[0][k] + pts[1][k] + pts[2][k]) / 3) as V3,
+            // Scattered over the whole viewport, mostly on this tetrahedron's half.
+            sx: dir * (rnd() * .55 - .05), sy: rnd() - .5,
+            spin: [(rnd() - .5) * 6, (rnd() - .5) * 6, (rnd() - .5) * 6],
+            delay: rnd() * .3,
+            el: add('polygon', 'lab-backdrop-shard', g),
+          });
+        }
       }
-    }
-    // Loose fragments that are absorbed into the centre before the faces lock in.
+      return { dir, g, shards, x: 0, y: 0 };
+    });
+    // Loose fragments absorbed into the nearer tetrahedron before the faces lock in.
     const shapes = ['M-6-6h12v12h-12z', 'M0-7L6 4H-6z', 'M-6 0a6 6 0 1 0 12 0a6 6 0 1 0-12 0', 'M-6 0H6M0-6V6', 'M-10 0H10', 'M-2 0a2 2 0 1 0 4 0a2 2 0 1 0-4 0'];
     const bits = Array.from({ length: 22 }, (_, i) => {
-      const g = add('g', 'lab-intro-bit' + (i % 5 === 0 ? ' is-accent' : ''));
+      const g = add('g', 'lab-backdrop-bit' + (i % 5 === 0 ? ' is-accent' : ''), svg);
       add('path', '', g).setAttribute('d', shapes[i % shapes.length]);
-      return { g, x: rnd() - .5, y: rnd() - .5, size: .8 + rnd() * .9, rot: rnd() * 360, spin: (rnd() - .5) * 540, delay: rnd() * .2, phase: rnd() * 6.28 };
+      const x = rnd() - .5;
+      return { g, x, y: rnd() - .5, side: sides[x < 0 ? 0 : 1], size: .8 + rnd() * .9, rot: rnd() * 360, spin: (rnd() - .5) * 540, delay: rnd() * .2 };
     });
 
     const LIGHT = unit([-.6, -.7, -.9]);
-    let W = 0, H = 0, R = 0, range = 1, running = false, tiltX = 0, tiltY = 0, aimX = 0, aimY = 0;
+    let W = 0, H = 0, R = 0, queued = false, tiltX = 0, tiltY = 0, aimX = 0, aimY = 0;
     let accent: V3 = [230, 96, 67], bg: V3 = [246, 245, 241], ink: V3 = [27, 38, 43];
     const rgb = (value: string): V3 => {
       const hex = value.trim().replace('#', '');
@@ -125,59 +137,66 @@ const blog = {
       const style = getComputedStyle(document.documentElement);
       accent = rgb(style.getPropertyValue('--accent')); bg = rgb(style.getPropertyValue('--bg')); ink = rgb(style.getPropertyValue('--ink'));
     };
-    const resize = () => {
-      W = svg.clientWidth; H = svg.clientHeight; R = Math.min(W, H) * .26; range = H * .45;
+    // Each tetrahedron sits in the margin beside the content column; where the margin is too narrow it
+    // tucks half off-screen and fades so it never competes with the text.
+    const layout = () => {
+      W = innerWidth; H = innerHeight;
+      R = Math.min(Math.max(Math.min(W, H) * .09, 44), 110);
       svg.setAttribute('viewBox', `${-W / 2} ${-H / 2} ${W} ${H}`);
+      const shell = document.querySelector('.shell')?.getBoundingClientRect();
+      const gutter = shell ? shell.left : 0;
+      const fits = gutter > R * 2.2;
+      for (const side of sides) {
+        side.x = side.dir * (W / 2 - (fits ? gutter / 2 : R * .3));
+        side.y = H * (side.dir < 0 ? -.12 : .22);
+        side.g.style.opacity = fits ? '1' : '.4';
+      }
     };
 
-    // p is 0 at the top of the page and 1 once the reader has scrolled 45% of the section.
-    function draw(time: number) {
-      const scrolled = live ? clamp(-root!.getBoundingClientRect().top / range) * range : range;
-      const p = scrolled / range;
-      const cy = (live ? scrolled * .5 : 0) + R * .1; // sinks at half speed while the page moves up
-      tiltX += (aimX - tiltX) * .06; tiltY += (aimY - tiltY) * .06;
-      // At p = 1 an edge faces the reader so two lit faces show; it then sways gently around that angle.
-      const yaw = 3.665 + (p - 1) * 2.2 + (live ? Math.sin(time / 4000) * .25 : 0) + tiltX * .5, pitch = .42 + tiltY * .2, f = R * 5;
-      const faces = shards.map((s) => {
-        const far = 1 - ease(clamp((p - s.delay) / .55)), wobble = far * .04 * Math.sin(time / 1300 + s.phase);
-        const world = s.pts.map((v) => {
-          const d = rotZ(rotY(rotX(sub(v, s.c), s.spin[0] * far), s.spin[1] * far), s.spin[2] * far);
-          const q = rotX(rotY([s.c[0] + d[0], s.c[1] + d[1], s.c[2] + d[2]], yaw), pitch).map((x) => x * R) as V3;
-          return [q[0] + (s.off[0] * W * .48 * far + wobble * R), q[1] + (s.off[1] * H * .5 * far + wobble * R), q[2] + s.off[2] * R * 2 * far] as V3;
-        });
-        const n = unit(cross(sub(world[1], world[0]), sub(world[2], world[0])));
-        return { s, world, lock: clamp((.2 - far) / .2), lit: .1 + .9 * Math.abs(n[0] * LIGHT[0] + n[1] * LIGHT[1] + n[2] * LIGHT[2]), z: world[0][2] + world[1][2] + world[2][2] };
-      }).sort((a, b) => b.z - a.z); // far faces first
-      for (const { s, world, lock, lit } of faces) {
-        s.el.setAttribute('points', world.map(([x, y, z]) => `${(x * f / (f + z)).toFixed(1)},${(y * f / (f + z) + cy).toFixed(1)}`).join(' '));
-        const shade = mix(mix(accent, [0, 0, 0], .3), mix(accent, [255, 255, 255], .4), lit);
-        s.el.style.fill = lock ? css(mix(bg, shade, lock)) : 'none';
-        s.el.style.stroke = css(lock > .5 ? mix(shade, bg, .35) : ink);
-        svg!.appendChild(s.el);
+    // p runs from 0 at the top of the page to 1 after 60% of a viewport of scrolling.
+    function draw() {
+      queued = false;
+      const p = live ? clamp(scrollY / (H * .6)) : 1;
+      tiltX += (aimX - tiltX) * .12; tiltY += (aimY - tiltY) * .12;
+      const f = R * 5;
+      for (const side of sides) {
+        const yaw = 3.665 + (p - 1) * 2.2 * side.dir + tiltX * .5 * side.dir, pitch = .42 + tiltY * .2;
+        const faces = side.shards.map((s) => {
+          const far = 1 - ease(clamp((p - s.delay) / .55));
+          const centre = rotX(rotY(s.c, yaw), pitch).map((x) => x * R) as V3;
+          const shift = [(s.sx * W - side.x - centre[0]) * far, (s.sy * H - side.y - centre[1]) * far, -centre[2] * far];
+          const world = s.pts.map((v) => {
+            const d = rotZ(rotY(rotX(sub(v, s.c), s.spin[0] * far), s.spin[1] * far), s.spin[2] * far);
+            const q = rotX(rotY([s.c[0] + d[0], s.c[1] + d[1], s.c[2] + d[2]], yaw), pitch);
+            return [q[0] * R + shift[0], q[1] * R + shift[1], q[2] * R + shift[2]] as V3;
+          });
+          const n = unit(cross(sub(world[1], world[0]), sub(world[2], world[0])));
+          return { s, world, lock: clamp((.2 - far) / .2), lit: .1 + .9 * Math.abs(n[0] * LIGHT[0] + n[1] * LIGHT[1] + n[2] * LIGHT[2]), z: world[0][2] + world[1][2] + world[2][2] };
+        }).sort((a, b) => b.z - a.z); // far faces first
+        for (const { s, world, lock, lit } of faces) {
+          s.el.setAttribute('points', world.map(([x, y, z]) => `${(side.x + x * f / (f + z)).toFixed(1)},${(side.y + y * f / (f + z)).toFixed(1)}`).join(' '));
+          const shade = mix(mix(accent, [0, 0, 0], .3), mix(accent, [255, 255, 255], .4), lit);
+          s.el.style.fill = lock ? css(mix(bg, shade, lock)) : 'none';
+          s.el.style.stroke = css(lock > .5 ? mix(shade, bg, .35) : mix(bg, ink, .3 + .4 * (1 - lock)));
+          side.g.appendChild(s.el);
+        }
       }
       for (const b of bits) {
         const t = ease(clamp((p - b.delay) / .4)), far = 1 - t;
-        const x = b.x * W * .95 * far + far * 5 * Math.sin(time / 1200 + b.phase);
-        const y = cy + b.y * H * .9 * far + far * 5 * Math.cos(time / 1500 + b.phase);
+        const x = b.side.x + (b.x * W - b.side.x) * far, y = b.side.y + (b.y * H - b.side.y) * far;
         b.g.setAttribute('transform', `translate(${x.toFixed(1)} ${y.toFixed(1)}) rotate(${(b.rot + b.spin * t).toFixed(1)}) scale(${Math.max(0, b.size * (1 - t * 1.05)).toFixed(3)})`);
       }
-      const end = clamp((p - .8) / .2);
-      stem.setAttribute('d', `M0 ${(cy + R * .75).toFixed(1)}V${(cy + R * .75 + (H / 2 - cy - R * .75) * end).toFixed(1)}`);
-      root!.style.setProperty('--landed', end.toFixed(3));
-      if (running) requestAnimationFrame(draw);
+      if (Math.abs(aimX - tiltX) + Math.abs(aimY - tiltY) > .002) schedule();
     }
+    const schedule = () => { if (!queued) { queued = true; requestAnimationFrame(draw); } };
 
-    root.classList.add('is-ready');
-    colors(); resize();
-    new ResizeObserver(() => { resize(); if (!live) draw(0); }).observe(svg);
-    new MutationObserver(() => { colors(); if (!live) draw(0); }).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+    colors(); layout(); draw();
+    svg.classList.add('is-ready');
+    addEventListener('resize', () => { layout(); schedule(); });
+    new MutationObserver(() => { colors(); schedule(); }).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
     if (live) {
-      root.addEventListener('pointermove', (e) => { const b = root.getBoundingClientRect(); aimX = (e.clientX - b.left) / b.width - .5; aimY = (e.clientY - b.top) / b.height - .5; });
-      root.addEventListener('pointerleave', () => { aimX = aimY = 0; });
-      new IntersectionObserver(([entry]) => {
-        if (entry.isIntersecting && !running) { running = true; requestAnimationFrame(draw); }
-        else if (!entry.isIntersecting) running = false;
-      }).observe(root);
-    } else draw(0);
+      addEventListener('scroll', schedule, { passive: true });
+      addEventListener('pointermove', (e) => { aimX = e.clientX / W - .5; aimY = e.clientY / H - .5; schedule(); }, { passive: true });
+    }
   }
 </script>
