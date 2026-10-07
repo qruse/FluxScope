@@ -139,8 +139,20 @@ body:has(.lab-backdrop), body:has(.lab-backdrop) :is(.site-header, .site-footer)
 .lab-backdrop-bit { fill: none; stroke: var(--pen); stroke-width: 1.3; stroke-linecap: round; opacity: .45; }
 .lab-backdrop-bit.is-accent { stroke: var(--accent); opacity: .7; }
 .lab-index { padding: 2.6rem 0 4.5rem; }
-.lab-entry { display: grid; grid-template-columns: 6rem minmax(0, .9fr) minmax(0, 1.1fr); gap: 1.6rem clamp(1.6rem, 4vw, 3.2rem); align-items: start; padding: 2.4rem 0; border-top: 1px solid var(--line); }
-.lab-entry:first-of-type { border-top: 2px solid var(--ink); }
+.lab-entry { position: relative; display: grid; grid-template-columns: 6rem minmax(0, .9fr) minmax(0, 1.1fr); gap: 1.6rem clamp(1.6rem, 4vw, 3.2rem); align-items: start; padding: 2.4rem 0; scroll-margin-top: 1rem; }
+.lab-entry::before { content: ''; position: absolute; inset: 0 0 auto; height: 1px; background: var(--line); transform-origin: left; transition: transform .9s cubic-bezier(.2, .7, .2, 1); }
+.lab-entry:first-of-type::before { height: 2px; background: var(--ink); }
+/* Reveal (html.lab-motion is set before first paint unless motion is reduced): the rule draws across, the
+   columns rise in one after another and the sketch strokes are drawn in turn. */
+.lab-motion .lab-entry > * { transition: opacity .7s ease, transform .7s cubic-bezier(.2, .7, .2, 1); }
+.lab-motion .lab-entry > :nth-child(2) { transition-delay: .08s; }
+.lab-motion .lab-entry > :nth-child(n+3) { transition-delay: .16s; }
+.lab-motion .lab-entry:not(.is-seen)::before { transform: scaleX(0); }
+.lab-motion .lab-entry:not(.is-seen) > * { opacity: 0; transform: translateY(18px); }
+.lab-motion .lab-sketch path { transition: stroke-dashoffset 1s ease var(--d, 0s), opacity .6s ease var(--d, 0s); }
+.lab-motion .lab-sketch path:not(.is-dashed) { stroke-dasharray: 1 2; }
+.lab-motion .lab-sketch:not(.is-seen) path:not(.is-dashed) { stroke-dashoffset: 1.01; }
+.lab-motion .lab-sketch:not(.is-seen) .is-dashed { opacity: 0; }
 .lab-entry.is-soon { align-items: center; padding-block: 1.6rem; }
 .lab-entry-num { display: grid; justify-items: start; gap: .8rem; font-size: clamp(2rem, 3.4vw, 2.8rem); font-weight: 800; line-height: 1; letter-spacing: -.05em; font-variant-numeric: tabular-nums; transition: color .3s ease; }
 .lab-entry.is-active .lab-entry-num { color: var(--accent); }
@@ -525,10 +537,13 @@ html[data-theme="dark"] .astro-code span {
   .nav-link-major { padding: .4rem .6rem; min-height: 40px; display: inline-flex; align-items: center; border-radius: 6px; }
   .hero-grid { grid-template-columns: 1fr; gap: 2.4rem; }
   .lead-grid { grid-template-columns: 1fr; gap: 2.2rem; }
-  .lab-entry { grid-template-columns: 3.2rem minmax(0, 1fr); gap: 1.4rem 1rem; }
+  /* The number column doubles as a rail for the backdrop tetrahedron on narrow screens, so only the
+     thumbnails span it. */
+  .lab-entry { grid-template-columns: 3.6rem minmax(0, 1fr); gap: 1.4rem 1rem; }
   .lab-entry-num { font-size: 1.6rem; gap: .6rem; }
   .lab-face { width: 1.3rem; height: 1.3rem; }
-  :is(.lab-thumbs, .lab-latest, .lab-sketch) { grid-column: 1 / -1; }
+  .lab-thumbs { grid-column: 1 / -1; }
+  :is(.lab-latest, .lab-sketch) { grid-column: 2 / -1; }
   .lab-sketch { justify-self: start; max-width: 300px; }
   .sub-posts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.6rem; }
   .post-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }

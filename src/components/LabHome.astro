@@ -29,6 +29,15 @@ const upcoming = [
      (data-face); that face turns forward and lights up while the entry is on screen. The script builds
      the SVG; with reduced motion it draws the finished shapes, and without JS nothing is shown. -->
 <svg class="lab-backdrop" data-lab-backdrop aria-hidden="true"></svg>
+<script is:inline>
+  // Hide the entries for their reveal before the first paint. The module script below reveals them as they
+  // scroll in; if it never runs, everything is shown shortly after load.
+  if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    const root = document.documentElement;
+    root.classList.add('lab-motion');
+    addEventListener('load', () => setTimeout(() => { if (!root.classList.contains('lab-live')) root.classList.remove('lab-motion'); }, 1500));
+  }
+</script>
 
 <section class="lab-index" aria-labelledby="lab-index-title">
   <div class="shell">
@@ -57,7 +66,7 @@ const upcoming = [
       </section>
     </article>
     {upcoming.map((item, i) => (
-      <article class="lab-entry is-soon" data-face={i + 1}>
+      <article class="lab-entry is-soon" id={item.kind} data-face={i + 1}>
         <div class="lab-entry-num">{String(i + 2).padStart(2, '0')}<LabFace face={i + 1} /></div>
         <div class="lab-entry-copy">
           <h3>{item.name}</h3>
@@ -160,10 +169,19 @@ const upcoming = [
       return { yaw: best + .9, pitch: PITCH };
     });
     const entries = Array.from(document.querySelectorAll<HTMLElement>('[data-face]'));
+    document.documentElement.classList.add('lab-live');
+    const reveal = new IntersectionObserver((seen) => {
+      for (const { isIntersecting, target } of seen) if (isIntersecting) { target.classList.add('is-seen'); reveal.unobserve(target); }
+    }, { rootMargin: '0px 0px -12% 0px' });
+    document.querySelectorAll('.lab-entry, .lab-sketch').forEach((el) => reveal.observe(el));
 
     const LIGHT = unit([-.6, -.7, -.9]);
     let W = 0, H = 0, R = 0, queued = false, tiltX = 0, tiltY = 0, aimX = 0, aimY = 0, current = 0;
-    let turn = poses[0].yaw, pitch = poses[0].pitch;
+    let turn = poses[0].yaw, pitch = poses[0].pitch, rail = false;
+    // On touch screens, where nothing follows a pointer, scrolling kicks the shape into a spin that swings
+    // back to rest.
+    const touch = matchMedia('(hover: none)').matches;
+    let lastY = scrollY, swing = 0, swingSpeed = 0;
     const glow = [1, 0, 0, 0];
     let accent: V3 = [230, 96, 67], bg: V3 = [246, 245, 241], pen: V3 = [52, 70, 163];
     const rgb = (value: string): V3 => {
@@ -176,19 +194,23 @@ const upcoming = [
       const style = getComputedStyle(document.documentElement);
       accent = rgb(style.getPropertyValue('--accent')); bg = rgb(style.getPropertyValue('--bg')); pen = rgb(style.getPropertyValue('--pen'));
     };
-    // Each tetrahedron sits in the margin beside the content column; where the margin is too narrow it
-    // tucks half off-screen and fades so it never competes with the text.
+    // Each tetrahedron sits in the margin beside the content column. Where the margin is too narrow it
+    // tucks half off-screen and fades so it never competes with the text; on the mobile layout both swarms
+    // gather into one small tetrahedron riding the number column, and the second one dissolves.
     const layout = () => {
       W = innerWidth; H = innerHeight;
       R = Math.min(Math.max(Math.min(W, H) * .09, 44), 110);
       svg.setAttribute('viewBox', `${-W / 2} ${-H / 2} ${W} ${H}`);
       const shell = document.querySelector('.shell')?.getBoundingClientRect();
+      const column = document.querySelector('.lab-entry-num')?.getBoundingClientRect();
       const gutter = shell ? shell.left : 0;
       const fits = gutter > R * 2.2;
+      rail = W <= 860 && !!column;
+      if (rail) R = Math.min(column!.width * .48, 32);
       for (const side of sides) {
-        side.x = side.dir * (W / 2 - (fits ? gutter / 2 : R * .3));
-        side.y = H * (side.dir < 0 ? -.12 : .22);
-        side.g.style.opacity = fits ? '1' : '.4';
+        side.x = rail ? column!.left + column!.width / 2 - W / 2 : side.dir * (W / 2 - (fits ? gutter / 2 : R * .3));
+        side.y = rail ? H * .14 : H * (side.dir < 0 ? -.12 : .22);
+        side.g.style.opacity = fits || rail ? '1' : '.4';
       }
     };
     // The entry whose top has passed 45% of the viewport is active; the last one once the page bottom is reached.
@@ -212,12 +234,18 @@ const upcoming = [
       tiltX += (aimX - tiltX) * .12; tiltY += (aimY - tiltY) * .12;
       turn += turnTo(turn, pose.yaw) * k;
       pitch += (pose.pitch - pitch) * k;
-      let moving = Math.abs(aimX - tiltX) + Math.abs(aimY - tiltY) + Math.abs(pose.pitch - pitch);
+      if (live && touch) {
+        swingSpeed = (swingSpeed + Math.max(-40, Math.min(40, scrollY - lastY)) * .004 - swing * .07) * .86;
+        swing += swingSpeed;
+      }
+      lastY = scrollY;
+      let moving = Math.abs(aimX - tiltX) + Math.abs(aimY - tiltY) + Math.abs(pose.pitch - pitch) + Math.abs(swing) + Math.abs(swingSpeed);
       glow.forEach((g, i) => { glow[i] = g + ((i === face ? 1 : 0) - g) * k; moving += Math.abs((i === face ? 1 : 0) - glow[i]); });
       moving += Math.abs(turnTo(turn, pose.yaw));
       const f = R * 5;
       for (const side of sides) {
-        const yaw = turn + (p - 1) * 2.2 * side.dir + tiltX * .5 * side.dir, tip = pitch + tiltY * .2;
+        const yaw = turn + swing + (p - 1) * 2.2 * side.dir + tiltX * .5 * side.dir, tip = pitch + tiltY * .2;
+        if (rail && side.dir > 0) side.g.style.opacity = String(1 - ease(p));
         const drawn = side.shards.map((s) => {
           const far = 1 - ease(clamp((p - s.delay) / .55));
           const centre = rotX(rotY(s.c, yaw), tip).map((x) => x * R) as V3;

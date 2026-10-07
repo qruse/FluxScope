@@ -181,7 +181,12 @@ const searchUrl = blogPath('/search/', currentLang);
               <a href={itDevicesUrl} class="nav-link-major">{t('nav.it_devices')}</a>
             </>
           ) : (
-            <a href={blogUrl} class="nav-link-major">{t('nav.blog')}</a>
+            <>
+              <a href={blogUrl} class="nav-link-major">{t('nav.blog')}</a>
+              {/* Not built yet: these point at their entries on the lab home until they get their own pages. */}
+              <a href={`${labUrl}#projects`} class="nav-link-major">{t('nav.projects')}</a>
+              <a href={`${labUrl}#portfolio`} class="nav-link-major">{t('nav.portfolio')}</a>
+            </>
           )}
         </nav>
         <div class="header-actions">
