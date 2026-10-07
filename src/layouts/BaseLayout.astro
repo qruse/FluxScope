@@ -2,6 +2,7 @@
 import '../styles/global.css';
 import { blogPath, lab, withBase } from '../lib/site';
 import { getLangFromUrl, useTranslations, type Lang } from '../i18n/ui';
+import LabFace from '../components/LabFace.astro';
 
 interface Props {
   title?: string;
@@ -210,7 +211,7 @@ const searchUrl = blogPath('/search/', currentLang);
     <footer class="site-footer">
       <div class="shell footer-grid">
         <div>
-          <a class="footer-brand" href={homeUrl}>{defaultTitle}<span class="brand-dot" aria-hidden="true"></span></a>
+          <a class="footer-brand" href={homeUrl}><LabFace face={0} class="footer-mark" /><span>{defaultTitle}<span class="brand-dot" aria-hidden="true"></span></span></a>
           <p>{inBlog ? t('footer.motto') : t('lab.motto')}</p>
         </div>
         <div class="footer-links">

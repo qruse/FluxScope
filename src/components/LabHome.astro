@@ -53,7 +53,7 @@ const upcoming = [
           ))}
         </div>
         <!-- The Worker fills in the number of published posts from D1. -->
-        <p class="lab-meta" data-dynamic-total-wrap hidden>{isKo ? <>글 <span data-dynamic-total></span>편 · 한국어 / English</> : <><span data-dynamic-total></span> posts · English / 한국어</>}</p>
+        <p class="lab-stat" data-dynamic-total-wrap hidden><strong data-dynamic-total></strong><span>{isKo ? '편의 글 · 한국어 / English' : 'posts · English / 한국어'}</span></p>
         <a class="lab-cta" href={blog.href}>{isKo ? '블로그 열기' : 'Open the blog'}<span aria-hidden="true">→</span></a>
       </div>
       <!-- Filled by the Worker with the thumbnails of the three newest posts; hidden when empty. -->
