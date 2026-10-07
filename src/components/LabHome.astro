@@ -41,17 +41,17 @@ const blog = {
       <!-- Filled by the Worker with the thumbnails of the three newest posts; hidden when empty. -->
       <div class="lab-thumbs" data-dynamic-thumbs="3" aria-label={isKo ? '블로그 최신 글 썸네일' : 'Latest blog post thumbnails'}></div>
     </article>
-    <!-- Portfolio: announced but not built yet, so it has no page or link. Give it a section path when it launches. -->
+    <p class="lab-next">{isKo ? '02 · 프로젝트 · 준비 중.' : '02 · Projects · Coming soon.'}</p>
+    <!-- Portfolio: always the last project, so new projects go above it. Announced but not built yet, so it has no
+         page or link. Give it a section path when it launches. -->
     <article class="lab-project is-soon">
       <div class="lab-project-copy">
-        <div class="lab-project-index">02</div>
+        <div class="lab-project-index">03</div>
         <h3>{isKo ? '포트폴리오' : 'Portfolio'}</h3>
-        <p>{isKo ? '직접 만든 작업물을 모아 두는 곳. 지금 준비 중임.' : "A place for the things I've built. It's in the works."}</p>
-        <span class="lab-project-soon">{isKo ? '준비 중' : 'Coming soon'}</span>
+        <p>{isKo ? '준비 중.' : 'Coming soon.'}</p>
       </div>
       <div class="lab-tiles" aria-hidden="true"><i></i><i></i><i></i></div>
     </article>
-    <p class="lab-next">{isKo ? '03 · 다음 프로젝트는 여기에 추가됨' : '03 · The next project will appear here'}</p>
   </div>
 </section>
 

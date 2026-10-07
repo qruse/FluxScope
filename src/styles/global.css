@@ -137,9 +137,8 @@ body:has(.lab-backdrop) :is(.site-header, .site-footer, .lab-project) { backgrou
 .lab-projects { padding: 2.6rem 0 3.5rem; }
 .lab-project { display: grid; grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr); gap: clamp(1.6rem, 4vw, 3.2rem); align-items: center; padding: clamp(1.25rem, 3vw, 2.2rem); background: var(--surface); border: 1px solid var(--line); border-radius: 16px; }
 .lab-project:not(.is-soon):not(:has(.lab-thumbs a)) { grid-template-columns: 1fr; }
-.lab-project + .lab-project { margin-top: 1rem; }
+:is(.lab-project, .lab-next) + .lab-project { margin-top: 1rem; }
 .lab-project.is-soon h3 { color: var(--muted); }
-.lab-project-soon { display: inline-block; margin-top: 1.6rem; padding: .7rem 1.1rem; border: 1px dashed var(--line); border-radius: 999px; color: var(--muted); font-size: .85rem; font-weight: 800; }
 .lab-tiles { display: grid; grid-template-columns: 1.55fr 1fr; grid-template-rows: repeat(2, minmax(0, 1fr)); gap: .7rem; aspect-ratio: 16 / 10; }
 .lab-tiles i { border: 1px dashed var(--line); border-radius: 10px; }
 .lab-tiles i:first-child { grid-row: span 2; }
