@@ -12,7 +12,7 @@ const readMoreText = isKo ? '글 읽기' : 'Read article';
 ---
 <article class:list={['post-card', { featured, compact }]}>
   <a class="card-link" href={postPath(post)} aria-label={`${readMoreText}: ${post.data.title}`}>
-    <div class="card-media">
+    <div class="card-media taped">
       <img
         class="card-visual"
         src={withBase(post.data.image.src)}
@@ -25,7 +25,7 @@ const readMoreText = isKo ? '글 읽기' : 'Read article';
     </div>
     <div class="card-copy">
       <div class="eyebrow"><span class="category-pip"></span>{categoryName}<span class="eyebrow-sep">/</span><time datetime={post.data.publishedAt.toISOString()}>{formatDate(post.data.publishedAt, post.data.lang)}</time></div>
-      <h3>{post.data.title}</h3>
+      <h3 class="pen-under">{post.data.title}</h3>
       <p>{post.data.description}</p>
     </div>
   </a>

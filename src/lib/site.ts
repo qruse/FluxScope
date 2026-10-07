@@ -7,6 +7,23 @@ export const lab = {
   url: 'https://hslab.space',
 };
 
+// The lab's sections in display order. The lab home list and the header nav read from here, and each section
+// owns the tetrahedron face at its index (its number is index + 1). A section without a path is announced but
+// not built yet: it links to its entry on the lab home. Portfolio always stays last, so new sections go above it.
+export const labSections = [
+  { id: 'blog', name: 'Blog', nameKo: '블로그', path: '/blog/' },
+  { id: 'projects', name: 'Projects', nameKo: '프로젝트', status: 'Drafting', statusKo: '설계 중' },
+  { id: 'portfolio', name: 'Portfolio', nameKo: '포트폴리오', status: 'Collecting work', statusKo: '작업물 모으는 중' },
+] as const;
+export type LabSection = (typeof labSections)[number];
+
+export function labSectionPath(section: LabSection, lang: Lang = defaultLang): string {
+  const root = lang === 'en' ? '/en' : '';
+  return withBase('path' in section ? `${root}${section.path}` : `${root}/#${section.id}`);
+}
+
+export const labSectionNumber = (id: LabSection['id']) => String(labSections.findIndex((section) => section.id === id) + 1).padStart(2, '0');
+
 export const site = {
   name: "HSL's Blog",
   description: 'AI, 자동차, IT 기기 등 궁금한 것을 찾아보고 기록하는 개인 블로그.',

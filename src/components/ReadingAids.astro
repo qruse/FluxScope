@@ -1,0 +1,70 @@
+---
+// Article reading aids, used on every blog page; the script only acts where an article body exists, which also
+// covers the Worker's D1 articles (rendered into this layout). It builds the left-margin contents list from the
+// body's h2 headings with the blog's tetrahedron face marking the current one, draws each h2's pen underline as
+// it scrolls in, and runs a pen line along the top of the window as the article is read.
+import LabFace from './LabFace.astro';
+import type { Lang } from '../i18n/ui';
+
+interface Props { lang: Lang; }
+const { lang } = Astro.props;
+---
+<div class="read-progress" data-read-progress hidden></div>
+<nav class="article-toc" data-article-toc aria-label={lang === 'en' ? 'Contents' : '목차'} hidden>
+  <p class="article-toc-title">{lang === 'en' ? 'Contents' : '목차'}</p>
+  <LabFace face={0} class="article-toc-face" />
+  <ol></ol>
+</nav>
+
+<script>
+  const body = document.querySelector<HTMLElement>('.article-body');
+  const toc = document.querySelector<HTMLElement>('[data-article-toc]');
+  const bar = document.querySelector<HTMLElement>('[data-read-progress]');
+  if (body && toc && bar) {
+    const root = document.documentElement;
+    // The opening summary box is an h2 too; it is not a section of the article.
+    const heads = [...body.querySelectorAll<HTMLElement>(':scope > h2')].filter((h) => h !== body.firstElementChild);
+    const list = toc.querySelector('ol')!;
+    const face = toc.querySelector<SVGElement>('.article-toc-face')!;
+    const links = heads.map((h, i) => {
+      h.id ||= `section-${i + 1}`;
+      const a = document.createElement('a');
+      a.href = `#${h.id}`;
+      a.textContent = h.textContent;
+      list.appendChild(document.createElement('li')).appendChild(a);
+      return a;
+    });
+    if (heads.length >= 3) toc.hidden = false;
+    bar.hidden = false;
+    if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      root.classList.add('pen-motion');
+      const seen = new IntersectionObserver((entries) => entries.forEach((e) => {
+        if (e.isIntersecting) { e.target.classList.add('is-seen'); seen.unobserve(e.target); }
+      }), { rootMargin: '0px 0px -15% 0px' });
+      heads.forEach((h) => seen.observe(h));
+    }
+
+    let current = -1, turns = 0, frame = 0;
+    const update = () => {
+      frame = 0;
+      const box = body.getBoundingClientRect(), view = innerHeight;
+      bar.style.transform = `scaleX(${Math.min(1, Math.max(0, (view * .5 - box.top) / box.height))})`;
+      // The list shows only while the body is on screen; the current section is the last heading above 30%.
+      toc.classList.toggle('is-on', box.top < view * .6 && box.bottom > view * .4);
+      let index = -1;
+      heads.forEach((h, i) => { if (h.getBoundingClientRect().top < view * .3) index = i; });
+      if (index === current) return;
+      links[current]?.removeAttribute('aria-current');
+      current = index;
+      const link = links[index];
+      if (!link) { face.classList.remove('is-shown'); return; }
+      link.setAttribute('aria-current', 'true');
+      turns += 1;
+      face.classList.add('is-shown');
+      face.style.transform = `translateY(${link.offsetTop + link.offsetHeight / 2}px) rotate(${turns * 120}deg)`;
+    };
+    addEventListener('scroll', () => { frame ||= requestAnimationFrame(update); }, { passive: true });
+    addEventListener('resize', update);
+    update();
+  }
+</script>

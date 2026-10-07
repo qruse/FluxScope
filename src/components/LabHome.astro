@@ -1,27 +1,23 @@
 ---
-import { blogPath, categories, categoryPath, type Category } from '../lib/site';
+import { blogPath, categories, categoryPath, labSections, type Category, type LabSection } from '../lib/site';
 import { useTranslations, type Lang } from '../i18n/ui';
-import LabFace from './LabFace.astro';
+import LabMark from './LabMark.astro';
 import LabSketch from './LabSketch.astro';
 
 interface Props { lang: Lang; }
 const { lang } = Astro.props;
 const t = useTranslations(lang);
 const isKo = lang === 'ko';
-// Projects of the lab; the blog is the first one. Add an entry here for each new project.
+// Sections come from labSections in lib/site.ts. The blog has its own entry with live content; the rest are
+// announced but not built yet, so they show a teaser sketch and their status.
 const blog = {
   name: t('site.title'),
   href: blogPath('/', lang),
   description: isKo
-    ? 'AI 모델, 자동차, IT 기기의 가격·성능·마케팅 주장을 원문으로 따져보고, 쓸지 살지 판단을 돕는 글.'
-    : 'Checks prices, benchmarks and marketing claims for AI models, cars and devices against the original sources.',
+    ? '내가 궁금해서 만든 블로그.'
+    : 'A blog I started because I was curious.',
 };
-// Announced but not built yet, so they have no page or link. Give each a section path when it launches.
-// Portfolio always stays last, so new projects go above it.
-const upcoming = [
-  { kind: 'projects', name: isKo ? '프로젝트' : 'Projects', status: isKo ? '설계 중' : 'Drafting' },
-  { kind: 'portfolio', name: isKo ? '포트폴리오' : 'Portfolio', status: isKo ? '작업물 모으는 중' : 'Collecting work' },
-] as const;
+const upcoming = labSections.filter((section): section is Exclude<LabSection, { path: string }> => !('path' in section));
 ---
 <h1 class="sr-only">{t('lab.title')}</h1>
 <!-- Background layer behind the home content: scattered pen-drawn triangles gather into two hatched
@@ -29,14 +25,23 @@ const upcoming = [
      (data-face); that face turns forward and lights up while the entry is on screen. The script builds
      the SVG; with reduced motion it draws the finished shapes, and without JS nothing is shown. -->
 <svg class="lab-backdrop" data-lab-backdrop aria-hidden="true"></svg>
+<script is:inline>
+  // Hide the entries for their reveal before the first paint. The module script below reveals them as they
+  // scroll in; if it never runs, everything is shown shortly after load.
+  if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    const root = document.documentElement;
+    root.classList.add('lab-motion');
+    addEventListener('load', () => setTimeout(() => { if (!root.classList.contains('lab-live')) root.classList.remove('lab-motion'); }, 1500));
+  }
+</script>
 
 <section class="lab-index" aria-labelledby="lab-index-title">
   <div class="shell">
     <h2 class="home-section-title" id="lab-index-title">{isKo ? '프로젝트' : 'Projects'}</h2>
     <article class="lab-entry is-active" data-face="0">
-      <div class="lab-entry-num">01<LabFace face={0} /></div>
+      <LabMark id="blog" class="lab-entry-num" />
       <div class="lab-entry-copy">
-        <h3><a href={blog.href}>{blog.name}</a></h3>
+        <h3><a class="pen-under" href={blog.href}>{blog.name}</a></h3>
         <p>{blog.description}</p>
         <div class="lab-chips">
           {(Object.keys(categories) as Category[]).map((key) => (
@@ -44,7 +49,7 @@ const upcoming = [
           ))}
         </div>
         <!-- The Worker fills in the number of published posts from D1. -->
-        <p class="lab-meta" data-dynamic-total-wrap hidden>{isKo ? <>글 <span data-dynamic-total></span>편 · 한국어 / English</> : <><span data-dynamic-total></span> posts · English / 한국어</>}</p>
+        <p class="lab-stat" data-dynamic-total-wrap hidden><strong data-dynamic-total></strong><span>{isKo ? '편의 글 · 한국어 / English' : 'posts · English / 한국어'}</span></p>
         <a class="lab-cta" href={blog.href}>{isKo ? '블로그 열기' : 'Open the blog'}<span aria-hidden="true">→</span></a>
       </div>
       <!-- Filled by the Worker with the thumbnails of the three newest posts; hidden when empty. -->
@@ -56,15 +61,15 @@ const upcoming = [
         <p class="lab-more"><a class="quiet-link" href={blog.href}>{isKo ? '블로그에서 전체 보기 →' : 'See all posts on the blog →'}</a></p>
       </section>
     </article>
-    {upcoming.map((item, i) => (
-      <article class="lab-entry is-soon" data-face={i + 1}>
-        <div class="lab-entry-num">{String(i + 2).padStart(2, '0')}<LabFace face={i + 1} /></div>
+    {upcoming.map((item) => (
+      <article class="lab-entry is-soon" id={item.id} data-face={labSections.indexOf(item)}>
+        <LabMark id={item.id} class="lab-entry-num" />
         <div class="lab-entry-copy">
-          <h3>{item.name}</h3>
+          <h3><span class="pen-under">{isKo ? item.nameKo : item.name}</span></h3>
           <p>{isKo ? '준비 중.' : 'Coming soon.'}</p>
-          <p class="lab-status">{item.status}</p>
+          <p class="lab-status">{isKo ? item.statusKo : item.status}</p>
         </div>
-        <LabSketch kind={item.kind} />
+        <LabSketch kind={item.id} />
       </article>
     ))}
   </div>
@@ -160,10 +165,19 @@ const upcoming = [
       return { yaw: best + .9, pitch: PITCH };
     });
     const entries = Array.from(document.querySelectorAll<HTMLElement>('[data-face]'));
+    document.documentElement.classList.add('lab-live');
+    const reveal = new IntersectionObserver((seen) => {
+      for (const { isIntersecting, target } of seen) if (isIntersecting) { target.classList.add('is-seen'); reveal.unobserve(target); }
+    }, { rootMargin: '0px 0px -12% 0px' });
+    document.querySelectorAll('.lab-entry, .lab-sketch').forEach((el) => reveal.observe(el));
 
     const LIGHT = unit([-.6, -.7, -.9]);
     let W = 0, H = 0, R = 0, queued = false, tiltX = 0, tiltY = 0, aimX = 0, aimY = 0, current = 0;
-    let turn = poses[0].yaw, pitch = poses[0].pitch;
+    let turn = poses[0].yaw, pitch = poses[0].pitch, rail = false;
+    // On touch screens, where nothing follows a pointer, scrolling kicks the shape into a spin that swings
+    // back to rest.
+    const touch = matchMedia('(hover: none)').matches;
+    let lastY = scrollY, swing = 0, swingSpeed = 0;
     const glow = [1, 0, 0, 0];
     let accent: V3 = [230, 96, 67], bg: V3 = [246, 245, 241], pen: V3 = [52, 70, 163];
     const rgb = (value: string): V3 => {
@@ -176,19 +190,23 @@ const upcoming = [
       const style = getComputedStyle(document.documentElement);
       accent = rgb(style.getPropertyValue('--accent')); bg = rgb(style.getPropertyValue('--bg')); pen = rgb(style.getPropertyValue('--pen'));
     };
-    // Each tetrahedron sits in the margin beside the content column; where the margin is too narrow it
-    // tucks half off-screen and fades so it never competes with the text.
+    // Each tetrahedron sits in the margin beside the content column. Where the margin is too narrow it
+    // tucks half off-screen and fades so it never competes with the text; on the mobile layout both swarms
+    // gather into one small tetrahedron riding the number column, and the second one dissolves.
     const layout = () => {
       W = innerWidth; H = innerHeight;
       R = Math.min(Math.max(Math.min(W, H) * .09, 44), 110);
       svg.setAttribute('viewBox', `${-W / 2} ${-H / 2} ${W} ${H}`);
       const shell = document.querySelector('.shell')?.getBoundingClientRect();
+      const column = document.querySelector('.lab-entry-num')?.getBoundingClientRect();
       const gutter = shell ? shell.left : 0;
       const fits = gutter > R * 2.2;
+      rail = W <= 860 && !!column;
+      if (rail) R = Math.min(column!.width * .48, 32);
       for (const side of sides) {
-        side.x = side.dir * (W / 2 - (fits ? gutter / 2 : R * .3));
-        side.y = H * (side.dir < 0 ? -.12 : .22);
-        side.g.style.opacity = fits ? '1' : '.4';
+        side.x = rail ? column!.left + column!.width / 2 - W / 2 : side.dir * (W / 2 - (fits ? gutter / 2 : R * .3));
+        side.y = rail ? H * .14 : H * (side.dir < 0 ? -.12 : .22);
+        side.g.style.opacity = fits || rail ? '1' : '.4';
       }
     };
     // The entry whose top has passed 45% of the viewport is active; the last one once the page bottom is reached.
@@ -212,12 +230,18 @@ const upcoming = [
       tiltX += (aimX - tiltX) * .12; tiltY += (aimY - tiltY) * .12;
       turn += turnTo(turn, pose.yaw) * k;
       pitch += (pose.pitch - pitch) * k;
-      let moving = Math.abs(aimX - tiltX) + Math.abs(aimY - tiltY) + Math.abs(pose.pitch - pitch);
+      if (live && touch) {
+        swingSpeed = (swingSpeed + Math.max(-40, Math.min(40, scrollY - lastY)) * .004 - swing * .07) * .86;
+        swing += swingSpeed;
+      }
+      lastY = scrollY;
+      let moving = Math.abs(aimX - tiltX) + Math.abs(aimY - tiltY) + Math.abs(pose.pitch - pitch) + Math.abs(swing) + Math.abs(swingSpeed);
       glow.forEach((g, i) => { glow[i] = g + ((i === face ? 1 : 0) - g) * k; moving += Math.abs((i === face ? 1 : 0) - glow[i]); });
       moving += Math.abs(turnTo(turn, pose.yaw));
       const f = R * 5;
       for (const side of sides) {
-        const yaw = turn + (p - 1) * 2.2 * side.dir + tiltX * .5 * side.dir, tip = pitch + tiltY * .2;
+        const yaw = turn + swing + (p - 1) * 2.2 * side.dir + tiltX * .5 * side.dir, tip = pitch + tiltY * .2;
+        if (rail && side.dir > 0) side.g.style.opacity = String(1 - ease(p));
         const drawn = side.shards.map((s) => {
           const far = 1 - ease(clamp((p - s.delay) / .55));
           const centre = rotX(rotY(s.c, yaw), tip).map((x) => x * R) as V3;
