@@ -123,20 +123,23 @@ img { max-width: 100%; height: auto; }
 .topic-row:hover .topic-name { color: var(--accent); }
 .topic-desc { color: var(--muted); font-size: .9rem; line-height: 1.6; word-break: keep-all; }
 .home-topics { padding-bottom: 4.5rem; }
-.lab-intro { position: relative; height: 0; overflow: hidden; }
-.lab-intro.is-ready { height: 85vh; height: 85svh; }
-.lab-intro::before { content: ''; position: absolute; inset: 0; background-image: radial-gradient(circle, var(--line) 1px, transparent 1.4px); background-size: 26px 26px; -webkit-mask-image: linear-gradient(transparent, #000 18%, #000 62%, transparent); mask-image: linear-gradient(transparent, #000 18%, #000 62%, transparent); }
-.lab-intro-art { position: absolute; inset: 0; width: 100%; height: 100%; }
-.lab-intro-shard { stroke-width: 1.3; stroke-linejoin: round; }
-.lab-intro-bit { fill: none; stroke: var(--ink); stroke-width: 1.4; stroke-linecap: round; }
-.lab-intro-bit.is-accent { stroke: var(--accent); }
-.lab-intro-stem { fill: none; stroke: var(--accent); stroke-width: 1.4; }
-.lab-intro-base { position: absolute; left: 0; right: 0; bottom: 0; }
-.lab-intro-base i { display: block; position: relative; height: 1px; background: var(--line); }
-.lab-intro-base i::after { content: ''; position: absolute; left: 50%; top: -4px; width: 9px; height: 9px; margin-left: -4.5px; border-radius: 50%; background: var(--accent); transform: scale(var(--landed, 0)); }
-.lab-projects { padding: 3.2rem 0 3.5rem; }
+/* The home backdrop sits behind the page, so the page colour moves from body to html there. */
+html:has(.lab-backdrop) { background: var(--bg); }
+body:has(.lab-backdrop) { background: transparent; }
+.lab-backdrop { position: fixed; inset: 0; z-index: -1; width: 100%; height: 100%; pointer-events: none; visibility: hidden; }
+.lab-backdrop.is-ready { visibility: visible; }
+.lab-backdrop-shard { stroke-width: 1.2; stroke-linejoin: round; }
+.lab-backdrop-bit { fill: none; stroke: var(--line); stroke-width: 1.4; stroke-linecap: round; }
+.lab-backdrop-bit.is-accent { stroke: var(--accent); opacity: .6; }
+.lab-projects { padding: 2.6rem 0 3.5rem; }
 .lab-project { display: grid; grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr); gap: clamp(1.6rem, 4vw, 3.2rem); align-items: center; padding: clamp(1.25rem, 3vw, 2.2rem); background: var(--surface); border: 1px solid var(--line); border-radius: 16px; }
-.lab-project:not(:has(.lab-thumbs a)) { grid-template-columns: 1fr; }
+.lab-project:not(.is-soon):not(:has(.lab-thumbs a)) { grid-template-columns: 1fr; }
+.lab-project + .lab-project { margin-top: 1rem; }
+.lab-project.is-soon h3 { color: var(--muted); }
+.lab-project-soon { display: inline-block; margin-top: 1.6rem; padding: .7rem 1.1rem; border: 1px dashed var(--line); border-radius: 999px; color: var(--muted); font-size: .85rem; font-weight: 800; }
+.lab-tiles { display: grid; grid-template-columns: 1.55fr 1fr; grid-template-rows: repeat(2, minmax(0, 1fr)); gap: .7rem; aspect-ratio: 16 / 10; }
+.lab-tiles i { border: 1px dashed var(--line); border-radius: 10px; }
+.lab-tiles i:first-child { grid-row: span 2; }
 .lab-project-index { color: var(--accent); font-size: .78rem; font-weight: 850; letter-spacing: .14em; font-variant-numeric: tabular-nums; }
 .lab-project h3 { margin: .5rem 0 .8rem; font-size: clamp(1.8rem, 3.2vw, 2.6rem); font-weight: 760; line-height: 1.1; letter-spacing: -.05em; }
 .lab-project h3 a:hover { color: var(--accent); }
@@ -506,7 +509,7 @@ html[data-theme="dark"] .astro-code span {
   .hero-grid { grid-template-columns: 1fr; gap: 2.4rem; }
   .lead-grid { grid-template-columns: 1fr; gap: 2.2rem; }
   .lab-project { grid-template-columns: 1fr; }
-  .lab-thumbs { order: -1; }
+  .lab-thumbs, .lab-tiles { order: -1; }
   .sub-posts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.6rem; }
   .post-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
