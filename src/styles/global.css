@@ -14,6 +14,8 @@
   --line: #d9ddda;
   --accent: #e66043;
   --soft: #edf0ec;
+  --pen: #3446a3;
+  --grid: rgba(52, 70, 163, .07);
 }
 
 html[data-theme="dark"] {
@@ -25,6 +27,8 @@ html[data-theme="dark"] {
   --line: #334045;
   --accent: #ff8669;
   --soft: #202e32;
+  --pen: #93a3f0;
+  --grid: rgba(147, 163, 240, .06);
 }
 
 * { box-sizing: border-box; }
@@ -123,43 +127,54 @@ img { max-width: 100%; height: auto; }
 .topic-row:hover .topic-name { color: var(--accent); }
 .topic-desc { color: var(--muted); font-size: .9rem; line-height: 1.6; word-break: keep-all; }
 .home-topics { padding-bottom: 4.5rem; }
-/* The home backdrop sits behind the page, so the page colour moves from body to html there. */
-html:has(.lab-backdrop) { background: var(--bg); }
-body:has(.lab-backdrop) { background: transparent; }
-/* The backdrop shows through the page; only the project copy sits on a frosted panel so it stays readable. */
-body:has(.lab-backdrop) :is(.site-header, .site-footer, .lab-project) { background: transparent; }
-.lab-project-copy { margin: -1rem; padding: 1rem; border-radius: 12px; background: color-mix(in srgb, var(--surface) 72%, transparent); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); }
+/* Lab home: a sheet of graph paper. The page colour moves from body to html so the fixed backdrop can sit
+   between them and show through the transparent header, list and footer. */
+html:has(.lab-backdrop) { background-color: var(--bg); background-image: linear-gradient(var(--grid) 1px, transparent 1px), linear-gradient(90deg, var(--grid) 1px, transparent 1px); background-size: 28px 28px; background-attachment: fixed; }
+body:has(.lab-backdrop), body:has(.lab-backdrop) :is(.site-header, .site-footer) { background: transparent; }
 .lab-backdrop { position: fixed; inset: 0; z-index: -1; width: 100%; height: 100%; pointer-events: none; visibility: hidden; }
 .lab-backdrop.is-ready { visibility: visible; }
-.lab-backdrop-shard { stroke-width: 1.2; stroke-linejoin: round; }
-.lab-backdrop-bit { fill: none; stroke: var(--line); stroke-width: 1.4; stroke-linecap: round; }
-.lab-backdrop-bit.is-accent { stroke: var(--accent); opacity: .6; }
-.lab-projects { padding: 2.6rem 0 3.5rem; }
-.lab-project { display: grid; grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr); gap: clamp(1.6rem, 4vw, 3.2rem); align-items: center; padding: clamp(1.25rem, 3vw, 2.2rem); background: var(--surface); border: 1px solid var(--line); border-radius: 16px; }
-.lab-project:not(.is-soon):not(:has(.lab-thumbs a)) { grid-template-columns: 1fr; }
-:is(.lab-project, .lab-latest) + :is(.lab-project, .lab-latest) { margin-top: 1rem; }
-.lab-latest { padding: clamp(1.25rem, 3vw, 2.2rem); border: 1px solid var(--line); border-radius: 16px; background: color-mix(in srgb, var(--surface) 72%, transparent); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); }
-.lab-project.is-soon h3 { color: var(--muted); }
-.lab-tiles { display: grid; grid-template-columns: 1.55fr 1fr; grid-template-rows: repeat(2, minmax(0, 1fr)); gap: .7rem; aspect-ratio: 16 / 10; }
-.lab-tiles i { border: 1px dashed var(--line); border-radius: 10px; }
-.lab-tiles i:first-child { grid-row: span 2; }
-.lab-project-index { color: var(--accent); font-size: .78rem; font-weight: 850; letter-spacing: .14em; font-variant-numeric: tabular-nums; }
-.lab-project h3 { margin: .5rem 0 .8rem; font-size: clamp(1.8rem, 3.2vw, 2.6rem); font-weight: 760; line-height: 1.1; letter-spacing: -.05em; }
-.lab-project h3 a:hover { color: var(--accent); }
-.lab-project-copy > p { margin: 0; color: var(--muted); font-size: 1rem; line-height: 1.7; word-break: keep-all; }
+.lab-backdrop-shard { stroke-width: 1.1; stroke-linejoin: round; }
+.lab-hatch rect { fill: var(--bg); }
+.lab-hatch path { stroke: var(--pen); stroke-width: .8; }
+.lab-backdrop-bit { fill: none; stroke: var(--pen); stroke-width: 1.3; stroke-linecap: round; opacity: .45; }
+.lab-backdrop-bit.is-accent { stroke: var(--accent); opacity: .7; }
+.lab-index { padding: 2.6rem 0 4.5rem; }
+.lab-entry { display: grid; grid-template-columns: 6rem minmax(0, .9fr) minmax(0, 1.1fr); gap: 1.6rem clamp(1.6rem, 4vw, 3.2rem); align-items: start; padding: 2.4rem 0; border-top: 1px solid var(--line); }
+.lab-entry:first-of-type { border-top: 2px solid var(--ink); }
+.lab-entry.is-soon { align-items: center; padding-block: 1.6rem; }
+.lab-entry-num { display: grid; justify-items: start; gap: .8rem; font-size: clamp(2rem, 3.4vw, 2.8rem); font-weight: 800; line-height: 1; letter-spacing: -.05em; font-variant-numeric: tabular-nums; transition: color .3s ease; }
+.lab-entry.is-active .lab-entry-num { color: var(--accent); }
+.lab-face { width: 1.7rem; height: 1.7rem; overflow: visible; }
+.lab-face polygon { fill: none; stroke: var(--pen); stroke-width: 1.1; stroke-linejoin: round; }
+.lab-face .is-on { fill: var(--accent); }
+.lab-entry h3 { margin: 0 0 .8rem; font-size: clamp(1.8rem, 3.2vw, 2.6rem); font-weight: 760; line-height: 1.1; letter-spacing: -.05em; }
+.lab-entry h3 a:hover { color: var(--accent); }
+.lab-entry.is-soon h3 { color: var(--muted); }
+.lab-entry-copy > p { margin: 0; color: var(--muted); line-height: 1.7; word-break: keep-all; }
+/* A paper-coloured halo keeps text readable where a fragment passes behind it. */
+.lab-entry :is(h3, p, .latest-list) { text-shadow: 0 0 .4rem var(--bg), 0 0 .15rem var(--bg); }
+.lab-entry-copy > .lab-status { display: inline-flex; align-items: center; gap: .5rem; margin-top: 1rem; color: var(--pen); font-size: .82rem; font-weight: 750; }
+.lab-status::before { content: ''; width: .45rem; height: .45rem; border-radius: 50%; background: var(--accent); }
 .lab-chips { display: flex; flex-wrap: wrap; gap: .45rem; margin-top: 1.3rem; }
-.lab-chips a { padding: .38rem .8rem; border: 1px solid var(--line); border-radius: 999px; font-size: .8rem; font-weight: 700; }
+.lab-chips a { padding: .38rem .8rem; border: 1px solid var(--line); border-radius: 999px; background: var(--bg); font-size: .8rem; font-weight: 700; }
 .lab-chips a:hover { border-color: var(--accent); color: var(--accent); }
-.lab-project .lab-project-meta { margin-top: 1.1rem; font-size: .84rem; font-variant-numeric: tabular-nums; }
-.lab-project-cta { display: inline-flex; gap: .6rem; align-items: center; margin-top: 1.6rem; padding: .75rem 1.15rem; border-radius: 999px; background: var(--ink); color: var(--bg); font-size: .88rem; font-weight: 800; }
-.lab-project-cta:hover { background: var(--accent); color: #fff; }
+.lab-entry-copy > .lab-meta { margin-top: 1.1rem; font-size: .84rem; font-variant-numeric: tabular-nums; }
+.lab-cta { display: inline-flex; gap: .6rem; align-items: center; margin-top: 1.6rem; padding: .75rem 1.15rem; border-radius: 999px; background: var(--ink); color: var(--bg); font-size: .88rem; font-weight: 800; }
+.lab-cta:hover { background: var(--accent); color: #fff; }
 .lab-thumbs { display: grid; grid-template-columns: 1.55fr 1fr; grid-template-rows: repeat(2, minmax(0, 1fr)); gap: .7rem; aspect-ratio: 16 / 10; }
 .lab-thumbs:empty { display: none; }
-.lab-thumbs a { position: relative; min-height: 0; overflow: hidden; border: 1px solid var(--line); border-radius: 10px; background: var(--soft); }
+.lab-thumbs a { position: relative; min-height: 0; overflow: hidden; border: 1px solid var(--line); border-radius: 6px; background: var(--soft); }
 .lab-thumbs a:first-child { grid-row: span 2; }
 .lab-thumbs img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform .3s ease; }
 .lab-thumbs a:hover img { transform: scale(1.03); }
+.lab-latest { grid-column: 2 / -1; }
+.lab-latest-title { margin: 0 0 .8rem; color: var(--muted); font-size: .85rem; font-weight: 800; }
 .lab-more { margin: 1.2rem 0 0; font-size: .85rem; font-weight: 750; }
+.lab-sketch { justify-self: end; width: 100%; max-width: 340px; height: auto; overflow: visible; }
+.lab-sketch path { fill: none; stroke: var(--pen); stroke-width: 1.4; stroke-linecap: round; stroke-linejoin: round; }
+.lab-sketch .is-echo { stroke-width: .8; opacity: .4; }
+.lab-sketch .is-dashed { stroke-dasharray: 4 5; }
+.lab-sketch .is-accent { stroke: var(--accent); }
 .latest:last-child { padding-bottom: 4.5rem; }
 
 .site-footer { border-top: 1px solid var(--line); padding: 3rem 0 2rem; background: var(--soft); }
@@ -510,8 +525,11 @@ html[data-theme="dark"] .astro-code span {
   .nav-link-major { padding: .4rem .6rem; min-height: 40px; display: inline-flex; align-items: center; border-radius: 6px; }
   .hero-grid { grid-template-columns: 1fr; gap: 2.4rem; }
   .lead-grid { grid-template-columns: 1fr; gap: 2.2rem; }
-  .lab-project { grid-template-columns: 1fr; }
-  .lab-thumbs, .lab-tiles { order: -1; }
+  .lab-entry { grid-template-columns: 3.2rem minmax(0, 1fr); gap: 1.4rem 1rem; }
+  .lab-entry-num { font-size: 1.6rem; gap: .6rem; }
+  .lab-face { width: 1.3rem; height: 1.3rem; }
+  :is(.lab-thumbs, .lab-latest, .lab-sketch) { grid-column: 1 / -1; }
+  .lab-sketch { justify-self: start; max-width: 300px; }
   .sub-posts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.6rem; }
   .post-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }

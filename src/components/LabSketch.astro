@@ -1,0 +1,59 @@
+---
+// Pen-style teaser sketch for a project that is not built yet, in the same hand as the blog thumbnails.
+// Lines are bent and doubled at build time, so the page ships plain SVG paths and no script.
+interface Props { kind: 'projects' | 'portfolio'; }
+const { kind } = Astro.props;
+type P = [number, number];
+type Line = { pts: P[]; closed?: boolean; cls?: 'is-dashed' | 'is-accent' };
+
+let seed = kind === 'projects' ? 7 : 13;
+const rnd = () => ((seed = (seed * 16807) % 2147483647) - 1) / 2147483646;
+const n = (v: number) => v.toFixed(1);
+// Each segment is its own slightly bent stroke that starts and ends a little off the corner.
+const pen = ({ pts, closed }: Line) => {
+  const all = closed ? [...pts, pts[0]] : pts;
+  let d = '';
+  for (let i = 0; i < all.length - 1; i++) {
+    const [ax, ay] = all[i], [bx, by] = all[i + 1];
+    const len = Math.hypot(bx - ax, by - ay) || 1, bend = (rnd() - .5) * len * .05;
+    const j = () => (rnd() - .5) * 1.6;
+    d += `M${n(ax + j())} ${n(ay + j())}Q${n((ax + bx) / 2 - (by - ay) / len * bend)} ${n((ay + by) / 2 + (bx - ax) / len * bend)} ${n(bx + j())} ${n(by + j())}`;
+  }
+  return d;
+};
+const ring = (cx: number, cy: number, r: number): P[] => Array.from({ length: 12 }, (_, i) => [cx + Math.cos(i * Math.PI / 6) * r, cy + Math.sin(i * Math.PI / 6) * r]);
+
+// Projects: a tetrahedron being drafted on a sheet, with a dimension line and a pencil.
+// Portfolio: three frames on a line; the middle one holds the tetrahedron, the last is still empty.
+const lines: Line[] = kind === 'projects'
+  ? [
+    { pts: [[30, 18], [205, 12], [212, 126], [36, 132]], closed: true },
+    { pts: [[80, 100], [118, 32], [156, 96]] },
+    { pts: [[80, 100], [156, 96]] },
+    { pts: [[118, 32], [128, 80]], cls: 'is-dashed' },
+    { pts: [[80, 100], [128, 80], [156, 96]], cls: 'is-dashed' },
+    { pts: ring(118, 32, 6), closed: true, cls: 'is-accent' },
+    { pts: [[80, 114], [156, 110]] },
+    { pts: [[80, 109], [80, 119]] },
+    { pts: [[156, 105], [156, 115]] },
+    { pts: [[172, 66], [224, 30], [230, 38], [178, 74]], closed: true },
+    { pts: [[172, 66], [164, 80], [178, 74]] },
+  ]
+  : [
+    { pts: [[10, 24], [120, 32], [230, 20]] },
+    { pts: [[44, 28], [30, 42], [84, 42], [70, 29]] },
+    { pts: [[30, 42], [84, 42], [84, 100], [30, 100]], closed: true },
+    { pts: [[36, 94], [50, 70], [60, 82], [68, 74], [78, 94]] },
+    { pts: [[110, 32], [98, 46], [158, 46], [146, 32]] },
+    { pts: [[98, 46], [158, 46], [158, 120], [98, 120]], closed: true },
+    { pts: [[110, 106], [128, 62], [146, 104]], cls: 'is-accent' },
+    { pts: [[110, 106], [146, 104]], cls: 'is-accent' },
+    { pts: [[128, 62], [132, 96]], cls: 'is-dashed' },
+    { pts: [[186, 26], [174, 40], [222, 40], [212, 25]] },
+    { pts: [[174, 40], [222, 40], [222, 90], [174, 90]], closed: true, cls: 'is-dashed' },
+  ];
+---
+<svg class="lab-sketch" viewBox="0 0 240 140" aria-hidden="true">
+  {lines.map((line) => <path class={line.cls} d={pen(line)} />)}
+  {lines.filter((line) => !line.cls).map((line) => <path class="is-echo" d={pen(line)} />)}
+</svg>
