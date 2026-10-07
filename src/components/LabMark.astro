@@ -1,0 +1,9 @@
+---
+// A lab section's number and its tetrahedron face, e.g. "01" with the blog's face filled.
+import { labSections, labSectionNumber, type LabSection } from '../lib/site';
+import LabFace from './LabFace.astro';
+
+interface Props { id: LabSection['id']; class?: string; }
+const { id, class: extra } = Astro.props;
+---
+<span class:list={['lab-mark', extra]}>{labSectionNumber(id)}<LabFace face={labSections.findIndex((section) => section.id === id)} /></span>

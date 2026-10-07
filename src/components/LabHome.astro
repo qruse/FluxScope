@@ -1,14 +1,15 @@
 ---
-import { blogPath, categories, categoryPath, type Category } from '../lib/site';
+import { blogPath, categories, categoryPath, labSections, type Category, type LabSection } from '../lib/site';
 import { useTranslations, type Lang } from '../i18n/ui';
-import LabFace from './LabFace.astro';
+import LabMark from './LabMark.astro';
 import LabSketch from './LabSketch.astro';
 
 interface Props { lang: Lang; }
 const { lang } = Astro.props;
 const t = useTranslations(lang);
 const isKo = lang === 'ko';
-// Projects of the lab; the blog is the first one. Add an entry here for each new project.
+// Sections come from labSections in lib/site.ts. The blog has its own entry with live content; the rest are
+// announced but not built yet, so they show a teaser sketch and their status.
 const blog = {
   name: t('site.title'),
   href: blogPath('/', lang),
@@ -16,12 +17,7 @@ const blog = {
     ? '내가 궁금해서 만든 블로그.'
     : 'A blog I started because I was curious.',
 };
-// Announced but not built yet, so they have no page or link. Give each a section path when it launches.
-// Portfolio always stays last, so new projects go above it.
-const upcoming = [
-  { kind: 'projects', name: isKo ? '프로젝트' : 'Projects', status: isKo ? '설계 중' : 'Drafting' },
-  { kind: 'portfolio', name: isKo ? '포트폴리오' : 'Portfolio', status: isKo ? '작업물 모으는 중' : 'Collecting work' },
-] as const;
+const upcoming = labSections.filter((section): section is Exclude<LabSection, { path: string }> => !('path' in section));
 ---
 <h1 class="sr-only">{t('lab.title')}</h1>
 <!-- Background layer behind the home content: scattered pen-drawn triangles gather into two hatched
@@ -43,9 +39,9 @@ const upcoming = [
   <div class="shell">
     <h2 class="home-section-title" id="lab-index-title">{isKo ? '프로젝트' : 'Projects'}</h2>
     <article class="lab-entry is-active" data-face="0">
-      <div class="lab-entry-num">01<LabFace face={0} /></div>
+      <LabMark id="blog" class="lab-entry-num" />
       <div class="lab-entry-copy">
-        <h3><a href={blog.href}>{blog.name}</a></h3>
+        <h3><a class="pen-under" href={blog.href}>{blog.name}</a></h3>
         <p>{blog.description}</p>
         <div class="lab-chips">
           {(Object.keys(categories) as Category[]).map((key) => (
@@ -65,15 +61,15 @@ const upcoming = [
         <p class="lab-more"><a class="quiet-link" href={blog.href}>{isKo ? '블로그에서 전체 보기 →' : 'See all posts on the blog →'}</a></p>
       </section>
     </article>
-    {upcoming.map((item, i) => (
-      <article class="lab-entry is-soon" id={item.kind} data-face={i + 1}>
-        <div class="lab-entry-num">{String(i + 2).padStart(2, '0')}<LabFace face={i + 1} /></div>
+    {upcoming.map((item) => (
+      <article class="lab-entry is-soon" id={item.id} data-face={labSections.indexOf(item)}>
+        <LabMark id={item.id} class="lab-entry-num" />
         <div class="lab-entry-copy">
-          <h3>{item.name}</h3>
+          <h3><span class="pen-under">{isKo ? item.nameKo : item.name}</span></h3>
           <p>{isKo ? '준비 중.' : 'Coming soon.'}</p>
-          <p class="lab-status">{item.status}</p>
+          <p class="lab-status">{isKo ? item.statusKo : item.status}</p>
         </div>
-        <LabSketch kind={item.kind} />
+        <LabSketch kind={item.id} />
       </article>
     ))}
   </div>

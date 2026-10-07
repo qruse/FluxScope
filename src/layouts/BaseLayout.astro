@@ -1,8 +1,10 @@
 ---
 import '../styles/global.css';
-import { blogPath, lab, withBase } from '../lib/site';
+import { blogPath, lab, labSectionPath, labSections, withBase } from '../lib/site';
 import { getLangFromUrl, useTranslations, type Lang } from '../i18n/ui';
 import LabFace from '../components/LabFace.astro';
+import LabMark from '../components/LabMark.astro';
+import ReadingAids from '../components/ReadingAids.astro';
 
 interface Props {
   title?: string;
@@ -172,7 +174,7 @@ const searchUrl = blogPath('/search/', currentLang);
           <a class="brand" href={labUrl} aria-label={`${t('lab.title')} home`}>
             <span>hsl</span><span class="brand-mark" aria-hidden="true"></span>
           </a>
-          {inBlog && <a class="brand-section" href={blogUrl} aria-label={`${t('site.title')} home`}>{currentLang === 'en' ? 'blog' : '블로그'}</a>}
+          {inBlog && <a class="brand-section" href={blogUrl} aria-label={`${t('site.title')} home`}><LabMark id="blog" />{currentLang === 'en' ? 'blog' : '블로그'}</a>}
         </div>
         <nav class="main-nav" aria-label="Main navigation">
           {inBlog ? (
@@ -183,10 +185,7 @@ const searchUrl = blogPath('/search/', currentLang);
             </>
           ) : (
             <>
-              <a href={blogUrl} class="nav-link-major">{t('nav.blog')}</a>
-              {/* Not built yet: these point at their entries on the lab home until they get their own pages. */}
-              <a href={`${labUrl}#projects`} class="nav-link-major">{t('nav.projects')}</a>
-              <a href={`${labUrl}#portfolio`} class="nav-link-major">{t('nav.portfolio')}</a>
+              {labSections.map((section) => <a href={labSectionPath(section, currentLang)} class="nav-link-major">{currentLang === 'en' ? section.name : section.nameKo}</a>)}
             </>
           )}
         </nav>
@@ -208,6 +207,7 @@ const searchUrl = blogPath('/search/', currentLang);
       </div>
     </header>
     <main id="content"><slot /></main>
+    {inBlog && <ReadingAids lang={currentLang} />}
     <footer class="site-footer">
       <div class="shell footer-grid">
         <div>
