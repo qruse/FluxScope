@@ -15,14 +15,13 @@ const blog = {
     : 'Checks prices, benchmarks and marketing claims for AI models, cars and devices against the original sources.',
 };
 ---
-<!-- Scroll-driven intro: a particle mark morphs hsl. → magnifier → cube → document as the page scrolls.
-     Without JS or with reduced motion it shows the hsl. mark as a static block. -->
+<!-- Scroll-linked intro: scattered triangles and small fragments gather into one tetrahedron while the
+     page scrolls normally, then a stem drops onto the divider above the projects. The script builds the SVG;
+     with reduced motion it draws the finished shape, and without JS the section collapses. -->
 <section class="lab-intro" data-lab-intro aria-labelledby="lab-intro-title">
   <h1 class="sr-only" id="lab-intro-title">{t('lab.title')}</h1>
-  <div class="lab-intro-stage">
-    <canvas class="lab-intro-canvas" aria-hidden="true"></canvas>
-    <div class="shell lab-intro-bar" aria-hidden="true"><i><b></b></i></div>
-  </div>
+  <svg class="lab-intro-art" aria-hidden="true"></svg>
+  <div class="shell lab-intro-base" aria-hidden="true"><i></i></div>
 </section>
 
 <section class="lab-projects" aria-labelledby="lab-projects-title">
@@ -59,151 +58,126 @@ const blog = {
 </section>
 
 <script>
-  // Scroll progress drives which shape the particles form; the pointer pushes them aside.
   const root = document.querySelector<HTMLElement>('[data-lab-intro]');
-  const canvas = root?.querySelector('canvas');
-  const ctx = canvas?.getContext('2d');
-  if (root && canvas && ctx) {
-    const stage = root.querySelector<HTMLElement>('.lab-intro-stage')!;
+  const svg = root?.querySelector<SVGSVGElement>('svg');
+  if (root && svg) {
+    type V3 = [number, number, number];
+    const NS = 'http://www.w3.org/2000/svg';
     const live = !matchMedia('(prefers-reduced-motion: reduce)').matches;
-    const ACCENT = 40;
-    let n = 0, w = 0, h = 0, scale = 0, cx = 0, cy = 0;
-    let shapes: Float32Array[] = [];
-    let pos = new Float32Array(0), seed = new Float32Array(0);
-    let stickTop = 0, ink = '', accent = '', running = false, pointer: { x: number; y: number } | null = null;
-    let rand = 7;
-    const rnd = () => ((rand = (rand * 16807) % 2147483647) - 1) / 2147483646;
-
-    // n points spread along polylines (normalized units, about -1..1), with a little thickness.
-    const along = (paths: number[][], count: number, jitter = .035) => {
-      const segs: number[][] = [];
-      for (const p of paths) for (let i = 0; i < p.length - 2; i += 2) segs.push([p[i], p[i + 1], p[i + 2], p[i + 3], Math.hypot(p[i + 2] - p[i], p[i + 3] - p[i + 1])]);
-      const total = segs.reduce((sum, s) => sum + s[4], 0);
-      const out: number[] = [];
-      for (let i = 0; i < count; i++) {
-        let u = ((i + rnd()) / count) * total, k = 0;
-        while (k < segs.length - 1 && u > segs[k][4]) u -= segs[k++][4];
-        const [ax, ay, bx, by, len] = segs[k], f = len ? u / len : 0;
-        out.push(ax + (bx - ax) * f + (rnd() - .5) * jitter * 2, ay + (by - ay) * f + (rnd() - .5) * jitter * 2);
-      }
-      return out;
-    };
-    const circle = (x: number, y: number, r: number, from = 0, to = Math.PI * 2) => {
-      const p: number[] = [];
-      for (let i = 0; i <= 48; i++) { const a = from + ((to - from) * i) / 48; p.push(x + Math.cos(a) * r, y + Math.sin(a) * r); }
-      return p;
-    };
-    // Pixels of "hsl" plus the accent dot, sampled from an offscreen canvas.
-    const word = (count: number) => {
-      const off = document.createElement('canvas'), c = off.getContext('2d')!;
-      off.width = 600; off.height = 300;
-      c.font = `800 220px ${getComputedStyle(root).fontFamily}`;
-      const tw = c.measureText('hsl').width, r = 21, x = (600 - tw - 10 - r * 2) / 2;
-      const sample = (draw: () => void, max: number) => {
-        c.clearRect(0, 0, 600, 300); draw();
-        const data = c.getImageData(0, 0, 600, 300).data, pts: number[] = [];
-        for (let y = 0; y < 300; y += 3) for (let px = 0; px < 600; px += 3) if (data[(y * 600 + px) * 4 + 3] > 128) pts.push((px - 300) / 200, (y - 150) / 200);
-        const out: number[] = [];
-        for (let i = 0; i < max; i++) { const j = Math.floor(rnd() * (pts.length / 2)) * 2; out.push(pts[j] ?? 0, pts[j + 1] ?? 0); }
-        return out;
-      };
-      const dot = sample(() => { c.beginPath(); c.arc(x + tw + 10 + r, 228 - r, r, 0, 7); c.fill(); }, ACCENT);
-      return [...dot, ...sample(() => c.fillText('hsl', x, 228), count - ACCENT)];
-    };
-    const build = () => {
-      rand = 7;
-      n = w < 520 ? 520 : 760;
-      const body = n - ACCENT;
-      const cube = [0, -.62, .54, -.31, .54, .31, 0, .62, -.54, .31, -.54, -.31, 0, -.62];
-      shapes = [
-        word(n),
-        [...along([circle(-.12, -.12, .3, 3.5, 4.4)], ACCENT, .02), ...along([circle(-.12, -.12, .52), [.25, .25, .72, .72]], body, .045)],
-        [...along([[0, 0, -.54, -.31], [0, 0, .54, -.31], [0, 0, 0, .62]], ACCENT, .02), ...along([cube], body, .03)],
-        [...along([[-.36, -.5, .1, -.5]], ACCENT, .03), ...along([[-.55, -.75, .3, -.75, .55, -.5, .55, .75, -.55, .75, -.55, -.75], [.3, -.75, .3, -.5, .55, -.5],
-          [-.36, -.25, .36, -.25], [-.36, -.05, .28, -.05], [-.36, .15, .36, .15], [-.36, .35, .08, .35], [-.36, .55, .24, .55]], body, .025)],
-      ].map((s) => Float32Array.from(s));
-      if (pos.length !== n * 2) {
-        pos = new Float32Array(n * 2);
-        seed = new Float32Array(n * 3);
-        for (let i = 0; i < n; i++) {
-          pos[i * 2] = live ? rnd() * w : 0; pos[i * 2 + 1] = live ? rnd() * h : 0;
-          seed[i * 3] = rnd(); seed[i * 3 + 1] = rnd() * Math.PI * 2; seed[i * 3 + 2] = rnd() * Math.PI * 2;
-        }
-      }
-      if (!live) frame(0, true);
-    };
-    const resize = () => {
-      const dpr = Math.min(devicePixelRatio || 1, 2);
-      w = canvas.clientWidth; h = canvas.clientHeight;
-      canvas.width = Math.round(w * dpr); canvas.height = Math.round(h * dpr);
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      scale = Math.min(w * .42, h * .44); cx = w / 2; cy = h / 2;
-      stickTop = document.querySelector<HTMLElement>('.site-header')?.offsetHeight ?? 0;
-      root.style.setProperty('--intro-top', `${stickTop}px`);
-      build();
-    };
-    const colors = () => {
-      const css = getComputedStyle(document.documentElement);
-      ink = css.getPropertyValue('--ink').trim(); accent = css.getPropertyValue('--accent').trim();
-      if (!live && n) frame(0, true);
-    };
-    const ease = (t: number) => (t < .5 ? 4 * t * t * t : 1 - (-2 * t + 2) ** 3 / 2);
+    let seed = 5;
+    const rnd = () => ((seed = (seed * 16807) % 2147483647) - 1) / 2147483646;
     const clamp = (t: number) => Math.min(1, Math.max(0, t));
-    const windows = [[.06, .26], [.38, .58], [.7, .9]];
+    const ease = (t: number) => 1 - (1 - t) ** 3;
+    const add = <K extends keyof SVGElementTagNameMap>(tag: K, cls: string, parent: Element = svg) => {
+      const el = document.createElementNS(NS, tag);
+      el.setAttribute('class', cls);
+      parent.appendChild(el);
+      return el;
+    };
+    const sub = (a: V3, b: V3): V3 => [a[0] - b[0], a[1] - b[1], a[2] - b[2]];
+    const cross = (a: V3, b: V3): V3 => [a[1] * b[2] - a[2] * b[1], a[2] * b[0] - a[0] * b[2], a[0] * b[1] - a[1] * b[0]];
+    const unit = (a: V3): V3 => { const l = Math.hypot(...a) || 1; return [a[0] / l, a[1] / l, a[2] / l]; };
+    const rotX = (v: V3, a: number): V3 => [v[0], v[1] * Math.cos(a) - v[2] * Math.sin(a), v[1] * Math.sin(a) + v[2] * Math.cos(a)];
+    const rotY = (v: V3, a: number): V3 => [v[0] * Math.cos(a) + v[2] * Math.sin(a), v[1], -v[0] * Math.sin(a) + v[2] * Math.cos(a)];
+    const rotZ = (v: V3, a: number): V3 => [v[0] * Math.cos(a) - v[1] * Math.sin(a), v[0] * Math.sin(a) + v[1] * Math.cos(a), v[2]];
 
-    function frame(time: number, still = false) {
-      let p = 0;
-      if (!still) {
-        const box = root!.getBoundingClientRect();
-        p = clamp((stickTop - box.top) / Math.max(1, box.height - stage.offsetHeight));
-        root!.style.setProperty('--p', p.toFixed(3));
-      }
-      let from = 0, mix = 0;
-      windows.forEach(([a, b], k) => { if (p >= a) { from = k; mix = clamp((p - a) / (b - a)); } });
-      const A = shapes[from], B = shapes[Math.min(from + 1, 3)];
-      ctx!.clearRect(0, 0, w, h);
-      for (const pass of [0, 1]) {
-        ctx!.beginPath();
-        ctx!.fillStyle = pass ? accent : ink;
-        const r = pass ? 2.3 : w < 520 ? 1.35 : 1.6;
-        for (let i = pass ? 0 : ACCENT, end = pass ? ACCENT : n; i < end; i++) {
-          const local = clamp(mix * 1.6 - seed[i * 3] * .6), e = ease(local), swirl = Math.sin(Math.PI * local) * .2;
-          let x = cx + (A[i * 2] + (B[i * 2] - A[i * 2]) * e + Math.cos(seed[i * 3 + 1]) * swirl) * scale;
-          let y = cy + (A[i * 2 + 1] + (B[i * 2 + 1] - A[i * 2 + 1]) * e + Math.sin(seed[i * 3 + 1]) * swirl) * scale;
-          if (!still) {
-            x += Math.sin(time / 900 + seed[i * 3 + 2]) * 1.2; y += Math.cos(time / 1100 + seed[i * 3 + 2]) * 1.2;
-            if (pointer) {
-              const dx = x - pointer.x, dy = y - pointer.y, d = Math.hypot(dx, dy) || 1;
-              if (d < 90) { const push = (1 - d / 90) ** 2 * 42; x += (dx / d) * push; y += (dy / d) * push; }
-            }
-            pos[i * 2] += (x - pos[i * 2]) * .14; pos[i * 2 + 1] += (y - pos[i * 2 + 1]) * .14;
-          } else { pos[i * 2] = x; pos[i * 2 + 1] = y; }
-          ctx!.moveTo(pos[i * 2] + r, pos[i * 2 + 1]);
-          ctx!.arc(pos[i * 2], pos[i * 2 + 1], r, 0, Math.PI * 2);
-        }
-        ctx!.fill();
+    // A regular tetrahedron with its apex up (screen y points down); each face is cut into 9 triangles.
+    const corner = (k: number): V3 => [Math.cos(k * 2.0944) * Math.sqrt(8) / 3, 1 / 3, Math.sin(k * 2.0944) * Math.sqrt(8) / 3];
+    const V: V3[] = [[0, -1, 0], corner(0), corner(1), corner(2)];
+    const stem = add('path', 'lab-intro-stem');
+    const shards: { pts: V3[]; c: V3; off: V3; spin: V3; delay: number; phase: number; el: SVGPolygonElement }[] = [];
+    for (const [ia, ib, ic] of [[0, 1, 2], [0, 2, 3], [0, 3, 1], [1, 3, 2]]) {
+      const at = (i: number, j: number): V3 => {
+        const u = i / 3, v = j / 3, w = 1 - u - v;
+        return [0, 1, 2].map((k) => V[ia][k] * w + V[ib][k] * u + V[ic][k] * v) as V3;
+      };
+      for (let i = 0; i < 3; i++) for (let j = 0; j < 3 - i; j++) {
+        const tris = [[at(i, j), at(i + 1, j), at(i, j + 1)]];
+        if (i + j < 2) tris.push([at(i + 1, j), at(i + 1, j + 1), at(i, j + 1)]);
+        for (const pts of tris) shards.push({
+          pts,
+          c: [0, 1, 2].map((k) => (pts[0][k] + pts[1][k] + pts[2][k]) / 3) as V3,
+          off: [(rnd() - .5) * 2, (rnd() - .5) * 2, (rnd() - .5) * 1.2],
+          spin: [(rnd() - .5) * 6, (rnd() - .5) * 6, (rnd() - .5) * 6],
+          delay: rnd() * .3, phase: rnd() * 6.28,
+          el: add('polygon', 'lab-intro-shard'),
+        });
       }
     }
-    const loop = (time: number) => { if (!running) return; frame(time); requestAnimationFrame(loop); };
+    // Loose fragments that are absorbed into the centre before the faces lock in.
+    const shapes = ['M-6-6h12v12h-12z', 'M0-7L6 4H-6z', 'M-6 0a6 6 0 1 0 12 0a6 6 0 1 0-12 0', 'M-6 0H6M0-6V6', 'M-10 0H10', 'M-2 0a2 2 0 1 0 4 0a2 2 0 1 0-4 0'];
+    const bits = Array.from({ length: 22 }, (_, i) => {
+      const g = add('g', 'lab-intro-bit' + (i % 5 === 0 ? ' is-accent' : ''));
+      add('path', '', g).setAttribute('d', shapes[i % shapes.length]);
+      return { g, x: rnd() - .5, y: rnd() - .5, size: .8 + rnd() * .9, rot: rnd() * 360, spin: (rnd() - .5) * 540, delay: rnd() * .2, phase: rnd() * 6.28 };
+    });
 
-    new MutationObserver(colors).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
-    colors();
-    const start = () => {
-      root.classList.add('is-ready');
-      if (live) root.classList.add('is-live');
-      resize();
-      new ResizeObserver(resize).observe(canvas);
-      if (!live) return;
-      const track = (e: PointerEvent) => { const b = canvas.getBoundingClientRect(); pointer = { x: e.clientX - b.left, y: e.clientY - b.top }; };
-      stage.addEventListener('pointermove', track);
-      stage.addEventListener('pointerdown', track);
-      for (const type of ['pointerleave', 'pointerup', 'pointercancel']) stage.addEventListener(type, () => { pointer = null; });
+    const LIGHT = unit([-.6, -.7, -.9]);
+    let W = 0, H = 0, R = 0, range = 1, running = false, tiltX = 0, tiltY = 0, aimX = 0, aimY = 0;
+    let accent: V3 = [230, 96, 67], bg: V3 = [246, 245, 241], ink: V3 = [27, 38, 43];
+    const rgb = (value: string): V3 => {
+      const hex = value.trim().replace('#', '');
+      return [0, 2, 4].map((i) => parseInt(hex.slice(i, i + 2), 16) || 0) as V3;
+    };
+    const mix = (a: V3, b: V3, t: number): V3 => [0, 1, 2].map((i) => a[i] + (b[i] - a[i]) * t) as V3;
+    const css = (a: V3) => `rgb(${a.map(Math.round).join(',')})`;
+    const colors = () => {
+      const style = getComputedStyle(document.documentElement);
+      accent = rgb(style.getPropertyValue('--accent')); bg = rgb(style.getPropertyValue('--bg')); ink = rgb(style.getPropertyValue('--ink'));
+    };
+    const resize = () => {
+      W = svg.clientWidth; H = svg.clientHeight; R = Math.min(W, H) * .26; range = H * .45;
+      svg.setAttribute('viewBox', `${-W / 2} ${-H / 2} ${W} ${H}`);
+    };
+
+    // p is 0 at the top of the page and 1 once the reader has scrolled 45% of the section.
+    function draw(time: number) {
+      const scrolled = live ? clamp(-root!.getBoundingClientRect().top / range) * range : range;
+      const p = scrolled / range;
+      const cy = (live ? scrolled * .5 : 0) + R * .1; // sinks at half speed while the page moves up
+      tiltX += (aimX - tiltX) * .06; tiltY += (aimY - tiltY) * .06;
+      // At p = 1 an edge faces the reader so two lit faces show; it then sways gently around that angle.
+      const yaw = 3.665 + (p - 1) * 2.2 + (live ? Math.sin(time / 4000) * .25 : 0) + tiltX * .5, pitch = .42 + tiltY * .2, f = R * 5;
+      const faces = shards.map((s) => {
+        const far = 1 - ease(clamp((p - s.delay) / .55)), wobble = far * .04 * Math.sin(time / 1300 + s.phase);
+        const world = s.pts.map((v) => {
+          const d = rotZ(rotY(rotX(sub(v, s.c), s.spin[0] * far), s.spin[1] * far), s.spin[2] * far);
+          const q = rotX(rotY([s.c[0] + d[0], s.c[1] + d[1], s.c[2] + d[2]], yaw), pitch).map((x) => x * R) as V3;
+          return [q[0] + (s.off[0] * W * .48 * far + wobble * R), q[1] + (s.off[1] * H * .5 * far + wobble * R), q[2] + s.off[2] * R * 2 * far] as V3;
+        });
+        const n = unit(cross(sub(world[1], world[0]), sub(world[2], world[0])));
+        return { s, world, lock: clamp((.2 - far) / .2), lit: .1 + .9 * Math.abs(n[0] * LIGHT[0] + n[1] * LIGHT[1] + n[2] * LIGHT[2]), z: world[0][2] + world[1][2] + world[2][2] };
+      }).sort((a, b) => b.z - a.z); // far faces first
+      for (const { s, world, lock, lit } of faces) {
+        s.el.setAttribute('points', world.map(([x, y, z]) => `${(x * f / (f + z)).toFixed(1)},${(y * f / (f + z) + cy).toFixed(1)}`).join(' '));
+        const shade = mix(mix(accent, [0, 0, 0], .3), mix(accent, [255, 255, 255], .4), lit);
+        s.el.style.fill = lock ? css(mix(bg, shade, lock)) : 'none';
+        s.el.style.stroke = css(lock > .5 ? mix(shade, bg, .35) : ink);
+        svg!.appendChild(s.el);
+      }
+      for (const b of bits) {
+        const t = ease(clamp((p - b.delay) / .4)), far = 1 - t;
+        const x = b.x * W * .95 * far + far * 5 * Math.sin(time / 1200 + b.phase);
+        const y = cy + b.y * H * .9 * far + far * 5 * Math.cos(time / 1500 + b.phase);
+        b.g.setAttribute('transform', `translate(${x.toFixed(1)} ${y.toFixed(1)}) rotate(${(b.rot + b.spin * t).toFixed(1)}) scale(${Math.max(0, b.size * (1 - t * 1.05)).toFixed(3)})`);
+      }
+      const end = clamp((p - .8) / .2);
+      stem.setAttribute('d', `M0 ${(cy + R * .75).toFixed(1)}V${(cy + R * .75 + (H / 2 - cy - R * .75) * end).toFixed(1)}`);
+      root!.style.setProperty('--landed', end.toFixed(3));
+      if (running) requestAnimationFrame(draw);
+    }
+
+    root.classList.add('is-ready');
+    colors(); resize();
+    new ResizeObserver(() => { resize(); if (!live) draw(0); }).observe(svg);
+    new MutationObserver(() => { colors(); if (!live) draw(0); }).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+    if (live) {
+      root.addEventListener('pointermove', (e) => { const b = root.getBoundingClientRect(); aimX = (e.clientX - b.left) / b.width - .5; aimY = (e.clientY - b.top) / b.height - .5; });
+      root.addEventListener('pointerleave', () => { aimX = aimY = 0; });
       new IntersectionObserver(([entry]) => {
-        if (entry.isIntersecting && !running) { running = true; requestAnimationFrame(loop); }
+        if (entry.isIntersecting && !running) { running = true; requestAnimationFrame(draw); }
         else if (!entry.isIntersecting) running = false;
       }).observe(root);
-    };
-    const font = `800 220px ${getComputedStyle(root).fontFamily}`;
-    document.fonts.load(font, 'hsl').then(start, start);
+    } else draw(0);
   }
 </script>
