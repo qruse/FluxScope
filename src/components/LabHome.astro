@@ -222,10 +222,12 @@ const upcoming = labSections.filter((section): section is Exclude<LabSection, { 
       return Number(entries[k]?.dataset.face ?? 0);
     };
 
-    // p runs from 0 at the top of the page to 1 after 60% of a viewport of scrolling.
+    // p runs from 0 at the top of the page to 1 after 60% of a viewport of scrolling, or at the page bottom on
+    // a window so tall that the page scrolls less than that.
     function draw() {
       queued = false;
-      const p = live ? clamp(scrollY / (H * .6)) : 1;
+      const range = Math.min(H * .6, document.documentElement.scrollHeight - H);
+      const p = live && range > 1 ? clamp(scrollY / range) : 1;
       const face = pick(), pose = poses[face], k = live ? .1 : 1;
       tiltX += (aimX - tiltX) * .12; tiltY += (aimY - tiltY) * .12;
       turn += turnTo(turn, pose.yaw) * k;
