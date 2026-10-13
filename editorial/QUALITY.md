@@ -33,7 +33,7 @@ Every row must pass. A polished title cannot compensate for fabricated experienc
 | Evidence | Core claims traceable to opened original sources; market/model/date/units stated; calculations reproducible | Human review |
 | Reasoning | Conclusion follows from the actual metric; opinion, calculation and observation remain distinct | Human review |
 | Voice | One coherent question per article; headline titles with a hook the article answers (Korean titles not in 음슴체); natural witty humor grounded in facts; no fake experience, forced drama or repetitive filler | Human review |
-| Structure | Exactly 3 summary bullets; final Q&A with 3–5 answered questions; community immediately before it when present, each reaction linked and Reddit represented | Shared validator |
+| Structure | Exactly 3 summary bullets; final Q&A with 3–5 answered questions; community immediately before it when present, each reaction linked and Reddit or Hacker News represented | Shared validator |
 | Metadata | Correct category; 5–15 unique kebab-case tags; useful title/description/alt; original date/URL preserved | Validator plus human |
 | SEO | Title ≤ 70 chars with the product first; description states the answer; stable slug; body starts at H2; alt text 5–150 chars; no manual SEO tags | Validator plus human |
 | Images | New articles: 4–10 distinct visuals, exactly one generated rough sketch hero plus at least three useful body visuals; previously published articles and dated reference fixtures retain their prior 2–10 range under AGENTS §7; English text and USD labels; meaningful choice among five types; verified labels and dimensions; optimized files | Partial file/structure checks, then visual review |

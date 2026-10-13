@@ -24,7 +24,7 @@ Node.js 22.19 이상에서 `npm ci`, `npm run check`를 실행합니다. 로컬 
 
 ## 글 작성·미리보기·게시
 
-현재 작성자는 조사부터 한영 집필, 이미지, Reddit 원문 확인, 게시와 검증까지 맡습니다. 특정 모델 간 인계는 필수가 아닙니다. 실제 원본은 D1의 공개 게시본이며 저장된 초안은 별도입니다.
+현재 작성자는 조사부터 한영 집필, 이미지, Reddit·Hacker News 원문 확인, 게시와 검증까지 맡습니다. 특정 모델 간 인계는 필수가 아닙니다. 실제 원본은 D1의 공개 게시본이며 저장된 초안은 별도입니다.
 
 - 최신 목록: `GET /api/posts?lang=en`, `GET /api/posts?lang=ko`
 - 게시 본문: `GET /api/posts?lang=<en|ko>&slug=<slug>`

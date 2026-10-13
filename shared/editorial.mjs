@@ -41,7 +41,7 @@ export function validateEditorial(post, { existingPublishedAt, legacyImageFixtur
     const section = prose.slice(headings[ci].index + headings[ci][0].length, headings[ci + 1]?.index ?? prose.length);
     const reactions = section.split(/\r?\n/).filter(line => /^[-*] /.test(line));
     add(reactions.length >= 2 && reactions.length <= 4 && reactions.every(line => /\[[^\]]+\]\(https:\/\/[^\s)]+\)/.test(line)), 'community requires 2–4 reaction bullets, each with an original-source HTTPS link');
-    add(/https:\/\/(?:www\.)?reddit\.com\/r\/[^/\s]+\/comments\//.test(section), 'community must include a Reddit thread or comment source');
+    add(/https:\/\/(?:www\.)?reddit\.com\/r\/[^/\s]+\/comments\/|https:\/\/news\.ycombinator\.com\/item\?id=\d+/.test(section), 'community must include a Reddit or Hacker News thread or comment source');
   }
   const qi = headings.find(h => h[1] === qa);
   const qbody = qi ? prose.slice(qi.index + qi[0].length) : '';

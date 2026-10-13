@@ -37,9 +37,10 @@ test('image cap, ordered types and unique sketch are enforced', () => {
  for (const type of ['source', 'architecture', 'pipeline', 'chart']) assert.deepEqual(changed(p => p.visualTypes[1] = type), []);
 });
 
-test('Sourced Reddit reactions are required', () => {
+test('Sourced Reddit or Hacker News reactions are required', () => {
  assert.ok(changed(p => p.body = p.body.replaceAll(/\[레딧[^\]]*\]\([^)]+\)/g, '출처 없음')).some(e => e.includes('original-source')));
  assert.ok(changed(p => p.body = p.body.replaceAll('www.reddit.com', 'example.com')).some(e => e.includes('Reddit')));
+ assert.deepEqual(changed(p => p.body = p.body.replace(/https:\/\/www\.reddit\.com\/r\/[^)\s]+/g, 'https://news.ycombinator.com/item?id=50059115')), []);
 });
 
 function withImageCount(count) {
