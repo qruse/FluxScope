@@ -119,7 +119,7 @@ const upcoming = labSections.filter((section): section is Exclude<LabSection, { 
     const FACES = [[0, 1, 2], [0, 2, 3], [0, 3, 1], [1, 3, 2]];
     type Shard = { pts: V3[]; c: V3; face: number; sx: number; sy: number; spin: V3; delay: number; el: SVGPolygonElement; trail: SVGLineElement };
     const sides = [-1, 1].map((dir) => {
-      // Speed lines behind the flying shards, then the shards, then the pen trace drawn when the shape locks.
+      // Speed lines behind the flying shards, then the shards.
       const trails = add('g', 'lab-backdrop-trails', svg);
       const g = add('g', 'lab-backdrop-side', svg);
       const shards: Shard[] = [];
@@ -143,11 +143,9 @@ const upcoming = labSections.filter((section): section is Exclude<LabSection, { 
           });
         }
       });
-      const trace = add('path', 'lab-backdrop-trace', svg);
-      trace.setAttribute('pathLength', '1');
-      return { dir, g, trails, trace, shards, x: 0, y: 0 };
+      return { dir, g, trails, shards, x: 0, y: 0 };
     });
-    const fade = (side: (typeof sides)[number], value: string) => { side.g.style.opacity = side.trails.style.opacity = side.trace.style.opacity = value; };
+    const fade = (side: (typeof sides)[number], value: string) => { side.g.style.opacity = side.trails.style.opacity = value; };
     // Loose fragments absorbed into the nearer tetrahedron before the faces lock in.
     const shapes = ['M-6-6h12v12h-12z', 'M0-7L6 4H-6z', 'M-6 0a6 6 0 1 0 12 0a6 6 0 1 0-12 0', 'M-6 0H6M0-6V6', 'M-10 0H10', 'M-2 0a2 2 0 1 0 4 0a2 2 0 1 0-4 0'];
     const bits = Array.from({ length: 22 }, (_, i) => {
@@ -187,9 +185,8 @@ const upcoming = labSections.filter((section): section is Exclude<LabSection, { 
     // The drawn assembly trails the scroll position instead of jumping with it: `shown` eases toward the
     // scroll target over a fraction of a second, so a fast flick still plays out as an animation.
     let shown = -1, lastT = 0;
-    // The finish: a pop, an accent flash and a pen trace of the edges once the shards lock, armed again
-    // whenever the reader scrolls back up; afterwards the shapes breathe slowly so they never look frozen.
-    let lastP = -1, popAt = -1, armed = false;
+    // Once assembled the shapes breathe slowly so they never look frozen.
+    let lastP = -1;
     const glow = [1, 0, 0, 0];
     let accent: V3 = [230, 96, 67], bg: V3 = [246, 245, 241], pen: V3 = [52, 70, 163];
     const rgb = (value: string): V3 => {
@@ -258,24 +255,18 @@ const upcoming = labSections.filter((section): section is Exclude<LabSection, { 
       let moving = Math.abs(aimX - tiltX) + Math.abs(aimY - tiltY) + Math.abs(pose.pitch - pitch) + Math.abs(swing) + Math.abs(swingSpeed) + Math.abs(target - shown);
       glow.forEach((g, i) => { glow[i] = g + ((i === face ? 1 : 0) - g) * k; moving += Math.abs((i === face ? 1 : 0) - glow[i]); });
       moving += Math.abs(turnTo(turn, pose.yaw));
-      // Finish timing: the pop and flash start when the drawn assembly reaches the end on the way down.
       const vel = live && lastP >= 0 ? (p - lastP) / dt : 0;
       lastP = p;
-      // The shards look settled near p = .8 (the eased flight is almost over), so the finish fires there.
-      if (p < .5) armed = true;
-      if (live && armed && p >= .8) { armed = false; popAt = now; }
-      const since = popAt < 0 ? 9 : (now - popAt) / 1000;
-      const pop = since < .7 ? Math.sin(Math.PI * since / .7) * (1 - since / .7) : 0;
-      const flash = since < .9 ? 1 - since / .9 : 0;
+      // The shards look settled near p = .8 (the eased flight is almost over), so breathing starts there.
       const rest = live && p > .8;
       const breathe = rest ? Math.sin(now / 1000 * 1.1) * clamp((p - .8) / .1) : 0;
-      if (since < .9 || rest) moving += 1;
+      if (rest) moving += 1;
       const f = R * 5;
       for (const side of sides) {
         // Exactly one full turn while the shards assemble (p 0 → 1), fast at first and settling at the end,
         // then the shape rests on the active face with a slow breathing sway.
         const yaw = turn + swing + (ease(p) - 1) * TAU * side.dir + tiltX * .5 * side.dir + breathe * .06, tip = pitch + tiltY * .2 + breathe * .03;
-        const Rs = R * (1 + pop * .28), oy = side.y + breathe * R * .05;
+        const oy = side.y + breathe * R * .05;
         if (rail && side.dir > 0) fade(side, String(1 - ease(p)));
         const farAt = (s: Shard, at: number) => 1 - ease(clamp((at - s.delay) / .7));
         // Shards spiral in: the offset from the resting place shrinks and unwinds as they land.
@@ -287,12 +278,12 @@ const upcoming = labSections.filter((section): section is Exclude<LabSection, { 
         const screen = ([x, y, z]: V3): [number, number] => [side.x + x * f / (f + z), oy + y * f / (f + z)];
         const drawn = side.shards.map((s) => {
           const far = farAt(s, p);
-          const centre = rotX(rotY(s.c, yaw), tip).map((x) => x * Rs) as V3;
+          const centre = rotX(rotY(s.c, yaw), tip).map((x) => x * R) as V3;
           const shift = place(s, far, centre);
           const world = s.pts.map((v) => {
             const d = rotZ(rotY(rotX(sub(v, s.c), s.spin[0] * far), s.spin[1] * far), s.spin[2] * far);
             const q = rotX(rotY([s.c[0] + d[0], s.c[1] + d[1], s.c[2] + d[2]], yaw), tip);
-            return [q[0] * Rs + shift[0], q[1] * Rs + shift[1], q[2] * Rs + shift[2]] as V3;
+            return [q[0] * R + shift[0], q[1] * R + shift[1], q[2] * R + shift[2]] as V3;
           });
           // Speed line from where the shard was a moment ago, only while it is moving.
           const lock = clamp((.2 - far) / .2), speed = clamp(Math.abs(vel) * 4) * (1 - lock);
@@ -313,7 +304,7 @@ const upcoming = labSections.filter((section): section is Exclude<LabSection, { 
         }).sort((a, b) => b.z - a.z); // far faces first
         for (const { s, world, far, lock, lit } of drawn) {
           s.el.setAttribute('points', world.map((w) => screen(w).map((v) => v.toFixed(1)).join(',')).join(' '));
-          const on = Math.max(glow[s.face], flash * .55) * lock;
+          const on = glow[s.face] * lock;
           const shade = mix(mix(accent, [0, 0, 0], .3), mix(accent, [255, 255, 255], .4), lit);
           // In flight the outline takes on the accent colour; once locked it settles into pen hatching, or the
           // accent fill on the active entry's face.
@@ -323,14 +314,8 @@ const upcoming = labSections.filter((section): section is Exclude<LabSection, { 
           s.el.style.stroke = css(mix(mix(mix(bg, pen, .35 + .55 * lock), accent, tint), mix(shade, bg, .35), on));
           side.g.appendChild(s.el);
         }
-        // Pen trace around the six edges right after the lock.
-        if (since < .9) {
-          const v = V.map((p3) => screen(rotX(rotY(p3, yaw), tip).map((x) => x * Rs) as V3).map((n) => n.toFixed(1)).join(' '));
-          side.trace.setAttribute('d', `M${v[0]}L${v[1]}L${v[2]}ZM${v[0]}L${v[3]}M${v[1]}L${v[3]}M${v[2]}L${v[3]}`);
-          side.trace.style.strokeDashoffset = String(1 - ease(clamp(since / .55)));
-          side.trace.style.strokeOpacity = String(since < .55 ? 1 : 1 - (since - .55) / .35);
-        } else side.trace.style.strokeOpacity = '0';
-      }      for (const b of bits) {
+      }
+      for (const b of bits) {
         const t = ease(clamp((p - b.delay) / .6)), far = 1 - t;
         const x = b.side.x + (b.x * W - b.side.x) * far, y = b.side.y + (b.y * H - b.side.y) * far;
         b.g.setAttribute('transform', `translate(${x.toFixed(1)} ${y.toFixed(1)}) rotate(${(b.rot + b.spin * t).toFixed(1)}) scale(${Math.max(0, b.size * (1 - t * 1.05)).toFixed(3)})`);
