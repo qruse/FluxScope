@@ -178,6 +178,9 @@ const upcoming = labSections.filter((section): section is Exclude<LabSection, { 
     // back to rest.
     const touch = matchMedia('(hover: none)').matches;
     let lastY = scrollY, swing = 0, swingSpeed = 0;
+    // The drawn assembly trails the scroll position instead of jumping with it: `shown` eases toward the
+    // scroll target over a fraction of a second, so a fast flick still plays out as an animation.
+    let shown = -1, lastT = 0;
     const glow = [1, 0, 0, 0];
     let accent: V3 = [230, 96, 67], bg: V3 = [246, 245, 241], pen: V3 = [52, 70, 163];
     const rgb = (value: string): V3 => {
@@ -224,11 +227,17 @@ const upcoming = labSections.filter((section): section is Exclude<LabSection, { 
 
     // p runs from 0 at the top of the page to 1 after 60% of a viewport of scrolling, or at the page bottom on
     // a window so tall that the page scrolls less than that.
-    function draw() {
+    function draw(now = performance.now()) {
       queued = false;
       const range = Math.min(H * .6, document.documentElement.scrollHeight - H);
-      const p = live && range > 1 ? clamp(scrollY / range) : 1;
-      const face = pick(), pose = poses[face], k = live ? .1 : 1;
+      const target = live && range > 1 ? clamp(scrollY / range) : 1;
+      // Frame-rate independent smoothing: the assembly closes 1 - 1/e of the gap every .45 s, face turns every .3 s.
+      const dt = lastT ? Math.min(.1, (now - lastT) / 1000) : 1 / 60;
+      lastT = now;
+      shown = shown < 0 || !live ? target : shown + (target - shown) * (1 - Math.exp(-dt / .45));
+      if (Math.abs(target - shown) < .0005) shown = target;
+      const p = shown;
+      const face = pick(), pose = poses[face], k = live ? 1 - Math.exp(-dt / .3) : 1;
       tiltX += (aimX - tiltX) * .12; tiltY += (aimY - tiltY) * .12;
       turn += turnTo(turn, pose.yaw) * k;
       pitch += (pose.pitch - pitch) * k;
@@ -237,7 +246,7 @@ const upcoming = labSections.filter((section): section is Exclude<LabSection, { 
         swing += swingSpeed;
       }
       lastY = scrollY;
-      let moving = Math.abs(aimX - tiltX) + Math.abs(aimY - tiltY) + Math.abs(pose.pitch - pitch) + Math.abs(swing) + Math.abs(swingSpeed);
+      let moving = Math.abs(aimX - tiltX) + Math.abs(aimY - tiltY) + Math.abs(pose.pitch - pitch) + Math.abs(swing) + Math.abs(swingSpeed) + Math.abs(target - shown);
       glow.forEach((g, i) => { glow[i] = g + ((i === face ? 1 : 0) - g) * k; moving += Math.abs((i === face ? 1 : 0) - glow[i]); });
       moving += Math.abs(turnTo(turn, pose.yaw));
       const f = R * 5;
