@@ -225,16 +225,16 @@ const upcoming = labSections.filter((section): section is Exclude<LabSection, { 
       return Number(entries[k]?.dataset.face ?? 0);
     };
 
-    // p runs from 0 at the top of the page to 1 after 60% of a viewport of scrolling, or at the page bottom on
+    // p runs from 0 at the top of the page to 1 after 120% of a viewport of scrolling, or at the page bottom on
     // a window so tall that the page scrolls less than that.
     function draw(now = performance.now()) {
       queued = false;
-      const range = Math.min(H * .6, document.documentElement.scrollHeight - H);
+      const range = Math.min(H * 1.2, document.documentElement.scrollHeight - H);
       const target = live && range > 1 ? clamp(scrollY / range) : 1;
-      // Frame-rate independent smoothing: the assembly closes 1 - 1/e of the gap every .45 s, face turns every .3 s.
+      // Frame-rate independent smoothing: the assembly closes 1 - 1/e of the gap every .8 s, face turns every .3 s.
       const dt = lastT ? Math.min(.1, (now - lastT) / 1000) : 1 / 60;
       lastT = now;
-      shown = shown < 0 || !live ? target : shown + (target - shown) * (1 - Math.exp(-dt / .45));
+      shown = shown < 0 || !live ? target : shown + (target - shown) * (1 - Math.exp(-dt / .8));
       if (Math.abs(target - shown) < .0005) shown = target;
       const p = shown;
       const face = pick(), pose = poses[face], k = live ? 1 - Math.exp(-dt / .3) : 1;
@@ -251,10 +251,11 @@ const upcoming = labSections.filter((section): section is Exclude<LabSection, { 
       moving += Math.abs(turnTo(turn, pose.yaw));
       const f = R * 5;
       for (const side of sides) {
-        const yaw = turn + swing + (p - 1) * 2.2 * side.dir + tiltX * .5 * side.dir, tip = pitch + tiltY * .2;
+        // Exactly one full turn while the shards assemble (p 0 → 1), then the shape rests on the active face.
+        const yaw = turn + swing + (p - 1) * TAU * side.dir + tiltX * .5 * side.dir, tip = pitch + tiltY * .2;
         if (rail && side.dir > 0) side.g.style.opacity = String(1 - ease(p));
         const drawn = side.shards.map((s) => {
-          const far = 1 - ease(clamp((p - s.delay) / .55));
+          const far = 1 - ease(clamp((p - s.delay) / .7));
           const centre = rotX(rotY(s.c, yaw), tip).map((x) => x * R) as V3;
           const shift = [(s.sx * W - side.x - centre[0]) * far, (s.sy * H - side.y - centre[1]) * far, -centre[2] * far];
           const world = s.pts.map((v) => {
@@ -277,7 +278,7 @@ const upcoming = labSections.filter((section): section is Exclude<LabSection, { 
         }
       }
       for (const b of bits) {
-        const t = ease(clamp((p - b.delay) / .4)), far = 1 - t;
+        const t = ease(clamp((p - b.delay) / .6)), far = 1 - t;
         const x = b.side.x + (b.x * W - b.side.x) * far, y = b.side.y + (b.y * H - b.side.y) * far;
         b.g.setAttribute('transform', `translate(${x.toFixed(1)} ${y.toFixed(1)}) rotate(${(b.rot + b.spin * t).toFixed(1)}) scale(${Math.max(0, b.size * (1 - t * 1.05)).toFixed(3)})`);
       }
