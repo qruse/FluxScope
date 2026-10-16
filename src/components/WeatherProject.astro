@@ -39,6 +39,7 @@ const vars = isKo
             <tr><th>{isKo ? '기상청' : 'KMA'}</th>{test.map((t) => <td>{t.kma}</td>)}</tr>
           </tbody>
         </table>
+        <p class="wx-cost"><b>{isKo ? '총 비용 약 2만 원' : 'Total cost: about 20,000 KRW'}</b>{isKo ? ' · Colab 구독비와 Claude 토큰 사용량이 전부임' : ' (roughly 15 USD) · just a Colab subscription and Claude tokens'}</p>
         <p class="wx-note">{isKo
           ? '2026년 7월~10월 12일 발표 33번 · ASOS 97곳 · 발표 후 48시간 기준. 한정된 기간의 결과이고 다른 계절·큰 사건까지 이긴다는 뜻은 아님. 기상청 값은 5km 격자 예보라, 관측소별 평균 오차를 보정해 줘도(기온 1.02℃) 우리가 앞섰음.'
           : '33 issuances from July to October 12, 2026 · 97 ASOS stations · 48 hours after issuance. A limited period; it does not show wins in every season or major event. KMA values are 5 km grid forecasts; even with its per-station bias removed (1.02 °C) ours stayed ahead.'}</p>
@@ -495,6 +496,8 @@ const vars = isKo
   .wx-badge th:first-child { text-align: left; }
   .wx-badge .is-ours td { color: var(--accent); font-weight: 800; }
   .wx-note { margin: .7rem 0 0 !important; font-size: .78rem !important; }
+  .wx-cost { margin: .9rem 0 0 !important; padding: .6rem .8rem; border-left: 3px solid var(--accent); background: color-mix(in srgb, var(--accent) 9%, transparent); color: var(--ink) !important; font-size: .9rem !important; font-weight: 650; }
+  .wx-cost b { color: var(--accent); font-weight: 850; }
   .wx-layout { display: grid; grid-template-columns: minmax(0, 1fr) 250px; gap: 2.4rem; padding-block: 2rem 4rem; }
   .wx-main { display: grid; gap: 3rem; min-width: 0; }
   .wx-main > section { display: grid; gap: 1rem; min-width: 0; }

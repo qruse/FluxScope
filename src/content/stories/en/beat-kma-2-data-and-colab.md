@@ -76,5 +76,6 @@ part: 2
 - Box generation started at 7 p.m. on October 15 and ran into the next morning over three sessions
 - 195 runs at five to six minutes each, about 33 compute units
 - A Colab Pro month (about 10,000 KRW) includes 100 units, so all the boxes cost about a third of a month
+- **Counting the Colab subscription and the Claude tokens, the whole project cost about 20,000 KRW (roughly 15 USD)**
 - Cheap enough to feel sorry for the L4 that worked all night
 - Next: pitting untouched Aurora against the KMA
