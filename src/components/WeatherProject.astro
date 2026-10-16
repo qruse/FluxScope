@@ -1,6 +1,7 @@
 ---
 // "Can AI beat the KMA?" project page. The forecast pipeline (weather_forecasting repository, scripts/service.py)
-// uploads latest.json and verify/<base>.json to /api/weather/ once a day; this page draws them with plain SVG.
+// uploads latest.json and verify/<base>.json to /api/weather/ once a day. The page draws them with a small
+// built-in tile map (OpenStreetMap standard tiles) and plain SVG; no map or chart library.
 import { getCollection } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { portfolioPath, projects } from '../lib/site';
@@ -20,8 +21,8 @@ const test = [
   { label: isKo ? '비 F1' : 'Rain F1', ours: '0.41', kma: '0.26' },
 ];
 const vars = isKo
-  ? [['tmax', '최고기온'], ['tmin', '최저기온'], ['rain', '비'], ['wind', '바람'], ['hum', '습도']]
-  : [['tmax', 'High'], ['tmin', 'Low'], ['rain', 'Rain'], ['wind', 'Wind'], ['hum', 'Humidity']];
+  ? [['ta', '기온'], ['pop', '강수확률'], ['ws', '바람'], ['hm', '습도']]
+  : [['ta', 'Temp'], ['pop', 'Rain chance'], ['ws', 'Wind'], ['hm', 'Humidity']];
 ---
 <BaseLayout lang={lang} title={isKo ? project.nameKo : project.name} description={isKo ? project.summaryKo : project.summary}>
   <header class="page-top">
@@ -39,45 +40,68 @@ const vars = isKo
           </tbody>
         </table>
         <p class="wx-note">{isKo
-          ? '2026년 7월~10월 12일 발표 33번 · ASOS 97곳 · 발표 후 48시간 기준. 한정된 기간의 결과이고 다른 계절·큰 사건까지 이긴다는 뜻은 아님.'
-          : '33 issuances from July to October 12, 2026 · 97 ASOS stations · 48 hours after issuance. A limited period; it does not show wins in every season or major event.'}</p>
+          ? '2026년 7월~10월 12일 발표 33번 · ASOS 97곳 · 발표 후 48시간 기준. 한정된 기간의 결과이고 다른 계절·큰 사건까지 이긴다는 뜻은 아님. 기상청 값은 5km 격자 예보라, 관측소별 평균 오차를 보정해 줘도(기온 1.02℃) 우리가 앞섰음.'
+          : '33 issuances from July to October 12, 2026 · 97 ASOS stations · 48 hours after issuance. A limited period; it does not show wins in every season or major event. KMA values are 5 km grid forecasts; even with its per-station bias removed (1.02 °C) ours stayed ahead.'}</p>
       </div>
     </div>
   </header>
 
+  <!-- Weather icons, drawn with the site's pen strokes. -->
+  <svg width="0" height="0" class="wx-sprite" aria-hidden="true">
+    <symbol id="wx-sun" viewBox="0 0 32 32"><circle cx="16" cy="16" r="6" class="i-sun" /><path class="i-ray" d="M16 3v4M16 25v4M3 16h4M25 16h4M6.8 6.8l2.8 2.8M22.4 22.4l2.8 2.8M6.8 25.2l2.8-2.8M22.4 9.6l2.8-2.8" /></symbol>
+    <symbol id="wx-moon" viewBox="0 0 32 32"><path class="i-moon" d="M21 5.5a11 11 0 1 0 5.5 16A9 9 0 0 1 21 5.5z" /></symbol>
+    <symbol id="wx-part" viewBox="0 0 32 32"><circle cx="11" cy="11" r="5" class="i-sun" /><path class="i-ray" d="M11 2v3M2 11h3M4.6 4.6l2 2M17.4 4.6l-2 2M4.6 17.4l2-2" /><path class="i-cloud" d="M10 26h14a5 5 0 0 0 0-10 7 7 0 0 0-13.4 1.6A4.3 4.3 0 0 0 10 26z" /></symbol>
+    <symbol id="wx-partn" viewBox="0 0 32 32"><path class="i-moon" d="M13 3a8 8 0 1 0 4 12.5A6.5 6.5 0 0 1 13 3z" /><path class="i-cloud" d="M10 27h14a5 5 0 0 0 0-10 7 7 0 0 0-13.4 1.6A4.3 4.3 0 0 0 10 27z" /></symbol>
+    <symbol id="wx-cloud" viewBox="0 0 32 32"><path class="i-cloud" d="M8 25h16a6 6 0 0 0 0-12 8 8 0 0 0-15.3 2A5 5 0 0 0 8 25z" /></symbol>
+    <symbol id="wx-rain" viewBox="0 0 32 32"><path class="i-cloud" d="M8 20h16a6 6 0 0 0 0-12 8 8 0 0 0-15.3 2A5 5 0 0 0 8 20z" /><path class="i-drop" d="M11 23l-2 5M17 23l-2 5M23 23l-2 5" /></symbol>
+  </svg>
+
   <div class="wx-layout shell" data-wx data-lang={lang} data-src="/api/weather/">
     <div class="wx-main">
       <section aria-labelledby="wx-fc-title">
-        <h2 id="wx-fc-title" class="wx-h2"><span class="pen-under">{isKo ? '오늘·내일 예보' : 'Today and tomorrow'}</span></h2>
+        <h2 id="wx-fc-title" class="wx-h2"><span class="pen-under">{isKo ? '우리 AI vs 기상청 예보' : 'Our AI vs the KMA forecast'}</span></h2>
         <p class="wx-meta" data-wx-meta>{isKo ? '예보를 불러오는 중…' : 'Loading the forecast…'}</p>
-        <div class="wx-controls" hidden data-wx-controls>
-          <div class="wx-seg" role="group" aria-label={isKo ? '날짜' : 'Day'} data-wx-days></div>
-          <div class="wx-seg" role="group" aria-label={isKo ? '항목' : 'Variable'}>
-            {vars.map(([id, label], i) => <button type="button" data-var={id} aria-pressed={i === 0 ? 'true' : 'false'}>{label}</button>)}
+
+        <div class="wx-now" hidden data-wx-now>
+          <div class="wx-now-head">
+            <label><span class="sr-only">{isKo ? '관측소' : 'Station'}</span><select data-wx-select></select></label>
+            <span class="wx-now-time" data-wx-time></span>
+          </div>
+          <div class="wx-now-cols" data-wx-now-cols></div>
+        </div>
+
+        <div class="wx-mapbox" hidden data-wx-mapbox>
+          <div class="wx-map-bar">
+            <div class="wx-seg" role="group" aria-label={isKo ? '항목' : 'Variable'} data-wx-vars>
+              {vars.map(([id, label], i) => <button type="button" data-var={id} aria-pressed={i === 0 ? 'true' : 'false'}>{label}</button>)}
+            </div>
+            <p class="wx-legend"><b class="o">{isKo ? '우리 AI' : 'Our AI'}</b><b class="k">{isKo ? '기상청' : 'KMA'}</b></p>
+          </div>
+          <div class="wx-map" data-wx-map role="application" aria-label={isKo ? '예보 지도: 끌어서 이동, 휠이나 버튼으로 확대' : 'Forecast map: drag to move, wheel or buttons to zoom'}>
+            <div class="wx-tiles"></div>
+            <div class="wx-pins"></div>
+            <div class="wx-zoom"><button type="button" data-z="1" aria-label={isKo ? '확대' : 'Zoom in'}>+</button><button type="button" data-z="-1" aria-label={isKo ? '축소' : 'Zoom out'}>−</button></div>
+            <p class="wx-attrib">© <a href="https://www.openstreetmap.org/copyright" rel="noopener">OpenStreetMap</a> contributors</p>
+          </div>
+          <div class="wx-slider">
+            <input type="range" min="0" max="47" value="0" data-wx-slider aria-label={isKo ? '예보 시각' : 'Forecast time'} />
+            <div class="wx-slider-days" data-wx-slider-days></div>
           </div>
         </div>
-        <div class="wx-maps" hidden data-wx-maps>
-          <figure><figcaption>{isKo ? '우리 AI' : 'Our AI'}</figcaption><svg viewBox="0 0 582 600" data-map="ours" role="img" aria-label={isKo ? '우리 예보 지도' : 'Our forecast map'}></svg></figure>
-          <figure><figcaption>{isKo ? '기상청' : 'KMA'}</figcaption><svg viewBox="0 0 582 600" data-map="kma" role="img" aria-label={isKo ? '기상청 예보 지도' : 'KMA forecast map'}></svg></figure>
-        </div>
-        <p class="wx-legend" data-wx-legend></p>
 
-        <div class="wx-station" hidden data-wx-station>
-          <label>{isKo ? '관측소' : 'Station'} <select data-wx-select></select></label>
-          <table class="wx-days" data-wx-days-table></table>
-          <svg class="wx-chart" viewBox="0 0 640 250" data-wx-chart role="img" aria-label={isKo ? '시간별 기온과 비' : 'Hourly temperature and rain'}></svg>
-          <p class="wx-key"><span class="k-ours">{isKo ? '우리 AI' : 'Our AI'}</span><span class="k-kma">{isKo ? '기상청' : 'KMA'}</span><span class="k-obs">{isKo ? '관측' : 'Observed'}</span><span>{isKo ? '막대: 비 확률(우리) · 강수량 1mm 이상(기상청)' : 'Bars: rain chance (ours) · 1 mm or more (KMA)'}</span></p>
-        </div>
+        <div class="wx-daily" hidden data-wx-daily></div>
+        <div class="wx-hours-wrap" hidden data-wx-hours-wrap><table class="wx-hours" data-wx-hours></table></div>
       </section>
 
       <section aria-labelledby="wx-week-title">
         <h2 id="wx-week-title" class="wx-h2"><span class="pen-under">{isKo ? '지난 7일 성적표' : 'Last 7 days'}</span></h2>
-        <p class="wx-meta">{isKo ? '지난 발표들을 실제 ASOS 관측과 맞춰 본 결과. 낮을수록 좋은 MAE, 높을수록 좋은 비 F1.' : 'Past issuances checked against ASOS observations. Lower MAE and higher rain F1 are better.'}</p>
+        <p class="wx-meta">{isKo ? '지난 발표들을 실제 ASOS 관측과 맞춰 본 결과. 굵은 쪽이 이긴 쪽, MAE는 낮을수록 · 비 F1은 높을수록 좋음.' : 'Past issuances checked against ASOS observations. Bold marks the winner; lower MAE and higher rain F1 are better.'}</p>
         <div class="wx-table-wrap"><table class="wx-week" data-wx-week></table></div>
         <div class="wx-replay" hidden data-wx-replay>
           <label>{isKo ? '다시 보기' : 'Replay'} <select data-wx-run></select></label>
           <p class="wx-meta" data-wx-replay-meta></p>
           <svg class="wx-chart" viewBox="0 0 640 250" data-wx-replay-chart role="img" aria-label={isKo ? '지난 예보와 관측' : 'Past forecast and observations'}></svg>
+          <p class="wx-key"><span class="k-ours">{isKo ? '우리 AI' : 'Our AI'}</span><span class="k-kma">{isKo ? '기상청' : 'KMA'}</span><span class="k-obs">{isKo ? '관측' : 'Observed'}</span></p>
         </div>
       </section>
     </div>
@@ -96,7 +120,8 @@ const vars = isKo
 
 <script>
   type Series = Record<string, (number | null)[]>;
-  type Run = { base: string; times: string[]; stations: Record<string, { ours: Series; kma: Series; obs: Series }> };
+  type Stn = { ours: Series; kma: Series; obs: Series };
+  type Run = { base: string; times: string[]; stations: Record<string, Stn> };
   type Score = Record<string, number | null>;
   type Site = {
     updated: string; cut: number; forecast: Run;
@@ -111,8 +136,8 @@ const vars = isKo
     const ko = root.dataset.lang === 'ko';
     const $ = <T extends Element>(s: string) => root.querySelector<T>(s)!;
     const T = ko
-      ? { fail: '예보를 불러오지 못했음. 잠시 뒤 다시 열어 주셈.', issued: '발표', updated: '갱신', today: '오늘', tomorrow: '내일', ours: '우리 AI', kma: '기상청', obs: '관측', high: '최고', low: '최저', rainH: '비 시간', wind: '최대 풍속', none: '아직 채점할 지난 예보가 없음', total: '7일 합계', run: '발표', temp: '기온', hum: '습도', ws: '풍속', f1: '비 F1', h: '시간', st: '이 관측소' }
-      : { fail: 'Could not load the forecast. Please try again later.', issued: 'Issued', updated: 'updated', today: 'Today', tomorrow: 'Tomorrow', ours: 'Our AI', kma: 'KMA', obs: 'Observed', high: 'High', low: 'Low', rainH: 'Rain hours', wind: 'Max wind', none: 'No past forecasts to score yet', total: '7-day total', run: 'Issued', temp: 'Temp', hum: 'Humidity', ws: 'Wind', f1: 'Rain F1', h: 'h', st: 'This station' };
+      ? { fail: '예보를 불러오지 못했음. 잠시 뒤 다시 열어 주셈.', issued: '발표', updated: '갱신', ours: '우리 AI', kma: '기상청', obs: '관측', sky: '하늘', temp: '기온', pop: '강수확률', rn: '강수량', ws: '풍속', hm: '습도', am: '오전', pm: '오후', none: '아직 채점할 지난 예보가 없음', total: '7일 합계', run: '발표', f1: '비 F1', st: '이 관측소', wd: ['일', '월', '화', '수', '목', '금', '토'], h: '시' }
+      : { fail: 'Could not load the forecast. Please try again later.', issued: 'Issued', updated: 'updated', ours: 'Our AI', kma: 'KMA', obs: 'Observed', sky: 'Sky', temp: 'Temp', pop: 'Rain chance', rn: 'Rain', ws: 'Wind', hm: 'Humidity', am: 'AM', pm: 'PM', none: 'No past forecasts to score yet', total: '7-day total', run: 'Issued', f1: 'Rain F1', st: 'This station', wd: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'], h: ':00' };
     const src = root.dataset.src!;
     let site: Site;
     try { site = await (await fetch(`${src}latest.json`)).json(); } catch { $('[data-wx-meta]').textContent = T.fail; return; }
@@ -127,71 +152,279 @@ const vars = isKo
     };
     const fmt = (v: number | null | undefined, d = 1) => (v == null || !isFinite(v) ? '–' : v.toFixed(d));
     const day = (iso: string) => iso.slice(0, 10);
-    const label = (iso: string) => `${Number(iso.slice(5, 7))}/${Number(iso.slice(8, 10))}`;
+    const hour = (iso: string) => Number(iso.slice(11, 13));
+    const md = (iso: string) => `${Number(iso.slice(5, 7))}/${Number(iso.slice(8, 10))}`;
+    const dow = (iso: string) => T.wd[new Date(`${day(iso)}T12:00:00Z`).getUTCDay()];
+    const when = (iso: string) => `${md(iso)}(${dow(iso)}) ${hour(iso)}${T.h}`;
     const name = (stn: number | string) => { const s = site.stations.find((x) => String(x.stn) === String(stn)); return s ? (ko ? s.name : s.nameEn) : String(stn); };
-    const fc = site.forecast, cut = site.cut * 100;
+    const fc = site.forecast, cut = site.cut * 100, N = fc.times.length;
+    const units: Record<string, string> = { ta: '°', pop: '%', ws: '', hm: '%' };
+    const digits: Record<string, number> = { ta: 1, pop: 0, ws: 1, hm: 0 };
 
-    // Daily summaries from the hourly forecast: high, low, rainy hours, max wind, mean humidity.
-    const days = [...new Set(fc.times.map(day))].filter((d) => fc.times.filter((t) => day(t) === d).length >= 12).slice(0, 2);
-    const daily = (stn: string, who: 'ours' | 'kma' | 'obs', d: string) => {
-      const s = fc.stations[stn]?.[who];
-      if (!s) return null;
-      const idx = fc.times.map((t, i) => (day(t) === d ? i : -1)).filter((i) => i >= 0);
-      const pick = (k: string) => idx.map((i) => s[k]?.[i]).filter((v): v is number => v != null);
-      const ta = pick('ta'), ws = pick('ws'), hm = pick('hm');
-      const rain = who === 'ours' ? pick('pop').filter((p) => p >= cut).length : pick('rn').filter((r) => r >= 1).length;
-      return { tmax: ta.length ? Math.max(...ta) : null, tmin: ta.length ? Math.min(...ta) : null, rain, wind: ws.length ? Math.max(...ws) : null, hum: hm.length ? hm.reduce((a, b) => a + b, 0) / hm.length : null };
+    // Sky icon: ours from the rain chance and Aurora cloud cover, the KMA from its sky and precipitation codes.
+    const night = (iso: string) => hour(iso) < 6 || hour(iso) >= 19;
+    const sky = (who: 'ours' | 'kma', s: Stn, i: number) => {
+      let k: string | null;
+      if (who === 'ours') {
+        const c = s.ours.cc?.[i];
+        k = (s.ours.pop[i] ?? 0) >= cut ? 'rain' : c == null ? null : c < 30 ? 'sun' : c < 70 ? 'part' : 'cloud';
+      } else {
+        const p = s.kma.pty?.[i], q = s.kma.sky?.[i];
+        k = p != null && p > 0 ? 'rain' : q === 1 ? 'sun' : q === 3 ? 'part' : q === 4 ? 'cloud' : null;
+      }
+      if (k && night(fc.times[i] ?? '')) k = k === 'sun' ? 'moon' : k === 'part' ? 'partn' : k;
+      return k;
     };
+    const icon = (k: string | null, cls = 'wx-i') => (k ? `<svg class="${cls}" aria-hidden="true"><use href="#wx-${k}"/></svg>` : '<span class="wx-i"></span>');
+    const value = (s: Stn | undefined, who: 'ours' | 'kma', v: string, i: number) => s?.[who]?.[v]?.[i] ?? null;
 
-    let curDay = days[0], curVar = 'tmax', curStn = fc.stations['108'] ? '108' : Object.keys(fc.stations)[0];
+    let ti = 0, vKey = 'ta', curStn = fc.stations['108'] ? '108' : Object.keys(fc.stations)[0];
+    // Start at the forecast hour closest to now (Korean time).
+    const nowKst = new Date(Date.now() + 9 * 3600e3).toISOString().slice(0, 13);
+    const near = fc.times.findIndex((t) => t.slice(0, 13) >= nowKst);
+    ti = near < 0 ? N - 1 : near;
     $('[data-wx-meta]').textContent = `${T.issued} ${fc.base.replace('T', ' ')} KST · ${T.updated} ${site.updated.replace('T', ' ')}`;
-    const dayBox = $('[data-wx-days]');
-    days.forEach((d, i) => {
-      const b = document.createElement('button');
-      b.type = 'button'; b.dataset.day = d; b.setAttribute('aria-pressed', String(i === 0));
-      b.textContent = `${i === 0 ? T.today : T.tomorrow} ${label(d)}`;
-      dayBox.appendChild(b);
-    });
-    const press = (box: Element, attr: string, value: string) => box.querySelectorAll<HTMLButtonElement>('button').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset[attr] === value)));
 
-    // Map: same projection as scripts/make_map.py (x = (lon - 124) * cos 36° * 100, y = (38.9 - lat) * 100).
-    const px = (lon: number) => (lon - 124) * 0.80902 * 100, py = (lat: number) => (38.9 - lat) * 100;
-    const color = (v: number, lo: number, hi: number, kind: string) => {
-      const t = hi > lo ? Math.min(1, Math.max(0, (v - lo) / (hi - lo))) : .5;
-      if (kind === 'tmax' || kind === 'tmin') return `hsl(${230 - 230 * t} 70% 52%)`;
-      if (kind === 'wind') return `hsl(170 55% ${78 - 50 * t}%)`;
-      if (kind === 'hum') return `hsl(205 60% ${80 - 48 * t}%)`;
-      return `hsl(215 80% ${70 - 35 * t}%)`;
-    };
-    function drawMaps() {
-      const values: Record<string, Record<string, number | null>> = { ours: {}, kma: {} };
-      for (const who of ['ours', 'kma'] as const) for (const s of site.stations) {
-        const d = daily(String(s.stn), who, curDay);
-        values[who][s.stn] = d ? (d as Record<string, number | null>)[curVar] : null;
-      }
-      const all = Object.values(values).flatMap((v) => Object.values(v)).filter((v): v is number => v != null);
-      const lo = curVar === 'rain' ? 0 : Math.min(...all), hi = curVar === 'rain' ? Math.max(6, ...all) : Math.max(...all);
-      for (const who of ['ours', 'kma'] as const) {
-        const svg = $(`[data-map="${who}"]`);
-        svg.replaceChildren();
-        el('use', { href: '/projects/beat-kma/korea.svg#land', class: 'wx-land' }, svg);
-        for (const s of site.stations) {
-          const v = values[who][s.stn];
-          const c = el('circle', { cx: px(s.lon).toFixed(1), cy: py(s.lat).toFixed(1), r: String(s.stn) === curStn ? 11 : 8, class: `wx-dot${String(s.stn) === curStn ? ' is-on' : ''}`, tabindex: 0 }, svg);
-          (c as SVGElement).style.fill = v == null ? 'transparent' : curVar === 'rain' && v === 0 ? 'var(--bg)' : color(v, lo, hi, curVar);
-          el('title', {}, c, `${name(s.stn)} ${curVar === 'rain' ? `${fmt(v, 0)}${T.h}` : fmt(v)}`);
-          c.addEventListener('click', () => select(String(s.stn)));
-          c.addEventListener('keydown', (e) => { if ((e as KeyboardEvent).key === 'Enter') select(String(s.stn)); });
-        }
-        const sel = site.stations.find((s) => String(s.stn) === curStn);
-        const v = values[who][curStn];
-        if (sel) el('text', { x: Math.min(px(sel.lon) + 14, 520), y: py(sel.lat) + 5, class: 'wx-dot-label' }, svg, `${name(curStn)} ${curVar === 'rain' ? `${fmt(v, 0)}${T.h}` : fmt(v)}`);
-      }
-      const unit = { tmax: '℃', tmin: '℃', rain: ko ? '시간 (1mm 이상)' : ' h (1 mm+)', wind: 'm/s', hum: '%' }[curVar];
-      $('[data-wx-legend]').innerHTML = `<span class="wx-ramp wx-ramp-${curVar}"></span> ${fmt(lo, curVar === 'rain' ? 0 : 1)} – ${fmt(hi, curVar === 'rain' ? 0 : 1)}${unit}`;
+    // ---- Station card for the selected hour
+    function nowCard() {
+      const s = fc.stations[curStn];
+      $('[data-wx-time]').textContent = when(fc.times[ti]);
+      const col = (who: 'ours' | 'kma') => {
+        const rain = who === 'ours' ? `${T.pop} ${fmt(value(s, who, 'pop', ti), 0)}%` : `${T.pop} ${fmt(value(s, who, 'pop', ti), 0)}% · ${T.rn} ${fmt(value(s, who, 'rn', ti))}mm`;
+        return `<div class="wx-now-col is-${who}"><p class="wx-who">${who === 'ours' ? T.ours : T.kma}</p><div class="wx-now-main">${icon(sky(who, s, ti), 'wx-i wx-i-big')}<span class="wx-big">${fmt(value(s, who, 'ta', ti))}°</span></div><p>${rain}</p><p>${T.ws} ${fmt(value(s, who, 'ws', ti))}m/s · ${T.hm} ${fmt(value(s, who, 'hm', ti), 0)}%</p></div>`;
+      };
+      const o = value(s, 'obs' as 'ours', 'ta', ti);
+      $('[data-wx-now-cols]').innerHTML = col('ours') + col('kma') + (o != null ? `<p class="wx-now-obs">${T.obs} ${fmt(o)}°</p>` : '');
     }
 
-    // Hourly chart: temperature lines on top, rain bars below, a dashed line at each midnight.
+    // ---- Tile map (Web Mercator, 256 px tiles): drag to pan, wheel / pinch / buttons to zoom.
+    const box = $<HTMLElement>('[data-wx-map]');
+    const tiles = box.querySelector<HTMLElement>('.wx-tiles')!, pins = box.querySelector<HTMLElement>('.wx-pins')!;
+    const TS = 256, ZMIN = 6, ZMAX = 11;
+    const proj = (lat: number, lon: number, z: number) => {
+      const s = Math.sin(lat * Math.PI / 180), w = TS * 2 ** z;
+      return [(lon + 180) / 360 * w, (.5 - Math.log((1 + s) / (1 - s)) / (4 * Math.PI)) * w];
+    };
+    let z = root.querySelector<HTMLElement>('.wx-main')!.clientWidth < 600 ? 6 : 7;
+    let [cx, cy] = proj(35.9, 127.8, z);
+    const imgs = new Map<string, HTMLImageElement>();
+    // Station tiers: shown as labelled bubbles from this zoom up, as small dots below it.
+    const tier: Record<number, number> = { 108: 6, 105: 6, 133: 6, 156: 6, 143: 6, 159: 6, 184: 6, 101: 7, 146: 7, 136: 7, 138: 7, 168: 7, 102: 7, 115: 7, 165: 8, 112: 8 };
+    const pinEls = site.stations.map((s) => {
+      const b = document.createElement('button');
+      b.type = 'button'; b.className = 'wx-pin'; b.dataset.stn = String(s.stn);
+      b.addEventListener('click', (e) => { if (!moved) select(String(s.stn)); e.stopPropagation(); });
+      pins.appendChild(b);
+      return { s, b };
+    });
+    function clamp() {
+      const [x0, y0] = proj(39.6, 123.3, z), [x1, y1] = proj(32.6, 132.2, z);
+      cx = Math.min(Math.max(cx, x0), x1); cy = Math.min(Math.max(cy, y0), y1);
+    }
+    function drawMap() {
+      clamp();
+      const w = box.clientWidth, h = box.clientHeight, ox = cx - w / 2, oy = cy - h / 2, n = 2 ** z;
+      const keep = new Set<string>();
+      for (let tx = Math.floor(ox / TS); tx <= Math.floor((ox + w) / TS); tx++) for (let ty = Math.floor(oy / TS); ty <= Math.floor((oy + h) / TS); ty++) {
+        if (ty < 0 || ty >= n) continue;
+        const key = `${z}/${tx}/${ty}`;
+        keep.add(key);
+        let img = imgs.get(key);
+        if (!img) {
+          img = new Image(); img.alt = ''; img.draggable = false;
+          img.src = `https://tile.openstreetmap.org/${z}/${((tx % n) + n) % n}/${ty}.png`;
+          imgs.set(key, img); tiles.appendChild(img);
+        }
+        img.style.transform = `translate(${tx * TS - ox}px,${ty * TS - oy}px)`;
+      }
+      for (const [key, img] of imgs) if (!keep.has(key)) { img.remove(); imgs.delete(key); }
+      for (const { s, b } of pinEls) {
+        const [x, y] = proj(s.lat, s.lon, z);
+        const big = z >= (tier[s.stn] ?? 9) || String(s.stn) === curStn;
+        b.classList.toggle('is-dot', !big);
+        b.classList.toggle('is-on', String(s.stn) === curStn);
+        b.style.transform = `translate(${(x - ox).toFixed(1)}px,${(y - oy).toFixed(1)}px)`;
+        b.style.zIndex = String(String(s.stn) === curStn ? 3 : big ? 2 : 1);
+      }
+    }
+    function pinText() {
+      for (const { s, b } of pinEls) {
+        const st = fc.stations[String(s.stn)], o = value(st, 'ours', vKey, ti), k = value(st, 'kma', vKey, ti);
+        b.innerHTML = `<span class="n">${name(s.stn)}</span><span class="o">${fmt(o, digits[vKey])}${units[vKey]}</span><span class="k">${fmt(k, digits[vKey])}${units[vKey]}</span>`;
+        b.title = `${name(s.stn)} · ${T.ours} ${fmt(o, digits[vKey])} · ${T.kma} ${fmt(k, digits[vKey])}`;
+        b.style.setProperty('--c', color(o));
+      }
+    }
+    const color = (v: number | null) => {
+      if (v == null) return 'transparent';
+      const t = { ta: (v + 5) / 40, pop: v / 100, ws: v / 10, hm: v / 100 }[vKey]!;
+      const c = Math.min(1, Math.max(0, t));
+      return vKey === 'ta' ? `hsl(${235 - 235 * c} 72% 52%)` : vKey === 'pop' ? `hsl(212 80% ${88 - 50 * c}%)` : vKey === 'ws' ? `hsl(168 55% ${82 - 50 * c}%)` : `hsl(200 60% ${86 - 48 * c}%)`;
+    };
+    const zoomAt = (dz: number, px = box.clientWidth / 2, py = box.clientHeight / 2) => {
+      const nz = Math.min(ZMAX, Math.max(ZMIN, z + dz));
+      if (nz === z) return;
+      const f = 2 ** (nz - z), w = box.clientWidth, h = box.clientHeight;
+      const wx = cx - w / 2 + px, wy = cy - h / 2 + py;
+      cx = wx * f - px + w / 2; cy = wy * f - py + h / 2; z = nz;
+      drawMap();
+    };
+    let wheelAt = 0;
+    box.addEventListener('wheel', (e) => {
+      e.preventDefault();
+      if (Date.now() - wheelAt < 250) return;
+      wheelAt = Date.now();
+      const r = box.getBoundingClientRect();
+      zoomAt(e.deltaY < 0 ? 1 : -1, e.clientX - r.left, e.clientY - r.top);
+    }, { passive: false });
+    box.querySelectorAll<HTMLButtonElement>('[data-z]').forEach((b) => b.addEventListener('click', () => zoomAt(Number(b.dataset.z))));
+    // Pointers: one drags; two pinch (the layers scale with CSS, then snap to the nearest whole zoom).
+    const pts = new Map<number, [number, number]>();
+    let moved = false, pinch0 = 0, scale = 1, mid: [number, number] = [0, 0];
+    const layers = [tiles, pins];
+    box.addEventListener('pointerdown', (e) => {
+      if ((e.target as HTMLElement).closest('.wx-zoom, .wx-attrib')) return;
+      pts.set(e.pointerId, [e.clientX, e.clientY]); moved = false;
+      if (pts.size === 2) { const [a, b] = [...pts.values()]; pinch0 = Math.hypot(a[0] - b[0], a[1] - b[1]); const r = box.getBoundingClientRect(); mid = [(a[0] + b[0]) / 2 - r.left, (a[1] + b[1]) / 2 - r.top]; }
+    });
+    box.addEventListener('pointermove', (e) => {
+      const p = pts.get(e.pointerId);
+      if (!p) return;
+      if (pts.size === 1) {
+        const dx = e.clientX - p[0], dy = e.clientY - p[1];
+        if (!moved && Math.hypot(dx, dy) < 4) return;
+        if (!moved) box.setPointerCapture(e.pointerId);
+        moved = true; cx -= dx; cy -= dy; pts.set(e.pointerId, [e.clientX, e.clientY]); drawMap();
+      } else if (pts.size === 2) {
+        pts.set(e.pointerId, [e.clientX, e.clientY]);
+        const [a, b] = [...pts.values()];
+        scale = Math.hypot(a[0] - b[0], a[1] - b[1]) / pinch0; moved = true;
+        for (const l of layers) { l.style.transformOrigin = `${mid[0]}px ${mid[1]}px`; l.style.transform = `scale(${scale})`; }
+      }
+    });
+    const up = (e: PointerEvent) => {
+      if (!pts.delete(e.pointerId)) return;
+      if (scale !== 1 && pts.size < 2) {
+        for (const l of layers) l.style.transform = '';
+        zoomAt(Math.round(Math.log2(scale)), mid[0], mid[1]);
+        scale = 1; pts.clear();
+      }
+    };
+    box.addEventListener('pointerup', up); box.addEventListener('pointercancel', up);
+    addEventListener('resize', drawMap);
+
+    // ---- Time slider with day marks
+    const slider = $<HTMLInputElement>('[data-wx-slider]');
+    slider.max = String(N - 1); slider.value = String(ti);
+    $('[data-wx-slider-days]').innerHTML = fc.times.map((t, i) => (i === 0 || hour(t) === 0 ? `<span style="left:${(100 * i / (N - 1)).toFixed(2)}%">${md(t)}(${dow(t)})</span>` : '')).join('');
+    slider.addEventListener('input', () => setTime(Number(slider.value)));
+    const varBox = $('[data-wx-vars]');
+    varBox.addEventListener('click', (e) => {
+      const b = (e.target as HTMLElement).closest<HTMLButtonElement>('button');
+      if (!b?.dataset.var) return;
+      vKey = b.dataset.var;
+      varBox.querySelectorAll('button').forEach((x) => x.setAttribute('aria-pressed', String(x === b)));
+      pinText();
+    });
+
+    // ---- Daily strip: morning / afternoon sky, low / high, highest rain chance
+    function daily() {
+      const s = fc.stations[curStn];
+      const days = [...new Set(fc.times.map(day))].filter((d) => fc.times.filter((t) => day(t) === d).length >= 12);
+      const part = (who: 'ours' | 'kma', d: string, pm: boolean) => {
+        const idx = fc.times.map((t, i) => (day(t) === d && (hour(t) >= 12) === pm ? i : -1)).filter((i) => i >= 0);
+        if (!idx.length) return icon(null);
+        const ks = idx.map((i) => sky(who, s, i)).filter(Boolean) as string[];
+        const pick = ks.includes('rain') ? 'rain' : ks.sort((a, b) => ks.filter((x) => x === b).length - ks.filter((x) => x === a).length)[0] ?? null;
+        return icon(pick ? pick.replace('moon', 'sun').replace('partn', 'part') : null);
+      };
+      const stat = (who: 'ours' | 'kma', d: string) => {
+        const idx = fc.times.map((t, i) => (day(t) === d ? i : -1)).filter((i) => i >= 0);
+        const ta = idx.map((i) => value(s, who, 'ta', i)).filter((v): v is number => v != null);
+        const pop = idx.map((i) => value(s, who, 'pop', i)).filter((v): v is number => v != null);
+        return `<span class="lo">${ta.length ? fmt(Math.min(...ta)) : '–'}°</span><span class="hi">${ta.length ? fmt(Math.max(...ta)) : '–'}°</span><span class="pp">${pop.length ? Math.max(...pop).toFixed(0) : '–'}%</span>`;
+      };
+      $('[data-wx-daily]').innerHTML = days.map((d) => `<div class="wx-day"><p class="wx-day-h">${md(d)} (${dow(d)})</p>`
+        + `<div class="wx-day-row"><span class="wx-who o">${T.ours}</span>${part('ours', d, false)}${part('ours', d, true)}${stat('ours', d)}</div>`
+        + `<div class="wx-day-row"><span class="wx-who k">${T.kma}</span>${part('kma', d, false)}${part('kma', d, true)}${stat('kma', d)}</div></div>`).join('');
+      $('[data-wx-daily]').insertAdjacentHTML('afterbegin', `<p class="wx-day-key"><span>${T.am}</span><span>${T.pm}</span><span>${ko ? '최저' : 'Low'}</span><span>${ko ? '최고' : 'High'}</span><span>${ko ? '비' : 'Rain'}</span></p>`);
+    }
+
+    // ---- Hourly table: one column per hour, temperature curve across the columns
+    const CW = 46;
+    function hours() {
+      const s = fc.stations[curStn];
+      const cells = (f: (i: number) => string, cls = '') => fc.times.map((_, i) => `<td class="${i === ti ? 'is-on ' : ''}${cls}" data-i="${i}">${f(i)}</td>`).join('');
+      const head = fc.times.map((t, i) => `<th class="${i === ti ? 'is-on' : ''}${hour(t) === 0 ? ' is-day' : ''}" data-i="${i}">${i === 0 || hour(t) === 0 ? `<b>${md(t)}</b>` : ''}${hour(t)}${T.h}</th>`).join('');
+      const row = (label: string, body: string, cls = '') => `<tr class="${cls}"><th scope="row">${label}</th>${body}</tr>`;
+      const num = (who: 'ours' | 'kma' | 'obs', v: string, d: number) => cells((i) => fmt(value(s, who as 'ours', v, i), d));
+      const hasObs = s.obs.ta.some((v) => v != null);
+      $('[data-wx-hours]').innerHTML = `<thead><tr><th></th>${head}</tr></thead><tbody>`
+        + row(`${T.sky} <i class="o">${T.ours}</i>`, cells((i) => icon(sky('ours', s, i))))
+        + row(`${T.sky} <i class="k">${T.kma}</i>`, cells((i) => icon(sky('kma', s, i))))
+        + row(T.temp, `<td colspan="${N}" class="wx-curve-cell"><svg class="wx-curve" width="${N * CW}" height="120" data-wx-curve></svg></td>`)
+        + (hasObs ? row(`${T.obs} ${T.temp}`, num('obs', 'ta', 1), 'is-obs') : '')
+        + row(`${T.pop} <i class="o">${T.ours}</i>`, num('ours', 'pop', 0), 'is-o')
+        + row(`${T.pop} <i class="k">${T.kma}</i>`, num('kma', 'pop', 0), 'is-k')
+        + row(`${T.rn} <i class="k">${T.kma}</i>`, cells((i) => { const r = value(s, 'kma', 'rn', i); return r ? fmt(r) : '–'; }), 'is-k')
+        + row(`${T.ws} <i class="o">${T.ours}</i>`, num('ours', 'ws', 1), 'is-o')
+        + row(`${T.ws} <i class="k">${T.kma}</i>`, num('kma', 'ws', 1), 'is-k')
+        + row(`${T.hm} <i class="o">${T.ours}</i>`, num('ours', 'hm', 0), 'is-o')
+        + row(`${T.hm} <i class="k">${T.kma}</i>`, num('kma', 'hm', 0), 'is-k') + '</tbody>';
+      const svg = $('[data-wx-curve]');
+      const all = [s.ours.ta, s.kma.ta, s.obs.ta].flat().filter((v): v is number => v != null);
+      const lo = Math.min(...all) - 1, hi = Math.max(...all) + 1, y = (v: number) => 16 + 88 * (hi - v) / (hi - lo);
+      const path = (vals: (number | null)[], cls: string) => {
+        let d = '';
+        vals.forEach((v, i) => { if (v != null) d += `${d && vals[i - 1] != null ? 'L' : 'M'}${i * CW + CW / 2} ${y(v).toFixed(1)}`; });
+        if (d) el('path', { d, class: cls }, svg);
+      };
+      path(s.kma.ta, 'wx-line-kma'); path(s.ours.ta, 'wx-line-ours');
+      s.obs.ta.forEach((v, i) => { if (v != null) el('circle', { cx: i * CW + CW / 2, cy: y(v), r: 2.5, class: 'wx-obs' }, svg); });
+      s.ours.ta.forEach((v, i) => { if (v != null) el('text', { x: i * CW + CW / 2, y: y(v) - 7, class: 'wx-curve-o' }, svg, fmt(v)); });
+      s.kma.ta.forEach((v, i) => { if (v != null) el('text', { x: i * CW + CW / 2, y: y(v) + 15, class: 'wx-curve-k' }, svg, fmt(v)); });
+    }
+    $('[data-wx-hours]').addEventListener('click', (e) => {
+      const c = (e.target as HTMLElement).closest<HTMLElement>('[data-i]');
+      if (c) setTime(Number(c.dataset.i));
+    });
+
+    function setTime(i: number) {
+      ti = i; slider.value = String(i);
+      nowCard(); pinText();
+      root.querySelectorAll('.wx-hours [data-i]').forEach((c) => c.classList.toggle('is-on', Number((c as HTMLElement).dataset.i) === i));
+    }
+    function select(stn: string) {
+      curStn = stn;
+      stnSelect.value = stn;
+      nowCard(); drawMap(); daily(); hours(); weekTable(); replay();
+      const col = root.querySelector<HTMLElement>(`.wx-hours th[data-i="${ti}"]`);
+      const wrap = $<HTMLElement>('[data-wx-hours-wrap]');
+      if (col) wrap.scrollLeft = Math.max(0, col.offsetLeft - wrap.clientWidth / 3);
+    }
+    const stnSelect = $<HTMLSelectElement>('[data-wx-select]');
+    [...site.stations].sort((a, b) => name(a.stn).localeCompare(name(b.stn), ko ? 'ko' : 'en')).forEach((s) => stnSelect.add(new Option(name(s.stn), String(s.stn))));
+    stnSelect.addEventListener('change', () => select(stnSelect.value));
+
+    // ---- Last 7 days: one row per issuance plus the total and the selected station; the better side is bold.
+    function weekTable() {
+      const tbl = $('[data-wx-week]');
+      const wk = site.week;
+      if (!wk) { tbl.innerHTML = `<caption>${T.none}</caption>`; return; }
+      const cells = (o: Score, k: Score) => [['ta', 2, 1], ['hm', 1, 1], ['ws', 2, 1], ['f1', 2, -1]].map(([key, d, dir]) => {
+        const a = o[key as string], b = k[key as string];
+        const win = a != null && b != null && (dir as number) * ((a as number) - (b as number)) < 0;
+        const lose = a != null && b != null && (dir as number) * ((a as number) - (b as number)) > 0;
+        return `<td><span class="${win ? 'is-win' : ''}">${fmt(a, d as number)}</span><span class="${lose ? 'is-win k' : 'k'}">${fmt(b, d as number)}</span></td>`;
+      }).join('');
+      const row = (th: string, s: { ours: Score; kma: Score }, cls = '') => `<tr class="${cls}"><th>${th}</th>${cells(s.ours, s.kma)}</tr>`;
+      const st = wk.stations[curStn];
+      tbl.innerHTML = `<thead><tr><th>${T.run}</th><th>${T.temp} MAE</th><th>${T.hm} MAE</th><th>${T.ws} MAE</th><th>${T.f1}</th></tr><tr class="wx-sub"><th></th>${`<th><span>${T.ours}</span><span class="k">${T.kma}</span></th>`.repeat(4)}</tr></thead><tbody>`
+        + wk.runs.map((r) => row(when(r.base), r)).join('')
+        + row(T.total, wk.total, 'is-total') + (st ? row(`${T.st}: ${name(curStn)}`, st, 'is-station') : '') + '</tbody>';
+    }
+
+    // ---- Replay: a past issuance against what was observed
     function chart(svg: Element, run: Run, stn: string) {
       svg.replaceChildren();
       const s = run.stations[stn];
@@ -207,9 +440,9 @@ const vars = isKo
         el('text', { x: L - 6, y: y(v) + 4, class: 'wx-axis', 'text-anchor': 'end' }, svg, `${v}°`);
       }
       run.times.forEach((t, i) => {
-        if (t.endsWith('T00:00')) {
+        if (hour(t) === 0) {
           el('line', { x1: x(i) - (W - L - R) / n / 2, x2: x(i) - (W - L - R) / n / 2, y1: top, y2: rt + rh, class: 'wx-midnight' }, svg);
-          el('text', { x: x(i) + 2, y: rt + rh + 14, class: 'wx-axis' }, svg, label(t));
+          el('text', { x: x(i) + 2, y: rt + rh + 14, class: 'wx-axis' }, svg, md(t));
         }
       });
       const line = (vals: (number | null)[], cls: string) => {
@@ -217,8 +450,7 @@ const vars = isKo
         vals.forEach((v, i) => { if (v != null) d += `${d && vals[i - 1] != null ? 'L' : 'M'}${x(i).toFixed(1)} ${y(v).toFixed(1)}`; });
         if (d) el('path', { d, class: cls }, svg);
       };
-      line(s.kma.ta, 'wx-line-kma');
-      line(s.ours.ta, 'wx-line-ours');
+      line(s.kma.ta, 'wx-line-kma'); line(s.ours.ta, 'wx-line-ours');
       s.obs.ta.forEach((v, i) => { if (v != null) el('circle', { cx: x(i), cy: y(v), r: 2.4, class: 'wx-obs' }, svg); });
       const bw = (W - L - R) / n / 2 - .5;
       el('text', { x: L - 6, y: rt + rh / 2 + 4, class: 'wx-axis', 'text-anchor': 'end' }, svg, ko ? '비' : 'rain');
@@ -226,47 +458,6 @@ const vars = isKo
       s.kma.rn.forEach((r, i) => { if (r != null && r >= 1) el('rect', { x: x(i), y: rt + rh * .35, width: bw, height: rh * .65, class: 'wx-bar-kma' }, svg); });
       s.obs.rn.forEach((r, i) => { if (r != null && r >= 1) el('rect', { x: x(i) - bw, y: rt + rh + 2, width: bw * 2, height: 4, class: 'wx-bar-obs' }, svg); });
     }
-
-    function stationTable() {
-      const rows = days.map((d, i) => {
-        const o = daily(curStn, 'ours', d), k = daily(curStn, 'kma', d);
-        const cell = (a: number | null | undefined, b: number | null | undefined, digits = 1, suffix = '') => `<td><b>${fmt(a, digits)}${suffix}</b> <span>${fmt(b, digits)}${suffix}</span></td>`;
-        return `<tr><th>${i === 0 ? T.today : T.tomorrow} ${label(d)}</th>${cell(o?.tmax, k?.tmax)}${cell(o?.tmin, k?.tmin)}${cell(o?.rain, k?.rain, 0, T.h)}${cell(o?.wind, k?.wind)}</tr>`;
-      }).join('');
-      $('[data-wx-days-table]').innerHTML = `<caption>${name(curStn)} · <b>${T.ours}</b> <span>${T.kma}</span></caption><tr><th></th><th>${T.high}</th><th>${T.low}</th><th>${T.rainH}</th><th>${T.wind}</th></tr>${rows}`;
-    }
-
-    const select = (stn: string) => {
-      curStn = stn;
-      $<HTMLSelectElement>('[data-wx-select]').value = stn;
-      drawMaps(); stationTable(); chart($('[data-wx-chart]'), fc, stn); weekTable(); replay();
-    };
-
-    const stnSelect = $<HTMLSelectElement>('[data-wx-select]');
-    [...site.stations].sort((a, b) => name(a.stn).localeCompare(name(b.stn), ko ? 'ko' : 'en')).forEach((s) => stnSelect.add(new Option(name(s.stn), String(s.stn))));
-    stnSelect.addEventListener('change', () => select(stnSelect.value));
-    dayBox.addEventListener('click', (e) => { const b = (e.target as HTMLElement).closest('button'); if (b?.dataset.day) { curDay = b.dataset.day; press(dayBox, 'day', curDay); drawMaps(); } });
-    const varBox = root.querySelectorAll('.wx-seg')[1];
-    varBox.addEventListener('click', (e) => { const b = (e.target as HTMLElement).closest('button'); if (b?.dataset.var) { curVar = b.dataset.var; press(varBox, 'var', curVar); drawMaps(); } });
-    for (const s of ['[data-wx-controls]', '[data-wx-maps]', '[data-wx-station]']) $<HTMLElement>(s).hidden = false;
-
-    // Last 7 days: one row per issuance plus the total and the selected station; the better side is bold.
-    function weekTable() {
-      const box = $('[data-wx-week]');
-      const wk = site.week;
-      if (!wk) { box.innerHTML = `<caption>${T.none}</caption>`; return; }
-      const cells = (o: Score, k: Score) => [['ta', 2, 1], ['hm', 1, 1], ['ws', 2, 1], ['f1', 2, -1]].map(([key, d, dir]) => {
-        const a = o[key as string], b = k[key as string];
-        const win = a != null && b != null && (dir as number) * ((a as number) - (b as number)) < 0;
-        return `<td class="${win ? 'is-win' : ''}">${fmt(a, d as number)}<span>${fmt(b, d as number)}</span></td>`;
-      }).join('');
-      const row = (th: string, s: { ours: Score; kma: Score }, cls = '') => `<tr class="${cls}"><th>${th}</th>${cells(s.ours, s.kma)}</tr>`;
-      const st = wk.stations[curStn];
-      box.innerHTML = `<thead><tr><th>${T.run}</th><th>${T.temp}</th><th>${T.hum}</th><th>${T.ws}</th><th>${T.f1}</th></tr><tr class="wx-sub"><th></th>${`<th>${T.ours} <span>${T.kma}</span></th>`.repeat(4)}</tr></thead><tbody>`
-        + wk.runs.map((r) => row(r.base.replace('T', ' ').slice(5, 13), r)).join('')
-        + row(T.total, wk.total, 'is-total') + (st ? row(`${T.st}: ${name(curStn)}`, st, 'is-station') : '') + '</tbody>';
-    }
-
     const runSelect = $<HTMLSelectElement>('[data-wx-run]');
     const cache: Record<string, Run> = {};
     async function replay() {
@@ -278,53 +469,107 @@ const vars = isKo
       $('[data-wx-replay-meta]').textContent = `${name(curStn)} · ${T.issued} ${base.replace('T', ' ')}`;
       chart($('[data-wx-replay-chart]'), cache[key], curStn);
     }
-    site.week?.runs.slice().reverse().forEach((r) => runSelect.add(new Option(r.base.replace('T', ' '), r.base)));
+    site.week?.runs.slice().reverse().forEach((r) => runSelect.add(new Option(when(r.base), r.base)));
     runSelect.addEventListener('change', replay);
-    select(curStn);
+
+    for (const s of ['[data-wx-now]', '[data-wx-mapbox]', '[data-wx-daily]', '[data-wx-hours-wrap]']) $<HTMLElement>(s).hidden = false;
+    pinText(); select(curStn); setTime(ti);
   }
 </script>
 
 <!-- Page-only styles stay inline in this page's HTML so they do not grow the site-wide CSS bundle. -->
 <style is:inline>
+  .wx-sprite { position: absolute; }
+  .i-sun { fill: #f4b740; stroke: #d9822b; stroke-width: 1.6; }
+  .i-ray { fill: none; stroke: #d9822b; stroke-width: 2; stroke-linecap: round; }
+  .i-moon { fill: #f2d98a; stroke: #b99a3c; stroke-width: 1.6; stroke-linejoin: round; }
+  .i-cloud { fill: var(--surface); stroke: var(--muted); stroke-width: 1.8; stroke-linejoin: round; }
+  .i-drop { fill: none; stroke: #3b82d6; stroke-width: 2.2; stroke-linecap: round; }
+  .wx-i { display: inline-block; width: 28px; height: 28px; vertical-align: middle; }
+  .wx-i-big { width: 56px; height: 56px; }
   .wx-badge { max-width: 640px; margin-top: 1.6rem; padding: 1rem 1.2rem; background: var(--surface); box-shadow: 0 1px 2px rgba(0, 0, 0, .08), 0 12px 20px -16px rgba(0, 0, 0, .45); }
   .wx-badge-title { margin: 0 0 .6rem !important; color: var(--ink) !important; font-weight: 800; }
   .wx-badge-title::before { content: '✓ '; color: var(--accent); }
-  .wx-badge table, .wx-days, .wx-week { width: 100%; border-collapse: collapse; font-size: .86rem; font-variant-numeric: tabular-nums; }
+  .wx-badge table, .wx-week { width: 100%; border-collapse: collapse; font-size: .86rem; font-variant-numeric: tabular-nums; }
   .wx-badge th, .wx-badge td { padding: .3rem .4rem; border-bottom: 1px solid var(--line); text-align: right; }
   .wx-badge th:first-child { text-align: left; }
   .wx-badge .is-ours td { color: var(--accent); font-weight: 800; }
   .wx-note { margin: .7rem 0 0 !important; font-size: .78rem !important; }
   .wx-layout { display: grid; grid-template-columns: minmax(0, 1fr) 250px; gap: 2.4rem; padding-block: 2rem 4rem; }
   .wx-main { display: grid; gap: 3rem; min-width: 0; }
-  .wx-h2 { margin: 0 0 .6rem; font-size: 1.5rem; letter-spacing: -.03em; }
-  .wx-meta { margin: 0 0 1rem; color: var(--muted); font-size: .86rem; }
-  .wx-controls { display: flex; flex-wrap: wrap; gap: .6rem 1rem; margin-bottom: 1rem; }
+  .wx-main > section { display: grid; gap: 1rem; min-width: 0; }
+  .wx-h2 { margin: 0; font-size: 1.5rem; letter-spacing: -.03em; }
+  .wx-meta { margin: 0; color: var(--muted); font-size: .86rem; }
+  .wx-card, .wx-now, .wx-mapbox, .wx-day, .wx-hours-wrap { background: var(--surface); box-shadow: 0 1px 2px rgba(0, 0, 0, .08), 0 12px 20px -16px rgba(0, 0, 0, .45); }
+  .wx-now { padding: 1rem 1.2rem; }
+  .wx-now-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: .6rem; }
+  .wx-now-head select, .wx-replay select { padding: .4rem .6rem; border: 1px solid var(--line); border-radius: 8px; background: var(--bg); color: var(--ink); font: inherit; font-weight: 800; font-size: 1.05rem; }
+  .wx-now-time { color: var(--muted); font-weight: 750; font-size: .9rem; }
+  .wx-now-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: .8rem; }
+  .wx-now-col { padding: .7rem .9rem; border-left: 3px solid var(--accent); }
+  .wx-now-col.is-kma { border-color: var(--pen); }
+  .wx-now-col p { margin: .2rem 0 0; color: var(--muted); font-size: .84rem; }
+  .wx-now-col .wx-who { margin: 0; color: var(--accent); font-weight: 850; font-size: .8rem; letter-spacing: .06em; }
+  .wx-now-col.is-kma .wx-who { color: var(--pen); }
+  .wx-now-main { display: flex; align-items: center; gap: .6rem; }
+  .wx-big { font-size: 2.6rem; font-weight: 800; letter-spacing: -.04em; font-variant-numeric: tabular-nums; }
+  .wx-now-obs { grid-column: 1 / -1; margin: 0; color: var(--ink); font-size: .84rem; font-weight: 750; }
+  .wx-mapbox { padding: .8rem; }
+  .wx-map-bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: .5rem; margin-bottom: .6rem; }
   .wx-seg { display: inline-flex; flex-wrap: wrap; gap: .3rem; }
   .wx-seg button { padding: .4rem .8rem; border: 1px solid var(--line); border-radius: 999px; background: var(--bg); color: var(--ink); font: inherit; font-size: .82rem; font-weight: 700; cursor: pointer; }
   .wx-seg button[aria-pressed='true'] { border-color: var(--ink); background: var(--ink); color: var(--bg); }
-  .wx-maps { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
-  .wx-maps figure { margin: 0; padding: .6rem; background: var(--surface); box-shadow: 0 1px 2px rgba(0, 0, 0, .08); }
-  .wx-maps figcaption { font-weight: 800; font-size: .9rem; }
-  .wx-maps figure:first-child figcaption { color: var(--accent); }
-  .wx-maps svg { display: block; width: 100%; height: auto; }
-  .wx-land { fill: var(--soft); stroke: var(--line); stroke-width: 1.5; }
-  .wx-dot { stroke: var(--ink); stroke-width: 1; cursor: pointer; }
-  .wx-dot.is-on { stroke-width: 3; }
-  .wx-dot-label { font-size: 22px; font-weight: 800; fill: var(--ink); paint-order: stroke; stroke: var(--surface); stroke-width: 5px; }
-  .wx-legend { display: flex; align-items: center; gap: .5rem; margin: .6rem 0 0; color: var(--muted); font-size: .8rem; }
-  .wx-ramp { display: inline-block; width: 110px; height: 10px; border: 1px solid var(--line); background: linear-gradient(90deg, hsl(230 70% 52%), hsl(115 70% 52%), hsl(0 70% 52%)); }
-  .wx-ramp-rain { background: linear-gradient(90deg, hsl(215 80% 70%), hsl(215 80% 35%)); }
-  .wx-ramp-wind { background: linear-gradient(90deg, hsl(170 55% 78%), hsl(170 55% 28%)); }
-  .wx-ramp-hum { background: linear-gradient(90deg, hsl(205 60% 80%), hsl(205 60% 32%)); }
-  .wx-station { margin-top: 1.6rem; }
-  .wx-station label, .wx-replay label { font-weight: 800; font-size: .9rem; }
-  .wx-station select, .wx-replay select { margin-left: .4rem; padding: .35rem .5rem; border: 1px solid var(--line); border-radius: 6px; background: var(--bg); color: var(--ink); font: inherit; }
-  .wx-days { margin: 1rem 0; }
-  .wx-days caption { margin-bottom: .4rem; text-align: left; font-weight: 800; }
-  .wx-days th, .wx-days td, .wx-week th, .wx-week td { padding: .4rem .45rem; border-bottom: 1px solid var(--line); text-align: right; white-space: nowrap; }
-  .wx-days th:first-child, .wx-week th:first-child { text-align: left; }
-  :is(.wx-days, .wx-week, .wx-days caption) b { color: var(--accent); }
-  :is(.wx-days, .wx-week) span { margin-left: .35rem; color: var(--muted); font-size: .8em; }
+  .wx-legend { display: flex; gap: .8rem; margin: 0; font-size: .8rem; }
+  .wx-legend b::before { content: ''; display: inline-block; width: .7rem; height: .7rem; margin-right: .3rem; border-radius: 2px; vertical-align: -.05rem; }
+  .wx-legend .o { color: var(--accent); } .wx-legend .o::before { background: var(--accent); }
+  .wx-legend .k { color: var(--pen); } .wx-legend .k::before { background: var(--pen); }
+  .wx-map { position: relative; height: min(68vh, 560px); overflow: hidden; background: var(--soft); touch-action: none; cursor: grab; user-select: none; }
+  .wx-map:active { cursor: grabbing; }
+  .wx-tiles, .wx-pins { position: absolute; inset: 0; }
+  .wx-tiles img { position: absolute; left: 0; top: 0; width: 256px; height: 256px; max-width: none; pointer-events: none; }
+  [data-theme='dark'] .wx-tiles { filter: invert(1) hue-rotate(180deg) brightness(.85) contrast(.9); }
+  .wx-pin { position: absolute; left: 0; top: 0; display: grid; grid-template-columns: auto auto; gap: 0 .3rem; margin: 0; padding: .2rem .45rem .25rem; translate: -50% calc(-100% - 7px); border: 1px solid rgba(0, 0, 0, .18); border-top: 4px solid var(--c); border-radius: 6px; background: var(--surface); color: var(--ink); font: inherit; font-size: .74rem; line-height: 1.25; white-space: nowrap; box-shadow: 0 2px 6px rgba(0, 0, 0, .22); cursor: pointer; }
+  .wx-pin::after { content: ''; position: absolute; left: 50%; bottom: -6px; width: 8px; height: 8px; translate: -50% 0; rotate: 45deg; background: var(--surface); border-right: 1px solid rgba(0, 0, 0, .18); border-bottom: 1px solid rgba(0, 0, 0, .18); }
+  .wx-pin .n { grid-column: 1 / -1; font-weight: 800; text-align: center; }
+  .wx-pin .o { color: var(--accent); font-weight: 850; font-variant-numeric: tabular-nums; }
+  .wx-pin .k { color: var(--pen); font-weight: 750; font-variant-numeric: tabular-nums; }
+  .wx-pin.is-on { outline: 2.5px solid var(--ink); }
+  .wx-pin.is-dot { width: 12px; height: 12px; padding: 0; translate: -50% -50%; border: 1.5px solid var(--surface); border-radius: 50%; background: var(--c); font-size: 0; box-shadow: 0 1px 3px rgba(0, 0, 0, .4); }
+  .wx-pin.is-dot::after { display: none; }
+  .wx-zoom { position: absolute; right: .6rem; top: .6rem; display: grid; z-index: 5; }
+  .wx-zoom button { width: 34px; height: 34px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); font-size: 1.2rem; font-weight: 700; cursor: pointer; }
+  .wx-zoom button:first-child { border-radius: 8px 8px 0 0; } .wx-zoom button:last-child { border-top: 0; border-radius: 0 0 8px 8px; }
+  .wx-attrib { position: absolute; right: 0; bottom: 0; z-index: 5; margin: 0; padding: .1rem .4rem; background: rgba(255, 255, 255, .8); color: #333; font-size: .66rem; }
+  .wx-attrib a { color: inherit; }
+  .wx-slider { position: relative; padding: .8rem .4rem 1.4rem; }
+  .wx-slider input { width: 100%; accent-color: var(--accent); }
+  .wx-slider-days span { position: absolute; bottom: 0; translate: -10% 0; color: var(--muted); font-size: .72rem; font-weight: 750; white-space: nowrap; }
+  .wx-daily { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: .8rem; background: none; box-shadow: none; }
+  .wx-day-key { grid-column: 1 / -1; display: none; }
+  .wx-day { padding: .8rem 1rem; }
+  .wx-day-h { margin: 0 0 .4rem; font-weight: 850; }
+  .wx-day-row { display: grid; grid-template-columns: 4.6rem 32px 32px 1fr 1fr 1fr; align-items: center; gap: .3rem; padding: .2rem 0; font-variant-numeric: tabular-nums; font-size: .9rem; }
+  .wx-day-row .wx-who { font-size: .76rem; font-weight: 850; }
+  .wx-who.o { color: var(--accent); } .wx-who.k { color: var(--pen); }
+  .wx-day-row .lo { color: #3b82d6; font-weight: 750; text-align: right; }
+  .wx-day-row .hi { color: #e0533d; font-weight: 750; text-align: right; }
+  .wx-day-row .pp { color: var(--muted); text-align: right; }
+  .wx-hours-wrap { overflow-x: auto; }
+  .wx-hours { border-collapse: collapse; font-size: .78rem; font-variant-numeric: tabular-nums; }
+  .wx-hours th, .wx-hours td { min-width: 46px; width: 46px; padding: .3rem 0; border-bottom: 1px solid var(--line); text-align: center; white-space: nowrap; }
+  .wx-hours th[scope='row'], .wx-hours thead th:first-child { position: sticky; left: 0; z-index: 2; min-width: 7.4rem; padding: .3rem .6rem; background: var(--surface); text-align: left; font-weight: 750; }
+  .wx-hours th[scope='row'] i { font-style: normal; font-size: .72rem; }
+  .wx-hours i.o, .wx-hours .is-o td { color: var(--accent); } .wx-hours i.k, .wx-hours .is-k td { color: var(--pen); }
+  .wx-hours .is-obs td { font-weight: 800; }
+  .wx-hours thead th { color: var(--muted); font-weight: 700; cursor: pointer; }
+  .wx-hours thead th b { display: block; color: var(--ink); }
+  .wx-hours thead th.is-day { border-left: 1px dashed var(--muted); }
+  .wx-hours td[data-i], .wx-hours th[data-i] { cursor: pointer; }
+  .wx-hours .is-on { background: color-mix(in srgb, var(--accent) 12%, transparent); }
+  .wx-hours td.wx-curve-cell { padding: 0; text-align: left; }
+  .wx-curve { display: block; overflow: visible; }
+  .wx-curve-o, .wx-curve-k { font-size: 10.5px; text-anchor: middle; font-weight: 750; }
+  .wx-curve-o { fill: var(--accent); } .wx-curve-k { fill: var(--pen); }
   .wx-chart { display: block; width: 100%; height: auto; margin-top: .4rem; overflow: visible; }
   .wx-grid { stroke: var(--line); stroke-width: 1; }
   .wx-midnight { stroke: var(--muted); stroke-dasharray: 3 4; opacity: .6; }
@@ -342,25 +587,32 @@ const vars = isKo
   .wx-key .k-ours::before { background: var(--accent); }
   .wx-key .k-kma::before { background: var(--pen); }
   .wx-key .k-obs::before { width: 6px; height: 6px; border-radius: 50%; background: var(--ink); }
-  .wx-key span:last-child::before { display: none; }
-  .wx-table-wrap { overflow-x: auto; }
-  .wx-week .wx-sub th { color: var(--accent); font-size: .76rem; }
-  .wx-week td.is-win { color: var(--accent); font-weight: 800; }
-  .wx-week .is-total th, .wx-week .is-total td { border-top: 2px solid var(--ink); font-weight: 800; }
+  .wx-table-wrap { overflow-x: auto; background: var(--surface); box-shadow: 0 1px 2px rgba(0, 0, 0, .08); }
+  .wx-week th, .wx-week td { padding: .5rem .6rem; border-bottom: 1px solid var(--line); text-align: right; white-space: nowrap; }
+  .wx-week th:first-child { text-align: left; }
+  .wx-week td span { display: inline-block; min-width: 3.2rem; color: var(--accent); }
+  .wx-week td span.k, .wx-week .wx-sub span.k { color: var(--pen); }
+  .wx-week .wx-sub th { font-size: .74rem; color: var(--accent); }
+  .wx-week .wx-sub span { display: inline-block; min-width: 3.2rem; }
+  .wx-week .is-win { font-weight: 850; }
+  .wx-week td span:not(.is-win) { opacity: .75; }
+  .wx-week .is-total th, .wx-week .is-total td { border-top: 2px solid var(--ink); }
   .wx-week .is-station th { color: var(--pen); }
-  .wx-replay { margin-top: 1.4rem; }
-  .wx-replay .wx-meta { margin: .5rem 0 0; }
+  .wx-replay { padding: 1rem 1.2rem; background: var(--surface); box-shadow: 0 1px 2px rgba(0, 0, 0, .08); }
+  .wx-replay label { font-weight: 800; font-size: .9rem; }
   .wx-side { align-self: start; position: sticky; top: 1.2rem; padding: 1.1rem 1.2rem; background: var(--surface); box-shadow: 0 1px 2px rgba(0, 0, 0, .08), 0 12px 20px -16px rgba(0, 0, 0, .45); }
   .wx-side ol { margin: .8rem 0 0; padding: 0; list-style: none; display: grid; gap: .8rem; }
   .wx-side a { display: grid; gap: .15rem; font-size: .9rem; font-weight: 700; line-height: 1.4; }
   .wx-side a span { color: var(--accent); font-size: .74rem; font-weight: 850; letter-spacing: .08em; }
   .wx-side a:hover { color: var(--accent); }
   .wx-side-note { margin: 1.1rem 0 0; padding-top: .9rem; border-top: 1px solid var(--line); color: var(--muted); font-size: .8rem; line-height: 1.55; }
-  @media (max-width: 860px) {
+  @media (max-width: 960px) {
     .wx-layout { grid-template-columns: 1fr; }
     .wx-side { position: static; }
   }
   @media (max-width: 560px) {
-    .wx-maps { grid-template-columns: 1fr; }
+    .wx-now-cols { grid-template-columns: 1fr; }
+    .wx-big { font-size: 2.2rem; }
+    .wx-map { height: 62vh; }
   }
 </style>

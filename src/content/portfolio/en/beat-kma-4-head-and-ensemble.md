@@ -66,6 +66,18 @@ Test period (2026-07 to 10-12): 33 issuances × 97 stations × 48 hours. Models 
 - The win covers this test period, these 97 stations and 48 hours after issuance
 - There is no evidence yet for every season or for big events like typhoons and heavy snow
 - The KMA side is its 5 km grid value at each station, not the worded regional forecast forecasters actually issue
+- That part is a bit unfair. The KMA short-range forecast is one 5 km cell, not the station, while our heads were trained on station observations, so they got a free point correction
+- So the KMA got the same favour: its mean error per station (and per station and hour) on validation was subtracted from its test forecasts
+
+| Test MAE | Our ensemble | KMA as is | KMA + station fix | KMA + station-hour fix |
+|---|---|---|---|---|
+| Temp | **0.836 °C** | 1.077 °C | 1.033 °C | 1.019 °C |
+| Humidity | **4.54%** | 6.51% | 6.33% | 6.17% |
+| Wind | **0.577 m/s** | 0.963 m/s | 0.887 m/s | 0.877 m/s |
+
+- The temperature gap shrank from 0.24 °C to 0.18 °C, so about a quarter of it was grid vs point
+- The ranking still held: against the corrected KMA we were 18% lower on temperature, 27% on humidity and 34% on wind
+- The KMA grid missed most at valley and mountain stations such as Yangsan (−1.3 °C), Bukchangwon (−1.2 °C) and Inje (−1.1 °C)
 - Rain has a long way to go; being off by one hour counts as a miss, and timing was the hardest part
 
 ## An L4 that worked all day
