@@ -1,4 +1,6 @@
 @import "tailwindcss";
+/* The portfolio styles itself inline; its long copy would otherwise turn stray words into utility classes. */
+@source not "../components/PortfolioIndex.astro";
 @import "pretendard/dist/web/variable/pretendardvariable-dynamic-subset.css";
 
 :root {
