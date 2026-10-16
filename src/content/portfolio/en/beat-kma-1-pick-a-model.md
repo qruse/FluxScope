@@ -1,5 +1,5 @@
 ---
-title: "Can AI beat the KMA? ① Whose shoulders to stand on: Aurora"
+title: "Can AI beat the KMA? Which AI model should I use?"
 description: "Picking a pretrained global AI weather model that forecasts hour by hour and fits on one L4 GPU, and why Aurora 1.5 won."
 publishedAt: 2026-10-16
 lang: en

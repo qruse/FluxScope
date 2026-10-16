@@ -1,5 +1,5 @@
 ---
-title: "Can AI beat the KMA? ④ A head, an ensemble, and a win in the test period"
+title: "Added a head and fine-tuned it. So, how did it go?!"
 description: "Freezing Aurora, adding a station correction head, and mixing LightGBM with neural heads into an ensemble that beat the KMA on four metrics in the test period, with its limits."
 publishedAt: 2026-10-16
 lang: en
@@ -86,5 +86,6 @@ Test period (2026-07 to 10-12): 33 issuances × 97 stations × 48 hours. Models 
 
 - For now the service runs a two-day forecast from the 05:00 KST issuance every day
 - Our forecast and the KMA's sit side by side, with last week's scores against observations ([project page](/en/projects/beat-kma/))
+- One more teaser: a US edition is coming soon, up against the US National Weather Service (NWS)
 - That was fun. The end
 - More projects like this are coming, so stay tuned

@@ -1,5 +1,5 @@
 ---
-title: "Can AI beat the KMA? ② Collecting data and moving into a Colab L4"
+title: "No decent GPU at home.. so let's try Colab!"
 description: "Gathering the answers (ASOS), the opponent (KMA forecasts) and the starting point (AIFS analysis), then running Aurora 195 times overnight on one Colab L4."
 publishedAt: 2026-10-16
 lang: en

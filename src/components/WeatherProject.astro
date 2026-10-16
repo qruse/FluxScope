@@ -85,7 +85,7 @@ const vars = isKo
     <aside class="wx-side" aria-label={isKo ? '개발 스토리' : 'Development story'}>
       <p class="section-kicker">{isKo ? '개발 스토리' : 'Development story'}</p>
       <ol>
-        {stories.map((s) => <li><a href={portfolioPath(s.id.split('/').pop()!, lang)}><span>{isKo ? `${s.data.part}편` : `Part ${s.data.part}`}</span>{s.data.title.replace(/^[^①②③④⑤⑥⑦⑧⑨]*[①②③④⑤⑥⑦⑧⑨]\s*/, '')}</a></li>)}
+        {stories.map((s) => <li><a href={portfolioPath(s.id.split('/').pop()!, lang)}><span>{isKo ? `${s.data.part}편` : `Part ${s.data.part}`}</span>{s.data.title}</a></li>)}
       </ol>
       <p class="wx-side-note">{isKo
         ? '매일 05시 발표 기준으로 48시간 예보를 냄. 우리 모델: Aurora 1.5(고정) + 관측소 보정 머리 앙상블.'

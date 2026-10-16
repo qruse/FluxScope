@@ -33,7 +33,7 @@ const date = entry.data.publishedAt.toLocaleDateString(isKo ? 'ko-KR' : 'en-US',
       <ol>
         {parts.map((p) => (
           <li class={p.id === entry.id ? 'is-current' : undefined}>
-            <a href={portfolioPath(slugOf(p), lang)} aria-current={p.id === entry.id ? 'page' : undefined}>{p.data.title.replace(/^[^①②③④⑤⑥⑦⑧⑨]*/, '')}</a>
+            <a href={portfolioPath(slugOf(p), lang)} aria-current={p.id === entry.id ? 'page' : undefined}>{p.data.title}</a>
           </li>
         ))}
       </ol>

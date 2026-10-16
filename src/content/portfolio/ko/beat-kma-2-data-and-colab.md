@@ -1,5 +1,5 @@
 ---
-title: "AI로 기상청 이기기 ② 데이터 모으고 Colab L4에 자리 잡기"
+title: "집에 있는 GPU도 마땅치 않으니.. Colab을 써보자!"
 description: "정답(ASOS), 상대(기상청 단기예보), 출발점(AIFS 초기장)을 모으고, Colab L4 한 장으로 Aurora를 밤새 195번 돌리기까지 생긴 일."
 publishedAt: 2026-10-16
 lang: ko

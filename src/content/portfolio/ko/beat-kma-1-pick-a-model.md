@@ -1,5 +1,5 @@
 ---
-title: "AI로 기상청 이기기 ① 누구 어깨에 올라탈까, 결국 Aurora"
+title: "AI로 기상청을 이길 수 있을까? 어떤 AI 모델을 써야하지?"
 description: "지구 전체를 미리 배운 공개 AI 날씨 모델 중에서 1시간 단위 예보가 되고 L4 한 장에 들어가는 Aurora 1.5를 고른 과정."
 publishedAt: 2026-10-16
 lang: ko

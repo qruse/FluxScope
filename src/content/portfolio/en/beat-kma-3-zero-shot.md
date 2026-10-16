@@ -1,5 +1,5 @@
 ---
-title: "Can AI beat the KMA? ③ Aurora bare-handed: won on rain, lost on temperature"
+title: "A global AI model vs the KMA: who forecasts better?"
 description: "Untouched (zero-shot) Aurora against the KMA short-range forecast at 97 stations, from a sun that rose four hours late to a win on rain F1."
 publishedAt: 2026-10-16
 lang: en
