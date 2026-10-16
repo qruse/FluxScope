@@ -1,7 +1,10 @@
 ---
 // Portfolio: career, projects, research, awards and teaching, compiled from the owner's CVs.
 // The owner's name, photo and personal contact details stay off the page; the only contact is the public email.
+// Sections are numbered and ruled like the lab home entries; all styles are inline below.
 import BaseLayout from '../layouts/BaseLayout.astro';
+import LabMark from './LabMark.astro';
+import LabSketch from './LabSketch.astro';
 import { labSectionPath, labSections, projectPath, projects } from '../lib/site';
 import type { Lang } from '../i18n/ui';
 
@@ -13,22 +16,15 @@ const email = 'coolwin200@gmail.com';
 const stories = labSections.find((section) => section.id === 'stories')!;
 const weather = projects[0];
 
-const stats = [
-  { n: '6+', ko: '년차 실무', en: 'years in industry' },
-  { n: '15+', ko: '분석·개발 프로젝트', en: 'analysis and build projects' },
-  { n: '5', ko: 'KCI 논문 · 특허 1', en: 'KCI papers · 1 patent' },
-  { n: '470h+', ko: '강의 (기록된 것만)', en: 'of teaching on record' },
-];
-
 const career = [
-  { period: '2024.12 –', org: L('그리트㈜', 'Grit Inc.'), role: L('연구개발팀 선임연구원', 'Senior researcher, R&D team'), text: L('AI·데이터 연구개발.', 'AI and data R&D.'), now: true },
-  { period: '2020.07 – 2024.11', org: L('㈜빅웨이브에이아이', 'BigWave AI'), role: L('공동 창업 · 데이터분석 팀장 · 기업부설연구소장', 'Co-founder · data analysis lead · head of the corporate lab'), text: L('AI·빅데이터 분석 연구 총괄, 프로젝트 관리, 분석 실무, 백엔드 개발, 교육, 특허.', 'Led AI and data research, ran projects, did the analysis, built back ends, taught and filed a patent.') },
+  { period: L('2024.12 — 현재', '2024.12 — now'), org: L('그리트㈜', 'Grit Inc.'), role: L('연구개발팀 선임연구원', 'Senior researcher, R&D team'), text: L('AI·데이터 연구개발.', 'AI and data R&D.') },
+  { period: '2020.07 — 2024.11', org: L('㈜빅웨이브에이아이', 'BigWave AI'), role: L('공동 창업 · 데이터분석 팀장 · 기업부설연구소장', 'Co-founder · data analysis lead · head of the corporate lab'), text: L('AI·빅데이터 분석 연구 총괄, 프로젝트 관리, 분석 실무, 백엔드 개발, 교육, 특허.', 'Led AI and data research, ran projects, did the analysis, built back ends, taught and filed a patent.') },
 ];
 
 const education = [
-  { year: '2022.02', ko: '경북대학교 경영학부 경영정보시스템 박사과정 수료', en: 'PhD coursework completed, Management Information Systems, Kyungpook National University' },
-  { year: '2020.02', ko: '경북대학교 경영학부 경영정보시스템 석사', en: 'MS, Management Information Systems, Kyungpook National University' },
-  { year: '2018.02', ko: '경북대학교 경영학부 학사', en: 'BBA, Kyungpook National University' },
+  { year: '2022', ko: '경영정보시스템 박사과정 수료', en: 'PhD coursework, Management Information Systems' },
+  { year: '2020', ko: '경영정보시스템 석사', en: 'MS, Management Information Systems' },
+  { year: '2018', ko: '경영학 학사', en: 'BBA' },
 ];
 
 type Domain = 'ts' | 'anomaly' | 'nlp' | 'data';
@@ -38,39 +34,40 @@ const domains: { id: Domain; ko: string; en: string }[] = [
   { id: 'nlp', ko: '텍스트 · LLM', en: 'Text · LLM' },
   { id: 'data', ko: '데이터 분석', en: 'Data analysis' },
 ];
-const work: { period: string; org: string; d: Domain; ko: string; en: string; tags: string[] }[] = [
-  { period: '2024.06 – 2024.10', org: L('㈜오든', 'Oden'), d: 'anomaly', ko: '스마트부표 센서 바이오파울링 이상 탐지 시스템 개발', en: 'Biofouling anomaly detection for smart-buoy sensors', tags: ['Python', L('이상 탐지', 'Anomaly detection')] },
-  { period: '2024.06 – 2024.07', org: 'DIP', d: 'data', ko: '지역 메가프로젝트 중복성 검토 사업 자문', en: 'Overlap review advisory for regional mega projects', tags: [L('자문', 'Advisory')] },
-  { period: '2023.07 – 2023.11', org: L('그리트㈜', 'Grit Inc.'), d: 'ts', ko: '스마트팜 온실 환경 시뮬레이션 시스템 개발', en: 'Greenhouse environment simulation for smart farms', tags: ['Python', L('시계열 예측', 'Forecasting')] },
-  { period: '2023.06 – 2023.11', org: L('대구일보', 'Daegu Ilbo'), d: 'nlp', ko: 'LLM 기반 자동 기사 생성 프롬프트 엔지니어링', en: 'Prompt engineering for LLM-written news articles', tags: ['LLM', L('프롬프트', 'Prompting')] },
-  { period: '2022.08 –', org: 'KB', d: 'anomaly', ko: 'FDS(이상거래 탐지) 시스템 구축', en: 'Fraud detection system build', tags: ['PyTorch', 'FDS'] },
-  { period: '2022.06 – 2022.10', org: L('㈜오든', 'Oden'), d: 'ts', ko: '스마트부표 수온 예측 시스템 개발 (데이터바우처)', en: 'Water-temperature forecasting for smart buoys (data voucher)', tags: ['PyTorch', L('시계열 예측', 'Forecasting')] },
-  { period: '2022.05 – 2022.07', org: 'DIP', d: 'data', ko: '대구시 3대 주력산업 정책보고서 분석', en: "Policy report on Daegu's three key industries", tags: [L('정책 분석', 'Policy analysis')] },
-  { period: '2022.01 – 2022.03', org: 'KERIS', d: 'nlp', ko: '텍스트마이닝 프로젝트', en: 'Text mining project', tags: ['TensorFlow', L('텍스트마이닝', 'Text mining')] },
-  { period: '2020.06 – 2021.12', org: L('경북대학교 · DYETEC', 'KNU · DYETEC'), d: 'nlp', ko: '섬유소재 산업 빅데이터 플랫폼: 딥러닝 텍스트마이닝, 토픽모델링, 비즈니스 모델 연구', en: 'Textile industry data platform: deep-learning text mining, topic models, business models', tags: [L('토픽모델링', 'Topic models'), 'DETM'] },
-  { period: '2021.02 – 2021.05', org: 'DYETEC', d: 'data', ko: '염가공 색채 예측 알고리즘 고도화', en: 'Better colour prediction for textile dyeing', tags: ['Python', L('정형 데이터', 'Tabular')] },
-  { period: '2020.11 – 2021.03', org: L('한국가스공사', 'KOGAS'), d: 'ts', ko: '에너지 사용량 예측 모델 고도화, 관련 알고리즘 연구', en: 'Energy-use forecasting model upgrade and algorithm research', tags: [L('딥러닝', 'Deep learning'), L('시계열 예측', 'Forecasting')] },
-  { period: '2020', org: L('노코멘트 API', 'Know Comment API'), d: 'nlp', ko: '악성 댓글 분류 API (논문·특허로 이어짐)', en: 'Abusive-comment classification API (led to a paper and a patent)', tags: ['CNN', 'NLP'] },
-  { period: '2020.10 – 2020.12', org: L('한국건설기술연구원', 'KICT'), d: 'data', ko: '학습 데이터 수집·레이블링, 프로세스 관리', en: 'Training data collection, labelling and process management', tags: [L('데이터 구축', 'Data building')] },
-  { period: '2020.07 – 2021.09', org: L('대구시설공단', 'Daegu Facilities Corp.'), d: 'data', ko: '나드리콜(교통약자 이동 지원) 운영 데이터 지리 분석·시각화, 2회 수행', en: 'Geographic analysis of accessible-transport operations, done twice', tags: ['Python', L('시각화', 'Visualization')] },
-  { period: '2019.03 – 2019.12', org: L('경북대학교', 'KNU'), d: 'data', ko: '빅데이터 분석·시각화 프로젝트와 보고서', en: 'Data analysis and visualization project with reports', tags: ['Python', 'Excel'] },
+const domainName = (id: Domain) => { const d = domains.find((x) => x.id === id)!; return isKo ? d.ko : d.en; };
+const work: { period: string; org: string; d: Domain; ko: string; en: string }[] = [
+  { period: '2024.06 – 2024.10', org: L('㈜오든', 'Oden'), d: 'anomaly', ko: '스마트부표 센서 바이오파울링 이상 탐지 시스템 개발', en: 'Biofouling anomaly detection for smart-buoy sensors' },
+  { period: '2024.06 – 2024.07', org: L('대구디지털혁신진흥원', 'DIP'), d: 'data', ko: '지역 메가프로젝트 중복성 검토 사업 자문', en: 'Overlap review advisory for regional mega projects' },
+  { period: '2023.07 – 2023.11', org: L('그리트㈜', 'Grit Inc.'), d: 'ts', ko: '스마트팜 온실 환경 시뮬레이션 시스템 개발', en: 'Greenhouse environment simulation for smart farms' },
+  { period: '2023.06 – 2023.11', org: L('대구일보', 'Daegu Ilbo'), d: 'nlp', ko: 'LLM 기반 자동 기사 생성 프롬프트 엔지니어링', en: 'Prompt engineering for LLM-written news articles' },
+  { period: '2022.08 –', org: 'KB', d: 'anomaly', ko: 'FDS(이상거래 탐지) 시스템 구축', en: 'Fraud detection system build' },
+  { period: '2022.06 – 2022.10', org: L('㈜오든', 'Oden'), d: 'ts', ko: '스마트부표 수온 예측 시스템 개발 (데이터바우처)', en: 'Water-temperature forecasting for smart buoys (data voucher)' },
+  { period: '2022.05 – 2022.07', org: L('대구디지털혁신진흥원', 'DIP'), d: 'data', ko: '대구시 3대 주력산업 정책보고서 분석', en: "Policy report on Daegu's three key industries" },
+  { period: '2022.01 – 2022.03', org: 'KERIS', d: 'nlp', ko: '텍스트마이닝 프로젝트', en: 'Text mining project' },
+  { period: '2020.06 – 2021.12', org: L('경북대학교 · DYETEC', 'KNU · DYETEC'), d: 'nlp', ko: '섬유소재 산업 빅데이터 플랫폼: 딥러닝 텍스트마이닝, 토픽모델링, 비즈니스 모델', en: 'Textile industry data platform: text mining, topic models, business models' },
+  { period: '2021.02 – 2021.05', org: 'DYETEC', d: 'data', ko: '염가공 색채 예측 알고리즘 고도화', en: 'Better colour prediction for textile dyeing' },
+  { period: '2020.11 – 2021.03', org: L('한국가스공사', 'KOGAS'), d: 'ts', ko: '에너지 사용량 예측 모델 고도화, 관련 알고리즘 연구', en: 'Energy-use forecasting model upgrade and algorithm research' },
+  { period: '2020', org: L('노코멘트 API', 'Know Comment API'), d: 'nlp', ko: '악성 댓글 분류 API, 논문·특허로 이어짐', en: 'Abusive-comment classification API, which led to a paper and a patent' },
+  { period: '2020.10 – 2020.12', org: L('한국건설기술연구원', 'KICT'), d: 'data', ko: '학습 데이터 수집·레이블링, 프로세스 관리', en: 'Training data collection, labelling and process management' },
+  { period: '2020.07 – 2021.09', org: L('대구시설공단', 'Daegu Facilities Corp.'), d: 'data', ko: '나드리콜(교통약자 이동 지원) 운영 데이터 지리 분석·시각화', en: 'Geographic analysis of accessible-transport operations' },
+  { period: '2019.03 – 2019.12', org: L('경북대학교', 'KNU'), d: 'data', ko: '빅데이터 분석·시각화 프로젝트와 보고서', en: 'Data analysis and visualization project with reports' },
 ];
 
 const papers = [
-  { date: '2021.09', venue: L('정보시스템연구', 'The Journal of Information Systems'), title: L('섬유소재 분야 특허 기술 동향 분석: DETM & STM 텍스트마이닝 방법론 활용', 'Patent trends in textile materials with DETM and STM text mining') },
-  { date: '2020.12', venue: L('한국정보통신학회', 'KIICE'), title: 'Bias & Hate Speech Detection Using Deep Learning: Multi-channel CNN Modeling with Attention' },
-  { date: '2020.09', venue: L('정보시스템연구 29(3)', 'The Journal of Information Systems 29(3)'), title: L('하이웨이 네트워크 기반 CNN 모델링 및 사전 외 어휘 처리 기술을 활용한 악성 댓글 분류 연구', 'Abusive comment classification with highway-network CNNs and out-of-vocabulary handling') },
-  { date: '2020.03', venue: L('정보시스템연구', 'The Journal of Information Systems'), title: 'LSTM-based Deep Learning for Time Series Forecasting: The Case of Corporate Credit Score Prediction' },
-  { date: '2019.06', venue: L('인터넷전자상거래연구', 'The Journal of Internet Electronic Commerce Research'), title: 'Multi-phase Prediction Models for Crowdfunding Success: A Machine Learning Approach' },
+  { date: '2021', venue: L('정보시스템연구', 'The Journal of Information Systems'), title: L('섬유소재 분야 특허 기술 동향 분석: DETM & STM 텍스트마이닝 방법론 활용', 'Patent trends in textile materials with DETM and STM text mining') },
+  { date: '2020', venue: L('한국정보통신학회', 'KIICE'), title: 'Bias & Hate Speech Detection Using Deep Learning: Multi-channel CNN Modeling with Attention' },
+  { date: '2020', venue: L('정보시스템연구 29(3)', 'The Journal of Information Systems 29(3)'), title: L('하이웨이 네트워크 기반 CNN 모델링 및 사전 외 어휘 처리 기술을 활용한 악성 댓글 분류 연구', 'Abusive comment classification with highway-network CNNs and out-of-vocabulary handling') },
+  { date: '2020', venue: L('정보시스템연구', 'The Journal of Information Systems'), title: 'LSTM-based Deep Learning for Time Series Forecasting: The Case of Corporate Credit Score Prediction' },
+  { date: '2019', venue: L('인터넷전자상거래연구', 'The Journal of Internet Electronic Commerce Research'), title: 'Multi-phase Prediction Models for Crowdfunding Success: A Machine Learning Approach' },
 ];
 
 const awards = [
-  { rank: L('1등', '1st'), date: '2022.09', ko: '2022 스마트농업경진대회 해커톤 · 농림축산식품부 장관상', en: '2022 Smart Agriculture Hackathon · Minister of Agriculture award', by: L('농림수산식품교육문화정보원', 'EPIS'), hot: true },
-  { rank: L('루키', 'Rookie'), date: '2021.11', ko: '2021 스타트업 어워즈 루키상 (회사 수상)', en: '2021 Startup Awards, Rookie (company award)', by: L('대구시', 'Daegu City') },
-  { rank: L('2등', '2nd'), date: '2020.11', ko: '대·스타 해결사 플랫폼 AI CHAMPIONSHIP 2020', en: 'AI Championship 2020', by: L('중소벤처기업부', 'Ministry of SMEs and Startups') },
-  { rank: L('1등', '1st'), date: '2020.06', ko: '2020 인공지능 경진대회 텍스트 분야 1등 · 400팀 중 종합 10위', en: '2020 AI Competition, 1st in text · 10th of 400 teams overall', by: L('과학기술정보통신부', 'Ministry of Science and ICT'), hot: true },
-  { rank: L('최우수', 'Best'), date: '2019.05', ko: '최우수 논문상 (시계열 딥러닝)', en: 'Best paper award (time-series deep learning)', by: L('한국정보시스템학회', 'KAIS') },
-  { rank: L('최우수', 'Best'), date: '2018.11', ko: '최우수 논문상 (정형 데이터 분석)', en: 'Best paper award (tabular data analysis)', by: L('한국정보시스템학회', 'KAIS') },
+  { rank: L('1등', '1st'), date: '2022.09', ko: '스마트농업경진대회 해커톤', en: 'Smart Agriculture Hackathon', note: L('농림축산식품부 장관상', "Agriculture minister's award"), by: L('농림수산식품교육문화정보원', 'EPIS'), top: true },
+  { rank: L('1등', '1st'), date: '2020.06', ko: '인공지능 경진대회 텍스트 분야', en: 'AI Competition, text track', note: L('400팀 중 종합 10위', '10th overall of 400 teams'), by: L('과학기술정보통신부', 'Ministry of Science and ICT'), top: true },
+  { rank: L('2등', '2nd'), date: '2020.11', ko: 'AI CHAMPIONSHIP 2020', en: 'AI Championship 2020', note: L('대·스타 해결사 플랫폼', 'Big-and-startup solver platform'), by: L('중소벤처기업부', 'Ministry of SMEs and Startups') },
+  { rank: L('루키', 'Rookie'), date: '2021.11', ko: '스타트업 어워즈', en: 'Startup Awards', note: L('회사 수상', 'Company award'), by: L('대구시', 'Daegu City') },
+  { rank: L('최우수', 'Best'), date: '2019.05', ko: '최우수 논문상', en: 'Best paper award', note: L('시계열 딥러닝', 'Time-series deep learning'), by: L('한국정보시스템학회', 'KAIS') },
+  { rank: L('최우수', 'Best'), date: '2018.11', ko: '최우수 논문상', en: 'Best paper award', note: L('정형 데이터 분석', 'Tabular data analysis'), by: L('한국정보시스템학회', 'KAIS') },
 ];
 
 const teaching: { date: string; org: string; ko: string; en: string; h?: number }[] = [
@@ -82,7 +79,7 @@ const teaching: { date: string; org: string; ko: string; en: string; h?: number 
   { date: '2021.12 – 2022.01', org: L('라인평생원격교육원', 'LINE Lifelong Education'), ko: '빅데이터 분석 이론·실습 강의 촬영', en: 'Recorded course on data analysis', h: 40 },
   { date: '2021.12', org: 'DIP', ko: '인공지능 분석 실무자 양성', en: 'AI analyst training', h: 8 },
   { date: '2021.10 – 11', org: 'KERIS', ko: '빅데이터·인공지능 교재 280쪽 집필', en: '280-page data and AI textbook' },
-  { date: '2021.09', org: 'DIP', ko: '라즈베리파이 AI 시스템 개발·탑재 (얼굴·객체 인식, 포즈 추정)', en: 'AI on Raspberry Pi: face, object and pose detection', h: 16 },
+  { date: '2021.09', org: 'DIP', ko: '라즈베리파이 AI 시스템 개발·탑재', en: 'AI on Raspberry Pi', h: 16 },
   { date: '2021.08', org: 'DIP', ko: '의료 이미지 분석', en: 'Medical image analysis', h: 8 },
   { date: '2021.08', org: L('경북대학교', 'KNU'), ko: '농업 분야 인공지능 활용 사례', en: 'AI in agriculture', h: 4 },
   { date: '2021.08', org: 'DIP', ko: '스마트팩토리 인공지능 시스템 개발', en: 'AI systems for smart factories', h: 16 },
@@ -92,257 +89,388 @@ const teaching: { date: string; org: string; ko: string; en: string; h?: number 
   { date: '2021.07', org: 'DIP', ko: 'Flask 기반 Python 서비스 배포', en: 'Deploying Python services with Flask', h: 4 },
   { date: '2021.06 – 07', org: L('영진사이버대학교', 'Yeungjin Cyber Univ.'), ko: '사례로 알아보는 빅데이터 활용 강의 촬영', en: 'Recorded course on data in practice', h: 11 },
   { date: '2021.06', org: 'DIP', ko: '금융 분야 사기 거래 탐지 시스템 개발', en: 'Building fraud detection for finance', h: 12 },
-  { date: '2021.01', org: L('계명대학교', 'Keimyung Univ.'), ko: '빅데이터·인공지능 분석 특강 (DNN, CNN, RNN)', en: 'Data and AI lectures (DNN, CNN, RNN)', h: 80 },
+  { date: '2021.01', org: L('계명대학교', 'Keimyung Univ.'), ko: '빅데이터·인공지능 분석 특강', en: 'Data and AI lectures', h: 80 },
   { date: '2020.10', org: L('계명대학교', 'Keimyung Univ.'), ko: 'KAC 빅데이터 특강', en: 'KAC data science lectures', h: 80 },
 ];
 const hours = teaching.reduce((sum, t) => sum + (t.h ?? 0), 0);
-const teachOrgs = [...new Set(teaching.map((t) => t.org.split(' · ')[0]))];
+const longest = teaching.filter((t) => t.h).sort((a, b) => b.h! - a.h!).slice(0, 6);
+const maxHours = longest[0].h!;
+const barWidth = (h = 0) => `--w:${((h * 100) / maxHours).toFixed(1)}%`;
+
+const stats = [
+  { n: '6', s: '+', ko: '년차 실무', en: 'years in industry' },
+  { n: String(work.length), s: '', ko: '프로젝트', en: 'projects' },
+  { n: String(papers.length), s: '', ko: 'KCI 논문 · 특허 1', en: 'KCI papers · 1 patent' },
+  { n: String(awards.length), s: '', ko: '수상', en: 'awards' },
+  { n: String(hours), s: 'h+', ko: '강의', en: 'teaching' },
+];
 
 const skills = [
-  { ko: '모델링', en: 'Modelling', items: [L('시계열 예측', 'Forecasting'), L('이상 탐지', 'Anomaly detection'), L('정형 데이터', 'Tabular data'), 'NLP · LLM', L('비전', 'Vision'), 'XAI'] },
+  { ko: '모델링', en: 'Modelling', items: [L('시계열 예측', 'Forecasting'), L('이상 탐지', 'Anomaly detection'), L('정형 데이터', 'Tabular'), 'NLP · LLM', L('비전', 'Vision'), 'XAI'] },
   { ko: '도구', en: 'Tools', items: ['Python', 'PyTorch', 'TensorFlow', 'LightGBM', 'OpenCV', 'KNIME'] },
   { ko: '배포', en: 'Shipping', items: ['Docker', 'Flask', 'NGINX', 'Linux', 'Raspberry Pi', 'Cloudflare Workers'] },
 ];
+
+const sections = [
+  ['pf-now', L('지금 만드는 것', 'Building now')],
+  ['pf-career', L('경력', 'Career')],
+  ['pf-work', L('프로젝트', 'Projects')],
+  ['pf-research', L('연구', 'Research')],
+  ['pf-awards', L('수상', 'Awards')],
+  ['pf-teaching', L('강의', 'Teaching')],
+];
+const num = (id: string) => String(sections.findIndex(([s]) => s === id) + 1).padStart(2, '0');
 ---
 <BaseLayout lang={lang} title={L('포트폴리오', 'Portfolio')} description={L('2020년부터 해 온 데이터·AI 프로젝트, 논문, 수상, 강의를 한 페이지에 정리함.', 'Data and AI projects, papers, awards and teaching since 2020, on one page.')}>
-  <header class="page-top pf-hero"><div class="shell pf-hero-grid">
+  <header class="pf-hero"><div class="shell pf-hero-grid">
     <div>
-      <div class="section-kicker">{L('포트폴리오', 'Portfolio')}</div>
-      <h1>{L('데이터로 문제 풀어 온 6년', 'Six years of solving problems with data')}</h1>
-      <p>{L('경영정보시스템을 공부했고, 2020년부터 회사에서 시계열 예측, 이상거래 탐지, 텍스트 분석, LLM 프로젝트를 해 옴. 공동 창업한 회사에서 분석팀과 연구소를 맡았고, 지금은 R&D 연구원으로 일함. 강의도 꽤 많이 했음.', 'Trained in management information systems. Since 2020: forecasting, fraud detection, text analysis and LLM projects. Co-founded a company and ran its analysis team and lab; now an R&D researcher. A fair amount of teaching along the way.')}</p>
-      <div class="pf-actions">
-        <a class="lab-cta" href={`mailto:${email}`}>{email}<span aria-hidden="true">→</span></a>
-        <a class="pf-ghost" href={projectPath(weather.id, lang)}>{L('지금 돌아가는 프로젝트', 'Live project')}</a>
-      </div>
+      <div class="section-kicker"><LabMark id="portfolio" />{L('포트폴리오', 'Portfolio')}</div>
+      <h1>{L('데이터로 문제를 풀어 온', 'Solving problems with data')} <em>{L('6년', 'for six years')}</em></h1>
+      <p class="pf-lede">{L('경영정보시스템을 공부했고, 2020년부터 시계열 예측, 이상거래 탐지, 텍스트 분석, LLM 프로젝트를 해 옴. 공동 창업한 회사에서 분석팀과 연구소를 맡았고, 지금은 R&D 연구원으로 일함.', 'Trained in management information systems. Since 2020: forecasting, fraud detection, text analysis and LLM projects. Co-founded a company and ran its analysis team and lab; now an R&D researcher.')}</p>
+      <dl class="pf-meta">
+        <div><dt>{L('지금', 'Now')}</dt><dd>{L('그리트㈜ 선임연구원', 'Senior researcher, Grit Inc.')}</dd></div>
+        <div><dt>{L('분야', 'Focus')}</dt><dd>{L('시계열 예측 · 이상 탐지 · NLP/LLM', 'Forecasting · anomaly detection · NLP/LLM')}</dd></div>
+        <div><dt>{L('이메일', 'Email')}</dt><dd><a class="pen-under" href={`mailto:${email}`}>{email}</a></dd></div>
+      </dl>
     </div>
-    <dl class="pf-stats taped">
-      {stats.map((s) => <div><dt>{s.n}</dt><dd>{isKo ? s.ko : s.en}</dd></div>)}
-    </dl>
+    <LabSketch kind="portfolio" />
   </div></header>
 
-  <nav class="shell pf-toc" aria-label={L('목차', 'Contents')}>
-    {[['pf-now', L('지금', 'Now')], ['pf-career', L('경력', 'Career')], ['pf-work', L('프로젝트', 'Projects')], ['pf-research', L('연구', 'Research')], ['pf-awards', L('수상', 'Awards')], ['pf-teaching', L('강의', 'Teaching')], ['pf-contact', L('연락', 'Contact')]].map(([id, label]) => <a href={`#${id}`}>{label}</a>)}
-  </nav>
+  <div class="shell">
+    <dl class="pf-band">
+      {stats.map((s) => <div><dt>{s.n}<small>{s.s}</small></dt><dd>{isKo ? s.ko : s.en}</dd></div>)}
+    </dl>
+  </div>
+
+  <nav class="pf-toc" aria-label={L('목차', 'Contents')}><div class="shell">
+    {sections.map(([id, label], i) => <a href={`#${id}`}><span>{String(i + 1).padStart(2, '0')}</span>{label}</a>)}
+  </div></nav>
 
   <div class="shell pf-body">
-    <section id="pf-now" class="pf-section">
-      <h2 class="pf-h">{L('지금 돌아가는 것', 'Running now')}</h2>
-      <div class="pf-feature">
-        <a class="taped pf-shot" href={projectPath(weather.id, lang)}><img src="/images/projects/beat-kma-forecast.webp" width="1100" height="1051" loading="lazy" alt={L('97개 관측소 지도와 서울 예보 카드가 보이는 예보 화면', 'Forecast page with the Seoul card and the 97-station map')} /></a>
-        <div>
-          <p class="pf-eyebrow">{L('개인 프로젝트 · 2026', 'Side project · 2026')}</p>
-          <h3>{isKo ? weather.nameKo : weather.name}</h3>
-          <p>{isKo ? weather.summaryKo : weather.summary}</p>
-          <ul class="pf-tags"><li>Aurora</li><li>PyTorch</li><li>LightGBM</li><li>Cloudflare Workers</li></ul>
-          <div class="pf-actions">
-            <a class="lab-cta" href={projectPath(weather.id, lang)}>{L('오늘 예보 보기', "See today's forecast")}<span aria-hidden="true">→</span></a>
-            <a class="pf-ghost" href={labSectionPath(stories, lang)}>{L('만든 과정 1~4편', 'How it was built, parts 1–4')}</a>
+    <section id="pf-now" class="pf-sec">
+      <span class="pf-num">{num('pf-now')}</span>
+      <div class="pf-sec-body">
+        <h2>{L('지금 만드는 것', 'Building now')}</h2>
+        <div class="pf-feature">
+          <div>
+            <p class="pf-eyebrow">{L('개인 프로젝트 · 2026', 'Side project · 2026')}</p>
+            <h3><a class="pen-under" href={projectPath(weather.id, lang)}>{isKo ? weather.nameKo : weather.name}</a></h3>
+            <p class="pf-copy">{isKo ? weather.summaryKo : weather.summary}</p>
+            <p class="pf-stack">Aurora 1.5 <i>·</i> PyTorch <i>·</i> LightGBM <i>·</i> Cloudflare Workers</p>
+            <div class="pf-actions">
+              <a class="lab-cta" href={projectPath(weather.id, lang)}>{L('오늘 예보 보기', "See today's forecast")}<span aria-hidden="true">→</span></a>
+              <a class="pf-link" href={labSectionPath(stories, lang)}>{L('만든 과정 1~4편', 'How it was built')} →</a>
+            </div>
           </div>
+          <a class="taped pf-shot" href={projectPath(weather.id, lang)} tabindex="-1"><img src="/images/projects/beat-kma-forecast.webp" width="1100" height="1051" loading="lazy" decoding="async" alt={L('97개 관측소 지도와 서울 예보 카드가 보이는 예보 화면', 'Forecast page with the Seoul card and the 97-station map')} /></a>
         </div>
       </div>
     </section>
 
-    <section id="pf-career" class="pf-section pf-two">
-      <div>
-        <h2 class="pf-h">{L('경력', 'Career')}</h2>
-        <ol class="pf-timeline">
-          {career.map((c) => (
-            <li class={c.now ? 'is-now' : undefined}>
-              <span class="pf-period">{c.period}</span>
-              <strong>{c.org}</strong>
-              <em>{c.role}</em>
-              <p>{c.text}</p>
+    <section id="pf-career" class="pf-sec">
+      <span class="pf-num">{num('pf-career')}</span>
+      <div class="pf-sec-body pf-split">
+        <div>
+          <h2>{L('경력', 'Career')}</h2>
+          <ol class="pf-rows">
+            {career.map((c, i) => (
+              <li>
+                <span class="pf-when">{c.period}</span>
+                <div><h3>{c.org}{i === 0 && <b class="pf-now">{L('재직 중', 'Current')}</b>}</h3><p class="pf-role">{c.role}</p><p>{c.text}</p></div>
+              </li>
+            ))}
+          </ol>
+        </div>
+        <div>
+          <h2 class="pf-h-sm">{L('학력', 'Education')}</h2>
+          <ol class="pf-rows is-compact">
+            {education.map((e) => <li><span class="pf-when">{e.year}</span><div><p class="pf-strong">{isKo ? e.ko : e.en}</p><p>{L('경북대학교 경영학부', 'Kyungpook National University')}</p></div></li>)}
+          </ol>
+          <h2 class="pf-h-sm">{L('기술', 'Skills')}</h2>
+          <dl class="pf-skills">
+            {skills.map((g) => <div><dt>{isKo ? g.ko : g.en}</dt><dd>{g.items.join(' · ')}</dd></div>)}
+          </dl>
+        </div>
+      </div>
+    </section>
+
+    <section id="pf-work" class="pf-sec">
+      <span class="pf-num">{num('pf-work')}</span>
+      <div class="pf-sec-body">
+        <h2>{L('프로젝트', 'Projects')}</h2>
+        <div class="pf-tabs" role="radiogroup" aria-label={L('분야', 'Field')}>
+          <label><input type="radio" name="pf-d" value="all" checked /><span>{L('전체', 'All')}<sup>{work.length}</sup></span></label>
+          {domains.map((d) => <label><input type="radio" name="pf-d" value={d.id} /><span><i class={`pf-sw is-${d.id}`}></i>{isKo ? d.ko : d.en}<sup>{work.filter((w) => w.d === d.id).length}</sup></span></label>)}
+        </div>
+        <ol class="pf-list">
+          {work.map((w) => (
+            <li data-d={w.d}>
+              <span class="pf-when">{w.period}</span>
+              <div><h3>{isKo ? w.ko : w.en}</h3><p>{w.org}</p></div>
+              <span class="pf-field"><i class={`pf-sw is-${w.d}`}></i>{domainName(w.d)}</span>
             </li>
           ))}
         </ol>
       </div>
-      <div>
-        <h2 class="pf-h">{L('학력', 'Education')}</h2>
-        <ol class="pf-timeline is-quiet">
-          {education.map((e) => <li><span class="pf-period">{e.year}</span><p>{isKo ? e.ko : e.en}</p></li>)}
-        </ol>
-        <h2 class="pf-h">{L('기술', 'Skills')}</h2>
-        <div class="pf-skills">
-          {skills.map((g) => <div><span>{isKo ? g.ko : g.en}</span><ul class="pf-tags">{g.items.map((i) => <li>{i}</li>)}</ul></div>)}
+    </section>
+
+    <section id="pf-research" class="pf-sec">
+      <span class="pf-num">{num('pf-research')}</span>
+      <div class="pf-sec-body">
+        <h2>{L('연구', 'Research')}</h2>
+        <div class="pf-patent">
+          <span class="pf-badge">{L('특허 출원 · 2020', 'Patent filed · 2020')}</span>
+          <h3>{L('악성 댓글 분류장치 및 그 방법', 'Device and method for classifying abusive comments')}</h3>
+          <p>{L('하이웨이 네트워크 CNN 논문, 노코멘트 API와 같은 연구에서 나옴.', 'From the same work as the highway-network CNN paper and the Know Comment API.')}</p>
         </div>
-      </div>
-    </section>
-
-    <section id="pf-work" class="pf-section pf-work">
-      <h2 class="pf-h">{L('프로젝트', 'Projects')} <small>{work.length}</small></h2>
-      <div class="pf-filter" role="radiogroup" aria-label={L('분야', 'Field')}>
-        <label><input type="radio" name="pf-d" value="all" checked />{L('전체', 'All')}</label>
-        {domains.map((d) => <label><input type="radio" name="pf-d" value={d.id} />{isKo ? d.ko : d.en}</label>)}
-      </div>
-      <ul class="pf-cards">
-        {work.map((w) => (
-          <li class="pf-card" data-d={w.d}>
-            <div class="pf-card-top"><span class="pf-period">{w.period}</span><span class={`pf-dot is-${w.d}`}>{(isKo ? domains.find((d) => d.id === w.d)!.ko : domains.find((d) => d.id === w.d)!.en)}</span></div>
-            <h3>{isKo ? w.ko : w.en}</h3>
-            <p class="pf-org">{w.org}</p>
-            <ul class="pf-tags">{w.tags.map((t) => <li>{t}</li>)}</ul>
-          </li>
-        ))}
-      </ul>
-    </section>
-
-    <section id="pf-research" class="pf-section pf-two">
-      <div>
-        <h2 class="pf-h">{L('논문', 'Papers')} <small>KCI {papers.length}</small></h2>
-        <ol class="pf-papers">
-          {papers.map((p) => <li><span class="pf-period">{p.date}</span><strong>{p.title}</strong><span class="pf-org">{p.venue}</span></li>)}
+        <h2 class="pf-h-sm">{L('KCI 논문', 'KCI papers')} <sup>{papers.length}</sup></h2>
+        <ol class="pf-rows is-papers">
+          {papers.map((p) => <li><span class="pf-when">{p.date}</span><div><h3>{p.title}</h3><p>{p.venue}</p></div></li>)}
         </ol>
       </div>
-      <div>
-        <h2 class="pf-h">{L('특허', 'Patent')}</h2>
-        <div class="pf-patent taped">
-          <span class="pf-period">{L('2020.10 출원', 'Filed 2020.10')}</span>
-          <strong>{L('악성 댓글 분류장치 및 그 방법', 'Device and method for classifying abusive comments')}</strong>
-          <p>{L('하이웨이 네트워크 CNN 논문과 노코멘트 API로 이어진 연구.', 'Grew out of the highway-network CNN paper and the Know Comment API.')}</p>
+    </section>
+
+    <section id="pf-awards" class="pf-sec">
+      <span class="pf-num">{num('pf-awards')}</span>
+      <div class="pf-sec-body">
+        <h2>{L('수상', 'Awards')}</h2>
+        <ul class="pf-awards">
+          {awards.map((a) => (
+            <li class={a.top ? 'is-top' : undefined}>
+              <span class="pf-rank">{a.rank}</span>
+              <h3>{isKo ? a.ko : a.en}</h3>
+              <p class="pf-note">{a.note}</p>
+              <p class="pf-by">{a.by} · {a.date}</p>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </section>
+
+    <section id="pf-teaching" class="pf-sec">
+      <span class="pf-num">{num('pf-teaching')}</span>
+      <div class="pf-sec-body">
+        <h2>{L('강의 · 교육', 'Teaching')}</h2>
+        <div class="pf-teach">
+          <div class="pf-total">
+            <strong>{hours}<small>h+</small></strong>
+            <p>{L(`2020~2023년 ${teaching.length}개 과정. 시간이 기록된 과정만 더한 값이고, 교재 280쪽 집필과 강의 촬영도 포함.`, `${teaching.length} courses from 2020 to 2023. Only courses with recorded hours are summed; a 280-page textbook and recorded courses are among them.`)}</p>
+          </div>
+          <div class="pf-bars">
+            <p class="pf-eyebrow">{L('가장 길었던 과정', 'Longest courses')}</p>
+            {longest.map((t) => (
+              <div class="pf-bar">
+                <span class="pf-bar-label">{isKo ? t.ko : t.en}<small>{t.org}</small></span>
+                <span class="pf-bar-track"><span style={barWidth(t.h)}></span></span>
+                <span class="pf-bar-val">{t.h}h</span>
+              </div>
+            ))}
+          </div>
         </div>
+        <details class="pf-details">
+          <summary>{L(`전체 ${teaching.length}개 과정 보기`, `All ${teaching.length} courses`)}</summary>
+          <table>
+            <thead><tr><th>{L('기간', 'When')}</th><th>{L('기관', 'Where')}</th><th>{L('주제', 'Topic')}</th><th>{L('시간', 'Hours')}</th></tr></thead>
+            <tbody>{teaching.map((t) => <tr><td>{t.date}</td><td>{t.org}</td><td>{isKo ? t.ko : t.en}</td><td>{t.h ? `${t.h}h` : '—'}</td></tr>)}</tbody>
+          </table>
+        </details>
       </div>
-    </section>
-
-    <section id="pf-awards" class="pf-section">
-      <h2 class="pf-h">{L('수상', 'Awards')} <small>{awards.length}</small></h2>
-      <ul class="pf-awards">
-        {awards.map((a) => (
-          <li class={a.hot ? 'is-hot' : undefined}>
-            <span class="pf-rank">{a.rank}</span>
-            <div><span class="pf-period">{a.date}</span><strong>{isKo ? a.ko : a.en}</strong><span class="pf-org">{a.by}</span></div>
-          </li>
-        ))}
-      </ul>
-    </section>
-
-    <section id="pf-teaching" class="pf-section">
-      <h2 class="pf-h">{L('강의 · 교육', 'Teaching')}</h2>
-      <div class="pf-teach-head">
-        <p class="pf-big"><b>{hours}h+</b><span>{L(`${teaching.length}개 과정, 시간이 기록된 것만 합산`, `${teaching.length} courses; only those with recorded hours are counted`)}</span></p>
-        <ul class="pf-tags is-orgs">{teachOrgs.map((o) => <li>{o}</li>)}</ul>
-      </div>
-      <details class="pf-details">
-        <summary>{L('전체 강의 목록 보기', 'Show every course')}</summary>
-        <table>
-          <thead><tr><th>{L('기간', 'When')}</th><th>{L('기관', 'Where')}</th><th>{L('주제', 'Topic')}</th><th>{L('시간', 'Hours')}</th></tr></thead>
-          <tbody>{teaching.map((t) => <tr><td>{t.date}</td><td>{t.org}</td><td>{isKo ? t.ko : t.en}</td><td>{t.h ? `${t.h}h` : '–'}</td></tr>)}</tbody>
-        </table>
-      </details>
-    </section>
-
-    <section id="pf-contact" class="pf-section pf-contact">
-      <p class="pf-eyebrow">{L('연락', 'Contact')}</p>
-      <h2>{L('같이 할 일이 있으면 메일 주세요', 'Got something to build? Email me')}</h2>
-      <a class="pf-mail pen-under" href={`mailto:${email}`}>{email}</a>
     </section>
   </div>
 
+<script is:inline>
+  // Sections rise in as they scroll into view, and the contents bar marks the section being read.
+  (() => {
+    if (!('IntersectionObserver' in window)) return;
+    const root = document.documentElement;
+    const secs = [...document.querySelectorAll('.pf-sec')];
+    const links = new Map([...document.querySelectorAll('.pf-toc a')].map((a) => [a.hash.slice(1), a]));
+    if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      root.classList.add('pf-motion');
+      const reveal = new IntersectionObserver((entries) => entries.forEach((e) => { if (e.isIntersecting) { e.target.classList.add('is-in'); reveal.unobserve(e.target); } }), { rootMargin: '0px 0px -8% 0px' });
+      secs.forEach((s) => reveal.observe(s));
+    }
+    const spy = new IntersectionObserver((entries) => entries.forEach((e) => {
+      if (!e.isIntersecting) return;
+      links.forEach((a) => a.removeAttribute('aria-current'));
+      links.get(e.target.id)?.setAttribute('aria-current', 'true');
+    }), { rootMargin: '-40% 0px -55% 0px' });
+    secs.forEach((s) => spy.observe(s));
+  })();
+</script>
+
 <style is:inline>
-.pf-hero-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(260px, 380px); gap: 3rem; align-items: center; }
-.pf-hero h1 { font-size: clamp(2.6rem, 5.2vw, 4.6rem); }
-.pf-actions { display: flex; flex-wrap: wrap; gap: .7rem 1rem; align-items: center; margin-top: 1.6rem; }
+.pf-hero { padding: 4.6rem 0 2.6rem; }
+.pf-hero-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(220px, 320px); gap: 3rem; align-items: end; }
+.pf-hero h1 { max-width: 15ch; margin: .8rem 0 1.2rem; font-size: clamp(2.6rem, 5.6vw, 4.8rem); font-weight: 820; line-height: 1.04; letter-spacing: -.065em; word-break: keep-all; }
+.pf-hero h1 em { font-style: normal; color: var(--accent); }
+.pf-lede { max-width: 620px; margin: 0; color: var(--muted); font-size: 1.05rem; line-height: 1.75; word-break: keep-all; }
+.pf-meta { display: flex; flex-wrap: wrap; gap: 1rem 2.6rem; margin: 2rem 0 0; }
+.pf-meta div { display: grid; gap: .3rem; }
+.pf-meta dt { color: var(--muted); font-size: .7rem; font-weight: 800; letter-spacing: .16em; text-transform: uppercase; }
+.pf-meta dd { margin: 0; font-size: .95rem; font-weight: 700; }
+.pf-meta a { color: var(--pen); }
+.pf-meta a:hover::after { clip-path: inset(0); }
+.pf-hero .lab-sketch { max-width: 300px; margin-bottom: .5rem; }
+
+.pf-band { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); margin: 0; border-top: 2px solid var(--ink); border-bottom: 1px solid var(--line); }
+.pf-band div { padding: 1.5rem 1.2rem 1.4rem; }
+.pf-band div + div { border-left: 1px solid var(--line); }
+.pf-band dt { font-size: clamp(2.2rem, 4vw, 3.3rem); font-weight: 820; line-height: 1; letter-spacing: -.06em; font-variant-numeric: tabular-nums; }
+.pf-band dt small { margin-left: .06em; color: var(--accent); font-size: .5em; letter-spacing: -.02em; }
+.pf-band dd { margin: .6rem 0 0; color: var(--muted); font-size: .84rem; font-weight: 650; }
+
+.pf-toc { position: sticky; top: 0; z-index: 5; margin-top: 2.4rem; background: color-mix(in srgb, var(--bg) 88%, transparent); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); border-bottom: 1px solid var(--line); }
+.pf-toc .shell { display: flex; gap: 1.8rem; overflow-x: auto; scrollbar-width: none; }
+.pf-toc a { position: relative; flex: none; display: inline-flex; gap: .45rem; padding: .95rem 0 .85rem; color: var(--muted); font-size: .86rem; font-weight: 750; transition: color .2s; }
+.pf-toc a span { color: var(--pen); font-variant-numeric: tabular-nums; opacity: .7; }
+.pf-toc a::after { content: ''; position: absolute; left: 0; right: 0; bottom: -1px; height: 2px; background: var(--accent); transform: scaleX(0); transform-origin: left; transition: transform .35s cubic-bezier(.2, .7, .2, 1); }
+.pf-toc a:hover, .pf-toc a[aria-current] { color: var(--ink); }
+.pf-toc a[aria-current]::after { transform: scaleX(1); }
+
+.pf-body { padding-bottom: 6rem; }
+.pf-sec { position: relative; display: grid; grid-template-columns: 6rem minmax(0, 1fr); gap: clamp(1.4rem, 3vw, 2.6rem); padding: 3.6rem 0 3rem; border-top: 1px solid var(--line); scroll-margin-top: 3.4rem; }
+.pf-sec:first-child { border-top: 0; }
+.pf-num { color: var(--ink); font-size: clamp(2rem, 3.4vw, 2.8rem); font-weight: 800; line-height: 1; letter-spacing: -.05em; font-variant-numeric: tabular-nums; transition: color .4s; }
+.pf-sec.is-in .pf-num, .pf-sec:hover .pf-num { color: var(--accent); }
+.pf-sec h2 { margin: 0 0 2rem; font-size: clamp(1.8rem, 3.2vw, 2.6rem); font-weight: 760; line-height: 1.08; letter-spacing: -.05em; }
+.pf-sec h2.pf-h-sm { margin: 2.8rem 0 1.1rem; font-size: 1.05rem; font-weight: 800; letter-spacing: -.01em; }
+.pf-split > div > h2.pf-h-sm:first-child { margin-top: .55rem; }
+.pf-sec h2 sup, .pf-tabs sup { margin-left: .3em; color: var(--accent); font-size: .62em; font-weight: 800; vertical-align: super; }
+.pf-eyebrow { margin: 0 0 .7rem; color: var(--accent); font-size: .72rem; font-weight: 850; letter-spacing: .16em; text-transform: uppercase; }
+.pf-when { color: var(--muted); font-size: .8rem; font-weight: 700; font-variant-numeric: tabular-nums; letter-spacing: .01em; white-space: nowrap; }
+
+.pf-feature { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr); gap: clamp(2rem, 4vw, 3.6rem); align-items: start; }
+.pf-feature h3 { display: inline-block; margin: 0 0 1rem; font-size: clamp(1.5rem, 2.6vw, 2.05rem); font-weight: 780; line-height: 1.15; letter-spacing: -.045em; }
+.pf-feature h3 a:hover { color: var(--accent); }
+.pf-feature h3 a:hover::after { clip-path: inset(0); }
+.pf-copy { margin: 0; color: var(--muted); line-height: 1.75; word-break: keep-all; }
+.pf-stack { margin: 1.2rem 0 0; font-size: .84rem; font-weight: 700; }
+.pf-stack i { color: var(--accent); font-style: normal; margin: 0 .2rem; }
+.pf-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 1rem 1.6rem; margin-top: 1.8rem; }
 .pf-actions .lab-cta { margin-top: 0; }
-.pf-ghost { padding: .7rem 1.1rem; border: 1px solid var(--line); border-radius: 999px; font-size: .88rem; font-weight: 800; }
-.pf-ghost:hover { border-color: var(--accent); color: var(--accent); }
-.pf-stats { --tilt: 1deg; display: grid; grid-template-columns: 1fr 1fr; gap: 0; margin: 0; padding: .4rem; }
-.pf-stats div { padding: 1.1rem 1rem; border: 1px dashed var(--line); margin: -1px 0 0 -1px; }
-.pf-stats dt { color: var(--pen); font-size: clamp(1.8rem, 3vw, 2.4rem); font-weight: 900; letter-spacing: -.05em; line-height: 1; }
-.pf-stats div:first-child dt { color: var(--accent); }
-.pf-stats dd { margin: .45rem 0 0; color: var(--muted); font-size: .82rem; line-height: 1.4; }
-.pf-toc { position: sticky; top: 0; z-index: 5; display: flex; gap: .3rem; overflow-x: auto; padding-block: .7rem; background: var(--bg); border-bottom: 1px solid var(--line); scrollbar-width: none; }
-.pf-toc a { flex: none; padding: .35rem .8rem; border-radius: 999px; color: var(--muted); font-size: .84rem; font-weight: 750; }
-.pf-toc a:hover { background: var(--soft); color: var(--ink); }
-.pf-body { padding-bottom: 5rem; }
-.pf-section { padding-block: 3.4rem 1rem; scroll-margin-top: 3.5rem; }
-.pf-h { display: flex; align-items: baseline; gap: .6rem; margin: 0 0 1.5rem; font-size: clamp(1.6rem, 2.8vw, 2.2rem); letter-spacing: -.05em; }
-.pf-h small { color: var(--accent); font-size: .9rem; font-weight: 850; letter-spacing: 0; }
-.pf-two { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: 3.5rem; }
-.pf-two .pf-h + * + .pf-h, .pf-two > div > .pf-h:not(:first-child) { margin-top: 2.6rem; }
-.pf-eyebrow { margin: 0 0 .4rem; color: var(--accent); font-size: .75rem; font-weight: 850; letter-spacing: .14em; text-transform: uppercase; }
-.pf-period { color: var(--muted); font-size: .78rem; font-weight: 750; font-variant-numeric: tabular-nums; letter-spacing: .02em; }
-.pf-org { color: var(--muted); font-size: .84rem; }
-.pf-tags { display: flex; flex-wrap: wrap; gap: .35rem; margin: 0; padding: 0; list-style: none; }
-.pf-tags li { padding: .2rem .55rem; border-radius: 999px; background: var(--soft); color: var(--ink); font-size: .74rem; font-weight: 700; }
-.pf-feature { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 3rem; align-items: center; }
-.pf-shot { --tilt: -1deg; }
-.pf-feature h3 { margin: 0 0 .7rem; font-size: clamp(1.5rem, 2.6vw, 2rem); letter-spacing: -.04em; }
-.pf-feature p:not(.pf-eyebrow) { margin: 0 0 1.1rem; color: var(--muted); line-height: 1.7; }
-.pf-timeline { display: grid; gap: 1.6rem; margin: 0; padding: 0 0 0 1.5rem; list-style: none; border-left: 2px solid var(--line); }
-.pf-timeline li { position: relative; display: grid; gap: .2rem; }
-.pf-timeline li::before { content: ''; position: absolute; left: calc(-1.5rem - 7px); top: .2rem; width: 12px; height: 12px; border-radius: 50%; background: var(--bg); border: 2px solid var(--pen); }
-.pf-timeline li.is-now::before { background: var(--accent); border-color: var(--accent); box-shadow: 0 0 0 5px color-mix(in srgb, var(--accent) 22%, transparent); }
-.pf-timeline strong { font-size: 1.15rem; letter-spacing: -.03em; }
-.pf-timeline em { color: var(--pen); font-style: normal; font-size: .9rem; font-weight: 750; }
-.pf-timeline p { margin: .2rem 0 0; color: var(--muted); line-height: 1.6; font-size: .93rem; }
-.pf-timeline.is-quiet { gap: .9rem; }
-.pf-timeline.is-quiet p { margin: 0; color: var(--ink); }
-.pf-skills { display: grid; gap: .9rem; }
-.pf-skills > div { display: grid; grid-template-columns: 4.5rem 1fr; gap: .6rem; align-items: start; }
-.pf-skills span { padding-top: .2rem; color: var(--muted); font-size: .8rem; font-weight: 800; }
-.pf-filter { display: flex; flex-wrap: wrap; gap: .4rem; margin-bottom: 1.4rem; }
-.pf-filter label { padding: .45rem .9rem; border: 1px solid var(--line); border-radius: 999px; font-size: .84rem; font-weight: 750; cursor: pointer; }
-.pf-filter input { position: absolute; opacity: 0; pointer-events: none; }
-.pf-filter label:has(input:checked) { background: var(--ink); border-color: var(--ink); color: var(--bg); }
-.pf-filter label:has(input:focus-visible) { outline: 2px solid var(--accent); outline-offset: 2px; }
-.pf-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 1rem; margin: 0; padding: 0; list-style: none; }
-.pf-card { display: flex; flex-direction: column; gap: .55rem; padding: 1.1rem 1.15rem 1.2rem; background: var(--surface); box-shadow: 0 1px 2px rgba(0, 0, 0, .08); transition: transform .25s cubic-bezier(.2, .7, .2, 1), box-shadow .25s; }
-.pf-card:hover { transform: translateY(-3px); box-shadow: 0 1px 2px rgba(0, 0, 0, .08), 0 14px 22px -16px rgba(0, 0, 0, .45); }
-.pf-card-top { display: flex; justify-content: space-between; gap: .6rem; align-items: center; }
-.pf-card h3 { margin: 0; font-size: 1.02rem; line-height: 1.45; letter-spacing: -.02em; }
-.pf-card .pf-org { margin: 0 0 .2rem; flex: 1; }
-.pf-dot { display: inline-flex; align-items: center; gap: .35rem; font-size: .72rem; font-weight: 800; color: var(--muted); white-space: nowrap; }
-.pf-dot::before { content: ''; width: 8px; height: 8px; border-radius: 50%; background: currentColor; }
-.pf-dot.is-ts { color: var(--pen); }
-.pf-dot.is-anomaly { color: var(--accent); }
-.pf-dot.is-nlp { color: #2f9e74; }
-.pf-dot.is-data { color: #c08a1e; }
-.pf-work:has(input[value="ts"]:checked) .pf-card:not([data-d="ts"]),
-.pf-work:has(input[value="anomaly"]:checked) .pf-card:not([data-d="anomaly"]),
-.pf-work:has(input[value="nlp"]:checked) .pf-card:not([data-d="nlp"]),
-.pf-work:has(input[value="data"]:checked) .pf-card:not([data-d="data"]) { display: none; }
-.pf-papers { display: grid; gap: 1.1rem; margin: 0; padding: 0; list-style: none; counter-reset: paper; }
-.pf-papers li { display: grid; gap: .25rem; padding-bottom: 1.1rem; border-bottom: 1px solid var(--line); }
-.pf-papers strong { font-size: .98rem; line-height: 1.5; letter-spacing: -.01em; }
-.pf-patent { --tilt: .8deg; display: grid; gap: .4rem; padding: 1.4rem 1.3rem; }
-.pf-patent strong { font-size: 1.15rem; letter-spacing: -.03em; }
-.pf-patent p { margin: 0; color: var(--muted); font-size: .9rem; line-height: 1.6; }
-.pf-awards { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1rem; margin: 0; padding: 0; list-style: none; }
-.pf-awards li { display: grid; grid-template-columns: 4.6rem 1fr; gap: 1rem; align-items: center; padding: 1rem 1.1rem; border: 1px solid var(--line); }
-.pf-awards li > div { display: grid; gap: .2rem; }
-.pf-awards strong { font-size: .95rem; line-height: 1.45; }
-.pf-rank { display: grid; place-items: center; aspect-ratio: 1; border-radius: 50%; border: 2px solid var(--pen); color: var(--pen); font-size: .92rem; font-weight: 900; letter-spacing: -.03em; }
-.pf-awards li.is-hot { border-color: color-mix(in srgb, var(--accent) 55%, var(--line)); }
-.pf-awards li.is-hot .pf-rank { border-color: var(--accent); background: var(--accent); color: #fff; }
-.pf-teach-head { display: grid; grid-template-columns: auto 1fr; gap: 2.5rem; align-items: center; }
-.pf-big { display: grid; gap: .3rem; margin: 0; }
-.pf-big b { color: var(--accent); font-size: clamp(2.8rem, 6vw, 4.4rem); font-weight: 900; letter-spacing: -.06em; line-height: 1; }
-.pf-big span { color: var(--muted); font-size: .85rem; }
-.pf-tags.is-orgs li { background: transparent; border: 1px solid var(--line); font-size: .8rem; padding: .3rem .7rem; }
-.pf-details { margin-top: 1.6rem; }
-.pf-details summary { display: inline-block; padding: .55rem 1rem; border: 1px solid var(--line); border-radius: 999px; font-size: .86rem; font-weight: 800; cursor: pointer; list-style: none; }
+.pf-link { font-size: .88rem; font-weight: 800; border-bottom: 1px solid var(--line); padding-bottom: .15rem; transition: border-color .2s, color .2s; }
+.pf-link:hover { color: var(--accent); border-color: var(--accent); }
+.pf-shot { --tilt: 1.2deg; --tape-tilt: -4deg; }
+
+.pf-split { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr); gap: clamp(2rem, 5vw, 4.5rem); }
+.pf-rows { margin: 0; padding: 0; list-style: none; border-top: 1px solid var(--ink); }
+.pf-rows li { display: grid; grid-template-columns: 9.5rem minmax(0, 1fr); gap: 1.2rem; padding: 1.35rem 0; border-bottom: 1px solid var(--line); }
+.pf-rows .pf-when { padding-top: .25rem; }
+.pf-rows h3 { display: flex; flex-wrap: wrap; align-items: center; gap: .6rem; margin: 0 0 .35rem; font-size: 1.2rem; font-weight: 800; letter-spacing: -.035em; }
+.pf-rows p { margin: 0; color: var(--muted); font-size: .92rem; line-height: 1.65; word-break: keep-all; }
+.pf-rows p.pf-role { margin-bottom: .45rem; color: var(--pen); font-size: .88rem; font-weight: 750; }
+.pf-rows p.pf-strong { color: var(--ink); font-weight: 700; }
+.pf-rows.is-compact li { grid-template-columns: 4rem minmax(0, 1fr); padding: .9rem 0; }
+.pf-rows.is-compact .pf-when { padding-top: .1rem; }
+.pf-rows.is-papers li { grid-template-columns: 4rem minmax(0, 1fr); }
+.pf-rows.is-papers h3 { display: block; font-size: 1.02rem; font-weight: 750; line-height: 1.5; letter-spacing: -.015em; }
+.pf-now { padding: .18rem .5rem; border: 1px solid var(--accent); border-radius: 999px; color: var(--accent); font-size: .66rem; font-weight: 850; letter-spacing: .06em; }
+.pf-skills { margin: 0; border-top: 1px solid var(--ink); }
+.pf-skills div { display: grid; grid-template-columns: 4rem minmax(0, 1fr); gap: 1.2rem; padding: .9rem 0; border-bottom: 1px solid var(--line); }
+.pf-skills dt { color: var(--muted); font-size: .8rem; font-weight: 750; padding-top: .1rem; }
+.pf-skills dd { margin: 0; font-size: .92rem; font-weight: 650; line-height: 1.6; }
+
+.pf-tabs { display: flex; flex-wrap: wrap; gap: .2rem 1.6rem; margin: -.6rem 0 1.4rem; }
+.pf-tabs label { position: relative; cursor: pointer; }
+.pf-tabs input { position: absolute; opacity: 0; pointer-events: none; }
+.pf-tabs span { display: inline-flex; align-items: center; gap: .4rem; padding: .55rem 0; color: var(--muted); font-size: .92rem; font-weight: 750; border-bottom: 2px solid transparent; transition: color .2s, border-color .2s; }
+.pf-tabs label:hover span { color: var(--ink); }
+.pf-tabs input:checked + span { color: var(--ink); border-color: var(--ink); }
+.pf-tabs input:focus-visible + span { outline: 2px solid var(--accent); outline-offset: 3px; }
+.pf-tabs sup { margin-left: 0; font-size: .68rem; }
+.pf-sw { display: inline-block; width: .55rem; height: .55rem; border-radius: 2px; background: var(--muted); transform: rotate(45deg); }
+.pf-sw.is-ts { background: var(--pen); }
+.pf-sw.is-anomaly { background: var(--accent); }
+.pf-sw.is-nlp { background: #33a07a; }
+.pf-sw.is-data { background: #c99326; }
+.pf-list { margin: 0; padding: 0; list-style: none; border-top: 1px solid var(--ink); }
+.pf-list li { display: grid; grid-template-columns: 10rem minmax(0, 1fr) 9rem; gap: 1.4rem; align-items: baseline; padding: 1.15rem .6rem; margin: 0 -.6rem; border-bottom: 1px solid var(--line); transition: background .2s; }
+.pf-list li:hover { background: color-mix(in srgb, var(--surface) 70%, transparent); }
+.pf-list h3 { margin: 0 0 .2rem; font-size: 1.04rem; font-weight: 750; line-height: 1.45; letter-spacing: -.02em; word-break: keep-all; transition: color .2s; }
+.pf-list li:hover h3 { color: var(--accent); }
+.pf-list p { margin: 0; color: var(--muted); font-size: .85rem; }
+.pf-field { display: inline-flex; align-items: center; gap: .5rem; justify-self: end; color: var(--muted); font-size: .8rem; font-weight: 700; white-space: nowrap; }
+#pf-work:has(input[value="ts"]:checked) .pf-list li:not([data-d="ts"]),
+#pf-work:has(input[value="anomaly"]:checked) .pf-list li:not([data-d="anomaly"]),
+#pf-work:has(input[value="nlp"]:checked) .pf-list li:not([data-d="nlp"]),
+#pf-work:has(input[value="data"]:checked) .pf-list li:not([data-d="data"]) { display: none; }
+
+.pf-patent { position: relative; display: grid; gap: .5rem; max-width: 760px; padding: 1.6rem 1.7rem 1.6rem 1.9rem; background: var(--surface); box-shadow: 0 1px 2px rgba(0, 0, 0, .08), 0 14px 26px -22px rgba(0, 0, 0, .5); }
+.pf-patent::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 4px; background: var(--accent); }
+.pf-badge { color: var(--accent); font-size: .72rem; font-weight: 850; letter-spacing: .12em; text-transform: uppercase; }
+.pf-patent h3 { margin: 0; font-size: clamp(1.25rem, 2.2vw, 1.55rem); font-weight: 800; letter-spacing: -.04em; }
+.pf-patent p { margin: 0; color: var(--muted); font-size: .92rem; line-height: 1.6; }
+
+.pf-awards { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 2.4rem 2rem; margin: 0; padding: 0; list-style: none; }
+.pf-awards li { display: grid; align-content: start; gap: .35rem; padding-top: 1.1rem; border-top: 1px solid var(--ink); }
+.pf-awards li.is-top { border-top: 3px solid var(--accent); padding-top: calc(1.1rem - 2px); }
+.pf-rank { margin-bottom: .5rem; font-size: clamp(2rem, 3.4vw, 2.7rem); font-weight: 820; line-height: 1; letter-spacing: -.05em; }
+.pf-awards li.is-top .pf-rank { color: var(--accent); }
+.pf-awards h3 { margin: 0; font-size: 1.08rem; font-weight: 780; line-height: 1.4; letter-spacing: -.025em; }
+.pf-note { margin: 0; color: var(--ink); font-size: .9rem; font-weight: 600; }
+.pf-by { margin: .2rem 0 0; color: var(--muted); font-size: .8rem; }
+
+.pf-teach { display: grid; grid-template-columns: minmax(0, .8fr) minmax(0, 1.2fr); gap: clamp(2rem, 5vw, 4.5rem); align-items: start; }
+.pf-total strong { display: block; color: var(--accent); font-size: clamp(4rem, 9vw, 7rem); font-weight: 850; line-height: .9; letter-spacing: -.07em; font-variant-numeric: tabular-nums; }
+.pf-total strong small { margin-left: .05em; font-size: .38em; letter-spacing: -.02em; }
+.pf-total p { max-width: 34ch; margin: 1.2rem 0 0; color: var(--muted); font-size: .92rem; line-height: 1.7; word-break: keep-all; }
+.pf-bars { display: grid; gap: 1rem; padding-top: .3rem; }
+.pf-bars .pf-eyebrow { margin-bottom: .2rem; }
+.pf-bar { display: grid; grid-template-columns: minmax(0, 1fr) 3.2rem; grid-template-areas: 'label val' 'track track'; gap: .45rem .8rem; align-items: end; }
+.pf-bar-label { grid-area: label; display: flex; flex-wrap: wrap; align-items: baseline; gap: .1rem .6rem; font-size: .92rem; font-weight: 720; }
+.pf-bar-label small { color: var(--muted); font-size: .78rem; font-weight: 600; }
+.pf-bar-val { grid-area: val; justify-self: end; font-size: .88rem; font-weight: 800; font-variant-numeric: tabular-nums; }
+.pf-bar-track { grid-area: track; height: 6px; background: var(--soft); border-radius: 3px; overflow: hidden; }
+.pf-bar-track span { display: block; height: 100%; width: var(--w); background: var(--pen); border-radius: 3px; transform-origin: left; transition: transform 1.1s cubic-bezier(.2, .7, .2, 1) .15s; }
+.pf-bar:first-of-type .pf-bar-track span { background: var(--accent); }
+.pf-details { margin-top: 2.6rem; border-top: 1px solid var(--line); }
+.pf-details summary { display: inline-flex; align-items: center; gap: .5rem; margin-top: 1.2rem; font-size: .9rem; font-weight: 800; cursor: pointer; list-style: none; }
 .pf-details summary::-webkit-details-marker { display: none; }
-.pf-details summary::after { content: ' +'; color: var(--accent); }
-.pf-details[open] summary::after { content: ' −'; }
-.pf-details table { width: 100%; margin-top: 1.2rem; border-collapse: collapse; font-size: .88rem; }
-.pf-details th { text-align: left; padding: .6rem .7rem; border-bottom: 2px solid var(--ink); font-size: .78rem; color: var(--muted); }
-.pf-details td { padding: .6rem .7rem; border-bottom: 1px solid var(--line); vertical-align: top; }
-.pf-details td:first-child, .pf-details td:last-child { white-space: nowrap; color: var(--muted); font-variant-numeric: tabular-nums; }
-.pf-contact { margin-top: 2.4rem; padding: 3.4rem 0 1rem; border-top: 1px solid var(--line); text-align: center; }
-.pf-contact h2 { margin: 0 0 1.1rem; font-size: clamp(1.7rem, 3.4vw, 2.6rem); letter-spacing: -.05em; }
-.pf-mail { display: inline-block; color: var(--pen); font-size: clamp(1.2rem, 3vw, 1.8rem); font-weight: 850; letter-spacing: -.03em; }
-.pf-mail:hover::after { clip-path: inset(0); }
-@media (max-width: 900px) {
-  .pf-hero-grid, .pf-feature, .pf-two, .pf-teach-head { grid-template-columns: 1fr; }
-  .pf-hero-grid, .pf-two { gap: 2rem; }
-  .pf-feature { gap: 1.8rem; }
-  .pf-stats { --tilt: 0deg; }
+.pf-details summary::after { content: '+'; display: grid; place-items: center; width: 1.4rem; height: 1.4rem; border: 1px solid var(--line); border-radius: 50%; color: var(--accent); font-weight: 700; transition: transform .25s; }
+.pf-details[open] summary::after { transform: rotate(45deg); }
+.pf-details summary:hover { color: var(--accent); }
+.pf-details table { width: 100%; margin-top: 1.4rem; border-collapse: collapse; font-size: .88rem; }
+.pf-details th { padding: .7rem .8rem .7rem 0; border-bottom: 1px solid var(--ink); color: var(--muted); font-size: .72rem; font-weight: 800; letter-spacing: .12em; text-align: left; text-transform: uppercase; }
+.pf-details td { padding: .75rem .8rem .75rem 0; border-bottom: 1px solid var(--line); vertical-align: top; line-height: 1.5; }
+.pf-details td:first-child, .pf-details td:last-child { color: var(--muted); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.pf-details td:last-child, .pf-details th:last-child { text-align: right; padding-right: 0; }
+
+.pf-motion .pf-sec .pf-sec-body { transition: opacity .8s cubic-bezier(.2, .7, .2, 1), transform .8s cubic-bezier(.2, .7, .2, 1); }
+.pf-motion .pf-sec:not(.is-in) .pf-sec-body { opacity: 0; transform: translateY(18px); }
+.pf-motion .pf-sec:not(.is-in) .pf-bar-track span { transform: scaleX(0); }
+
+@media (max-width: 960px) {
+  .pf-hero-grid { grid-template-columns: 1fr; }
+  .pf-hero .lab-sketch { display: none; }
+  .pf-band { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .pf-band div:nth-child(4) { border-left: 0; }
+  .pf-band div:nth-child(n + 4) { border-top: 1px solid var(--line); }
+  .pf-feature, .pf-split, .pf-teach { grid-template-columns: 1fr; }
+  .pf-awards { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
-@media (max-width: 520px) {
-  .pf-awards { grid-template-columns: 1fr; }
-  .pf-awards li { grid-template-columns: 3.6rem 1fr; gap: .8rem; }
-  .pf-rank { font-size: .8rem; }
+@media (max-width: 720px) {
+  .pf-hero { padding: 2.6rem 0 1.8rem; }
+  .pf-meta { gap: .9rem 1.8rem; }
+  .pf-band { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .pf-band div { padding: 1.1rem .9rem; }
+  .pf-band div:nth-child(n) { border-left: 0; border-top: 0; }
+  .pf-band div:nth-child(even) { border-left: 1px solid var(--line); }
+  .pf-band div:nth-child(n + 3) { border-top: 1px solid var(--line); }
+  .pf-band div:last-child { grid-column: 1 / -1; border-left: 0; }
+  .pf-toc { margin-top: 1.6rem; }
+  .pf-toc .shell { gap: 1.3rem; }
+  .pf-sec { grid-template-columns: 1fr; gap: .6rem; padding: 2.6rem 0 2rem; }
+  .pf-num { font-size: 1.1rem; }
+  .pf-sec h2 { margin-bottom: 1.4rem; }
+  .pf-rows li, .pf-rows.is-papers li { grid-template-columns: 1fr; gap: .35rem; }
+  .pf-rows .pf-when { padding-top: 0; }
+  .pf-list li { grid-template-columns: 1fr auto; gap: .3rem 1rem; }
+  .pf-list .pf-when { grid-column: 1; grid-row: 1; }
+  .pf-list .pf-field { grid-column: 2; grid-row: 1; }
+  .pf-list li > div { grid-column: 1 / -1; }
+  .pf-awards { grid-template-columns: 1fr; gap: 1.8rem; }
   .pf-details td:nth-child(2), .pf-details th:nth-child(2) { display: none; }
-  .pf-section { padding-top: 2.6rem; }
 }
 </style>
 </BaseLayout>
