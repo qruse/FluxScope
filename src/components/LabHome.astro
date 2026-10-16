@@ -3,14 +3,14 @@ import { getCollection } from 'astro:content';
 import { blogPath, categories, categoryPath, labSectionPath, labSections, projectPath, projects, storyPath, type Category } from '../lib/site';
 import { useTranslations, type Lang } from '../i18n/ui';
 import LabMark from './LabMark.astro';
-import LabSketch from './LabSketch.astro';
+import { portfolio } from '../lib/portfolio';
 
 interface Props { lang: Lang; }
 const { lang } = Astro.props;
 const t = useTranslations(lang);
 const isKo = lang === 'ko';
 // Sections come from labSections in lib/site.ts: the blog with its newest posts, the projects with a capture of
-// the forecast page, the project stories and the portfolio; the last two keep their pen sketches beside the text.
+// the forecast page, the project stories with charts pinned from their parts, and the portfolio with its figures.
 const blog = {
   name: t('site.title'),
   href: blogPath('/', lang),
@@ -19,6 +19,12 @@ const blog = {
     : 'A blog I started because I was curious.',
 };
 const stories = (await getCollection('stories', (entry) => entry.data.lang === lang)).sort((a, b) => a.data.part - b.data.part);
+const storyPins = [
+  { part: 2, img: 'part2-pipeline', h: 523, ko: '2편 데이터 흐름도', en: 'Part 2 data flow chart' },
+  { part: 3, img: 'part3-zeroshot', h: 509, ko: '3편 제로샷 검증 점수 차트', en: 'Part 3 zero-shot validation chart' },
+  { part: 4, img: 'part4-test', h: 537, ko: '4편 테스트 기간 점수 차트', en: 'Part 4 test-period score chart' },
+];
+const cv = portfolio(lang);
 ---
 <h1 class="sr-only">{t('lab.title')}</h1>
 <!-- Background layer behind the home content: scattered pen-drawn triangles gather into two hatched
@@ -84,19 +90,37 @@ const stories = (await getCollection('stories', (entry) => entry.data.lang === l
       <div class="lab-entry-copy">
         <h3><a class="pen-under" href={labSectionPath(labSections[2], lang)}>{isKo ? '프로젝트 스토리' : 'Project Stories'}</a></h3>
         <p>{isKo ? '프로젝트를 만들면서 생긴 일을 편마다 정리한 개발 스토리.' : 'Development stories from the projects, one part at a time.'}</p>
-        <ol class="latest-list lab-stories">
-          {stories.map((story) => <li><a href={storyPath(story.id.split('/')[1], lang)}>{story.data.title}</a></li>)}
+        <ol class="lab-parts">
+          {stories.map((story) => <li><a href={storyPath(story.id.split('/')[1], lang)}><span>{isKo ? `${story.data.part}편` : `Part ${story.data.part}`}</span>{story.data.title}</a></li>)}
         </ol>
       </div>
-      <LabSketch kind="stories" />
+      <!-- Charts from the parts, pinned up like prints; each one opens its part. -->
+      <div class="lab-pins">
+        {storyPins.map((pin) => (
+          <a class="taped lab-pin" href={storyPath(stories[pin.part - 1].id.split('/')[1], lang)}>
+            <img src={`/images/stories/beat-kma/thumb-${pin.img}.webp`} width="560" height={pin.h} loading="lazy" decoding="async" alt={isKo ? pin.ko : pin.en} />
+          </a>
+        ))}
+      </div>
     </article>
     <article class="lab-entry" id="portfolio" data-face="3">
       <LabMark id="portfolio" class="lab-entry-num" />
       <div class="lab-entry-copy">
         <h3><a class="pen-under" href={labSectionPath(labSections[3], lang)}>{isKo ? '포트폴리오' : 'Portfolio'}</a></h3>
         <p>{isKo ? '2020년부터 해 온 데이터·AI 프로젝트, 논문, 수상, 강의.' : 'Data and AI projects, papers, awards and teaching since 2020.'}</p>
+        <dl class="lab-figures">
+          {cv.stats.filter((s) => s.id !== 'papers').map((s) => <div><dt>{s.n}<small>{s.s}</small></dt><dd>{isKo ? s.ko : s.en}</dd></div>)}
+        </dl>
+        <a class="lab-cta" href={labSectionPath(labSections[3], lang)}>{isKo ? '포트폴리오 보기' : 'Open the portfolio'}<span aria-hidden="true">→</span></a>
       </div>
-      <LabSketch kind="portfolio" />
+      <!-- The top awards and the research count, as an index card. -->
+      <a class="taped lab-card" href={labSectionPath(labSections[3], lang)}>
+        <span class="lab-card-kicker">{isKo ? '하이라이트' : 'Highlights'}</span>
+        <ol>
+          {cv.awards.slice(0, 3).map((a) => <li class={a.top ? 'is-top' : undefined}><b>{a.rank}</b><span>{isKo ? a.ko : a.en}<small>{a.note}</small></span></li>)}
+          <li><b>KCI</b><span>{isKo ? `논문 ${cv.papers.length}편 · 특허 출원 1건` : `${cv.papers.length} papers · 1 patent filed`}<small>{isKo ? '텍스트 분류, 시계열 딥러닝, 토픽모델링' : 'Text classification, time-series deep learning, topic models'}</small></span></li>
+        </ol>
+      </a>
     </article>
   </div>
 </section>
@@ -199,7 +223,7 @@ const stories = (await getCollection('stories', (entry) => entry.data.lang === l
     const reveal = new IntersectionObserver((seen) => {
       for (const { isIntersecting, target } of seen) if (isIntersecting) { target.classList.add('is-seen'); reveal.unobserve(target); }
     }, { rootMargin: '0px 0px -12% 0px' });
-    document.querySelectorAll('.lab-entry, .lab-sketch').forEach((el) => reveal.observe(el));
+    document.querySelectorAll('.lab-entry').forEach((el) => reveal.observe(el));
 
     const LIGHT = unit([-.6, -.7, -.9]);
     let W = 0, H = 0, R = 0, queued = false, tiltX = 0, tiltY = 0, aimX = 0, aimY = 0, current = 0;
@@ -358,3 +382,42 @@ const stories = (await getCollection('stories', (entry) => entry.data.lang === l
     if (live) addEventListener('pointermove', (e) => { aimX = e.clientX / W - .5; aimY = e.clientY / H - .5; schedule(); }, { passive: true });
   }
 </script>
+
+<!-- Styles for the story and portfolio entries only, inline so the site-wide CSS bundle stays in budget. -->
+<style is:inline>
+.lab-parts { margin: 1.3rem 0 0; padding: 0; list-style: none; border-top: 1px solid var(--ink); }
+.lab-parts a { display: grid; grid-template-columns: 3.2rem minmax(0, 1fr); gap: .8rem; align-items: baseline; padding: .78rem 0; border-bottom: 1px solid var(--line); font-size: .98rem; font-weight: 700; line-height: 1.45; letter-spacing: -.02em; word-break: keep-all; text-shadow: 0 0 .4rem var(--bg), 0 0 .15rem var(--bg); transition: color .2s, padding .3s cubic-bezier(.2, .7, .2, 1); }
+.lab-parts span { color: var(--accent); font-size: .76rem; font-weight: 850; font-variant-numeric: tabular-nums; }
+.lab-parts a:hover { color: var(--accent); padding-left: .35rem; }
+.lab-pins { position: relative; justify-self: end; width: 100%; max-width: 470px; aspect-ratio: 470 / 410; margin-top: .4rem; }
+.lab-pin { position: absolute; width: 56%; }
+.lab-pin img { height: auto; }
+.lab-pin:nth-child(1) { left: 0; top: 15%; --tilt: -7deg; --tape-tilt: 4deg; }
+.lab-pin:nth-child(2) { left: 22%; top: 0; --tilt: 1.5deg; z-index: 1; }
+.lab-pin:nth-child(3) { right: 0; top: 24%; --tilt: 6deg; --tape-tilt: -5deg; z-index: 2; }
+a.lab-pin:hover { z-index: 3; transform: rotate(0) translateY(-6px) scale(1.06); }
+.lab-figures { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); margin: 1.5rem 0 0; border-top: 1px solid var(--ink); border-bottom: 1px solid var(--line); background: color-mix(in srgb, var(--bg) 82%, transparent); }
+.lab-figures div { padding: .95rem .8rem .85rem; }
+.lab-figures div + div { border-left: 1px solid var(--line); }
+.lab-figures dt { font-size: clamp(1.5rem, 2.4vw, 2rem); font-weight: 820; line-height: 1; letter-spacing: -.05em; font-variant-numeric: tabular-nums; }
+.lab-figures dt small { margin-left: .04em; color: var(--accent); font-size: .55em; letter-spacing: -.02em; }
+.lab-figures dd { margin: .45rem 0 0; color: var(--muted); font-size: .76rem; font-weight: 650; }
+.lab-card { --tilt: 1.2deg; --tape-tilt: -3deg; justify-self: end; width: 100%; max-width: 440px; margin-top: .6rem; padding: 1.5rem 1.5rem 1.1rem; }
+.lab-card-kicker { display: block; margin-bottom: .7rem; color: var(--accent); font-size: .7rem; font-weight: 850; letter-spacing: .16em; text-transform: uppercase; }
+.lab-card ol { margin: 0; padding: 0; list-style: none; }
+.lab-card li { display: grid; grid-template-columns: 3.6rem minmax(0, 1fr); gap: .9rem; align-items: baseline; padding: .85rem 0; border-top: 1px solid var(--line); }
+.lab-card b { color: var(--pen); font-size: 1.25rem; font-weight: 820; letter-spacing: -.04em; }
+.lab-card li.is-top b { color: var(--accent); }
+.lab-card li span { display: grid; gap: .15rem; font-size: .92rem; font-weight: 720; line-height: 1.4; letter-spacing: -.02em; word-break: keep-all; }
+.lab-card small { color: var(--muted); font-size: .78rem; font-weight: 600; }
+@media (max-width: 860px) {
+  .lab-pins, .lab-card { grid-column: 2 / -1; justify-self: start; }
+  .lab-pins { max-width: 400px; }
+}
+@media (max-width: 560px) {
+  .lab-figures { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .lab-figures div:nth-child(3) { border-left: 0; }
+  .lab-figures div:nth-child(n + 3) { border-top: 1px solid var(--line); }
+  .lab-parts a { grid-template-columns: 2.6rem minmax(0, 1fr); font-size: .92rem; }
+}
+</style>

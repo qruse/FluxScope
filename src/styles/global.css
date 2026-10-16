@@ -1,6 +1,7 @@
 @import "tailwindcss";
-/* The portfolio styles itself inline; its long copy would otherwise turn stray words into utility classes. */
+/* The portfolio styles itself inline; its long copy and data would otherwise turn stray words into utility classes. */
 @source not "../components/PortfolioIndex.astro";
+@source not "../lib/portfolio.ts";
 @import "pretendard/dist/web/variable/pretendardvariable-dynamic-subset.css";
 
 :root {
@@ -159,16 +160,12 @@ body:has(.lab-backdrop) { background: transparent; }
 .lab-entry::before { content: ''; position: absolute; inset: 0 0 auto; height: 1px; background: var(--line); transform-origin: left; transition: transform .9s cubic-bezier(.2, .7, .2, 1); }
 .lab-entry:first-of-type::before { height: 2px; background: var(--ink); }
 /* Reveal (html.lab-motion is set before first paint unless motion is reduced): the rule draws across, the
-   columns rise in one after another and the sketch strokes are drawn in turn. */
+   columns rise in one after another. */
 .lab-motion .lab-entry > * { transition: opacity .7s ease, transform .7s cubic-bezier(.2, .7, .2, 1); }
 .lab-motion .lab-entry > :nth-child(2) { transition-delay: .08s; }
 .lab-motion .lab-entry > :nth-child(n+3) { transition-delay: .16s; }
 .lab-motion .lab-entry:not(.is-seen)::before { transform: scaleX(0); }
 .lab-motion .lab-entry:not(.is-seen) > * { opacity: 0; transform: translateY(18px); }
-.lab-motion .lab-sketch path { transition: stroke-dashoffset 1s ease var(--d, 0s), opacity .6s ease var(--d, 0s); }
-.lab-motion .lab-sketch path:not(.is-dashed) { stroke-dasharray: 1 2; }
-.lab-motion .lab-sketch:not(.is-seen) path:not(.is-dashed) { stroke-dashoffset: 1.01; }
-.lab-motion .lab-sketch:not(.is-seen) .is-dashed { opacity: 0; }
 .lab-entry.is-soon { align-items: center; padding-block: 1.6rem; }
 .lab-entry-num { display: grid; justify-items: start; gap: .8rem; font-size: clamp(2rem, 3.4vw, 2.8rem); font-weight: 800; line-height: 1; letter-spacing: -.05em; font-variant-numeric: tabular-nums; transition: color .3s ease; }
 .lab-entry.is-active .lab-entry-num { color: var(--accent); }
@@ -577,9 +574,8 @@ html[data-theme="dark"] .astro-code span {
   .lab-entry-num { font-size: 1.6rem; gap: .6rem; }
   .lab-face { width: 1.3rem; height: 1.3rem; }
   .lab-thumbs { grid-column: 1 / -1; }
-  :is(.lab-latest, .lab-sketch, .lab-shot) { grid-column: 2 / -1; }
+  :is(.lab-latest, .lab-shot) { grid-column: 2 / -1; }
   .lab-shot { justify-self: start; }
-  .lab-sketch { justify-self: start; max-width: 300px; }
   .sub-posts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.6rem; }
   .post-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }

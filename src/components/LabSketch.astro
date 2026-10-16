@@ -1,12 +1,10 @@
 ---
-// Pen-style teaser sketch for a project that is not built yet, in the same hand as the blog thumbnails.
+// Pen-style sketch of an open folder for the portfolio header, in the same hand as the blog thumbnails.
 // Lines are bent and doubled at build time, so the page ships plain SVG paths.
-interface Props { kind: 'stories' | 'portfolio'; }
-const { kind } = Astro.props;
 type P = [number, number];
 type Line = { pts: P[]; closed?: boolean; cls?: 'is-dashed' | 'is-accent' };
 
-let seed = kind === 'stories' ? 13 : 7;
+let seed = 7;
 const rnd = () => ((seed = (seed * 16807) % 2147483647) - 1) / 2147483646;
 const n = (v: number) => v.toFixed(1);
 // Each segment is its own slightly bent stroke that starts and ends a little off the corner.
@@ -23,36 +21,20 @@ const pen = ({ pts, closed }: Line) => {
 };
 const ring = (cx: number, cy: number, r: number): P[] => Array.from({ length: 12 }, (_, i) => [cx + Math.cos(i * Math.PI / 6) * r, cy + Math.sin(i * Math.PI / 6) * r]);
 
-// Portfolio: an open folder with a blank sheet sliding in and a dashed sheet still to come.
-// Stories: three frames on a line; the middle one holds the tetrahedron, the last is still empty.
-const lines: Line[] = kind === 'portfolio'
-  ? [
-    { pts: [[40, 52], [40, 128], [200, 128], [200, 60], [118, 60], [106, 46], [52, 46]], closed: true },
-    { pts: [[40, 128], [62, 76], [222, 76], [200, 128]] },
-    { pts: [[78, 66], [86, 18], [170, 22], [164, 70]] },
-    { pts: [[96, 36], [150, 38]] },
-    { pts: [[94, 48], [140, 50]] },
-    { pts: [[100, 112], [118, 88], [136, 110]], cls: 'is-accent' },
-    { pts: [[100, 112], [136, 110]], cls: 'is-accent' },
-    { pts: [[176, 30], [224, 34], [218, 70]], cls: 'is-dashed' },
-    { pts: ring(206, 22, 5), closed: true, cls: 'is-accent' },
-  ]
-  : [
-    { pts: [[10, 24], [120, 32], [230, 20]] },
-    { pts: [[44, 28], [30, 42], [84, 42], [70, 29]] },
-    { pts: [[30, 42], [84, 42], [84, 100], [30, 100]], closed: true },
-    { pts: [[36, 94], [50, 70], [60, 82], [68, 74], [78, 94]] },
-    { pts: [[110, 32], [98, 46], [158, 46], [146, 32]] },
-    { pts: [[98, 46], [158, 46], [158, 120], [98, 120]], closed: true },
-    { pts: [[110, 106], [128, 62], [146, 104]], cls: 'is-accent' },
-    { pts: [[110, 106], [146, 104]], cls: 'is-accent' },
-    { pts: [[128, 62], [132, 96]], cls: 'is-dashed' },
-    { pts: [[186, 26], [174, 40], [222, 40], [212, 25]] },
-    { pts: [[174, 40], [222, 40], [222, 90], [174, 90]], closed: true, cls: 'is-dashed' },
-  ];
+// An open folder with a blank sheet sliding in and a dashed sheet still to come.
+const lines: Line[] = [
+  { pts: [[40, 52], [40, 128], [200, 128], [200, 60], [118, 60], [106, 46], [52, 46]], closed: true },
+  { pts: [[40, 128], [62, 76], [222, 76], [200, 128]] },
+  { pts: [[78, 66], [86, 18], [170, 22], [164, 70]] },
+  { pts: [[96, 36], [150, 38]] },
+  { pts: [[94, 48], [140, 50]] },
+  { pts: [[100, 112], [118, 88], [136, 110]], cls: 'is-accent' },
+  { pts: [[100, 112], [136, 110]], cls: 'is-accent' },
+  { pts: [[176, 30], [224, 34], [218, 70]], cls: 'is-dashed' },
+  { pts: ring(206, 22, 5), closed: true, cls: 'is-accent' },
+];
 ---
-<!-- pathLength and --d let the page draw each stroke in turn when the sketch scrolls into view. -->
 <svg class="lab-sketch" viewBox="0 0 240 140" aria-hidden="true">
-  {lines.map((line, i) => <path class={line.cls} d={pen(line)} pathLength={line.cls === 'is-dashed' ? undefined : 1} style={`--d:${(i * .08).toFixed(2)}s`} />)}
-  {lines.filter((line) => !line.cls).map((line, i) => <path class="is-echo" d={pen(line)} pathLength="1" style={`--d:${(lines.length * .08 + i * .04).toFixed(2)}s`} />)}
+  {lines.map((line) => <path class={line.cls} d={pen(line)} />)}
+  {lines.filter((line) => !line.cls).map((line) => <path class="is-echo" d={pen(line)} />)}
 </svg>
