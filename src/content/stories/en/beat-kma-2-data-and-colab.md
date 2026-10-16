@@ -25,6 +25,10 @@ part: 2
 - Issuances were picked every three days, alternating 05:00 and 17:00 KST, 197 in total
 - Two lost their initial conditions, leaving 122 for training, 40 for validation and 33 for test
 
+![Data flow from AIFS analysis to Aurora box, station head, our forecast and ASOS scoring](/images/stories/beat-kma/part2-pipeline.webp)
+
+*Made by HSL: how the three ingredients reach scoring through the Aurora box and the head*
+
 ## Starting eight hours behind the KMA
 
 - Inputs had to be public before the KMA issuance time
@@ -32,6 +36,10 @@ part: 2
 - The 05:00 issuance gets the previous day's 21:00 KST analysis; the 17:00 issuance gets 09:00 of the same day
 - Our model starts from information eight hours older than the KMA's
 - Only slow fields missing from open data, like sea ice and snow, come from ERA5 at least a week old
+
+![Split of 122 training, 40 validation and 33 test issues, with the starting analysis for 05:00 and 17:00 issues](/images/stories/beat-kma/part2-split.webp)
+
+*Made by HSL: the time split and what each issue could see*
 
 ## The opponent's record lives for three days
 

@@ -1,18 +1,18 @@
 ---
-// One development story from the portfolio collection, with the project's other parts in a side list.
+// One part of a project story, with the project's other parts in a side list.
 import { getCollection, render, type CollectionEntry } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
-import PortfolioStyles from './PortfolioStyles.astro';
-import { portfolioPath, projectPath, projects } from '../lib/site';
+import LabPageStyles from './LabPageStyles.astro';
+import { storyPath, projectPath, projects } from '../lib/site';
 import type { Lang } from '../i18n/ui';
 
-interface Props { entry: CollectionEntry<'portfolio'>; lang: Lang; }
+interface Props { entry: CollectionEntry<'stories'>; lang: Lang; }
 const { entry, lang } = Astro.props;
 const isKo = lang === 'ko';
 const { Content } = await render(entry);
-const parts = (await getCollection('portfolio', (e) => e.data.lang === lang && e.data.project === entry.data.project))
+const parts = (await getCollection('stories', (e) => e.data.lang === lang && e.data.project === entry.data.project))
   .sort((a, b) => a.data.part - b.data.part);
-const slugOf = (e: CollectionEntry<'portfolio'>) => e.id.split('/').pop()!;
+const slugOf = (e: CollectionEntry<'stories'>) => e.id.split('/').pop()!;
 const project = projects.find((p) => p.id === entry.data.project);
 const next = parts.find((p) => p.data.part === entry.data.part + 1);
 const date = entry.data.publishedAt.toLocaleDateString(isKo ? 'ko-KR' : 'en-US', { year: 'numeric', month: 'long', day: 'numeric', timeZone: 'Asia/Seoul' });
@@ -20,7 +20,7 @@ const date = entry.data.publishedAt.toLocaleDateString(isKo ? 'ko-KR' : 'en-US',
 <BaseLayout lang={lang} title={entry.data.title} description={entry.data.description} type="article" publishedAt={entry.data.publishedAt} updatedAt={entry.data.publishedAt}>
   <header class="page-top">
     <div class="article-shell">
-      <div class="section-kicker">{isKo ? `포트폴리오 · ${entry.data.part}편` : `Portfolio · Part ${entry.data.part}`}</div>
+      <div class="section-kicker">{isKo ? `프로젝트 스토리 · ${entry.data.part}편` : `Project Stories · Part ${entry.data.part}`}</div>
       <h1 class="story-title">{entry.data.title}</h1>
       <p>{entry.data.description}</p>
       <p class="story-meta"><time datetime={entry.data.publishedAt.toISOString()}>{date}</time></p>
@@ -33,12 +33,12 @@ const date = entry.data.publishedAt.toLocaleDateString(isKo ? 'ko-KR' : 'en-US',
       <ol>
         {parts.map((p) => (
           <li class={p.id === entry.id ? 'is-current' : undefined}>
-            <a href={portfolioPath(slugOf(p), lang)} aria-current={p.id === entry.id ? 'page' : undefined}>{p.data.title}</a>
+            <a href={storyPath(slugOf(p), lang)} aria-current={p.id === entry.id ? 'page' : undefined}>{p.data.title}</a>
           </li>
         ))}
       </ol>
-      {next && <a class="lab-cta" href={portfolioPath(slugOf(next), lang)}>{isKo ? '다음 편' : 'Next part'}<span aria-hidden="true">→</span></a>}
+      {next && <a class="lab-cta" href={storyPath(slugOf(next), lang)}>{isKo ? '다음 편' : 'Next part'}<span aria-hidden="true">→</span></a>}
     </aside>
   </div>
-  <PortfolioStyles />
+  <LabPageStyles />
 </BaseLayout>

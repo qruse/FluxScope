@@ -1,11 +1,11 @@
 ---
 import { getCollection } from 'astro:content';
-import PortfolioPost from '../../components/PortfolioPost.astro';
+import StoryPost from '../../../components/StoryPost.astro';
 
 export async function getStaticPaths() {
-  const entries = await getCollection('portfolio', (e) => e.data.lang === 'ko');
+  const entries = await getCollection('stories', (e) => e.data.lang === 'en');
   return entries.map((entry) => ({ params: { slug: entry.id.split('/').pop() }, props: { entry } }));
 }
 const { entry } = Astro.props;
 ---
-<PortfolioPost entry={entry} lang="ko" />
+<StoryPost entry={entry} lang="en" />

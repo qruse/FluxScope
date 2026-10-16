@@ -1,6 +1,6 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import PortfolioStyles from './PortfolioStyles.astro';
+import LabPageStyles from './LabPageStyles.astro';
 import { projectPath, projects } from '../lib/site';
 import type { Lang } from '../i18n/ui';
 
@@ -19,5 +19,5 @@ const isKo = lang === 'ko';
       </section>
     ))}
   </div>
-  <PortfolioStyles />
+  <LabPageStyles />
 </BaseLayout>

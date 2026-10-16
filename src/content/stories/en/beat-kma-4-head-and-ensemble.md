@@ -45,6 +45,10 @@ One feature per rung, scored on the validation period (mean of two seeds)
 - On validation the ensemble scored 0.953 °C, 6.51%, 0.632 m/s and rain F1 0.624
 - Every 2–3 model mix landed within 0.003, so the simplest one stayed
 
+![Validation temperature MAE for each neural ladder step against LightGBM, the ensemble and the KMA line](/images/stories/beat-kma/part4-ladder.webp)
+
+*Made by HSL: validation temperature MAE, mean of two seeds*
+
 ## The test set was opened once
 
 Test period (2026-07 to 10-12): 33 issuances × 97 stations × 48 hours. Models and the rain threshold were fixed on validation and scored once
@@ -60,6 +64,10 @@ Test period (2026-07 to 10-12): 33 issuances × 97 stations × 48 hours. Models 
 - On rain the ensemble only matched zero-shot Aurora, so the head did not add much there
 - Daegu was a big rain win, 0.54 vs 0.19
 - Seoul won on temperature, humidity and wind but lost on rain, 0.19 vs 0.22 (only 38 rainy hours in Seoul during the test, so a shaky number)
+
+![Test scores for the KMA, zero-shot Aurora and our ensemble: temperature, humidity and wind MAE and rain F1](/images/stories/beat-kma/part4-test.webp)
+
+*Made by HSL: test, 33 issues x 97 stations x 48 hours, scored once*
 
 ## So nobody gets the wrong idea
 
@@ -79,6 +87,10 @@ Test period (2026-07 to 10-12): 33 issuances × 97 stations × 48 hours. Models 
 - The ranking still held: against the corrected KMA we were 18% lower on temperature, 27% on humidity and 34% on wind
 - The KMA grid missed most at valley and mountain stations such as Yangsan (−1.3 °C), Bukchangwon (−1.2 °C) and Inje (−1.1 °C)
 - Rain has a long way to go; being off by one hour counts as a miss, and timing was the hardest part
+
+![Test MAE of our ensemble against the KMA forecast with station and hour corrections](/images/stories/beat-kma/part4-fair.webp)
+
+*Made by HSL: the KMA corrected by its own validation error, compared again*
 
 ## An L4 that worked all day
 

@@ -29,10 +29,10 @@ const posts = defineCollection({
   }),
 });
 
-// Portfolio write-ups (development stories of lab projects). Static Markdown, one file per language under
-// src/content/portfolio/<lang>/<slug>.md; unlike blog articles they are part of the lab site, not D1.
-const portfolio = defineCollection({
-  loader: glob({ pattern: '**/*.md', base: './src/content/portfolio' }),
+// Project stories (development write-ups of lab projects, one part at a time). Static Markdown, one file per
+// language under src/content/stories/<lang>/<slug>.md; unlike blog articles they are part of the lab site, not D1.
+const stories = defineCollection({
+  loader: glob({ pattern: '**/*.md', base: './src/content/stories' }),
   schema: z.object({
     title: z.string().min(8),
     description: z.string().min(30).max(200),
@@ -43,4 +43,4 @@ const portfolio = defineCollection({
   }),
 });
 
-export const collections = { posts, portfolio };
+export const collections = { posts, stories };

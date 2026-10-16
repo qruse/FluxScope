@@ -1,0 +1,32 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import LabPageStyles from './LabPageStyles.astro';
+import { storyPath, projectPath, projects } from '../lib/site';
+import type { Lang } from '../i18n/ui';
+
+interface Props { lang: Lang; }
+const { lang } = Astro.props;
+const isKo = lang === 'ko';
+const entries = await getCollection('stories', (e) => e.data.lang === lang);
+---
+<BaseLayout lang={lang} title={isKo ? '프로젝트 스토리' : 'Project Stories'} description={isKo ? 'HSL Lab 프로젝트의 개발 스토리.' : 'Development stories from HSL Lab projects.'}>
+  <header class="page-top"><div class="shell"><div class="section-kicker">{isKo ? '프로젝트 스토리' : 'Project Stories'}</div><h1>{isKo ? '만들면서 생긴 일' : 'How things got built'}</h1><p>{isKo ? '프로젝트마다 고르고, 삽질하고, 고친 과정을 편마다 정리함.' : 'What each project chose, broke and fixed, one part at a time.'}</p></div></header>
+  <div class="shell portfolio-list">
+    {projects.map((project) => {
+      const parts = entries.filter((e) => e.data.project === project.id).sort((a, b) => a.data.part - b.data.part);
+      return (
+        <section class="portfolio-project">
+          <h2><a class="pen-under" href={projectPath(project.id, lang)}>{isKo ? project.nameKo : project.name}</a></h2>
+          <p>{isKo ? project.summaryKo : project.summary}</p>
+          <ol>
+            {parts.map((p) => (
+              <li><a href={storyPath(p.id.split('/').pop()!, lang)}><strong>{p.data.title}</strong><span>{p.data.description}</span></a></li>
+            ))}
+          </ol>
+        </section>
+      );
+    })}
+  </div>
+  <LabPageStyles />
+</BaseLayout>

@@ -57,12 +57,20 @@ Recomputed from the official WeatherBench 2 results for East Asian land only (20
 - Among single deterministic models Aurora was best and also beat the ECMWF physics model
 - The files had no rain scores, so rain, the hardest part, had to be measured ourselves
 
+![Bar chart of 2 m temperature RMSE at 24 and 48 hours over East Asian land, with Aurora lowest among single models](/images/stories/beat-kma/part1-weatherbench.webp)
+
+*Made by HSL from the WeatherBench 2 table above*
+
 ## Cutting the list
 
 - **FourCastNet 3**: strong, but needs about 60 GB of GPU memory; the L4 has 24 GB
 - **GraphCast, Pangu**: 6-hour steps, while the KMA forecast is hourly
 - **AIFS**: ECMWF's operational AI model, with free public output; it became Aurora's starting point (initial conditions) instead of an opponent
 - **Aurora 1.5**: open weights, PyTorch, and it can roll forward one hour at a time
+
+![Table of why FourCastNet 3, GraphCast and Pangu were ruled out, AIFS became the input and Aurora 1.5 was chosen](/images/stories/beat-kma/part1-candidates.webp)
+
+*Made by HSL: reasons for each candidate and the L4 memory limit*
 
 ## Hourly steps sealed it
 

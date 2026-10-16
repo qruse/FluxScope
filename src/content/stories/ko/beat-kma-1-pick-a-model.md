@@ -37,7 +37,7 @@ part: 1
 
 - 지구 대기를 배운 모델은 수십 년치 재분석 자료와 GPU 수천 시간으로 만들어짐
 - 내 장비는 Colab Pro의 L4 한 장임
-- 그래서 남이 크게 학습해 둔 모델을 그대로 쓰고, 그 위에 관측소마다 보정하는 작은 머리만 직접 만들기로 했음
+- 그래서 남이 크게 학습해 둔 모델을 그대로 쓰고, 그 위에 관측소마다 보정하는 작은 예측 헤드(head)만 직접 만들기로 했음
 
 ## 공개 성적표부터 열어 봤음
 
@@ -58,12 +58,20 @@ WeatherBench 2 공식 결과 파일에서 동아시아 육지만 골라 다시 �
 - 단일 결정론 모델 중에선 Aurora가 제일 좋았고 ECMWF 수치모델(HRES)도 이겼음
 - 이 결과 파일엔 강수 점수가 없었음. 우리 승부처인 비는 직접 재야 했음
 
+![동아시아 육지 2m 기온 RMSE를 24·48시간으로 비교한 막대 차트, 단일 모델 중 Aurora가 가장 낮음](/images/stories/beat-kma/part1-weatherbench.webp)
+
+*HSL 제작 — WeatherBench 2 공개 결과로 다시 계산한 위 표를 그림으로 옮김*
+
 ## 하나씩 탈락시켰음
 
 - **FourCastNet 3**: 성능은 좋은데 GPU 메모리가 60GB 필요함. L4는 24GB라 바로 탈락
 - **GraphCast, Pangu**: 6시간 간격으로 예보함. 기상청 단기예보는 1시간 단위라 사이 시간을 메꿔야 함
 - **AIFS**: ECMWF가 운영 중인 AI 모델이고 예보를 무료로 공개함. 경쟁자 대신 Aurora의 출발점(초기장)으로 쓰기로 했음
 - **Aurora 1.5**: 가중치 공개, PyTorch, 1시간 간격으로 굴릴 수 있음
+
+![FourCastNet 3·GraphCast·Pangu는 탈락, AIFS는 입력, Aurora 1.5는 선택된 이유를 정리한 표](/images/stories/beat-kma/part1-candidates.webp)
+
+*HSL 제작 — 후보별 탈락·선택 이유와 L4 메모리 조건*
 
 ## 결정타는 1시간 단위였음
 

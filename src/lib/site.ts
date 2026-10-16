@@ -13,11 +13,12 @@ export const lab = {
 export const labSections = [
   { id: 'blog', name: 'Blog', nameKo: '블로그', path: '/blog/' },
   { id: 'projects', name: 'Projects', nameKo: '프로젝트', path: '/projects/' },
+  { id: 'stories', name: 'Project Stories', nameKo: '프로젝트 스토리', path: '/stories/' },
   { id: 'portfolio', name: 'Portfolio', nameKo: '포트폴리오', path: '/portfolio/' },
 ] as const;
 
-// Lab projects with their own pages under /projects/<id>/. Their development stories live in the portfolio
-// collection (src/content/portfolio/<lang>/<slug>.md) with a matching `project` field.
+// Lab projects with their own pages under /projects/<id>/. Their development stories live in the stories
+// collection (src/content/stories/<lang>/<slug>.md) with a matching `project` field.
 export const projects = [
   {
     id: 'beat-kma',
@@ -29,7 +30,7 @@ export const projects = [
 ] as const;
 
 export const projectPath = (id: string, lang: Lang = defaultLang) => withBase(`${lang === 'en' ? '/en' : ''}/projects/${id}/`);
-export const portfolioPath = (slug: string, lang: Lang = defaultLang) => withBase(`${lang === 'en' ? '/en' : ''}/portfolio/${slug}/`);
+export const storyPath = (slug: string, lang: Lang = defaultLang) => withBase(`${lang === 'en' ? '/en' : ''}/stories/${slug}/`);
 export type LabSection = (typeof labSections)[number];
 
 export function labSectionPath(section: LabSection, lang: Lang = defaultLang): string {

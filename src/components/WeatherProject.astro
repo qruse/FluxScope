@@ -4,16 +4,16 @@
 // built-in tile map (OpenStreetMap standard tiles) and plain SVG; no map or chart library.
 import { getCollection } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
-import { portfolioPath, projects } from '../lib/site';
+import { storyPath, projects } from '../lib/site';
 import type { Lang } from '../i18n/ui';
 
 interface Props { lang: Lang; }
 const { lang } = Astro.props;
 const isKo = lang === 'ko';
 const project = projects.find((p) => p.id === 'beat-kma')!;
-const stories = (await getCollection('portfolio', (e) => e.data.lang === lang && e.data.project === project.id))
+const stories = (await getCollection('stories', (e) => e.data.lang === lang && e.data.project === project.id))
   .sort((a, b) => a.data.part - b.data.part);
-// Test period result (2026-07-01 to 2026-10-12 issuances, scored once; see portfolio part 4).
+// Test period result (2026-07-01 to 2026-10-12 issuances, scored once; see project story part 4).
 const test = [
   { label: isKo ? '기온 MAE' : 'Temp MAE', ours: '0.84℃', kma: '1.08℃' },
   { label: isKo ? '습도 MAE' : 'Humidity MAE', ours: '4.5%', kma: '6.5%' },
@@ -109,10 +109,10 @@ const vars = isKo
     <aside class="wx-side" aria-label={isKo ? '개발 스토리' : 'Development story'}>
       <p class="section-kicker">{isKo ? '개발 스토리' : 'Development story'}</p>
       <ol>
-        {stories.map((s) => <li><a href={portfolioPath(s.id.split('/').pop()!, lang)}><span>{isKo ? `${s.data.part}편` : `Part ${s.data.part}`}</span>{s.data.title}</a></li>)}
+        {stories.map((s) => <li><a href={storyPath(s.id.split('/').pop()!, lang)}><span>{isKo ? `${s.data.part}편` : `Part ${s.data.part}`}</span>{s.data.title}</a></li>)}
       </ol>
       <p class="wx-side-note">{isKo
-        ? '매일 05시 발표 기준으로 48시간 예보를 냄. 우리 모델: Aurora 1.5(고정) + 관측소 보정 머리 앙상블.'
+        ? '매일 05시 발표 기준으로 48시간 예보를 냄. 우리 모델: Aurora 1.5(고정) + 관측소 보정 헤드(head) 앙상블.'
         : 'A 48-hour forecast from the 05:00 KST issuance every day. Model: frozen Aurora 1.5 plus an ensemble of station heads.'}</p>
     </aside>
   </div>

@@ -1,32 +1,16 @@
 ---
-import { getCollection } from 'astro:content';
+// The portfolio page is being rebuilt; until then it points to the projects and their stories.
 import BaseLayout from '../layouts/BaseLayout.astro';
-import PortfolioStyles from './PortfolioStyles.astro';
-import { portfolioPath, projectPath, projects } from '../lib/site';
+import LabPageStyles from './LabPageStyles.astro';
+import { labSectionPath, labSections } from '../lib/site';
 import type { Lang } from '../i18n/ui';
 
 interface Props { lang: Lang; }
 const { lang } = Astro.props;
 const isKo = lang === 'ko';
-const entries = await getCollection('portfolio', (e) => e.data.lang === lang);
+const stories = labSections.find((section) => section.id === 'stories')!;
 ---
-<BaseLayout lang={lang} title={isKo ? '포트폴리오' : 'Portfolio'} description={isKo ? 'HSL Lab 프로젝트의 개발 스토리.' : 'Development stories from HSL Lab projects.'}>
-  <header class="page-top"><div class="shell"><div class="section-kicker">{isKo ? '포트폴리오' : 'Portfolio'}</div><h1>{isKo ? '만들면서 생긴 일' : 'How things got built'}</h1><p>{isKo ? '프로젝트마다 고르고, 삽질하고, 고친 과정을 편마다 정리함.' : 'What each project chose, broke and fixed, one part at a time.'}</p></div></header>
-  <div class="shell portfolio-list">
-    {projects.map((project) => {
-      const parts = entries.filter((e) => e.data.project === project.id).sort((a, b) => a.data.part - b.data.part);
-      return (
-        <section class="portfolio-project">
-          <h2><a class="pen-under" href={projectPath(project.id, lang)}>{isKo ? project.nameKo : project.name}</a></h2>
-          <p>{isKo ? project.summaryKo : project.summary}</p>
-          <ol>
-            {parts.map((p) => (
-              <li><a href={portfolioPath(p.id.split('/').pop()!, lang)}><strong>{p.data.title}</strong><span>{p.data.description}</span></a></li>
-            ))}
-          </ol>
-        </section>
-      );
-    })}
-  </div>
-  <PortfolioStyles />
+<BaseLayout lang={lang} title={isKo ? '포트폴리오' : 'Portfolio'} description={isKo ? 'HSL Lab 포트폴리오는 새로 꾸미는 중.' : 'The HSL Lab portfolio is being rebuilt.'}>
+  <header class="page-top"><div class="shell"><div class="section-kicker">{isKo ? '포트폴리오' : 'Portfolio'}</div><h1>{isKo ? '새로 꾸미는 중' : 'Being rebuilt'}</h1><p>{isKo ? '그동안 만든 것들은 프로젝트 스토리에서 볼 수 있음.' : 'Meanwhile, what got built is in the project stories.'}</p><a class="lab-cta" href={labSectionPath(stories, lang)}>{isKo ? '프로젝트 스토리 보기' : 'Read the project stories'}<span aria-hidden="true">→</span></a></div></header>
+  <LabPageStyles />
 </BaseLayout>

@@ -1,12 +1,12 @@
 ---
 // Pen-style teaser sketch for a project that is not built yet, in the same hand as the blog thumbnails.
 // Lines are bent and doubled at build time, so the page ships plain SVG paths.
-interface Props { kind: 'projects' | 'portfolio'; }
+interface Props { kind: 'stories' | 'portfolio'; }
 const { kind } = Astro.props;
 type P = [number, number];
 type Line = { pts: P[]; closed?: boolean; cls?: 'is-dashed' | 'is-accent' };
 
-let seed = kind === 'projects' ? 7 : 13;
+let seed = kind === 'stories' ? 13 : 7;
 const rnd = () => ((seed = (seed * 16807) % 2147483647) - 1) / 2147483646;
 const n = (v: number) => v.toFixed(1);
 // Each segment is its own slightly bent stroke that starts and ends a little off the corner.
@@ -23,21 +23,19 @@ const pen = ({ pts, closed }: Line) => {
 };
 const ring = (cx: number, cy: number, r: number): P[] => Array.from({ length: 12 }, (_, i) => [cx + Math.cos(i * Math.PI / 6) * r, cy + Math.sin(i * Math.PI / 6) * r]);
 
-// Projects: a tetrahedron being drafted on a sheet, with a dimension line and a pencil.
-// Portfolio: three frames on a line; the middle one holds the tetrahedron, the last is still empty.
-const lines: Line[] = kind === 'projects'
+// Portfolio: an open folder with a blank sheet sliding in and a dashed sheet still to come.
+// Stories: three frames on a line; the middle one holds the tetrahedron, the last is still empty.
+const lines: Line[] = kind === 'portfolio'
   ? [
-    { pts: [[30, 18], [205, 12], [212, 126], [36, 132]], closed: true },
-    { pts: [[80, 100], [118, 32], [156, 96]] },
-    { pts: [[80, 100], [156, 96]] },
-    { pts: [[118, 32], [128, 80]], cls: 'is-dashed' },
-    { pts: [[80, 100], [128, 80], [156, 96]], cls: 'is-dashed' },
-    { pts: ring(118, 32, 6), closed: true, cls: 'is-accent' },
-    { pts: [[80, 114], [156, 110]] },
-    { pts: [[80, 109], [80, 119]] },
-    { pts: [[156, 105], [156, 115]] },
-    { pts: [[172, 66], [224, 30], [230, 38], [178, 74]], closed: true },
-    { pts: [[172, 66], [164, 80], [178, 74]] },
+    { pts: [[40, 52], [40, 128], [200, 128], [200, 60], [118, 60], [106, 46], [52, 46]], closed: true },
+    { pts: [[40, 128], [62, 76], [222, 76], [200, 128]] },
+    { pts: [[78, 66], [86, 18], [170, 22], [164, 70]] },
+    { pts: [[96, 36], [150, 38]] },
+    { pts: [[94, 48], [140, 50]] },
+    { pts: [[100, 112], [118, 88], [136, 110]], cls: 'is-accent' },
+    { pts: [[100, 112], [136, 110]], cls: 'is-accent' },
+    { pts: [[176, 30], [224, 34], [218, 70]], cls: 'is-dashed' },
+    { pts: ring(206, 22, 5), closed: true, cls: 'is-accent' },
   ]
   : [
     { pts: [[10, 24], [120, 32], [230, 20]] },

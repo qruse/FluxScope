@@ -38,6 +38,10 @@ Same date, only the input area changed
 - The latitude band still differed from the full globe by 1–4 °C, so the whole globe went in (19.5 GB on the L4, about six minutes per 48 hours)
 - Round one started from ERA5 reanalysis, so everything was rerun from real-time AIFS analyses under the rules
 
+![Chart of Seoul temperature MAE, peak hour and L4 memory for each input crop](/images/stories/beat-kma/part3-crop.webp)
+
+*Made by HSL: zero-shot runs on the same date with different input crops*
+
 ## The bare-handed scorecard
 
 Validation period (2026-03 to 06), 40 issuances × 97 stations × 48 hours
@@ -51,6 +55,10 @@ Validation period (2026-03 to 06), 40 issuances × 97 stations × 48 hours
 - Aurora rain counts 0.65 mm per hour or more as rain, not 1 mm
 - Aurora paints rain wide and light, so this threshold was picked on the validation period (which flatters Aurora a little)
 - The KMA keeps the 1 mm rule
+
+![Validation scores for the KMA and zero-shot Aurora: temperature, humidity and wind MAE and rain F1](/images/stories/beat-kma/part3-zeroshot.webp)
+
+*Made by HSL: validation, 40 issues x 97 stations x 48 hours*
 
 ## Why temperature lost and rain won
 

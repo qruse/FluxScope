@@ -205,6 +205,8 @@ body:has(.lab-backdrop) { background: transparent; }
 .lab-latest { grid-column: 2 / -1; }
 .lab-latest-title { margin: 0 0 .8rem; color: var(--muted); font-size: .85rem; font-weight: 800; }
 .lab-more { margin: 1.2rem 0 0; font-size: .85rem; font-weight: 750; }
+.lab-shot { --tilt: .8deg; --tape-tilt: 3deg; display: block; justify-self: end; width: 100%; max-width: 460px; margin-top: .4rem; }
+.lab-shot img { height: auto; }
 .lab-sketch { justify-self: end; width: 100%; max-width: 340px; height: auto; overflow: visible; }
 .lab-sketch path { fill: none; stroke: var(--pen); stroke-width: 1.4; stroke-linecap: round; stroke-linejoin: round; }
 .lab-sketch .is-echo { stroke-width: .8; opacity: .4; }
@@ -573,7 +575,8 @@ html[data-theme="dark"] .astro-code span {
   .lab-entry-num { font-size: 1.6rem; gap: .6rem; }
   .lab-face { width: 1.3rem; height: 1.3rem; }
   .lab-thumbs { grid-column: 1 / -1; }
-  :is(.lab-latest, .lab-sketch) { grid-column: 2 / -1; }
+  :is(.lab-latest, .lab-sketch, .lab-shot) { grid-column: 2 / -1; }
+  .lab-shot { justify-self: start; }
   .lab-sketch { justify-self: start; max-width: 300px; }
   .sub-posts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.6rem; }
   .post-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
