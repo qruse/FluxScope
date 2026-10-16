@@ -9,9 +9,18 @@ part: 1
 
 ## In three lines
 
+- After reading that AI weather forecasts had overtaken supercomputer forecasts, I wanted to know if one person could beat the KMA on a tiny budget
 - With no data or GPUs to learn the atmosphere from scratch, the plan was to stand on a public model that already learned the whole planet
-- The candidates were Aurora, GraphCast, Pangu, FourCastNet 3 and AIFS, and the first stop was the public WeatherBench 2 scoreboard
-- Aurora 1.5 won: the best single model we could run ourselves, hourly steps, and the whole globe fits on one L4
+- Comparing candidates on the public WeatherBench 2 scoreboard pointed to Aurora 1.5: hourly steps, and the whole globe fits on one L4
+
+## It started with one article
+
+- A while ago I read that AI had started forecasting the weather better than supercomputer physics models
+- Google's GraphCast, for one, reported beating the ECMWF physics model on 90% of 1,380 verification targets out to 10 days ([Science, 2023](https://www.science.org/doi/10.1126/science.adi2336))
+- But those results come from big tech labs with hundreds of GPUs
+- So the question was: can one person with limited resources, on a very small budget, beat a national weather service?
+- The whole bill: a Colab Pro subscription at about 10,000 KRW (roughly $7) a month and some Claude tokens
+- Nearly all the code was written together with Claude; my job was mostly setting the rules, doubting the results and shouting "isn't that cheating?"
 
 ## Rules first
 

@@ -67,6 +67,6 @@ part: 2
 
 - Box generation started at 7 p.m. on October 15 and ran into the next morning over three sessions
 - 195 runs at five to six minutes each, about 33 compute units
-- At roughly 30,000 KRW (about $22) per 200 units, all the boxes cost around $4
+- A Colab Pro month (about 10,000 KRW) includes 100 units, so all the boxes cost about a third of a month
 - Cheap enough to feel sorry for the L4 that worked all night
 - Next: pitting untouched Aurora against the KMA
