@@ -23,7 +23,7 @@ export const projects = [
   {
     id: 'beat-kma',
     name: 'Can AI beat the KMA?',
-    nameKo: 'AI로 기상청 이기기 가능?',
+    nameKo: 'AI로 한국 기상청 이기기 가능?',
     summary: 'Two-day forecasts for 97 Korean weather stations from a global weather-forecasting backbone model fine-tuned with an added head, side by side with the Korea Meteorological Administration.',
     summaryKo: '글로벌 기상예측 백본 모델에 finetuning(head 추가)을 통해 전국 97개 관측소의 2일 예보를 내고, 기상청 예보와 나란히 비교하는 프로젝트.',
   },
