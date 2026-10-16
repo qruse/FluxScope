@@ -17,8 +17,8 @@ const stories = labSections.find((section) => section.id === 'stories')!;
 const weather = projects[0];
 
 const career = [
-  { period: L('2024.12 — 현재', '2024.12 — now'), org: L('그리트㈜', 'Grit Inc.'), role: L('연구개발팀 선임연구원', 'Senior researcher, R&D team'), text: L('AI·데이터 연구개발.', 'AI and data R&D.') },
-  { period: '2020.07 — 2024.11', org: L('㈜빅웨이브에이아이', 'BigWave AI'), role: L('공동 창업 · 데이터분석 팀장 · 기업부설연구소장', 'Co-founder · data analysis lead · head of the corporate lab'), text: L('AI·빅데이터 분석 연구 총괄, 프로젝트 관리, 분석 실무, 백엔드 개발, 교육, 특허.', 'Led AI and data research, ran projects, did the analysis, built back ends, taught and filed a patent.') },
+  { period: L('2024.12 — 현재', '2024.12 — now'), org: L('스마트팜 기업', 'Smart-farm company'), role: L('연구개발팀 선임연구원', 'Senior researcher, R&D team'), text: L('AI·데이터 연구개발.', 'AI and data R&D.') },
+  { period: '2020.07 — 2024.11', org: L('AI 스타트업 공동창업', 'Co-founded AI startup'), role: L('데이터분석 팀장 · 기업부설연구소장', 'Data analysis lead · head of the corporate lab'), text: L('AI·빅데이터 분석 연구 총괄, 프로젝트 관리, 분석 실무, 백엔드 개발, 교육, 특허.', 'Led AI and data research, ran projects, did the analysis, built back ends, taught and filed a patent.') },
 ];
 
 const education = [
@@ -38,7 +38,7 @@ const domainName = (id: Domain) => { const d = domains.find((x) => x.id === id)!
 const work: { period: string; org: string; d: Domain; ko: string; en: string }[] = [
   { period: '2024.06 – 2024.10', org: L('㈜오든', 'Oden'), d: 'anomaly', ko: '스마트부표 센서 바이오파울링 이상 탐지 시스템 개발', en: 'Biofouling anomaly detection for smart-buoy sensors' },
   { period: '2024.06 – 2024.07', org: L('대구디지털혁신진흥원', 'DIP'), d: 'data', ko: '지역 메가프로젝트 중복성 검토 사업 자문', en: 'Overlap review advisory for regional mega projects' },
-  { period: '2023.07 – 2023.11', org: L('그리트㈜', 'Grit Inc.'), d: 'ts', ko: '스마트팜 온실 환경 시뮬레이션 시스템 개발', en: 'Greenhouse environment simulation for smart farms' },
+  { period: '2023.07 – 2023.11', org: L('스마트팜 기업', 'Smart-farm company'), d: 'ts', ko: '스마트팜 온실 환경 시뮬레이션 시스템 개발', en: 'Greenhouse environment simulation for smart farms' },
   { period: '2023.06 – 2023.11', org: L('대구일보', 'Daegu Ilbo'), d: 'nlp', ko: 'LLM 기반 자동 기사 생성 프롬프트 엔지니어링', en: 'Prompt engineering for LLM-written news articles' },
   { period: '2022.08 –', org: 'KB', d: 'anomaly', ko: 'FDS(이상거래 탐지) 시스템 구축', en: 'Fraud detection system build' },
   { period: '2022.06 – 2022.10', org: L('㈜오든', 'Oden'), d: 'ts', ko: '스마트부표 수온 예측 시스템 개발 (데이터바우처)', en: 'Water-temperature forecasting for smart buoys (data voucher)' },
@@ -128,7 +128,7 @@ const num = (id: string) => String(sections.findIndex(([s]) => s === id) + 1).pa
       <h1>{L('데이터로 문제를 풀어 온', 'Solving problems with data')} <em>{L('6년', 'for six years')}</em></h1>
       <p class="pf-lede">{L('경영정보시스템을 공부했고, 2020년부터 시계열 예측, 이상거래 탐지, 텍스트 분석, LLM 프로젝트를 해 옴. 공동 창업한 회사에서 분석팀과 연구소를 맡았고, 지금은 R&D 연구원으로 일함.', 'Trained in management information systems. Since 2020: forecasting, fraud detection, text analysis and LLM projects. Co-founded a company and ran its analysis team and lab; now an R&D researcher.')}</p>
       <dl class="pf-meta">
-        <div><dt>{L('지금', 'Now')}</dt><dd>{L('그리트㈜ 선임연구원', 'Senior researcher, Grit Inc.')}</dd></div>
+        <div><dt>{L('지금', 'Now')}</dt><dd>{L('스마트팜 기업 선임연구원', 'Senior researcher at a smart-farm company')}</dd></div>
         <div><dt>{L('분야', 'Focus')}</dt><dd>{L('시계열 예측 · 이상 탐지 · NLP/LLM', 'Forecasting · anomaly detection · NLP/LLM')}</dd></div>
         <div><dt>{L('이메일', 'Email')}</dt><dd><a class="pen-under" href={`mailto:${email}`}>{email}</a></dd></div>
       </dl>
