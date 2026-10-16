@@ -8,18 +8,33 @@ export const lab = {
 };
 
 // The lab's sections in display order. The lab home list and the header nav read from here, and each section
-// owns the tetrahedron face at its index (its number is index + 1). A section without a path is announced but
-// not built yet: it links to its entry on the lab home. Portfolio always stays last, so new sections go above it.
+// owns the tetrahedron face at its index (its number is index + 1). Every section has its own pages under its
+// path. Portfolio always stays last, so new sections go above it.
 export const labSections = [
   { id: 'blog', name: 'Blog', nameKo: '블로그', path: '/blog/' },
-  { id: 'projects', name: 'Projects', nameKo: '프로젝트', status: 'Drafting', statusKo: '설계 중' },
-  { id: 'portfolio', name: 'Portfolio', nameKo: '포트폴리오', status: 'Collecting work', statusKo: '작업물 모으는 중' },
+  { id: 'projects', name: 'Projects', nameKo: '프로젝트', path: '/projects/' },
+  { id: 'portfolio', name: 'Portfolio', nameKo: '포트폴리오', path: '/portfolio/' },
 ] as const;
+
+// Lab projects with their own pages under /projects/<id>/. Their development stories live in the portfolio
+// collection (src/content/portfolio/<lang>/<slug>.md) with a matching `project` field.
+export const projects = [
+  {
+    id: 'beat-kma',
+    name: 'Can AI beat the KMA?',
+    nameKo: 'AI로 기상청 이기기 가능?',
+    summary: 'Hourly two-day forecasts for 97 Korean weather stations from a frozen Aurora 1.5 plus a station head, side by side with the Korea Meteorological Administration.',
+    summaryKo: 'Aurora 1.5에 관측소 보정 머리를 달아 전국 97개 관측소의 2일 예보를 내고, 기상청 예보와 나란히 비교하는 프로젝트.',
+  },
+] as const;
+
+export const projectPath = (id: string, lang: Lang = defaultLang) => withBase(`${lang === 'en' ? '/en' : ''}/projects/${id}/`);
+export const portfolioPath = (slug: string, lang: Lang = defaultLang) => withBase(`${lang === 'en' ? '/en' : ''}/portfolio/${slug}/`);
 export type LabSection = (typeof labSections)[number];
 
 export function labSectionPath(section: LabSection, lang: Lang = defaultLang): string {
   const root = lang === 'en' ? '/en' : '';
-  return withBase('path' in section ? `${root}${section.path}` : `${root}/#${section.id}`);
+  return withBase(`${root}${section.path}`);
 }
 
 export const labSectionNumber = (id: LabSection['id']) => String(labSections.findIndex((section) => section.id === id) + 1).padStart(2, '0');

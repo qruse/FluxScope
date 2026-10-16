@@ -827,3 +827,9 @@ html[data-theme="dark"] .astro-code span {
 }
 .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
 .not-found { padding-bottom: 5rem; } .not-found-links { display: flex; flex-wrap: wrap; gap: 1rem; margin-top: 1.5rem; font-weight: 750; } .not-found-links a { border-bottom: 1px solid var(--accent); } .not-found-links a:hover { color: var(--accent); }
+
+/* Lab home: project and portfolio entries */
+.lab-project-link { color: var(--ink); font-size: 1.15rem; font-weight: 800; letter-spacing: -.02em; }
+.lab-project-link:hover { color: var(--accent); }
+.lab-entry-copy > p + p { margin-top: .4rem; }
+.lab-stories { margin-top: 1rem; }

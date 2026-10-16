@@ -1,0 +1,24 @@
+<!-- Styles for the projects and portfolio pages only, kept inline so they do not grow the site-wide CSS bundle. -->
+<style is:inline>
+.portfolio-list { display: grid; gap: 2.6rem; padding-block: 2.4rem 4rem; }
+.portfolio-project h2 { display: inline-block; margin: 0 0 .7rem; font-size: clamp(1.6rem, 3vw, 2.2rem); letter-spacing: -.04em; }
+.portfolio-project > p { max-width: 680px; margin: 0 0 1.2rem; color: var(--muted); line-height: 1.65; }
+.portfolio-project ol { display: grid; gap: .9rem; margin: 0; padding: 0; list-style: none; counter-reset: part; }
+.portfolio-project li a { display: grid; gap: .25rem; padding: .9rem 1.1rem; background: var(--surface); box-shadow: 0 1px 2px rgba(0, 0, 0, .08); }
+.portfolio-project li a:hover strong { color: var(--accent); }
+.portfolio-project li span { color: var(--muted); font-size: .88rem; line-height: 1.55; }
+.story-title { font-size: clamp(2.1rem, 4.4vw, 3.6rem) !important; }
+.story-meta { margin-top: .8rem !important; font-size: .85rem !important; }
+.story-layout { display: grid; grid-template-columns: minmax(0, 780px) 240px; justify-content: center; gap: 3rem; padding-block: 2.5rem 4rem; }
+.story-layout > .article-shell { width: 100%; margin: 0; }
+.story-side { align-self: start; position: sticky; top: 1.2rem; padding: 1.1rem 1.2rem; background: var(--surface); box-shadow: 0 1px 2px rgba(0, 0, 0, .08); }
+.story-side-project { margin: 0 0 .8rem; font-weight: 850; }
+.story-side-project a:hover, .story-side li a:hover { color: var(--accent); }
+.story-side ol { display: grid; gap: .6rem; margin: 0; padding-left: 1.1rem; font-size: .88rem; line-height: 1.45; }
+.story-side li.is-current a { color: var(--accent); font-weight: 800; }
+.story-side .lab-cta { margin-top: 1.2rem; }
+@media (max-width: 960px) {
+  .story-layout { grid-template-columns: 1fr; }
+  .story-side { position: static; }
+}
+</style>
