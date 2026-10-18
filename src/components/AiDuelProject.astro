@@ -30,6 +30,7 @@ const rules = [
     <div class="shell">
       <div class="section-kicker">{L('프로젝트', 'Project')}</div>
       <h1>{isKo ? project.nameKo : project.name}</h1>
+      <p class="du-paper"><b>{L('모의투자', 'Paper trading')}</b>{L('실제 돈과 실제 주문 없이, 실제 시세(토스증권 정규장 종가)로만 계산하는 가상 포트폴리오', 'No real money and no real orders: virtual portfolios marked to real prices (Toss Securities regular-session closes)')}</p>
       <p class="du-lede">{isKo ? project.summaryKo : project.summary}</p>
     </div>
   </header>
@@ -249,6 +250,8 @@ const rules = [
 <style is:inline>
 .du-hero { padding: 4.2rem 0 1.2rem; }
 .du-hero h1 { max-width: 20ch; margin: .7rem 0 1rem; font-size: clamp(2.2rem, 4.6vw, 3.9rem); font-weight: 820; line-height: 1.1; letter-spacing: -.055em; word-break: keep-all; }
+.du-paper { display: flex; flex-wrap: wrap; align-items: center; gap: .4rem .7rem; max-width: 680px; margin: 0 0 1rem; padding: .7rem .9rem; border: 1.5px solid var(--ink); border-radius: 6px; font-size: .88rem; font-weight: 650; line-height: 1.5; word-break: keep-all; }
+.du-paper b { padding: .15rem .55rem; border-radius: 4px; background: var(--ink); color: var(--bg); font-size: .8rem; font-weight: 850; letter-spacing: .02em; }
 .du-lede { max-width: 680px; margin: 0; color: var(--muted); font-size: 1.02rem; line-height: 1.75; word-break: keep-all; }
 .du-body { padding-bottom: 5rem; }
 .du-status { margin: 1.8rem 0 0; color: var(--muted); font-size: .86rem; font-weight: 750; word-break: keep-all; }
