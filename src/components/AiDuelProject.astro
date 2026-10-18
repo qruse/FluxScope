@@ -46,7 +46,7 @@ const rules = [
     </section>
 
     <section class="du-sec">
-      <div class="du-head"><h2>{L('포트폴리오', 'Portfolios')}</h2><p class="du-sub">{L('막대는 비중, 검은 칸은 ETF', 'Bars show weights; black cells are ETFs')}</p></div>
+      <div class="du-head"><h2>{L('포트폴리오', 'Portfolios')}</h2><p class="du-sub">{L('막대는 비중, 회색 칸은 ETF', 'Bars show weights; grey cells are ETFs')}</p></div>
       <div class="du-two" data-du-books></div>
     </section>
 
@@ -84,9 +84,10 @@ const rules = [
   const ko = root.dataset.lang === 'ko';
   const T = ko
     ? { fail: '데이터를 불러오지 못했음. 잠시 뒤 다시 열어 주세요.', wait: '첫 체결 대기', waitLong: '첫 포트폴리오는 다음 미국 거래일 종가에 체결됨', start: '시작', updated: '갱신', lead: '앞서는 중', tie: '동률', vs: '대비', pending: '체결 대기 · 목표 비중', holdings: '보유 비중', cash: '현금', filled: '체결', waiting: '체결 대기', strategy: '운용 전략', journal: '최근 회고', none: '아직 없음', more: '펼쳐 보기', less: '접기', nodata: '첫 체결 뒤부터 그래프가 그려짐', beatBoth: '지수 둘 다 이기는 중' }
-    : { fail: 'Could not load the data. Please try again later.', wait: 'Waiting for first fill', waitLong: 'The first portfolio fills at the next US close', start: 'Started', updated: 'Updated', lead: 'Leading', tie: 'Tied', vs: 'vs', pending: 'Waiting to fill · target weights', holdings: 'Holdings', cash: 'Cash', filled: 'Filled', waiting: 'Waiting', strategy: 'Strategy', journal: 'Latest review', none: 'None yet', more: 'Show all', less: 'Collapse', nodata: 'The chart starts after the first fill', beatBoth: 'Beating both indexes' };
+    : { fail: 'Could not load the data. Please try again later.', wait: 'Waiting for first fill', waitLong: 'The first portfolio fills at the next US close', start: 'Started', updated: 'Updated', lead: 'Leading', tie: 'Tied', vs: 'vs', pending: 'Waiting to fill · target weights', holdings: 'Holdings', cash: 'Cash', filled: 'Filled', waiting: 'Waiting', strategy: 'Strategy · machine-translated from Korean', journal: 'Latest review · machine-translated from Korean', none: 'None yet', more: 'Show all', less: 'Collapse', nodata: 'The chart starts after the first fill', beatBoth: 'Beating both indexes' };
   const CLI = { gpt: 'Codex CLI · high', opus: 'Claude CLI · high', argon: 'Antigravity CLI · medium' };
   const COL = { gpt: 'var(--accent)', opus: 'var(--pen)', argon: '#7b4fc9', SPY: '#8d989e', QQQ: '#c99326' };
+  const ETF_COL = '#4f5f68'; // 라이트·다크 모드 모두에서 보이는 고정 회색
   const PAL = ['#e0603f', '#3446a3', '#3b7d3a', '#b7791f', '#7a4ea3', '#2b8a9e', '#c2477a', '#6b7f2a', '#a05a2c', '#476f95'];
   const $ = (q) => root.querySelector(q);
   const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -127,7 +128,8 @@ const rules = [
       </article>`;
     }).join('');
     $('[data-du-status]').textContent = !started ? T.waitLong : leader ? `${leader.name} ${T.lead}` : scored.length > 1 ? T.tie : '';
-    $('[data-du-bench]').innerHTML = Object.entries(d.bench?.names || {}).map(([s, n]) => `<div style="--c:${COL[s]}"><dt>${esc(n)}</dt><dd class="${sign(bRet(s))}">${pct(bRet(s))}</dd></div>`).join('');
+    const bnames = (!ko && d.bench?.names_en) || d.bench?.names || {};
+    $('[data-du-bench]').innerHTML = Object.entries(bnames).map(([s, n]) => `<div style="--c:${COL[s]}"><dt>${esc(n)}</dt><dd class="${sign(bRet(s))}">${pct(bRet(s))}</dd></div>`).join('');
     const upd = `${T.updated} ${String(d.updated).replace('T', ' ').slice(0, 16)}`;
     $('[data-du-meta]').textContent = started && d.bench.start ? `${T.start} ${d.bench.start} · ${upd}` : upd;
 
@@ -145,7 +147,7 @@ const rules = [
   function chart(d, started) {
     const cap = d.capital_usd;
     const series = d.agents.map((a) => ({ id: a.id, name: a.name, ai: true, pts: (a.history || []).map((x) => [x.date, x.nav / a.capital_usd - 1]) }))
-      .concat(Object.keys(d.bench?.names || {}).map((s) => ({ id: s, name: d.bench.names[s], ai: false, pts: (d.bench.history || []).map((x) => [x.date, x[s] / cap - 1]) })));
+      .concat(Object.keys(d.bench?.names || {}).map((s) => ({ id: s, name: ((!ko && d.bench.names_en) || d.bench.names)[s], ai: false, pts: (d.bench.history || []).map((x) => [x.date, x[s] / cap - 1]) })));
     $('[data-du-legend]').innerHTML = series.map((s) => `<span style="--c:${COL[s.id]}" class="${s.ai ? 'is-ai' : ''}">${esc(s.name)}</span>`).join('');
     const W = 900, H = 320, P = { l: 52, r: 62, t: 16, b: 30 };
     const dates = [...new Set(series.flatMap((s) => s.pts.map((p) => p[0])))].sort();
@@ -190,10 +192,10 @@ const rules = [
     rows.sort((p, q) => q[1] - p[1]);
     const etf = (s) => d.kinds?.[s] === 'ETF';
     let n = 0;
-    const colors = Object.fromEntries(rows.map(([s]) => [s, etf(s) ? 'var(--ink)' : PAL[n++ % PAL.length]]));
+    const colors = Object.fromEntries(rows.map(([s]) => [s, etf(s) ? ETF_COL : PAL[n++ % PAL.length]]));
     const bar = rows.map(([s, w]) => `<span style="flex:${w};background:${colors[s]}" title="${esc(s)} ${(w * 100).toFixed(1)}%">${w >= 0.07 ? esc(s) : ''}</span>`).join('') + (cash > 0.002 ? `<span class="is-cash" style="flex:${cash}"></span>` : '');
     const max = Math.max(...rows.map((r) => r[1]), cash, 0.01);
-    const list = rows.map(([s, w]) => `<li><span class="du-sym"><i style="background:${colors[s]}"></i>${esc(s)}${etf(s) ? '<small>ETF</small>' : ''}</span><span class="du-nm">${d.names?.[s] && d.names[s] !== s ? esc(d.names[s]) : ''}</span><span class="du-w"><span style="width:${(w / max) * 100}%;background:${colors[s]}"></span></span><b>${(w * 100).toFixed(1)}%</b></li>`).join('')
+    const list = rows.map(([s, w]) => `<li><span class="du-sym"><i style="background:${colors[s]}"></i>${esc(s)}${etf(s) ? '<small>ETF</small>' : ''}</span><span class="du-nm">${esc(d.desc?.[s]?.[ko ? 'ko' : 'en'] || (d.names?.[s] !== s ? d.names?.[s] : '') || '')}</span><span class="du-w"><span style="width:${(w / max) * 100}%;background:${colors[s]}"></span></span><b>${(w * 100).toFixed(1)}%</b></li>`).join('')
       + `<li class="is-cash"><span class="du-sym"><i></i>${T.cash}</span><span class="du-nm">${live ? usd(a.cash) : ''}</span><span class="du-w"><span style="width:${(cash / max) * 100}%"></span></span><b>${(cash * 100).toFixed(1)}%</b></li>`;
     return `<article class="du-book" style="--c:${COL[a.id]}"><h3><i></i>${esc(a.name)}<small>${live ? T.holdings : T.pending}</small></h3><div class="du-stack">${bar}</div><ul class="du-list">${list}</ul></article>`;
   }
@@ -205,7 +207,7 @@ const rules = [
       const l = (a.log || []).find((x) => x.week === w);
       if (!l) return `<div class="du-entry is-empty" style="--c:${COL[a.id]}"></div>`;
       const top = Object.entries(l.targets || {}).sort((p, q) => q[1] - p[1]).slice(0, 6).map(([s, v]) => `<span>${esc(s)} ${(v * 100).toFixed(0)}%</span>`).join('');
-      return `<div class="du-entry" style="--c:${COL[a.id]}"><p class="du-who">${esc(a.name)} <span>${l.filled_on ? `${T.filled} ${esc(l.filled_on)}` : T.waiting}</span></p><p>${esc(l.summary)}</p><p class="du-top">${top}</p></div>`;
+      return `<div class="du-entry" style="--c:${COL[a.id]}"><p class="du-who">${esc(a.name)} <span>${l.filled_on ? `${T.filled} ${esc(l.filled_on)}` : T.waiting}</span></p><p>${esc((!ko && l.summary_en) || l.summary)}</p><p class="du-top">${top}</p></div>`;
     }).join('')}</div>`).join('');
   }
 
@@ -241,7 +243,7 @@ const rules = [
 
   function docs(a) {
     const box = (title, text) => `<div class="du-doc"><h4>${title}</h4><div class="du-md">${text ? md(text) : `<p>${T.none}</p>`}</div><button type="button" class="du-more">${T.more}</button></div>`;
-    return `<article class="du-docs" style="--c:${COL[a.id]}"><h3><i></i>${esc(a.name)}</h3>${box(T.journal, a.journal)}${box(T.strategy, a.strategy)}</article>`;
+    return `<article class="du-docs" style="--c:${COL[a.id]}"><h3><i></i>${esc(a.name)}</h3>${box(T.journal, (!ko && a.journal_en) || a.journal)}${box(T.strategy, (!ko && a.strategy_en) || a.strategy)}</article>`;
   }
 })();
 </script>
@@ -305,7 +307,7 @@ const rules = [
 .du-sym { display: inline-flex; align-items: center; gap: .45rem; font-weight: 800; }
 .du-sym i { width: .6rem; height: .6rem; border-radius: 2px; flex: none; }
 .du-sym small { padding: .05rem .3rem; border-radius: 3px; background: var(--ink); color: var(--bg); font-size: .6rem; font-weight: 800; }
-.du-nm { overflow: hidden; color: var(--muted); font-size: .8rem; text-overflow: ellipsis; white-space: nowrap; }
+.du-nm { color: var(--muted); font-size: .8rem; line-height: 1.4; word-break: keep-all; }
 .du-w { height: .45rem; border-radius: 3px; background: var(--soft); overflow: hidden; }
 .du-w span { display: block; height: 100%; border-radius: 3px; }
 .du-list b { text-align: right; font-variant-numeric: tabular-nums; }
