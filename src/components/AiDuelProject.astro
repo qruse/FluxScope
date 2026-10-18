@@ -12,8 +12,8 @@ const isKo = lang === 'ko';
 const L = (ko: string, en: string) => (isKo ? ko : en);
 const project = projects.find((p) => p.id === 'ai-duel')!;
 const rules = isKo
-  ? ['자금 2천만 원 (시작 날 환율로 달러 환산), 미국 개별 주식만 (ETF·지수·레버리지 상품 금지)', '두 AI 모두 같은 시작 프롬프트. 매주 토요일 회고하고 자기 전략 문서를 고친 뒤 새 목표 비중을 냄', '주문은 다음 미국 거래일 종가에 체결, 거래비용 0.1%. 매일 아침 종가로 평가', '목표: S&P 500(SPY)과 나스닥100(QQQ)을 둘 다 이기기']
-  : ['20 million KRW (converted to USD on day one), US single stocks only (no ETFs, index or leveraged products)', 'Same starting prompt for both. Every Saturday each reviews its week, rewrites its own strategy and sets new target weights', 'Orders fill at the next US close with a 0.1% cost; books are marked to the close every morning', 'Goal: beat both the S&P 500 (SPY) and the Nasdaq-100 (QQQ)'];
+  ? ['자금 2천만 원 (시작 날 환율로 달러 환산), 미국 주식·ETF (지수 ETF 가능, 레버리지·인버스 금지)', '두 AI 모두 같은 시작 프롬프트. 매주 토요일 회고하고 자기 전략 문서를 고친 뒤 새 목표 비중을 냄', '주문은 다음 미국 거래일 종가에 체결, 거래비용 0.1%. 매일 아침 종가로 평가', '목표: S&P 500(SPY)과 나스닥100(QQQ)을 둘 다 이기기']
+  : ['20 million KRW (converted to USD on day one), US stocks and ETFs (index ETFs allowed, no leveraged or inverse products)', 'Same starting prompt for both. Every Saturday each reviews its week, rewrites its own strategy and sets new target weights', 'Orders fill at the next US close with a 0.1% cost; books are marked to the close every morning', 'Goal: beat both the S&P 500 (SPY) and the Nasdaq-100 (QQQ)'];
 ---
 <BaseLayout lang={lang} title={isKo ? project.nameKo : project.name} description={isKo ? project.summaryKo : project.summary}>
   <header class="page-top">
@@ -37,7 +37,7 @@ const rules = isKo
       <p class="du-legend" data-du-legend></p>
     </section>
     <div class="du-agents" data-du-agents></div>
-    <p class="du-note">{L('모의투자이며 실제 주문은 나가지 않음. 시세는 토스증권 Open API(정규장 일봉 종가). SPY·QQQ는 지수를 따라가는 ETF로, 비교 기준으로만 씀. 투자 권유가 아님.', 'Paper trading only; no real orders. Prices are regular-session daily closes from the Toss Securities Open API. SPY and QQQ are index-tracking ETFs used only as benchmarks. Not investment advice.')}</p>
+    <p class="du-note">{L('모의투자이며 실제 주문은 나가지 않음. 시세는 토스증권 Open API(정규장 일봉 종가). SPY·QQQ는 지수를 따라가는 ETF로 비교 기준이며, AI도 살 수 있음. 투자 권유가 아님.', 'Paper trading only; no real orders. Prices are regular-session daily closes from the Toss Securities Open API. SPY and QQQ are index-tracking ETFs used as benchmarks; the AIs may buy them too. Not investment advice.')}</p>
   </div>
 
 <script is:inline>
