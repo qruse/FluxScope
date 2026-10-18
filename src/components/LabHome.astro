@@ -19,6 +19,9 @@ const blog = {
     : 'A blog I started because I was curious.',
 };
 const stories = (await getCollection('stories', (entry) => entry.data.lang === lang)).sort((a, b) => a.data.part - b.data.part);
+// Parts grouped by project, in the projects list order; the pinned charts come from the weather project.
+const storyGroups = projects.map((project) => ({ project, parts: stories.filter((s) => s.data.project === project.id) })).filter((g) => g.parts.length);
+const weatherStories = stories.filter((s) => s.data.project === 'beat-kma');
 const storyPins = [
   { part: 2, img: 'part2-pipeline', h: 523, ko: '2편 데이터 흐름도', en: 'Part 2 data flow chart' },
   { part: 3, img: 'part3-zeroshot', h: 509, ko: '3편 제로샷 검증 점수 차트', en: 'Part 3 zero-shot validation chart' },
@@ -90,14 +93,19 @@ const cv = portfolio(lang);
       <div class="lab-entry-copy">
         <h3><a class="pen-under" href={labSectionPath(labSections[2], lang)}>{isKo ? '프로젝트 스토리' : 'Project Stories'}</a></h3>
         <p>{isKo ? '프로젝트를 만들면서 생긴 일을 편마다 정리한 개발 스토리.' : 'Development stories from the projects, one part at a time.'}</p>
-        <ol class="lab-parts">
-          {stories.map((story) => <li><a href={storyPath(story.id.split('/')[1], lang)}><span>{isKo ? `${story.data.part}편` : `Part ${story.data.part}`}</span>{story.data.title}</a></li>)}
-        </ol>
+        {storyGroups.map((g) => (
+          <>
+            <p class="lab-parts-project">{isKo ? g.project.nameKo : g.project.name}</p>
+            <ol class="lab-parts">
+              {g.parts.map((story) => <li><a href={storyPath(story.id.split('/')[1], lang)}><span>{isKo ? `${story.data.part}편` : `Part ${story.data.part}`}</span>{story.data.title}</a></li>)}
+            </ol>
+          </>
+        ))}
       </div>
       <!-- Charts from the parts, pinned up like prints; each one opens its part. -->
       <div class="lab-pins">
         {storyPins.map((pin) => (
-          <a class="taped lab-pin" href={storyPath(stories[pin.part - 1].id.split('/')[1], lang)}>
+          <a class="taped lab-pin" href={storyPath(weatherStories[pin.part - 1].id.split('/')[1], lang)}>
             <img src={`/images/stories/beat-kma/thumb-${pin.img}.webp`} width="560" height={pin.h} loading="lazy" decoding="async" alt={isKo ? pin.ko : pin.en} />
           </a>
         ))}
@@ -385,6 +393,8 @@ const cv = portfolio(lang);
 
 <!-- Styles for the story and portfolio entries only, inline so the site-wide CSS bundle stays in budget. -->
 <style is:inline>
+.lab-parts-project { margin: 1.4rem 0 .45rem !important; color: var(--pen) !important; font-size: .8rem; font-weight: 850; letter-spacing: .02em; }
+.lab-parts-project + .lab-parts { margin-top: 0; }
 .lab-parts { margin: 1.3rem 0 0; padding: 0; list-style: none; border-top: 1px solid var(--ink); }
 .lab-parts a { display: grid; grid-template-columns: 3.2rem minmax(0, 1fr); gap: .8rem; align-items: baseline; padding: .78rem 0; border-bottom: 1px solid var(--line); font-size: .98rem; font-weight: 700; line-height: 1.45; letter-spacing: -.02em; word-break: keep-all; text-shadow: 0 0 .4rem var(--bg), 0 0 .15rem var(--bg); transition: color .2s, padding .3s cubic-bezier(.2, .7, .2, 1); }
 .lab-parts span { color: var(--accent); font-size: .76rem; font-weight: 850; font-variant-numeric: tabular-nums; }

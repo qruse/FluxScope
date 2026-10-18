@@ -2,8 +2,9 @@
 // "GPT vs Claude" project page. The ai_portfolio_duel repository (duel.py daily) uploads latest.json to /api/duel/
 // after every US close; the page draws the scoreboard, a cumulative-return chart and each AI's book, strategy
 // and weekly review from it with plain SVG and text. Paper trading only; prices come from the Toss Securities Open API.
+import { getCollection } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
-import { projects } from '../lib/site';
+import { projects, storyPath } from '../lib/site';
 import type { Lang } from '../i18n/ui';
 
 interface Props { lang: Lang; }
@@ -11,9 +12,11 @@ const { lang } = Astro.props;
 const isKo = lang === 'ko';
 const L = (ko: string, en: string) => (isKo ? ko : en);
 const project = projects.find((p) => p.id === 'ai-duel')!;
+const stories = (await getCollection('stories', (e) => e.data.lang === lang && e.data.project === project.id))
+  .sort((a, b) => a.data.part - b.data.part);
 const rules = isKo
-  ? ['자금 2천만 원 (시작 날 환율로 달러 환산), 미국 주식·ETF (지수 ETF 가능, 레버리지·인버스 금지)', '두 AI 모두 같은 시작 프롬프트. 매주 토요일 회고하고 자기 전략 문서를 고친 뒤 새 목표 비중을 냄', '주문은 다음 미국 거래일 종가에 체결, 거래비용 0.1%. 매일 아침 종가로 평가', '목표: S&P 500(SPY)과 나스닥100(QQQ)을 둘 다 이기기']
-  : ['20 million KRW (converted to USD on day one), US stocks and ETFs (index ETFs allowed, no leveraged or inverse products)', 'Same starting prompt for both. Every Saturday each reviews its week, rewrites its own strategy and sets new target weights', 'Orders fill at the next US close with a 0.1% cost; books are marked to the close every morning', 'Goal: beat both the S&P 500 (SPY) and the Nasdaq-100 (QQQ)'];
+  ? ['자금 2만 달러, 미국 주식·ETF (지수 ETF 가능, 레버리지·인버스 금지)', '두 AI 모두 같은 시작 프롬프트, 추론 강도 high. 매주 토요일 회고하고 자기 전략 문서를 고친 뒤 새 목표 비중을 냄', '주문은 다음 미국 거래일 종가에 체결, 수수료 0.1% (토스증권 해외주식 기본 수수료 수준) 매매마다 차감. 매일 아침 종가로 평가', '목표: S&P 500(SPY)·나스닥100(QQQ)을 이기는 것과 상대 AI를 이기는 것, 둘 다 주목표. 서로의 수익률은 매주 브리핑에 공개됨 (보유 종목은 비공개)']
+  : ['$20,000 to start, US stocks and ETFs (index ETFs allowed, no leveraged or inverse products)', 'Same starting prompt for both, both at high reasoning effort. Every Saturday each reviews its week, rewrites its own strategy and sets new target weights', 'Orders fill at the next US close with a 0.1% fee on every trade, about the Toss Securities US-stock rate; books are marked to the close every morning', 'Goals: beat the S&P 500 (SPY) and the Nasdaq-100 (QQQ), and beat the other AI; both are primary. Each sees the other’s return every week, not its holdings'];
 ---
 <BaseLayout lang={lang} title={isKo ? project.nameKo : project.name} description={isKo ? project.summaryKo : project.summary}>
   <header class="page-top">
@@ -22,6 +25,7 @@ const rules = isKo
       <h1>{isKo ? project.nameKo : project.name}</h1>
       <p>{isKo ? project.summaryKo : project.summary}</p>
       <ul class="du-rules">{rules.map((r) => <li>{r}</li>)}</ul>
+      {stories.length > 0 && <ol class="du-stories">{stories.map((s) => <li><a href={storyPath(s.id.split('/').pop()!, lang)}><span>{isKo ? `${s.data.part}편` : `Part ${s.data.part}`}</span>{s.data.title}</a></li>)}</ol>}
     </div>
   </header>
 
@@ -128,6 +132,10 @@ const rules = isKo
 
 <style is:inline>
 .du-rules { display: grid; gap: .35rem; max-width: 760px; margin: 1.4rem 0 0; padding-left: 1.1rem; color: var(--muted); font-size: .92rem; line-height: 1.6; }
+.du-stories { display: flex; flex-wrap: wrap; gap: .5rem 1.6rem; margin: 1.4rem 0 0; padding: 0; list-style: none; font-size: .92rem; font-weight: 750; }
+.du-stories a { display: inline-flex; gap: .5rem; border-bottom: 1px solid var(--line); padding-bottom: .15rem; }
+.du-stories a:hover { color: var(--accent); border-color: var(--accent); }
+.du-stories span { color: var(--accent); font-size: .78rem; font-weight: 850; }
 .du-body { padding-block: 1rem 5rem; }
 .du-sec { padding-top: 2.6rem; }
 .du-sec h2, .du-agent h2 { margin: 0 0 .6rem; font-size: clamp(1.5rem, 2.6vw, 2rem); font-weight: 760; letter-spacing: -.045em; }
