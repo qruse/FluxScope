@@ -22,6 +22,7 @@ const rules = [
   [L('체결', 'Fills'), L('다음 미국 거래일 종가', 'Next US close')],
   [L('수수료', 'Fees'), L('매매마다 0.1%', '0.1% per trade')],
   [L('리듬', 'Rhythm'), L('토요일 회의, 매일 아침 평가', 'Saturday meeting, marked daily')],
+  [L('추론 강도', 'Reasoning effort'), L('GPT·Opus high, Argon medium', 'GPT and Opus high, Argon medium')],
 ];
 ---
 <BaseLayout lang={lang} title={isKo ? project.nameKo : project.name} description={isKo ? project.summaryKo : project.summary}>
@@ -34,11 +35,8 @@ const rules = [
   </header>
 
   <div class="shell du-body" data-du data-lang={lang}>
-    <section class="du-vs" aria-label={L('대결 현황', 'Head to head')}>
-      <article class="du-player" data-player="gpt" style="--c: var(--accent)"></article>
-      <div class="du-vs-mid"><span>VS</span><p data-du-status></p></div>
-      <article class="du-player" data-player="opus" style="--c: var(--pen)"></article>
-    </section>
+    <p class="du-status" data-du-status></p>
+    <section class="du-vs" aria-label={L('대결 현황', 'Standings')} data-du-players></section>
     <dl class="du-bench" data-du-bench></dl>
     <p class="du-meta" data-du-meta>{L('불러오는 중…', 'Loading…')}</p>
 
@@ -66,7 +64,8 @@ const rules = [
       <div>
         <h2>{L('규칙', 'Rules')}</h2>
         <dl class="du-rules">{rules.map(([k, v]) => <div><dt>{k}</dt><dd>{v}</dd></div>)}</dl>
-        <p class="du-goal"><b>{L('목표', 'Goal')}</b>{L('S&P 500(SPY)·나스닥100(QQQ)을 이기는 것과 상대 AI를 이기는 것, 둘 다 주목표. 서로의 수익률은 매주 공개되고 보유 종목은 비공개.', 'Beat the S&P 500 (SPY) and the Nasdaq-100 (QQQ), and beat the other AI; both are primary. Each sees the other’s return every week, not its holdings.')}</p>
+        <p class="du-goal"><b>{L('목표', 'Goal')}</b>{L('S&P 500(SPY)·나스닥100(QQQ)을 이기는 것과 상대 AI들을 이기는 것, 둘 다 주목표. 서로의 수익률은 매주 공개되고 보유 종목은 비공개.', 'Beat the S&P 500 (SPY) and the Nasdaq-100 (QQQ), and beat the other AIs; both are primary. Each sees the others’ returns every week, not their holdings.')}</p>
+        <p class="du-goal is-note"><b>{L('왜 Argon만 medium?', 'Why is Argon on medium?')}</b>{L('GPT-6.1 Sol과 Opus 5.5는 high 위에 xhigh·max가 더 있어 high가 중간 단계임. Gemini 4 Argon은 low·medium·high 세 단계뿐이라 high가 최고 단계. 그래서 같은 자리(최고 단계 바로 아래)인 medium으로 맞췄고, medium은 구글이 정한 기본값이기도 함.', 'GPT-6.1 Sol and Opus 5.5 have xhigh and max above high, so high is a middle step for them. Gemini 4 Argon only has low, medium and high, so high is its top step. Argon runs on medium, the same position one below the top, which is also Google’s default.')}</p>
       </div>
       {stories.length > 0 && (
         <div>
@@ -86,8 +85,8 @@ const rules = [
   const T = ko
     ? { fail: '데이터를 불러오지 못했음. 잠시 뒤 다시 열어 주세요.', wait: '첫 체결 대기', waitLong: '첫 포트폴리오는 다음 미국 거래일 종가에 체결됨', start: '시작', updated: '갱신', lead: '앞서는 중', tie: '동률', vs: '대비', pending: '체결 대기 · 목표 비중', holdings: '보유 비중', cash: '현금', filled: '체결', waiting: '체결 대기', strategy: '운용 전략', journal: '최근 회고', none: '아직 없음', more: '펼쳐 보기', less: '접기', nodata: '첫 체결 뒤부터 그래프가 그려짐', beatBoth: '지수 둘 다 이기는 중' }
     : { fail: 'Could not load the data. Please try again later.', wait: 'Waiting for first fill', waitLong: 'The first portfolio fills at the next US close', start: 'Started', updated: 'Updated', lead: 'Leading', tie: 'Tied', vs: 'vs', pending: 'Waiting to fill · target weights', holdings: 'Holdings', cash: 'Cash', filled: 'Filled', waiting: 'Waiting', strategy: 'Strategy', journal: 'Latest review', none: 'None yet', more: 'Show all', less: 'Collapse', nodata: 'The chart starts after the first fill', beatBoth: 'Beating both indexes' };
-  const CLI = { gpt: 'Codex CLI · high', opus: 'Claude CLI · high' };
-  const COL = { gpt: 'var(--accent)', opus: 'var(--pen)', SPY: '#8d989e', QQQ: '#c99326' };
+  const CLI = { gpt: 'Codex CLI · high', opus: 'Claude CLI · high', argon: 'Antigravity CLI · medium' };
+  const COL = { gpt: 'var(--accent)', opus: 'var(--pen)', argon: '#7b4fc9', SPY: '#8d989e', QQQ: '#c99326' };
   const PAL = ['#e0603f', '#3446a3', '#3b7d3a', '#b7791f', '#7a4ea3', '#2b8a9e', '#c2477a', '#6b7f2a', '#a05a2c', '#476f95'];
   const $ = (q) => root.querySelector(q);
   const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -105,25 +104,29 @@ const rules = [
     const bLast = bh[bh.length - 1];
     const bRet = (s) => (bLast ? bLast[s] / cap - 1 : null);
     const ret = (a) => (a.history?.length ? a.history[a.history.length - 1].nav / a.capital_usd - 1 : null);
-    const A = Object.fromEntries(d.agents.map((a) => [a.id, a]));
     const started = d.agents.some((a) => a.history?.length);
-    const rg = ret(A.gpt), ro = ret(A.opus);
-    const leader = rg == null || ro == null ? null : rg === ro ? 'tie' : rg > ro ? 'gpt' : 'opus';
+    // 순위는 수익률이 나온 AI끼리만. 동률이면 같은 순위.
+    const scored = d.agents.filter((a) => ok(ret(a))).sort((p, q) => ret(q) - ret(p));
+    const rank = (a) => (ok(ret(a)) ? 1 + scored.filter((x) => ret(x) > ret(a)).length : null);
+    const leader = scored.length > 1 && ret(scored[0]) > ret(scored[1]) ? scored[0] : null;
 
-    for (const a of d.agents) {
+    const order = started ? [...scored, ...d.agents.filter((a) => !scored.includes(a))] : d.agents;
+    $('[data-du-players]').style.setProperty('--n', d.agents.length);
+    $('[data-du-players]').innerHTML = order.map((a) => {
       const r = ret(a);
-      const el = root.querySelector(`[data-player="${a.id}"]`);
-      if (!el) continue;
       const nav = a.history?.length ? a.history[a.history.length - 1].nav : a.capital_usd;
       const beat = ok(r) && ok(bRet('SPY')) && r > bRet('SPY') && r > bRet('QQQ');
-      el.innerHTML = `<p class="du-model">${esc(CLI[a.id] || a.model)}</p>
+      const rk = rank(a);
+      return `<article class="du-player" style="--c:${COL[a.id]}">
+        <p class="du-model">${esc(CLI[a.id] || a.model)}${rk && scored.length > 1 ? `<span class="du-rank">${ko ? `${rk}위` : `#${rk}`}</span>` : ''}</p>
         <h2>${esc(a.name)}</h2>
         <p class="du-big ${r == null ? 'is-wait' : sign(r)}">${r == null ? T.wait : pct(r)}</p>
-        <p class="du-nav">${usd(nav)}<span>/ ${usd(a.capital_usd)}</span></p>
+        <p class="du-nav">${usd(nav)}<span>/ ${usd(a.capital_usd)}</span>${a.start ? `<span>· ${T.start} ${esc(a.start)}</span>` : ''}</p>
         <ul class="du-diff">${['SPY', 'QQQ'].map((s) => { const v = ok(r) && ok(bRet(s)) ? r - bRet(s) : null; return `<li><span>${s} ${T.vs}</span><b class="${sign(v)}">${pp(v)}</b></li>`; }).join('')}</ul>
-        <div class="du-badges">${leader === a.id ? `<em class="du-badge">${T.lead}</em>` : ''}${beat ? `<em class="du-badge is-beat">${T.beatBoth}</em>` : ''}</div>`;
-    }
-    $('[data-du-status]').textContent = !started ? T.waitLong : leader === 'tie' ? T.tie : leader ? `${A[leader].name} ${T.lead}` : '';
+        <div class="du-badges">${leader === a ? `<em class="du-badge">${T.lead}</em>` : ''}${beat ? `<em class="du-badge is-beat">${T.beatBoth}</em>` : ''}</div>
+      </article>`;
+    }).join('');
+    $('[data-du-status]').textContent = !started ? T.waitLong : leader ? `${leader.name} ${T.lead}` : scored.length > 1 ? T.tie : '';
     $('[data-du-bench]').innerHTML = Object.entries(d.bench?.names || {}).map(([s, n]) => `<div style="--c:${COL[s]}"><dt>${esc(n)}</dt><dd class="${sign(bRet(s))}">${pct(bRet(s))}</dd></div>`).join('');
     const upd = `${T.updated} ${String(d.updated).replace('T', ' ').slice(0, 16)}`;
     $('[data-du-meta]').textContent = started && d.bench.start ? `${T.start} ${d.bench.start} · ${upd}` : upd;
@@ -198,7 +201,7 @@ const rules = [
   function timeline(d) {
     const weeks = [...new Set(d.agents.flatMap((a) => (a.log || []).map((l) => l.week)))].sort((p, q) => q - p);
     if (!weeks.length) return `<p class="du-sub">${T.none}</p>`;
-    return weeks.map((w) => `<div class="du-week"><span class="du-wk">${ko ? `${w}주차` : `Week ${w}`}</span>${d.agents.map((a) => {
+    return weeks.map((w) => `<div class="du-week" style="--n:${d.agents.length}"><span class="du-wk">${ko ? `${w}주차` : `Week ${w}`}</span>${d.agents.map((a) => {
       const l = (a.log || []).find((x) => x.week === w);
       if (!l) return `<div class="du-entry is-empty" style="--c:${COL[a.id]}"></div>`;
       const top = Object.entries(l.targets || {}).sort((p, q) => q[1] - p[1]).slice(0, 6).map(([s, v]) => `<span>${esc(s)} ${(v * 100).toFixed(0)}%</span>`).join('');
@@ -248,19 +251,20 @@ const rules = [
 .du-hero h1 { max-width: 20ch; margin: .7rem 0 1rem; font-size: clamp(2.2rem, 4.6vw, 3.9rem); font-weight: 820; line-height: 1.1; letter-spacing: -.055em; word-break: keep-all; }
 .du-lede { max-width: 680px; margin: 0; color: var(--muted); font-size: 1.02rem; line-height: 1.75; word-break: keep-all; }
 .du-body { padding-bottom: 5rem; }
-.du-vs { display: grid; grid-template-columns: minmax(0, 1fr) 9rem minmax(0, 1fr); align-items: stretch; margin-top: 1.8rem; }
-.du-player { position: relative; padding: 1.5rem 1.6rem 1.3rem; background: var(--surface); box-shadow: 0 1px 2px rgba(0, 0, 0, .08), 0 18px 30px -26px rgba(0, 0, 0, .55); border-top: 4px solid var(--c); }
-.du-player[data-player="opus"] { text-align: right; }
-.du-model { margin: 0; color: var(--muted); font-size: .7rem; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; }
+.du-status { margin: 1.8rem 0 0; color: var(--muted); font-size: .86rem; font-weight: 750; word-break: keep-all; }
+.du-status:empty { display: none; }
+.du-vs { display: grid; grid-template-columns: repeat(var(--n, 3), minmax(0, 1fr)); gap: 1rem; align-items: stretch; margin-top: .8rem; }
+.du-player { position: relative; padding: 1.4rem 1.4rem 1.2rem; background: var(--surface); box-shadow: 0 1px 2px rgba(0, 0, 0, .08), 0 18px 30px -26px rgba(0, 0, 0, .55); border-top: 4px solid var(--c); }
+.du-model { display: flex; justify-content: space-between; gap: .5rem; margin: 0; color: var(--muted); font-size: .7rem; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; }
+.du-rank { color: var(--c); font-size: .9rem; letter-spacing: 0; }
 .du-player h2 { margin: .3rem 0 .9rem; color: var(--c); font-size: clamp(1.4rem, 2.5vw, 2rem); font-weight: 820; letter-spacing: -.045em; }
 .du-big { margin: 0; font-size: clamp(2.3rem, 4.8vw, 3.6rem); font-weight: 850; line-height: 1; letter-spacing: -.06em; font-variant-numeric: tabular-nums; }
 .du-big.is-wait { color: var(--muted); font-size: clamp(1.25rem, 2.3vw, 1.6rem); font-weight: 780; letter-spacing: -.03em; line-height: 1.3; }
 .du-body .is-up { color: #2f9e5b; }
 .du-body .is-down { color: #d1453b; }
 .du-nav { margin: .55rem 0 0; font-size: .95rem; font-weight: 750; font-variant-numeric: tabular-nums; }
-.du-nav span { margin-left: .35rem; color: var(--muted); font-weight: 600; }
+.du-nav span { margin-left: .35rem; color: var(--muted); font-weight: 600; font-size: .85rem; }
 .du-diff { display: flex; gap: 1.4rem; margin: 1.1rem 0 0; padding: .9rem 0 0; border-top: 1px solid var(--line); list-style: none; font-variant-numeric: tabular-nums; }
-.du-player[data-player="opus"] .du-diff, .du-player[data-player="opus"] .du-badges { justify-content: flex-end; }
 .du-diff li { display: grid; gap: .15rem; }
 .du-diff span { color: var(--muted); font-size: .74rem; font-weight: 750; }
 .du-diff b { font-size: 1.05rem; font-weight: 820; }
@@ -268,9 +272,6 @@ const rules = [
 .du-badges:empty { display: none; }
 .du-badge { padding: .22rem .6rem; border-radius: 999px; background: var(--c); color: #fff; font-size: .7rem; font-style: normal; font-weight: 850; }
 .du-badge.is-beat { background: #2f9e5b; }
-.du-vs-mid { display: grid; place-content: center; justify-items: center; gap: .6rem; padding: 0 .6rem; text-align: center; }
-.du-vs-mid span { display: grid; place-items: center; width: 4.2rem; height: 4.2rem; border-radius: 50%; background: var(--ink); color: var(--bg); font-size: 1.3rem; font-weight: 900; letter-spacing: -.04em; }
-.du-vs-mid p { margin: 0; color: var(--muted); font-size: .78rem; font-weight: 700; line-height: 1.45; word-break: keep-all; }
 .du-bench { display: flex; flex-wrap: wrap; justify-content: center; gap: .6rem 2.4rem; margin: 1.4rem 0 0; }
 .du-bench div { display: flex; align-items: baseline; gap: .6rem; }
 .du-bench dt { display: inline-flex; align-items: center; gap: .45rem; color: var(--muted); font-size: .84rem; font-weight: 700; }
@@ -292,7 +293,7 @@ const rules = [
 .du-empty { position: relative; }
 .du-empty .ghost { fill: none; stroke: var(--line); stroke-width: 3; stroke-dasharray: 8 8; }
 .du-empty p { position: absolute; inset: 0; display: grid; place-items: center; margin: 0; color: var(--muted); font-size: .9rem; font-weight: 700; }
-.du-two { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 2.4rem; }
+.du-two { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); gap: 2rem; }
 .du-book h3, .du-docs h3 { display: flex; align-items: baseline; flex-wrap: wrap; gap: .3rem .7rem; margin: 0 0 .9rem; font-size: 1.2rem; font-weight: 820; letter-spacing: -.03em; }
 .du-book h3 i, .du-docs h3 i { align-self: center; width: .65rem; height: .65rem; border-radius: 2px; background: var(--c); transform: rotate(45deg); }
 .du-book h3 small { color: var(--muted); font-size: .78rem; font-weight: 700; letter-spacing: 0; }
@@ -300,7 +301,7 @@ const rules = [
 .du-stack span { display: grid; place-items: center; min-width: 0; overflow: hidden; border-right: 2px solid var(--surface); color: #fff; font-size: .72rem; font-weight: 800; white-space: nowrap; }
 .du-stack .is-cash { background: repeating-linear-gradient(45deg, var(--soft), var(--soft) 5px, var(--line) 5px, var(--line) 6px); border-right: 0; }
 .du-list { margin: 1rem 0 0; padding: 0; list-style: none; }
-.du-list li { display: grid; grid-template-columns: 6.4rem minmax(0, 1fr) minmax(0, 7rem) 3.6rem; gap: .8rem; align-items: center; padding: .55rem 0; border-bottom: 1px solid var(--line); font-size: .88rem; }
+.du-list li { display: grid; grid-template-columns: 5.8rem minmax(0, 1fr) minmax(0, 3.5rem) 3.4rem; gap: .8rem; align-items: center; padding: .55rem 0; border-bottom: 1px solid var(--line); font-size: .88rem; }
 .du-sym { display: inline-flex; align-items: center; gap: .45rem; font-weight: 800; }
 .du-sym i { width: .6rem; height: .6rem; border-radius: 2px; flex: none; }
 .du-sym small { padding: .05rem .3rem; border-radius: 3px; background: var(--ink); color: var(--bg); font-size: .6rem; font-weight: 800; }
@@ -310,7 +311,7 @@ const rules = [
 .du-list b { text-align: right; font-variant-numeric: tabular-nums; }
 .du-list .is-cash { color: var(--muted); }
 .du-list .is-cash i, .du-list .is-cash .du-w span { background: var(--line); }
-.du-week { display: grid; grid-template-columns: 4.5rem repeat(2, minmax(0, 1fr)); gap: 1.4rem; padding: 1.2rem 0; border-bottom: 1px solid var(--line); }
+.du-week { display: grid; grid-template-columns: 4.5rem repeat(var(--n, 3), minmax(0, 1fr)); gap: 1.4rem; padding: 1.2rem 0; border-bottom: 1px solid var(--line); }
 .du-wk { font-size: 1.05rem; font-weight: 850; letter-spacing: -.02em; }
 .du-entry { padding-left: 1rem; border-left: 3px solid var(--c); }
 .du-entry.is-empty { border-left-style: dashed; opacity: .4; }
@@ -344,6 +345,8 @@ const rules = [
 .du-rules dd { margin: .25rem 0 0; font-size: .92rem; font-weight: 720; word-break: keep-all; }
 .du-goal { margin: 1rem 0 0; padding: .9rem 1rem; border-left: 3px solid var(--accent); background: color-mix(in srgb, var(--accent) 8%, transparent); font-size: .9rem; line-height: 1.6; word-break: keep-all; }
 .du-goal b { margin-right: .5rem; color: var(--accent); }
+.du-goal.is-note { border-left-color: #7b4fc9; background: color-mix(in srgb, #7b4fc9 8%, transparent); }
+.du-goal.is-note b { color: #7b4fc9; }
 .du-stories { display: grid; gap: .8rem; margin: 1.1rem 0 0; padding: 0; list-style: none; }
 .du-stories a { display: grid; gap: .25rem; padding: 1rem 1.1rem; background: var(--surface); box-shadow: 0 1px 2px rgba(0, 0, 0, .08); transition: transform .25s cubic-bezier(.2, .7, .2, 1); }
 .du-stories a:hover { transform: translateY(-2px); }
@@ -354,11 +357,7 @@ const rules = [
 .du-note { margin: 3rem 0 0; color: var(--muted); font-size: .78rem; line-height: 1.6; }
 @media (max-width: 860px) {
   .du-vs { grid-template-columns: 1fr; gap: .8rem; }
-  .du-player[data-player="opus"] { text-align: left; }
-  .du-player[data-player="opus"] .du-diff, .du-player[data-player="opus"] .du-badges { justify-content: flex-start; }
-  .du-vs-mid { grid-auto-flow: column; justify-content: center; align-items: center; gap: .9rem; padding: .2rem 0; }
-  .du-vs-mid span { width: 3rem; height: 3rem; font-size: 1rem; }
-  .du-two, .du-about { grid-template-columns: 1fr; }
+  .du-about { grid-template-columns: 1fr; }
   .du-week { grid-template-columns: 1fr; gap: .8rem; }
   .du-list li { grid-template-columns: 5.6rem minmax(0, 1fr) 3.4rem; }
   .du-w { display: none; }

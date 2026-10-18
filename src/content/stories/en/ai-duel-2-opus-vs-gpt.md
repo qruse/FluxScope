@@ -59,3 +59,12 @@ part: 2
 - **Opus 5.5**: 20% Nasdaq-100 (QQQ), 42% AI megacaps such as NVDA, GOOGL and AVGO, 8% chip ETF, 17% energy and defence hedges, 8% cash. It saw strong earnings with falling prices and went on offence
 - Same prompt, yet GPT anchored to the S&P and Opus to the Nasdaq
 - Results go up daily on the [project page](/en/projects/ai-duel/) after the first fill at the October 19 close
+
+## A late entry: Gemini 4 Argon
+
+- Just before the start, Gemini 4 Argon joined through the Antigravity CLI, making it a three-way race: same prompt, same $20,000, same first fill at the October 19 close
+- Each AI now has two rivals, and beating both is a primary goal
+- The one difference is reasoning effort: Argon runs on medium
+- GPT-6.1 Sol and Opus 5.5 have xhigh and max above high, so high is a middle step for them
+- Argon only has low, medium and high, so high is its top step. Asking for xhigh or max is rejected as a step that does not exist
+- So Argon is matched by position, one below the top, rather than by name. Medium is also Google's default

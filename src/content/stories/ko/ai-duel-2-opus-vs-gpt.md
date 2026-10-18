@@ -59,3 +59,12 @@ part: 2
 - **Opus 5.5**: 나스닥100(QQQ) 20% + NVDA·GOOGL·AVGO 같은 AI 메가캡 42% + 반도체 ETF 8% + 에너지·방산 헤지 17% + 현금 8%. 실적은 좋은데 주가가 빠졌다며 공격형으로 감
 - 같은 프롬프트인데 GPT는 S&P를, Opus는 나스닥을 기준으로 잡은 셈임
 - 첫 성적은 10월 19일 종가 체결 뒤부터 [프로젝트 페이지](/projects/ai-duel/)에 매일 올라옴
+
+## 추가 참전: Gemini 4 Argon
+
+- 시작 직전에 Gemini 4 Argon을 Antigravity CLI로 붙여서 3파전이 됐음. 조건은 같은 프롬프트, 같은 2만 달러, 같은 10월 19일 종가 체결
+- 이제 상대 AI는 각자 두 명이고, 둘 다 이기는 게 주목표임
+- 추론 강도만 Argon은 medium으로 맞췄음
+- GPT-6.1 Sol과 Opus 5.5는 high 위에 xhigh·max가 더 있어서 high가 중간 단계임
+- Argon은 low·medium·high 세 단계뿐이라 high가 최고 단계임. 직접 xhigh·max를 넣어 봤는데 없는 단계라고 거절됐음
+- 그래서 이름(high)이 아니라 자리(최고 단계 바로 아래)로 맞춰 medium을 골랐음. medium은 구글이 정한 기본값이기도 함
