@@ -26,6 +26,17 @@ export const projects = [
     nameKo: 'AI로 한국 기상청 이기기 가능?',
     summary: 'Two-day forecasts for 97 Korean weather stations from a global weather-forecasting backbone model fine-tuned with an added head, side by side with the Korea Meteorological Administration.',
     summaryKo: '글로벌 기상예측 백본 모델에 finetuning(head 추가)을 통해 전국 97개 관측소의 2일 예보를 내고, 기상청 예보와 나란히 비교하는 프로젝트.',
+    cta: "See today's forecast",
+    ctaKo: '오늘 예보 보기',
+  },
+  {
+    id: 'ai-duel',
+    name: 'GPT vs Claude: can AI beat the US market?',
+    nameKo: 'GPT vs Claude, AI가 미국 주식시장을 이길 수 있을까?',
+    summary: 'GPT-6.1 Sol and Claude Opus 5.5 each run a 20 million KRW paper portfolio of US stocks from the same starting prompt, rewrite their own strategy every week, and race the S&P 500 and the Nasdaq-100.',
+    summaryKo: 'GPT-6.1 Sol과 Claude Opus 5.5가 같은 프롬프트로 시작해 각자 2천만 원 미국 주식 모의 포트폴리오를 운용하고, 매주 스스로 전략을 고쳐 가며 S&P 500·나스닥100과 겨루는 프로젝트.',
+    cta: 'See the scoreboard',
+    ctaKo: '현재 순위 보기',
   },
 ] as const;
 

@@ -451,13 +451,13 @@ async function submitRecentlyChanged(env) {
   console.log('IndexNow daily submission', JSON.stringify(results));
 }
 
-// Forecast data for the weather project page (/projects/beat-kma/). The forecasting pipeline in the
-// weather_forecasting repository uploads it once a day with PUBLISH_TOKEN; R2 keeps it under weather/.
-async function weather(request, env, url) {
-  const match = url.pathname.match(/^\/api\/weather\/((?:verify\/)?[a-z0-9_-]+\.json)$/);
+// Data for the project pages, uploaded once a day with PUBLISH_TOKEN and kept in R2 under the project's prefix:
+// weather/ for /projects/beat-kma/ (weather_forecasting repository) and duel/ for /projects/ai-duel/ (ai_portfolio_duel).
+async function projectData(request, env, url) {
+  const match = url.pathname.match(/^\/api\/(weather|duel)\/((?:verify\/)?[a-z0-9_-]+\.json)$/);
   if (!match) return json({ error: 'Not found' }, 404);
   if (!env.IMAGES) return json({ error: 'Storage is unavailable' }, 503);
-  const key = `weather/${match[1]}`;
+  const key = `${match[1]}/${match[2]}`;
   if (request.method === 'PUT') {
     if (!authorized(request, env.PUBLISH_TOKEN)) return json({ error: 'Unauthorized' }, 401);
     const text = await request.text();
@@ -476,7 +476,7 @@ async function weather(request, env, url) {
 
 async function api(request, env, url, ctx) {
   if (url.pathname === '/api/images') return images(request, env, url);
-  if (url.pathname.startsWith('/api/weather/')) return weather(request, env, url);
+  if (/^\/api\/(weather|duel)\//.test(url.pathname)) return projectData(request, env, url);
   if (!env.DB) return json({ error: 'Database binding is unavailable' }, 503);
   if (url.pathname === '/api/comments') return comments(request, env, url);
   if (url.pathname === '/api/views') return views(request, env, url);

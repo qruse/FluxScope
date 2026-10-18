@@ -15,7 +15,7 @@ const isKo = lang === 'ko';
       <section class="portfolio-project">
         <h2><a class="pen-under" href={projectPath(project.id, lang)}>{isKo ? project.nameKo : project.name}</a></h2>
         <p>{isKo ? project.summaryKo : project.summary}</p>
-        <a class="lab-cta" href={projectPath(project.id, lang)}>{isKo ? '오늘 예보 보기' : "See today's forecast"}<span aria-hidden="true">→</span></a>
+        <a class="lab-cta" href={projectPath(project.id, lang)}>{isKo ? project.ctaKo : project.cta}<span aria-hidden="true">→</span></a>
       </section>
     ))}
   </div>

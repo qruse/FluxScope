@@ -1,0 +1,173 @@
+---
+// "GPT vs Claude" project page. The ai_portfolio_duel repository (duel.py daily) uploads latest.json to /api/duel/
+// after every US close; the page draws the scoreboard, a cumulative-return chart and each AI's book, strategy
+// and weekly review from it with plain SVG and text. Paper trading only; prices come from the Toss Securities Open API.
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { projects } from '../lib/site';
+import type { Lang } from '../i18n/ui';
+
+interface Props { lang: Lang; }
+const { lang } = Astro.props;
+const isKo = lang === 'ko';
+const L = (ko: string, en: string) => (isKo ? ko : en);
+const project = projects.find((p) => p.id === 'ai-duel')!;
+const rules = isKo
+  ? ['자금 2천만 원 (시작 날 환율로 달러 환산), 미국 개별 주식만 (ETF·지수·레버리지 상품 금지)', '두 AI 모두 같은 시작 프롬프트. 매주 토요일 회고하고 자기 전략 문서를 고친 뒤 새 목표 비중을 냄', '주문은 다음 미국 거래일 종가에 체결, 거래비용 0.1%. 매일 아침 종가로 평가', '목표: S&P 500(SPY)과 나스닥100(QQQ)을 둘 다 이기기']
+  : ['20 million KRW (converted to USD on day one), US single stocks only (no ETFs, index or leveraged products)', 'Same starting prompt for both. Every Saturday each reviews its week, rewrites its own strategy and sets new target weights', 'Orders fill at the next US close with a 0.1% cost; books are marked to the close every morning', 'Goal: beat both the S&P 500 (SPY) and the Nasdaq-100 (QQQ)'];
+---
+<BaseLayout lang={lang} title={isKo ? project.nameKo : project.name} description={isKo ? project.summaryKo : project.summary}>
+  <header class="page-top">
+    <div class="shell">
+      <div class="section-kicker">{L('프로젝트', 'Project')}</div>
+      <h1>{isKo ? project.nameKo : project.name}</h1>
+      <p>{isKo ? project.summaryKo : project.summary}</p>
+      <ul class="du-rules">{rules.map((r) => <li>{r}</li>)}</ul>
+    </div>
+  </header>
+
+  <div class="shell du-body" data-du data-lang={lang}>
+    <section class="du-sec">
+      <h2>{L('현재 순위', 'Scoreboard')}</h2>
+      <p class="du-meta" data-du-meta>{L('불러오는 중…', 'Loading…')}</p>
+      <ol class="du-board" data-du-board></ol>
+    </section>
+    <section class="du-sec" data-du-chart-wrap hidden>
+      <h2>{L('누적 수익률', 'Cumulative return')}</h2>
+      <div class="du-chart" data-du-chart></div>
+      <p class="du-legend" data-du-legend></p>
+    </section>
+    <div class="du-agents" data-du-agents></div>
+    <p class="du-note">{L('모의투자이며 실제 주문은 나가지 않음. 시세는 토스증권 Open API(정규장 일봉 종가). SPY·QQQ는 지수를 따라가는 ETF로, 비교 기준으로만 씀. 투자 권유가 아님.', 'Paper trading only; no real orders. Prices are regular-session daily closes from the Toss Securities Open API. SPY and QQQ are index-tracking ETFs used only as benchmarks. Not investment advice.')}</p>
+  </div>
+
+<script is:inline>
+(() => {
+  const root = document.querySelector('[data-du]');
+  if (!root) return;
+  const ko = root.dataset.lang === 'ko';
+  const T = ko
+    ? { start: '대결 시작', wait: '첫 포트폴리오는 다음 미국 거래일 종가에 체결됨', updated: '갱신', holdings: '보유', cash: '현금', pending: '체결 대기 중인 목표 비중', last: '이번 주 결정', strategy: '지금 전략 (AI가 직접 고침)', journal: '최근 회고', none: '아직 없음', week: '주차', vs: '대비', beat: '둘 다 이기는 중', fail: '데이터를 불러오지 못했음. 잠시 뒤 다시 열어 주세요.', notyet: '아직 첫 주문 전. 첫 주간 회의가 끝나면 여기에 나옴.' }
+    : { start: 'Started', wait: 'The first portfolio fills at the next US close', updated: 'Updated', holdings: 'Holdings', cash: 'Cash', pending: 'Target weights waiting to fill', last: "This week's call", strategy: 'Current strategy (written by the AI)', journal: 'Latest review', none: 'None yet', week: 'week', vs: 'vs', beat: 'Beating both', fail: 'Could not load the data. Please try again later.', notyet: 'No orders yet. This fills in after the first weekly run.' };
+  const COLORS = { gpt: 'var(--accent)', opus: 'var(--pen)', SPY: '#9aa3a8', QQQ: '#c99326' };
+  const pct = (v) => (v == null || !isFinite(v) ? '–' : `${v >= 0 ? '+' : ''}${(v * 100).toFixed(2)}%`);
+  const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  const $ = (q) => root.querySelector(q);
+
+  fetch('/api/duel/latest.json', { cache: 'no-store' }).then((r) => (r.ok ? r.json() : Promise.reject(r.status))).then(draw).catch(() => { $('[data-du-meta]').textContent = T.fail; });
+
+  function draw(d) {
+    const bench = d.bench || {};
+    const bh = bench.history || [];
+    const series = [];
+    for (const a of d.agents) {
+      const h = a.history || [];
+      series.push({ id: a.id, name: a.name, pts: h.map((x) => [x.date, x.nav / a.capital_usd - 1]) });
+    }
+    const cap = d.agents.find((a) => a.capital_usd)?.capital_usd;
+    for (const s of Object.keys(bench.names || {})) series.push({ id: s, name: bench.names[s], pts: bh.map((x) => [x.date, x[s] / cap - 1]) });
+    const lastOf = (s) => (s.pts.length ? s.pts[s.pts.length - 1][1] : null);
+    const started = series.some((s) => s.pts.length);
+    $('[data-du-meta]').textContent = started
+      ? `${T.start} ${bench.start} · ${T.updated} ${d.updated.replace('T', ' ')}`
+      : `${T.wait} · ${T.updated} ${d.updated.replace('T', ' ')}`;
+    const ranked = [...series].sort((a, b) => (lastOf(b) ?? -1e9) - (lastOf(a) ?? -1e9));
+    const bestBench = Math.max(...series.filter((s) => s.id === 'SPY' || s.id === 'QQQ').map((s) => lastOf(s) ?? -1e9));
+    $('[data-du-board]').innerHTML = ranked.map((s, i) => {
+      const ai = s.id === 'gpt' || s.id === 'opus';
+      const v = lastOf(s);
+      const win = ai && v != null && v > bestBench;
+      return `<li class="${ai ? 'is-ai' : 'is-bench'}" style="--c:${COLORS[s.id]}"><span class="du-rank">${started ? i + 1 : '–'}</span><span class="du-name">${esc(s.name)}</span><b>${pct(v)}</b>${win ? `<em>${T.beat}</em>` : ''}</li>`;
+    }).join('');
+    if (started) chart(series);
+    $('[data-du-agents]').innerHTML = d.agents.map(agent).join('');
+  }
+
+  function chart(series) {
+    const dates = [...new Set(series.flatMap((s) => s.pts.map((p) => p[0])))].sort();
+    if (dates.length < 1) return;
+    $('[data-du-chart-wrap]').hidden = false;
+    const W = 760, H = 300, P = { l: 52, r: 16, t: 14, b: 30 };
+    const vals = series.flatMap((s) => s.pts.map((p) => p[1])).concat(0);
+    let lo = Math.min(...vals), hi = Math.max(...vals);
+    const pad = Math.max((hi - lo) * 0.12, 0.005); lo -= pad; hi += pad;
+    const x = (dt) => P.l + (dates.length === 1 ? (W - P.l - P.r) / 2 : (dates.indexOf(dt) / (dates.length - 1)) * (W - P.l - P.r));
+    const y = (v) => P.t + (1 - (v - lo) / (hi - lo)) * (H - P.t - P.b);
+    const ticks = 4, grid = [];
+    for (let i = 0; i <= ticks; i++) { const v = lo + ((hi - lo) * i) / ticks; grid.push(`<line x1="${P.l}" x2="${W - P.r}" y1="${y(v)}" y2="${y(v)}" class="g"/><text x="${P.l - 8}" y="${y(v) + 4}" text-anchor="end">${(v * 100).toFixed(1)}%</text>`); }
+    const step = Math.max(1, Math.ceil(dates.length / 6));
+    const xl = dates.map((dt, i) => (i % step === 0 || i === dates.length - 1 ? `<text x="${x(dt)}" y="${H - 8}" text-anchor="middle">${dt.slice(5).replace('-', '/')}</text>` : '')).join('');
+    const lines = series.map((s) => {
+      if (!s.pts.length) return '';
+      const ai = s.id === 'gpt' || s.id === 'opus';
+      const d = s.pts.map((p, i) => `${i ? 'L' : 'M'}${x(p[0]).toFixed(1)} ${y(p[1]).toFixed(1)}`).join('');
+      const last = s.pts[s.pts.length - 1];
+      return `<path d="${d}" fill="none" stroke="${COLORS[s.id]}" stroke-width="${ai ? 2.6 : 1.6}" ${ai ? '' : 'stroke-dasharray="5 4"'} stroke-linejoin="round" stroke-linecap="round"/><circle cx="${x(last[0])}" cy="${y(last[1])}" r="${ai ? 3.6 : 2.6}" fill="${COLORS[s.id]}"/>`;
+    }).join('');
+    $('[data-du-chart]').innerHTML = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${ko ? '누적 수익률 차트' : 'Cumulative return chart'}">${grid.join('')}<line x1="${P.l}" x2="${W - P.r}" y1="${y(0)}" y2="${y(0)}" class="z"/>${xl}${lines}</svg>`;
+    $('[data-du-legend]').innerHTML = series.map((s) => `<span style="--c:${COLORS[s.id]}" class="${s.id === 'gpt' || s.id === 'opus' ? 'is-ai' : ''}">${esc(s.name)}</span>`).join('');
+  }
+
+  function agent(a) {
+    const total = a.history?.length ? a.history[a.history.length - 1].nav : a.capital_usd;
+    const rows = (a.holdings || []).filter((h) => h.weight).sort((p, q) => q.weight - p.weight)
+      .map((h) => `<tr><td>${esc(h.symbol)}</td><td>${(h.weight * 100).toFixed(1)}%</td><td>${h.price != null ? '$' + h.price.toLocaleString() : '–'}</td></tr>`).join('');
+    const cashW = total ? a.cash / total : 1;
+    const pend = a.pending ? `<div class="du-box"><h4>${T.pending} · ${a.pending.week}${ko ? '주차' : ' ' + T.week}</h4><p>${esc(a.pending.summary)}</p><p class="du-tags">${Object.entries(a.pending.targets).sort((p, q) => q[1] - p[1]).map(([s, w]) => `<span>${esc(s)} ${(w * 100).toFixed(0)}%</span>`).join('')}</p></div>` : '';
+    const last = a.last ? `<div class="du-box"><h4>${T.last} · ${a.last.week}${ko ? '주차' : ' ' + T.week}</h4><p>${esc(a.last.summary)}</p></div>` : '';
+    return `<section class="du-agent" style="--c:${COLORS[a.id]}">
+      <h2><i></i>${esc(a.name)}</h2>
+      ${!rows && !a.pending ? `<p class="du-meta">${T.notyet}</p>` : ''}
+      ${pend}${last}
+      ${rows ? `<h3>${T.holdings}</h3><table class="du-table"><tbody>${rows}<tr class="is-cash"><td>${T.cash}</td><td>${(cashW * 100).toFixed(1)}%</td><td>$${Math.round(a.cash).toLocaleString()}</td></tr></tbody></table>` : ''}
+      <details class="du-doc"><summary>${T.strategy}</summary><div class="du-text">${esc(a.strategy) || T.none}</div></details>
+      <details class="du-doc"><summary>${T.journal}</summary><div class="du-text">${esc(a.journal) || T.none}</div></details>
+    </section>`;
+  }
+})();
+</script>
+
+<style is:inline>
+.du-rules { display: grid; gap: .35rem; max-width: 760px; margin: 1.4rem 0 0; padding-left: 1.1rem; color: var(--muted); font-size: .92rem; line-height: 1.6; }
+.du-body { padding-block: 1rem 5rem; }
+.du-sec { padding-top: 2.6rem; }
+.du-sec h2, .du-agent h2 { margin: 0 0 .6rem; font-size: clamp(1.5rem, 2.6vw, 2rem); font-weight: 760; letter-spacing: -.045em; }
+.du-meta { margin: 0 0 1.2rem; color: var(--muted); font-size: .88rem; }
+.du-board { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1rem; margin: 0; padding: 0; list-style: none; }
+.du-board li { position: relative; display: grid; gap: .3rem; padding: 1.1rem 1.1rem 1rem; border-top: 3px solid var(--c); background: var(--surface); box-shadow: 0 1px 2px rgba(0, 0, 0, .08); }
+.du-board li.is-bench { border-top-style: dashed; background: transparent; box-shadow: none; border-bottom: 1px solid var(--line); }
+.du-rank { color: var(--muted); font-size: .78rem; font-weight: 800; }
+.du-name { font-weight: 780; font-size: .98rem; letter-spacing: -.02em; }
+.du-board b { color: var(--c); font-size: clamp(1.6rem, 3vw, 2.2rem); font-weight: 830; letter-spacing: -.05em; font-variant-numeric: tabular-nums; }
+.du-board em { position: absolute; top: .9rem; right: .9rem; padding: .15rem .45rem; border-radius: 999px; background: var(--c); color: #fff; font-size: .66rem; font-style: normal; font-weight: 850; }
+.du-chart svg { display: block; width: 100%; height: auto; }
+.du-chart text { fill: var(--muted); font-size: 11px; font-variant-numeric: tabular-nums; }
+.du-chart .g { stroke: var(--line); stroke-width: 1; }
+.du-chart .z { stroke: var(--ink); stroke-width: 1; opacity: .5; }
+.du-legend { display: flex; flex-wrap: wrap; gap: .4rem 1.2rem; margin: .6rem 0 0; font-size: .84rem; color: var(--muted); }
+.du-legend span::before { content: ''; display: inline-block; width: 1.3rem; height: 0; margin-right: .45rem; vertical-align: middle; border-top: 2px dashed var(--c); }
+.du-legend span.is-ai::before { border-top: 3px solid var(--c); }
+.du-agents { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 2.4rem; padding-top: 3rem; }
+.du-agent { min-width: 0; padding-top: 1.2rem; border-top: 2px solid var(--c); }
+.du-agent h2 i { display: inline-block; width: .7rem; height: .7rem; margin-right: .55rem; border-radius: 2px; background: var(--c); transform: rotate(45deg) translateY(-.1rem); }
+.du-agent h3 { margin: 1.4rem 0 .5rem; font-size: .95rem; font-weight: 800; }
+.du-box { margin-top: 1rem; padding: .9rem 1rem; background: var(--surface); box-shadow: 0 1px 2px rgba(0, 0, 0, .08); }
+.du-box h4 { margin: 0 0 .4rem; color: var(--c); font-size: .78rem; font-weight: 850; letter-spacing: .04em; }
+.du-box p { margin: 0; font-size: .92rem; line-height: 1.6; }
+.du-tags { display: flex; flex-wrap: wrap; gap: .35rem; margin-top: .6rem !important; }
+.du-tags span { padding: .2rem .5rem; border-radius: 999px; background: var(--soft); font-size: .78rem; font-weight: 700; font-variant-numeric: tabular-nums; }
+.du-table { width: 100%; border-collapse: collapse; font-size: .9rem; font-variant-numeric: tabular-nums; }
+.du-table td { padding: .5rem 0; border-bottom: 1px solid var(--line); }
+.du-table td:not(:first-child) { text-align: right; }
+.du-table td:first-child { font-weight: 750; }
+.du-table .is-cash td { color: var(--muted); }
+.du-doc { margin-top: 1rem; border-top: 1px solid var(--line); }
+.du-doc summary { padding: .8rem 0 .2rem; font-size: .9rem; font-weight: 800; cursor: pointer; }
+.du-doc summary:hover { color: var(--accent); }
+.du-text { max-height: 28rem; overflow: auto; margin-top: .6rem; padding: .9rem 1rem; background: var(--soft); font-size: .85rem; line-height: 1.65; white-space: pre-wrap; word-break: break-word; }
+.du-note { margin: 3rem 0 0; color: var(--muted); font-size: .8rem; line-height: 1.6; }
+@media (max-width: 860px) {
+  .du-board { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .du-agents { grid-template-columns: 1fr; }
+}
+</style>
+</BaseLayout>
