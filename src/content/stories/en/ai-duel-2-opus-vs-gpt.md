@@ -47,6 +47,13 @@ part: 2
 - Also whether it leaves what works alone instead of paying costs for needless trades
 - And whether, when it is behind, it chases the others or keeps its own rules while fixing them
 
+## Two things measured besides returns
+
+- Over a few months, returns depend more on luck and market direction than on skill, so two more measures track self-improvement directly
+- **Hypothesis checks**: every week each AI writes two or three hypotheses for the coming week, each with a test that decides right or wrong, and judges them itself at the next meeting. Whether the hit rate climbs over time is the real self-improvement signal
+- **Risk figures**: max drawdown, volatility and beta against SPY sit next to the return. They are in the briefing too, so the AIs see them. Pumping returns with leverage shows up in these numbers right away
+- Rivals' max drawdowns are shown along with their returns; holdings and strategies stay hidden
+
 ## A late entry: Gemini 4 Argon
 
 - Just before the start, Gemini 4 Argon joined through the Antigravity CLI, making it a three-way race
@@ -68,9 +75,9 @@ part: 2
 
 *Made by HSL: targets for the first fill at the October 19 close; an asterisk marks an ETF*
 
-- **GPT-6.1 Sol**: 5 holdings, 84% ETFs. Equal-weight S&P 500 (RSP) 35% and QQQ 25% as the base, then health care (XLV) 15%, TSMC 15%, ultra-short Treasuries (SGOV) 9% and 1% cash, betting that gains keep spreading beyond tech during the sell-off
-- **Opus 5.5**: 7 holdings, 84% ETFs. QQQ 30% at the core, buying chips after nine straight down days (SMH and NVDA, 20%), with energy, health care and defense (42%) to offset tech, and 8% cash ahead of the Fed meeting
-- **Gemini 4 Argon**: 6 holdings, no cash. QQQ 25%, NVDA and TSM 20% each, META 15% and AVGO 10%, putting 90% on AI chips and big tech, with energy (XLE) 10% as a hedge against high oil
-- Same prompt, yet GPT spread out defensively, Opus built core and satellites, and Argon concentrated on AI
-- None of the three bought a leveraged or inverse ETF in week one. Only Opus wrote a conditional rule: up to 20% only while QQQ is above its 50-day line and the VIX is under 18
+- **GPT-6.1 Sol**: 3 holdings, all ETFs. Equal-weight S&P 500 (RSP) 45%, QQQ 25%, financials (XLF) 20% and 10% cash, betting that equal-weight and financials lead while tech is weak. It wrote that it will not use leverage until it has a proven edge
+- **Opus 5.5**: 6 holdings, 89% ETFs. A core of QQQ 42% and SPY 12%, some chips after last week's 11% drop (SMH and NVDA, 16%), energy (XLE) 15% as an oil-shock hedge, health care (XLV) 10% and 5% cash
+- **Gemini 4 Argon**: 5 holdings, no cash. The 2x Nasdaq-100 fund (QLD) at 30%, TSM and NVDA at 20% each, power-grid maker GE Vernova (GEV) 15% and energy (XLE) 15%. Argon is the only one using leverage from week one
+- Same prompt, yet GPT spread across indexes, Opus built core, satellites and a hedge, and Argon bet on an AI rebound with leverage on top
+- The first hypotheses show their characters too. GPT set tight numeric tests ("right if RSP beats SPY by 0.3 points or more"), Opus tested the reasons behind its trades ("chips beat QQQ"), and Argon made aggressive calls ("QLD beats both QQQ and SPY")
 - Results go up daily on the [project page](/en/projects/ai-duel/) after the first fill at the October 19 close

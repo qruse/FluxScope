@@ -56,6 +56,11 @@ const rules = [
     </section>
 
     <section class="du-sec">
+      <div class="du-head"><h2>{L('가설 검증', 'Hypothesis check')}</h2><p class="du-sub">{L('매주 다음 주에 확인할 가설을 적고, 일주일 뒤 스스로 맞음·틀림을 판정함', 'Each week every AI writes hypotheses to test, then judges them itself a week later')}</p></div>
+      <div class="du-two" data-du-hyp></div>
+    </section>
+
+    <section class="du-sec">
       <div class="du-head"><h2>{L('AI가 직접 쓰는 전략과 회고', 'Strategy and reviews, written by the AIs')}</h2><p class="du-sub">{L('매주 스스로 고치는 문서. 자기 개선이 보이는 곳', 'Rewritten by each AI every week: where self-improvement shows')}</p></div>
       <div class="du-two" data-du-docs></div>
     </section>
@@ -64,7 +69,7 @@ const rules = [
       <div>
         <h2>{L('규칙', 'Rules')}</h2>
         <dl class="du-rules">{rules.map(([k, v]) => <div><dt>{k}</dt><dd>{v}</dd></div>)}</dl>
-        <p class="du-goal"><b>{L('목표', 'Goal')}</b>{L('S&P 500(SPY)·나스닥100(QQQ)을 이기는 것과 상대 AI들을 이기는 것, 둘 다 주목표. 서로의 수익률은 매주 공개되고 보유 종목은 비공개.', 'Beat the S&P 500 (SPY) and the Nasdaq-100 (QQQ), and beat the other AIs; both are primary. Each sees the others’ returns every week, not their holdings.')}</p>
+        <p class="du-goal"><b>{L('목표', 'Goal')}</b>{L('S&P 500(SPY)·나스닥100(QQQ)을 이기는 것과 상대 AI들을 이기는 것, 둘 다 주목표. 서로의 수익률과 최대 낙폭은 매주 공개되고 보유 종목은 비공개.', 'Beat the S&P 500 (SPY) and the Nasdaq-100 (QQQ), and beat the other AIs; both are primary. Each sees the others’ returns and max drawdowns every week, not their holdings.')}</p>
         <p class="du-goal is-note"><b>{L('왜 Argon만 medium?', 'Why is Argon on medium?')}</b>{L('GPT-6.1 Sol과 Opus 5.5는 high 위에 xhigh·max가 더 있어 high가 중간 단계임. Gemini 4 Argon은 low·medium·high 세 단계뿐이라 high가 최고 단계. 그래서 같은 자리(최고 단계 바로 아래)인 medium으로 맞췄고, medium은 구글이 정한 기본값이기도 함.', 'GPT-6.1 Sol and Opus 5.5 have xhigh and max above high, so high is a middle step for them. Gemini 4 Argon only has low, medium and high, so high is its top step. Argon runs on medium, the same position one below the top, which is also Google’s default.')}</p>
       </div>
       {stories.length > 0 && (
@@ -86,8 +91,8 @@ const rules = [
   if (!root) return;
   const ko = root.dataset.lang === 'ko';
   const T = ko
-    ? { fail: '데이터를 불러오지 못했음. 잠시 뒤 다시 열어 주세요.', wait: '첫 체결 대기', waitLong: '첫 포트폴리오는 다음 미국 거래일 종가에 체결됨', start: '시작', updated: '갱신', lead: '앞서는 중', tie: '동률', vs: '대비', pending: '체결 대기 · 목표 비중', holdings: '보유 비중', cash: '현금', filled: '체결', waiting: '체결 대기', strategy: '운용 전략', journal: '최근 회고', none: '아직 없음', more: '펼쳐 보기', less: '접기', nodata: '첫 체결 뒤부터 그래프가 그려짐', beatBoth: '지수 둘 다 이기는 중' }
-    : { fail: 'Could not load the data. Please try again later.', wait: 'Waiting for first fill', waitLong: 'The first portfolio fills at the next US close', start: 'Started', updated: 'Updated', lead: 'Leading', tie: 'Tied', vs: 'vs', pending: 'Waiting to fill · target weights', holdings: 'Holdings', cash: 'Cash', filled: 'Filled', waiting: 'Waiting', strategy: 'Strategy · machine-translated from Korean', journal: 'Latest review · machine-translated from Korean', none: 'None yet', more: 'Show all', less: 'Collapse', nodata: 'The chart starts after the first fill', beatBoth: 'Beating both indexes' };
+    ? { fail: '데이터를 불러오지 못했음. 잠시 뒤 다시 열어 주세요.', wait: '첫 체결 대기', waitLong: '첫 포트폴리오는 다음 미국 거래일 종가에 체결됨', start: '시작', updated: '갱신', lead: '앞서는 중', tie: '동률', vs: '대비', pending: '체결 대기 · 목표 비중', holdings: '보유 비중', cash: '현금', filled: '체결', waiting: '체결 대기', strategy: '운용 전략', journal: '최근 회고', none: '아직 없음', more: '펼쳐 보기', less: '접기', nodata: '첫 체결 뒤부터 그래프가 그려짐', beatBoth: '지수 둘 다 이기는 중', mdd: '최대 낙폭', vol: '변동성', beta: '베타', riskWait: '위험 지표는 체결 3일 뒤부터', hypNow: '이번 주 가설', hypPast: '지난 가설 판정', check: '기준', right: '맞음', wrong: '틀림', open: '보류', hit: '적중률', noVerdict: '첫 판정은 2주차 회의에서' }
+    : { fail: 'Could not load the data. Please try again later.', wait: 'Waiting for first fill', waitLong: 'The first portfolio fills at the next US close', start: 'Started', updated: 'Updated', lead: 'Leading', tie: 'Tied', vs: 'vs', pending: 'Waiting to fill · target weights', holdings: 'Holdings', cash: 'Cash', filled: 'Filled', waiting: 'Waiting', strategy: 'Strategy · machine-translated from Korean', journal: 'Latest review · machine-translated from Korean', none: 'None yet', more: 'Show all', less: 'Collapse', nodata: 'The chart starts after the first fill', beatBoth: 'Beating both indexes', mdd: 'Max drawdown', vol: 'Volatility', beta: 'Beta', riskWait: 'Risk figures start three days after the first fill', hypNow: 'This week’s hypotheses', hypPast: 'Last verdicts', check: 'Test', right: 'Right', wrong: 'Wrong', open: 'Open', hit: 'Hit rate', noVerdict: 'First verdicts at the week-two meeting' };
   const CLI = { gpt: 'Codex CLI · high', opus: 'Claude CLI · high', argon: 'Antigravity CLI · medium' };
   const COL = { gpt: 'var(--accent)', opus: 'var(--pen)', argon: '#7b4fc9', SPY: '#8d989e', QQQ: '#c99326' };
   const ETF_COL = '#4f5f68'; // 라이트·다크 모드 모두에서 보이는 고정 회색
@@ -127,18 +132,20 @@ const rules = [
         <p class="du-big ${r == null ? 'is-wait' : sign(r)}">${r == null ? T.wait : pct(r)}</p>
         <p class="du-nav">${usd(nav)}<span>/ ${usd(a.capital_usd)}</span>${a.start ? `<span>· ${T.start} ${esc(a.start)}</span>` : ''}</p>
         <ul class="du-diff">${['SPY', 'QQQ'].map((s) => { const v = ok(r) && ok(bRet(s)) ? r - bRet(s) : null; return `<li><span>${s} ${T.vs}</span><b class="${sign(v)}">${pp(v)}</b></li>`; }).join('')}</ul>
+        ${a.risk ? `<p class="du-risk"><span>${T.mdd} <b>${pct(a.risk.mdd, 1)}</b></span><span>${T.vol} <b>${(a.risk.vol * 100).toFixed(0)}%</b></span>${ok(a.risk.beta) ? `<span>${T.beta} <b>${a.risk.beta.toFixed(2)}</b></span>` : ''}</p>` : a.start ? `<p class="du-risk is-wait">${T.riskWait}</p>` : ''}
         <div class="du-badges">${leader === a ? `<em class="du-badge">${T.lead}</em>` : ''}${beat ? `<em class="du-badge is-beat">${T.beatBoth}</em>` : ''}</div>
       </article>`;
     }).join('');
     $('[data-du-status]').textContent = !started ? T.waitLong : leader ? `${leader.name} ${T.lead}` : scored.length > 1 ? T.tie : '';
     const bnames = (!ko && d.bench?.names_en) || d.bench?.names || {};
-    $('[data-du-bench]').innerHTML = Object.entries(bnames).map(([s, n]) => `<div style="--c:${COL[s]}"><dt>${esc(n)}</dt><dd class="${sign(bRet(s))}">${pct(bRet(s))}</dd></div>`).join('');
+    $('[data-du-bench]').innerHTML = Object.entries(bnames).map(([s, n]) => { const br = d.bench?.risk?.[s]; return `<div style="--c:${COL[s]}"><dt>${esc(n)}</dt><dd class="${sign(bRet(s))}">${pct(bRet(s))}${br ? `<small>${T.mdd} ${pct(br.mdd, 1)}</small>` : ''}</dd></div>`; }).join('');
     const upd = `${T.updated} ${String(d.updated).replace('T', ' ').slice(0, 16)}`;
     $('[data-du-meta]').textContent = started && d.bench.start ? `${T.start} ${d.bench.start} · ${upd}` : upd;
 
     chart(d, started);
     $('[data-du-books]').innerHTML = d.agents.map((a) => book(a, d)).join('');
     $('[data-du-log]').innerHTML = timeline(d);
+    $('[data-du-hyp]').innerHTML = d.agents.map(hyp).join('');
     $('[data-du-docs]').innerHTML = d.agents.map(docs).join('');
     root.querySelectorAll('.du-md').forEach((box) => {
       const btn = box.nextElementSibling;
@@ -212,6 +219,23 @@ const rules = [
       const top = Object.entries(l.targets || {}).sort((p, q) => q[1] - p[1]).slice(0, 6).map(([s, v]) => `<span>${esc(s)} ${(v * 100).toFixed(0)}%</span>`).join('');
       return `<div class="du-entry" style="--c:${COL[a.id]}"><p class="du-who">${esc(a.name)} <span>${l.filled_on ? `${T.filled} ${esc(l.filled_on)}` : T.waiting}</span></p><p>${esc((!ko && l.summary_en) || l.summary)}</p><p class="du-top">${top}</p></div>`;
     }).join('')}</div>`).join('');
+  }
+
+  // Hypotheses each AI wrote for the coming week and its own verdicts on earlier ones, with a running tally.
+  function hyp(a) {
+    const weeks = a.hyp || [];
+    const kind = (r) => (/맞|right|correct|true/i.test(r) ? 'right' : /틀|wrong|false/i.test(r) ? 'wrong' : 'open');
+    const all = weeks.flatMap((w) => w.verdicts.map((v) => ({ ...v, week: w.week, k: kind(v.result) })));
+    const n = { right: 0, wrong: 0, open: 0 };
+    all.forEach((v) => n[v.k]++);
+    const decided = n.right + n.wrong;
+    const tx = (x, k) => esc((!ko && x[k + '_en']) || x[k]);
+    const now = [...weeks].reverse().find((w) => w.hypotheses.length);
+    const past = [...weeks].reverse().find((w) => w.verdicts.length);
+    const tally = `<p class="du-tally"><span class="is-right">${T.right} <b>${n.right}</b></span><span class="is-wrong">${T.wrong} <b>${n.wrong}</b></span><span>${T.open} <b>${n.open}</b></span>${decided ? `<span>${T.hit} <b>${Math.round((n.right / decided) * 100)}%</b></span>` : ''}</p>`;
+    const nowList = now ? `<ol class="du-hyps">${now.hypotheses.map((h) => `<li><p>${tx(h, 'text')}</p>${h.check ? `<small>${T.check}: ${tx(h, 'check')}</small>` : ''}</li>`).join('')}</ol>` : `<p class="du-sub">${T.none}</p>`;
+    const pastList = past ? `<ul class="du-verdicts">${past.verdicts.map((v) => `<li class="is-${kind(v.result)}"><em>${T[kind(v.result)]}</em><p>${tx(v, 'hypothesis')}${v.why ? `<small>${tx(v, 'why')}</small>` : ''}</p></li>`).join('')}</ul>` : `<p class="du-sub">${T.noVerdict}</p>`;
+    return `<article class="du-hyp" style="--c:${COL[a.id]}"><h3><i></i>${esc(a.name)}</h3>${tally}<h4>${T.hypNow}${now ? ` · ${ko ? `${now.week}주차` : `week ${now.week}`}` : ''}</h4>${nowList}<h4>${T.hypPast}</h4>${pastList}</article>`;
   }
 
   // Small Markdown renderer for the AI-written files: headings, lists, tables, bold, code, links, paragraphs.
@@ -299,6 +323,27 @@ const rules = [
 .du-empty .ghost { fill: none; stroke: var(--line); stroke-width: 3; stroke-dasharray: 8 8; }
 .du-empty p { position: absolute; inset: 0; display: grid; place-items: center; margin: 0; color: var(--muted); font-size: .9rem; font-weight: 700; }
 .du-two { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); gap: 2rem; }
+.du-risk { display: flex; flex-wrap: wrap; gap: .3rem 1.1rem; margin: .7rem 0 0; color: var(--muted); font-size: .76rem; font-weight: 700; font-variant-numeric: tabular-nums; }
+.du-risk b { color: var(--ink); font-weight: 820; }
+.du-risk.is-wait { font-weight: 650; }
+.du-bench dd small { margin-left: .5rem; color: var(--muted); font-size: .74rem; font-weight: 700; }
+.du-hyp { padding-top: 1rem; border-top: 3px solid var(--c); }
+.du-hyp h3 { display: flex; align-items: baseline; gap: .7rem; margin: 0 0 .7rem; font-size: 1.2rem; font-weight: 820; letter-spacing: -.03em; }
+.du-hyp h3 i { align-self: center; width: .65rem; height: .65rem; border-radius: 2px; background: var(--c); transform: rotate(45deg); }
+.du-hyp h4 { margin: 1.3rem 0 .6rem; color: var(--c); font-size: .74rem; font-weight: 850; letter-spacing: .1em; text-transform: uppercase; }
+.du-tally { display: flex; flex-wrap: wrap; gap: .3rem 1rem; margin: 0; padding: .7rem 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); color: var(--muted); font-size: .8rem; font-weight: 750; font-variant-numeric: tabular-nums; }
+.du-tally b { color: var(--ink); font-size: 1rem; font-weight: 830; }
+.du-tally .is-right b { color: #23855b; }
+.du-tally .is-wrong b { color: #c43d2f; }
+.du-hyps { margin: 0; padding-left: 1.2rem; display: grid; gap: .65rem; }
+.du-hyps p { margin: 0; font-size: .9rem; font-weight: 650; line-height: 1.55; word-break: keep-all; }
+.du-hyps small, .du-verdicts small { display: block; margin-top: .2rem; color: var(--muted); font-size: .78rem; line-height: 1.5; word-break: keep-all; }
+.du-verdicts { margin: 0; padding: 0; list-style: none; display: grid; gap: .65rem; }
+.du-verdicts li { display: grid; grid-template-columns: 3.2rem minmax(0, 1fr); gap: .6rem; align-items: start; }
+.du-verdicts em { padding: .12rem 0; border-radius: 4px; background: var(--soft); color: var(--muted); font-size: .7rem; font-style: normal; font-weight: 850; text-align: center; }
+.du-verdicts .is-right em { color: #23855b; background: color-mix(in srgb, #33a07a 16%, transparent); }
+.du-verdicts .is-wrong em { color: #c43d2f; background: color-mix(in srgb, #e5533f 14%, transparent); }
+.du-verdicts p { margin: 0; font-size: .88rem; font-weight: 650; line-height: 1.5; word-break: keep-all; }
 .du-book h3, .du-docs h3 { display: flex; align-items: baseline; flex-wrap: wrap; gap: .3rem .7rem; margin: 0 0 .9rem; font-size: 1.2rem; font-weight: 820; letter-spacing: -.03em; }
 .du-book h3 i, .du-docs h3 i { align-self: center; width: .65rem; height: .65rem; border-radius: 2px; background: var(--c); transform: rotate(45deg); }
 .du-book h3 small { color: var(--muted); font-size: .78rem; font-weight: 700; letter-spacing: 0; }
