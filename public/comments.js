@@ -1,5 +1,5 @@
 // Guest comments for article and project pages: nickname + password per comment, one reply level, @mention tags.
-// An optional data-intro on the section replaces the sign-up note with that bold line.
+// An optional data-intro on the section adds a bold line above the form.
 (() => {
   const root = document.querySelector('[data-comments]');
   if (!root) return;
@@ -9,7 +9,7 @@
     ko: {
       title: '댓글', nickname: '닉네임', password: '비밀번호', body: '댓글을 남겨주세요', submit: '등록', reply: '답글', delete: '삭제',
       cancel: '취소', confirm: '확인', deleted: '삭제된 댓글입니다', empty: '아직 댓글이 없음. 첫 댓글을 남겨주세요',
-      note: '회원가입 없이 닉네임과 비밀번호로 작성함. 댓글을 지울 때 같은 닉네임과 비밀번호가 필요함', deletePassword: '작성할 때 입력한 비밀번호', deleteNickname: '작성할 때 입력한 닉네임',
+      deletePassword: '작성할 때 입력한 비밀번호', deleteNickname: '작성할 때 입력한 닉네임',
       loadError: '댓글을 불러오지 못했음', sending: '등록 중…',
       errors: {
         invalid_nickname: '닉네임은 2~20자로 입력해 주세요 (<, >, @ 제외)', reserved_nickname: '사용할 수 없는 닉네임임',
@@ -21,7 +21,7 @@
     en: {
       title: 'Comments', nickname: 'Nickname', password: 'Password', body: 'Leave a comment', submit: 'Post', reply: 'Reply', delete: 'Delete',
       cancel: 'Cancel', confirm: 'Confirm', deleted: 'This comment was deleted', empty: 'No comments yet. Be the first to leave one',
-      note: 'No sign-up needed: pick a nickname and password. You need both to delete your comment', deletePassword: 'Password used when posting', deleteNickname: 'Nickname used when posting',
+      deletePassword: 'Password used when posting', deleteNickname: 'Nickname used when posting',
       loadError: 'Could not load comments', sending: 'Posting…',
       errors: {
         invalid_nickname: 'Use a 2–20 character nickname (no <, > or @)', reserved_nickname: 'That nickname is reserved',
@@ -140,7 +140,7 @@
     const visible = items.filter((c) => !c.deleted).length;
     root.replaceChildren(
       el('h2', { class: 'comments-title' }, t.title, el('span', { class: 'comments-count' }, String(visible))),
-      root.dataset.intro ? el('p', { class: 'comments-intro', style: 'margin:0 0 1rem;font-weight:700' }, root.dataset.intro) : el('p', { class: 'comments-note' }, t.note),
+      root.dataset.intro ? el('p', { class: 'comments-intro', style: 'margin:0 0 1rem;font-weight:700' }, root.dataset.intro) : null,
       form(),
       roots.length ? list : el('p', { class: 'comments-empty' }, t.empty));
   }
