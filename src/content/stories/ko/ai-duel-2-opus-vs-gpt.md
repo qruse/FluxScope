@@ -1,5 +1,5 @@
 ---
-title: "현존 최강 가성비 모델 2종, Opus 5.5 vs GPT-6.1 Sol"
+title: "현존 최강 가성비 모델 3종, Opus 5.5 vs GPT-6.1 Sol vs Gemini 4 Argon"
 description: "같은 프롬프트, 같은 2만 달러로 시작해 시장 지수와 서로를 이겨야 하는 AI들의 투자 규칙과, 핵심인 1주 단위 피드백 자기 개선 이야기."
 publishedAt: 2026-10-18
 lang: ko

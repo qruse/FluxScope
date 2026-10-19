@@ -1,5 +1,5 @@
 ---
-title: "The two best-value models today: Opus 5.5 vs GPT-6.1 Sol"
+title: "The three best-value models today: Opus 5.5 vs GPT-6.1 Sol vs Gemini 4 Argon"
 description: "AIs start from the same prompt and $20,000 and must beat the market indexes and each other. The rules, and the real point: improving themselves week by week."
 publishedAt: 2026-10-18
 lang: en
