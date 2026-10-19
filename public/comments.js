@@ -1,4 +1,5 @@
-// Guest comments for article pages: nickname + password per comment, one reply level, @mention tags.
+// Guest comments for article and project pages: nickname + password per comment, one reply level, @mention tags.
+// An optional data-intro on the section adds a bold line above the form.
 (() => {
   const root = document.querySelector('[data-comments]');
   if (!root) return;
@@ -139,6 +140,7 @@
     const visible = items.filter((c) => !c.deleted).length;
     root.replaceChildren(
       el('h2', { class: 'comments-title' }, t.title, el('span', { class: 'comments-count' }, String(visible))),
+      root.dataset.intro ? el('p', { class: 'comments-intro', style: 'margin:0 0 .45rem;font-weight:700' }, root.dataset.intro) : null,
       el('p', { class: 'comments-note' }, t.note),
       form(),
       roots.length ? list : el('p', { class: 'comments-empty' }, t.empty));

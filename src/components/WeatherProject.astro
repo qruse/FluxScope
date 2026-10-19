@@ -4,7 +4,7 @@
 // built-in tile map (OpenStreetMap standard tiles) and plain SVG; no map or chart library.
 import { getCollection } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
-import { storyPath, projects } from '../lib/site';
+import { storyPath, projects, projectPath } from '../lib/site';
 import type { Lang } from '../i18n/ui';
 
 interface Props { lang: Lang; }
@@ -117,6 +117,11 @@ const vars = isKo
         : 'A 48-hour forecast from the 05:00 KST issuance every day. Model: frozen Aurora 1.5 plus an ensemble of station heads.'}</p>
     </aside>
   </div>
+  <div class="shell">
+    <section class="comments" id="comments" data-comments data-lang={lang} data-page={projectPath('beat-kma', lang)}
+      data-intro={isKo ? '훈수 환영. 예보가 틀렸거나 모델을 이렇게 고치면 좋겠다 싶으면 편하게 남겨 주세요' : 'Backseat forecasting welcome. If a forecast missed or you would fix the model differently, say so here'}></section>
+  </div>
+  <script is:inline src="/comments.js" defer></script>
 </BaseLayout>
 
 <script>

@@ -210,7 +210,8 @@ const commentSchema = [
 ];
 
 // Guest comments: nickname + password per comment, one reply level, @mention of the replied-to nickname.
-const commentPage = /^\/(en\/)?blog\/(?:(posts)|ai|mobility|it-devices)\/([a-z0-9]+(?:-[a-z0-9]+)*)\/$/;
+// Blog articles and lab project pages (/projects/<id>/) take comments; group 2 marks a D1 post.
+const commentPage = /^\/(en\/)?(?:blog\/(?:(posts)|ai|mobility|it-devices)|projects)\/([a-z0-9]+(?:-[a-z0-9]+)*)\/$/;
 const reservedNicknames = /^(?:hsl|admin|administrator|관리자|운영자)$/i;
 const commentError = (code, status) => json({ error: code }, status);
 const toBase64 = (buffer) => btoa(String.fromCharCode(...new Uint8Array(buffer)));
