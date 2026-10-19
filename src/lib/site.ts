@@ -11,8 +11,8 @@ export const lab = {
 // owns the tetrahedron face at its index (its number is index + 1). Every section has its own pages under its
 // path. Portfolio always stays last, so new sections go above it.
 export const labSections = [
-  { id: 'blog', name: 'Blog', nameKo: '블로그', path: '/blog/' },
   { id: 'projects', name: 'Projects', nameKo: '프로젝트', path: '/projects/' },
+  { id: 'blog', name: 'Blog', nameKo: '블로그', path: '/blog/' },
   { id: 'stories', name: 'Project Stories', nameKo: '프로젝트 스토리', path: '/stories/' },
   { id: 'portfolio', name: 'Portfolio', nameKo: '포트폴리오', path: '/portfolio/' },
 ] as const;

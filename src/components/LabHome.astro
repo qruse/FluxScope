@@ -9,8 +9,8 @@ interface Props { lang: Lang; }
 const { lang } = Astro.props;
 const t = useTranslations(lang);
 const isKo = lang === 'ko';
-// Sections come from labSections in lib/site.ts: the blog with its newest posts, the projects with a capture of
-// the forecast page, the project stories with charts pinned from their parts, and the portfolio with its figures.
+// Sections come from labSections in lib/site.ts: the projects with a capture of the forecast page, the blog with
+// its newest posts, the project stories with charts pinned from their parts, and the portfolio with its figures.
 const blog = {
   name: t('site.title'),
   href: blogPath('/', lang),
@@ -48,7 +48,24 @@ const cv = portfolio(lang);
 <section class="lab-index" aria-labelledby="lab-index-title">
   <div class="shell">
     <h2 class="home-section-title" id="lab-index-title">{isKo ? '프로젝트' : 'Projects'}</h2>
-    <article class="lab-entry is-active" data-face="0">
+    <article class="lab-entry is-active" id="projects" data-face="0">
+      <LabMark id="projects" class="lab-entry-num" />
+      <div class="lab-entry-copy">
+        <h3><a class="pen-under" href={labSectionPath(labSections[0], lang)}>{isKo ? '프로젝트' : 'Projects'}</a></h3>
+        {projects.map((project) => (
+          <>
+            <p><a class="lab-project-link" href={projectPath(project.id, lang)}>{isKo ? project.nameKo : project.name}</a></p>
+            <p>{isKo ? project.summaryKo : project.summary}</p>
+          </>
+        ))}
+        <a class="lab-cta" href={projectPath(projects[0].id, lang)}>{isKo ? '오늘 예보 보기' : "See today's forecast"}<span aria-hidden="true">→</span></a>
+      </div>
+      <!-- A capture of the forecast page itself: our AI vs the KMA for Seoul and the station map. -->
+      <a class="lab-shot taped" href={projectPath(projects[0].id, lang)} aria-label={isKo ? '오늘 예보 화면으로 이동' : "Open today's forecast"}>
+        <img src="/images/projects/beat-kma-forecast.webp" width="1100" height="1051" loading="lazy" decoding="async" alt={isKo ? '서울 기온을 우리 AI와 기상청 예보로 나란히 보여주고 전국 관측소 지도를 띄운 예보 화면' : 'Forecast page showing our AI and the KMA side by side for Seoul above a map of station forecasts'} />
+      </a>
+    </article>
+    <article class="lab-entry" data-face="1">
       <LabMark id="blog" class="lab-entry-num" />
       <div class="lab-entry-copy">
         <h3><a class="pen-under" href={blog.href}>{blog.name}</a></h3>
@@ -70,23 +87,6 @@ const cv = portfolio(lang);
         <ol class="latest-list" data-dynamic-latest-list data-limit="5"></ol>
         <p class="lab-more"><a class="quiet-link" href={blog.href}>{isKo ? '블로그에서 전체 보기 →' : 'See all posts on the blog →'}</a></p>
       </section>
-    </article>
-    <article class="lab-entry" id="projects" data-face="1">
-      <LabMark id="projects" class="lab-entry-num" />
-      <div class="lab-entry-copy">
-        <h3><a class="pen-under" href={labSectionPath(labSections[1], lang)}>{isKo ? '프로젝트' : 'Projects'}</a></h3>
-        {projects.map((project) => (
-          <>
-            <p><a class="lab-project-link" href={projectPath(project.id, lang)}>{isKo ? project.nameKo : project.name}</a></p>
-            <p>{isKo ? project.summaryKo : project.summary}</p>
-          </>
-        ))}
-        <a class="lab-cta" href={projectPath(projects[0].id, lang)}>{isKo ? '오늘 예보 보기' : "See today's forecast"}<span aria-hidden="true">→</span></a>
-      </div>
-      <!-- A capture of the forecast page itself: our AI vs the KMA for Seoul and the station map. -->
-      <a class="lab-shot taped" href={projectPath(projects[0].id, lang)} aria-label={isKo ? '오늘 예보 화면으로 이동' : "Open today's forecast"}>
-        <img src="/images/projects/beat-kma-forecast.webp" width="1100" height="1051" loading="lazy" decoding="async" alt={isKo ? '서울 기온을 우리 AI와 기상청 예보로 나란히 보여주고 전국 관측소 지도를 띄운 예보 화면' : 'Forecast page showing our AI and the KMA side by side for Seoul above a map of station forecasts'} />
-      </a>
     </article>
     <article class="lab-entry" id="stories" data-face="2">
       <LabMark id="stories" class="lab-entry-num" />
