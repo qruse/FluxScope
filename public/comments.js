@@ -7,25 +7,25 @@
   const page = root.dataset.page;
   const t = {
     ko: {
-      title: '?볤?', nickname: '?됰꽕??, password: '鍮꾨?踰덊샇', body: '?볤????④꺼二쇱꽭??, submit: '?깅줉', reply: '?듦?', delete: '??젣',
-      cancel: '痍⑥냼', confirm: '?뺤씤', deleted: '??젣???볤??낅땲??, empty: '?꾩쭅 ?볤????놁쓬. 泥??볤????④꺼二쇱꽭??,
-      note: '?뚯썝媛???놁씠 ?됰꽕?꾧낵 鍮꾨?踰덊샇濡??묒꽦?? ?볤???吏????媛숈? ?됰꽕?꾧낵 鍮꾨?踰덊샇媛 ?꾩슂??, deletePassword: '?묒꽦?????낅젰??鍮꾨?踰덊샇', deleteNickname: '?묒꽦?????낅젰???됰꽕??,
-      loadError: '?볤???遺덈윭?ㅼ? 紐삵뻽??, sending: '?깅줉 以묅?,
+      title: '댓글', nickname: '닉네임', password: '비밀번호', body: '댓글을 남겨주세요', submit: '등록', reply: '답글', delete: '삭제',
+      cancel: '취소', confirm: '확인', deleted: '삭제된 댓글입니다', empty: '아직 댓글이 없음. 첫 댓글을 남겨주세요',
+      note: '회원가입 없이 닉네임과 비밀번호로 작성함. 댓글을 지울 때 같은 닉네임과 비밀번호가 필요함', deletePassword: '작성할 때 입력한 비밀번호', deleteNickname: '작성할 때 입력한 닉네임',
+      loadError: '댓글을 불러오지 못했음', sending: '등록 중…',
       errors: {
-        invalid_nickname: '?됰꽕?꾩? 2~20?먮줈 ?낅젰??二쇱꽭??(<, >, @ ?쒖쇅)', reserved_nickname: '?ъ슜?????녿뒗 ?됰꽕?꾩엫',
-        invalid_password: '鍮꾨?踰덊샇??4~64?먮줈 ?낅젰??二쇱꽭??, invalid_body: '?볤?? 1~1,000?먮줈 ?낅젰??二쇱꽭??,
-        rate_limited: '?좎떆 ???ㅼ떆 ?쒕룄??二쇱꽭??, wrong_credentials: '?됰꽕???먮뒗 鍮꾨?踰덊샇媛 留욎? ?딆쓬', invalid_parent: '?듦????????녿뒗 ?볤???,
-        not_found: '?대? ??젣???볤???, default: '?붿껌??泥섎━?섏? 紐삵뻽?? ?좎떆 ???ㅼ떆 ?쒕룄??二쇱꽭??,
+        invalid_nickname: '닉네임은 2~20자로 입력해 주세요 (<, >, @ 제외)', reserved_nickname: '사용할 수 없는 닉네임임',
+        invalid_password: '비밀번호는 4~64자로 입력해 주세요', invalid_body: '댓글은 1~1,000자로 입력해 주세요',
+        rate_limited: '잠시 후 다시 시도해 주세요', wrong_credentials: '닉네임 또는 비밀번호가 맞지 않음', invalid_parent: '답글을 달 수 없는 댓글임',
+        not_found: '이미 삭제된 댓글임', default: '요청을 처리하지 못했음. 잠시 후 다시 시도해 주세요',
       },
     },
     en: {
       title: 'Comments', nickname: 'Nickname', password: 'Password', body: 'Leave a comment', submit: 'Post', reply: 'Reply', delete: 'Delete',
       cancel: 'Cancel', confirm: 'Confirm', deleted: 'This comment was deleted', empty: 'No comments yet. Be the first to leave one',
       note: 'No sign-up needed: pick a nickname and password. You need both to delete your comment', deletePassword: 'Password used when posting', deleteNickname: 'Nickname used when posting',
-      loadError: 'Could not load comments', sending: 'Posting??,
+      loadError: 'Could not load comments', sending: 'Posting…',
       errors: {
-        invalid_nickname: 'Use a 2??0 character nickname (no <, > or @)', reserved_nickname: 'That nickname is reserved',
-        invalid_password: 'Use a 4??4 character password', invalid_body: 'Comments must be 1??,000 characters',
+        invalid_nickname: 'Use a 2–20 character nickname (no <, > or @)', reserved_nickname: 'That nickname is reserved',
+        invalid_password: 'Use a 4–64 character password', invalid_body: 'Comments must be 1–1,000 characters',
         rate_limited: 'Please wait a moment and try again', wrong_credentials: 'Nickname or password is incorrect', invalid_parent: 'You cannot reply to this comment',
         not_found: 'This comment was already deleted', default: 'Something went wrong. Please try again',
       },
@@ -140,7 +140,6 @@
     const visible = items.filter((c) => !c.deleted).length;
     root.replaceChildren(
       el('h2', { class: 'comments-title' }, t.title, el('span', { class: 'comments-count' }, String(visible))),
-      // A page with its own intro line (project pages) shows that instead of the sign-up note.
       root.dataset.intro ? el('p', { class: 'comments-intro', style: 'margin:0 0 1rem;font-weight:700' }, root.dataset.intro) : el('p', { class: 'comments-note' }, t.note),
       form(),
       roots.length ? list : el('p', { class: 'comments-empty' }, t.empty));
