@@ -9,7 +9,7 @@ export function portfolio(lang: Lang) {
   const L = (ko: string, en: string) => (isKo ? ko : en);
 
   const career = [
-    { period: L('2024.12 — 현재', '2024.12 — now'), org: L('스마트팜 기업', 'Smart-farm company'), role: L('연구개발팀 선임연구원', 'Senior researcher, R&D team'), text: L('AI·데이터 연구개발.', 'AI and data R&D.') },
+    { period: L('2024.12 — 현재', '2024.12 — now'), org: L('스마트팜 기업', 'Smart-farm company'), role: L('연구개발팀 선임연구원', 'Senior researcher, R&D team'), text: L('온실 환경 시계열 예측 모델(PatchTST)과 LLM Agent 기반 AI 컨설팅 리포트를 개발해 현장에 배포.', 'Built and shipped a greenhouse climate forecasting model (PatchTST) and LLM-agent consulting reports.') },
     { period: '2020.07 — 2024.11', org: L('AI 스타트업 공동창업', 'Co-founded AI startup'), role: L('데이터분석 팀장 · 기업부설연구소장', 'Data analysis lead · head of the corporate lab'), text: L('AI·빅데이터 분석 연구 총괄, 프로젝트 관리, 분석 실무, 백엔드 개발, 교육, 특허.', 'Led AI and data research, ran projects, did the analysis, built back ends, taught and filed a patent.') },
   ];
 
@@ -27,7 +27,10 @@ export function portfolio(lang: Lang) {
     { id: 'data', ko: '데이터 분석', en: 'Data analysis' },
   ];
   const domainName = (id: Domain) => { const d = domains.find((x) => x.id === id)!; return isKo ? d.ko : d.en; };
-  const work: { period: string; org: string; d: Domain; ko: string; en: string }[] = [
+  // `case` links a row to its write-up on the case-studies page (/portfolio/case-studies/#<case>).
+  const work: { period: string; org: string; d: Domain; ko: string; en: string; case?: string }[] = [
+    { period: '2025', org: L('스마트팜 기업', 'Smart-farm company'), d: 'nlp', ko: 'LLM Agent 기반 AI 컨설팅 리포트 생성', en: 'AI consulting reports written by LLM agents', case: 'report' },
+    { period: '2025', org: L('스마트팜 기업', 'Smart-farm company'), d: 'ts', ko: 'AI 온실 환경 시계열 예측 모델 개발', en: 'Greenhouse climate forecasting model', case: 'greenhouse' },
     { period: '2024.06 – 2024.10', org: L('㈜오든', 'Oden'), d: 'anomaly', ko: '스마트부표 센서 바이오파울링 이상 탐지 시스템 개발', en: 'Biofouling anomaly detection for smart-buoy sensors' },
     { period: '2024.06 – 2024.07', org: L('대구디지털혁신진흥원', 'DIP'), d: 'data', ko: '지역 메가프로젝트 중복성 검토 사업 자문', en: 'Overlap review advisory for regional mega projects' },
     { period: '2023.07 – 2023.11', org: L('스마트팜 기업', 'Smart-farm company'), d: 'ts', ko: '스마트팜 온실 환경 시뮬레이션 시스템 개발', en: 'Greenhouse environment simulation for smart farms' },
@@ -45,7 +48,10 @@ export function portfolio(lang: Lang) {
     { period: '2019.03 – 2019.12', org: L('경북대학교', 'KNU'), d: 'data', ko: '빅데이터 분석·시각화 프로젝트와 보고서', en: 'Data analysis and visualization project with reports' },
   ];
 
-  const papers = [
+  // Journal papers are KCI-indexed; `conf` marks a conference paper, which the KCI counts leave out.
+  const papers: { date: string; venue: string; title: string; conf?: boolean }[] = [
+    { date: '2024', venue: L('한국경영정보학회 추계학술대회', 'KMIS Fall Conference'), title: L('해양환경 예측을 위한 다중그룹 시계열 예측 AI 개발: 기상예보 데이터 결합 및 딥러닝 방법론 기반 해양 수온 예측', 'Multi-group time-series AI for ocean forecasting: sea-temperature prediction combining weather forecasts and deep learning'), conf: true },
+    { date: '2023', venue: L('한국정보처리학회', 'KIPS'), title: L('EPC ITB 프로젝트의 위험관리를 위한 문서 조항 분류 모델 연구: 딥러닝 기반 앙상블 기법 활용', 'Clause classification for risk management in EPC ITB documents: a deep-learning ensemble approach') },
     { date: '2021', venue: L('정보시스템연구', 'The Journal of Information Systems'), title: L('섬유소재 분야 특허 기술 동향 분석: DETM & STM 텍스트마이닝 방법론 활용', 'Patent trends in textile materials with DETM and STM text mining') },
     { date: '2020', venue: L('한국정보통신학회', 'KIICE'), title: 'Bias & Hate Speech Detection Using Deep Learning: Multi-channel CNN Modeling with Attention' },
     { date: '2020', venue: L('정보시스템연구 29(3)', 'The Journal of Information Systems 29(3)'), title: L('하이웨이 네트워크 기반 CNN 모델링 및 사전 외 어휘 처리 기술을 활용한 악성 댓글 분류 연구', 'Abusive comment classification with highway-network CNNs and out-of-vocabulary handling') },
@@ -54,6 +60,7 @@ export function portfolio(lang: Lang) {
   ];
 
   const awards = [
+    { rank: L('AI 1위', 'AI 1st'), date: '2024', ko: 'Autonomous Greenhouse Challenge 4th Edition', en: 'Autonomous Greenhouse Challenge, 4th edition', note: L('본선 4위 · AI 부문 1위', '4th in the final · 1st for AI'), by: L('해외 대학 주최 국제 대회', 'International contest hosted by a university abroad'), top: true },
     { rank: L('1등', '1st'), date: '2022.09', ko: '스마트농업경진대회 해커톤', en: 'Smart Agriculture Hackathon', note: L('농림축산식품부 장관상', "Agriculture minister's award"), by: L('농림수산식품교육문화정보원', 'EPIS'), top: true },
     { rank: L('1등', '1st'), date: '2020.06', ko: '인공지능 경진대회 텍스트 분야', en: 'AI Competition, text track', note: L('400팀 중 종합 10위', '10th overall of 400 teams'), by: L('과학기술정보통신부', 'Ministry of Science and ICT'), top: true },
     { rank: L('2등', '2nd'), date: '2020.11', ko: 'AI CHAMPIONSHIP 2020', en: 'AI Championship 2020', note: L('대·스타 해결사 플랫폼', 'Big-and-startup solver platform'), by: L('중소벤처기업부', 'Ministry of SMEs and Startups') },
@@ -63,6 +70,7 @@ export function portfolio(lang: Lang) {
   ];
 
   const teaching: { date: string; org: string; ko: string; en: string; h?: number }[] = [
+    { date: '2024', org: 'DIP', ko: '직무 리스킬링을 위한 데이터 리터러시·실무 딥러닝 분석', en: 'Data literacy and applied deep learning for reskilling' },
     { date: '2023.05 – 10', org: L('DIP · 대구은행', 'DIP · DGB'), ko: '금융 빅데이터 분석 교육', en: 'Financial data analysis course' },
     { date: '2022.08', org: L('영진직업전문학교', 'Yeungjin Vocational School'), ko: '인공지능 모델 배포', en: 'Deploying AI models' },
     { date: '2022.06 – 08', org: 'DIP', ko: '자동차 산업 AI 커리큘럼 개발·교육', en: 'AI curriculum for the automotive industry' },
@@ -89,20 +97,21 @@ export function portfolio(lang: Lang) {
   const maxHours = longest[0].h!;
   const barWidth = (h = 0) => `--w:${((h * 100) / maxHours).toFixed(1)}%`;
 
+  const kci = papers.filter((p) => !p.conf).length;
   const stats = [
     { id: 'years', n: '6', s: '+', ko: '년차 실무', en: 'years in industry' },
     { id: 'projects', n: String(work.length), s: '', ko: '프로젝트', en: 'projects' },
-    { id: 'papers', n: String(papers.length), s: '', ko: 'KCI 논문 · 특허 1', en: 'KCI papers · 1 patent' },
+    { id: 'papers', n: String(kci), s: '', ko: 'KCI 논문 · 특허 1', en: 'KCI papers · 1 patent' },
     { id: 'awards', n: String(awards.length), s: '', ko: '수상', en: 'awards' },
     { id: 'hours', n: String(hours), s: 'h+', ko: '강의', en: 'teaching' },
   ];
 
   const skills = [
-    { ko: '모델링', en: 'Modelling', items: [L('시계열 예측', 'Forecasting'), L('이상 탐지', 'Anomaly detection'), L('정형 데이터', 'Tabular'), 'NLP · LLM', L('비전', 'Vision'), 'XAI'] },
-    { ko: '도구', en: 'Tools', items: ['Python', 'PyTorch', 'TensorFlow', 'LightGBM', 'OpenCV', 'KNIME'] },
+    { ko: '모델링', en: 'Modelling', items: [L('시계열 예측', 'Forecasting'), 'Transformer (PatchTST)', L('이상 탐지', 'Anomaly detection'), L('정형 데이터', 'Tabular'), 'NLP · LLM Agent', L('비전', 'Vision'), 'XAI'] },
+    { ko: '도구', en: 'Tools', items: ['Python', 'PyTorch', 'TensorFlow', 'XGBoost', 'LightGBM', 'LangGraph', 'OpenCV', 'KNIME'] },
     { ko: '배포', en: 'Shipping', items: ['Docker', 'Flask', 'NGINX', 'Linux', 'Raspberry Pi', 'Cloudflare Workers'] },
   ];
 
 
-  return { career, education, domains, domainName, work, papers, awards, teaching, hours, longest, barWidth, stats, skills };
+  return { career, education, domains, domainName, work, papers, kci, awards, teaching, hours, longest, barWidth, stats, skills };
 }

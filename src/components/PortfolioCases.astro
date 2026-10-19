@@ -1,0 +1,716 @@
+---
+// Portfolio case studies: the three main client projects, each as the shipped service, then the three problems
+// it had to solve and how. Compiled from the owner's project deck; names of people and employers stay off the page.
+// Service screens are redrawn here as light HTML/SVG mock-ups; the report chart is a crop of a real weekly report.
+// All styles are inline below so the site-wide CSS bundle stays in budget.
+import BaseLayout from '../layouts/BaseLayout.astro';
+import LabMark from './LabMark.astro';
+import { labSectionPath, labSections } from '../lib/site';
+import type { Lang } from '../i18n/ui';
+
+interface Props { lang: Lang; }
+const { lang } = Astro.props;
+const isKo = lang === 'ko';
+const L = (ko: string, en: string) => (isKo ? ko : en);
+const portfolioHref = labSectionPath(labSections.find((s) => s.id === 'portfolio')!, lang);
+
+type Bar = { n: string; v: number; t: string; hi?: boolean };
+type Visual =
+  | { kind: 'timeline' }
+  | { kind: 'ema' }
+  | { kind: 'bars'; items: { label: string; max: number; rows: Bar[]; note?: string }[] }
+  | { kind: 'flow'; inputs: string[]; steps: string[] }
+  | { kind: 'squares' }
+  | { kind: 'docs' };
+type Step = { tag: string; head: string; problem: { t: string; d: string[] }; solution: { t: string; d: [string, string][] }; take: string; visual: Visual };
+type Case = {
+  id: string; field: string; meta: string; title: string; lede: string; stack: string[];
+  metrics: { v: string; k: string; d?: string }[]; features: { t: string; d: string }[]; quote: string; steps: Step[];
+};
+
+const cases: Case[] = [
+  {
+    id: 'leak',
+    field: L('이상 탐지 · 상수도', 'Anomaly detection · water supply'),
+    meta: L('상수도사업본부 · AI 스타트업 재직 시', 'Municipal waterworks · at the AI startup'),
+    title: L('유량 데이터로 누수 찾기', 'Finding leaks in flow data'),
+    lede: L('상수도 관망의 유량 데이터로 누수 의심 구역을 실시간으로 알려 주는 탐지 모델과 대시보드. 누수 시작 시점조차 기록되지 않은 현장 데이터를 학습 가능한 형태로 다시 정의하는 것부터 시작함.', 'A detection model and dashboard that flags suspected leak blocks from water-network flow data in real time. It started by redefining field records, which never logged when a leak began, into something a model could learn from.'),
+    stack: ['Python', 'XGBoost', 'EMA', 'Feature engineering', 'REST API'],
+    metrics: [
+      { v: '90%', k: 'Accuracy', d: '+19%p' },
+      { v: '0.63', k: 'F1 score', d: '+0.32' },
+      { v: '20+', k: L('파생 변수', 'engineered features') },
+    ],
+    features: [
+      { t: L('EMA 기준선 시각화', 'EMA baseline on the chart'), d: L('유량 그래프에 동적 기준선을 함께 그려 현장 담당자가 이상 여부를 바로 판단', 'A moving baseline drawn over the flow so field staff can judge anomalies at a glance') },
+      { t: L('AI 탐지 알림 목록', 'AI alert list'), d: L('누수 의심 구간을 실시간 알림으로 제공해 수동 감시 업무를 자동화', 'Suspected leak blocks arrive as live alerts, replacing manual watching') },
+      { t: L('REST API 연동', 'REST API'), d: L('분석 결과를 API로 제공해 기존 통합관제시스템과 연동', 'Results served over an API and wired into the existing control system') },
+    ],
+    quote: L('예측 결과를 담당자가 바로 쓸 수 있는 서비스 형태로 납품', 'Delivered as a service the operators could use the same day, not as a report'),
+    steps: [
+      {
+        tag: L('누수 데이터 정의', 'Defining a leak'),
+        head: L('기준이 모호한 현장 기록을 학습 데이터로', 'Turning vague field records into training data'),
+        problem: { t: L('누수 시점이 기록되지 않음', 'No record of when leaks began'), d: [
+          L('"복구 완료" 기록만 있고 실제 누수 시작 시점은 없음', 'Only "repair finished" was logged, never the start of the leak'),
+          L('복구일 기준으로 학습하면 누수가 진행 중인 패턴을 정상으로 잘못 배움', 'Labelling by repair date would teach the model that a leak in progress is normal'),
+        ] },
+        solution: { t: L('데이터 역추적 라벨링', 'Back-traced labels'), d: [
+          [L('구간 재정의', 'Windows'), L('복구 1일 전은 비정상, 복구 1주일 뒤부터는 정상 구간으로 라벨링', 'The day before a repair is abnormal; a week after the repair onward is normal')],
+          [L('운영 맥락 결합', 'Context'), L('계절·요일·수압 같은 운영 변수를 붙여 진짜 누수 패턴만 남김', 'Season, weekday and pressure joined in to keep only real leak patterns')],
+        ] },
+        take: L('데이터가 없는 문제를 분석으로 풀어, 불완전한 기록을 학습 가능한 데이터셋으로 재정의함', 'Missing data became an analysis problem: incomplete records redefined as a learnable dataset'),
+        visual: { kind: 'timeline' },
+      },
+      {
+        tag: L('누수 판단 기준', 'The alarm line'),
+        head: L('경험으로 그은 직선을 데이터 기반 곡선으로', 'From a hand-drawn straight line to a data-driven curve'),
+        problem: { t: L('고정된 직선 기준', 'A fixed straight threshold'), d: [
+          L('야간 최소유량(MNF) 제한선을 과거 경험에 기대 직선으로 일괄 설정', 'The minimum-night-flow (MNF) limit was a straight line set from experience'),
+          L('계절이나 물 사용량 변화를 반영하지 못해 정상 유량을 누수로 오인하는 일이 잦음', 'It ignored seasons and changing use, so normal flow was often flagged as a leak'),
+        ] },
+        solution: { t: L('EMA 동적 기준선', 'A moving EMA baseline'), d: [
+          ['EMA', L('최근 데이터에 가중치를 더 주는 지수이동평균으로 움직이는 추세선 개발', 'An exponential moving average that weights recent data and follows the trend')],
+          [L('계절성 반영', 'Seasonality'), L('직선 대신 데이터 흐름을 따르는 기준선으로 오탐을 크게 줄임', 'A baseline that follows the flow instead of a fixed line cut false alarms sharply')],
+        ] },
+        take: L('직관에 기대던 기준을 통계적 기준으로 바꿔 알림의 신뢰도를 높임', 'A rule of thumb replaced by a statistical baseline, so alarms could be trusted'),
+        visual: { kind: 'ema' },
+      },
+      {
+        tag: L('모델 고도화', 'Model upgrade'),
+        head: L('비선형 상호작용까지 보는 분류 모델', 'A classifier that sees non-linear interactions'),
+        problem: { t: L('단일 기준선의 한계', 'Limits of a single baseline'), d: [
+          L('누수는 유량뿐 아니라 요일·계절·시간대·수압이 비선형으로 얽혀 나타남', 'Leaks show up through non-linear mixes of weekday, season, hour and pressure, not flow alone'),
+          L('단일 변수 기준선으로는 미세 누수나 패턴 변화를 잡기 어려움', 'A one-variable threshold misses small leaks and shifting patterns'),
+        ] },
+        solution: { t: L('AI 분류 모델 도입', 'A machine-learning classifier'), d: [
+          ['Feature engineering', L('시간·요일·계절, 이동평균 차이, 수압 변동성 등 20개 이상 파생 변수', '20+ features: hour, weekday, season, moving-average gaps, pressure volatility')],
+          ['XGBoost', L('앙상블 모델로 비선형 패턴 분류 성능을 끌어올림', 'A boosted-tree ensemble for non-linear patterns')],
+          [L('임계값 최적화', 'Threshold tuning'), L('Precision-Recall 균형을 보고 임계값을 조정해 오탐 최소화', 'Cut-off tuned on the precision-recall trade-off to keep false alarms down')],
+        ] },
+        take: L('정확도 71% → 90%, F1 0.31 → 0.63', 'Accuracy 71% → 90%, F1 0.31 → 0.63'),
+        visual: { kind: 'bars', items: [
+          { label: 'Accuracy', max: 100, rows: [{ n: L('기존', 'Before'), v: 71, t: '71%' }, { n: L('개선', 'After'), v: 90, t: '90%', hi: true }] },
+          { label: 'F1 score', max: 1, rows: [{ n: L('기존', 'Before'), v: 0.31, t: '0.31' }, { n: L('개선', 'After'), v: 0.63, t: '0.63', hi: true }] },
+        ] },
+      },
+    ],
+  },
+  {
+    id: 'greenhouse',
+    field: L('시계열 예측 · 스마트팜', 'Forecasting · smart farming'),
+    meta: L('2025 · 스마트팜 기업', '2025 · smart-farm company'),
+    title: L('온실 환경 시계열 예측 AI', 'Forecasting the greenhouse climate'),
+    lede: L('온실 관리 소프트웨어 안에서 미래 24시간의 온도·환경 변화를 예측하고, 그 예측으로 천창·난방기 작동 시점을 미리 시뮬레이션하는 모델. 환경·제어·기상 예보가 얽힌 다변량 시계열을 구조부터 다시 설계함.', 'A model inside the greenhouse management software that forecasts the next 24 hours of temperature and climate, then simulates when vents and heaters should run. The multivariate mix of climate, control and weather-forecast data was redesigned from the input structure up.'),
+    stack: ['PyTorch', 'PatchTST', 'Multi-stream embedding', 'Trend decomposition'],
+    metrics: [
+      { v: '92%', k: 'R²', d: L('안정 조건', 'stable') },
+      { v: '1.1', k: 'MAE (℃)', d: L('안정 조건', 'stable') },
+      { v: '1/3', k: L('입력 변수 수', 'input features') },
+    ],
+    features: [
+      { t: L('온실 관리 SW 통합', 'Inside the farm software'), d: L('기존 통합 관제 시스템에 예측 모델을 탑재해 미래 24시간 환경 변화를 실시간 확인', 'The model runs inside the existing control system and shows the next 24 hours live') },
+      { t: L('장치 제어 시뮬레이션', 'Control simulation'), d: L('천창·난방기 작동 시점을 시뮬레이션해 능동적인 생육 관리를 지원', 'Simulated vent and heater timing for proactive crop management') },
+      { t: L('운영 가능한 성능', 'Production-grade accuracy'), d: L('MAE 1.1, R² 92%로 환절기에도 안정적인 제어 가이드 제공', 'MAE 1.1 and R² 92%, steady enough to guide control through season changes') },
+    ],
+    quote: L('농가의 실제 의사결정을 돕는 운영 서비스로 완성', 'Finished as a running service that helps growers decide'),
+    steps: [
+      {
+        tag: L('다변량 학습', 'Many inputs'),
+        head: L('트랜스포머와 스트림 임베딩으로 기존 모델의 한계를 넘음', 'Past the limits of RNNs with a transformer and stream embeddings'),
+        problem: { t: L('RNN·LSTM의 다변량 한계', 'RNN and LSTM hit a ceiling'), d: [
+          L('입력 변수가 많고 복잡해질수록 RNN 계열 모델의 성능이 떨어짐', 'RNN-family models degrade as inputs grow in number and complexity'),
+          L('환경·제어·기상 예보 변수의 성격을 구분하지 못하고 한데 섞음', 'Climate, control and forecast variables were mixed with no sense of what each meant'),
+        ] },
+        solution: { t: L('구조 재설계', 'A new architecture'), d: [
+          ['PatchTST', L('시계열을 패치 단위로 처리해 긴 맥락을 잡고 연산 효율을 높임', 'Patches of the series capture long context and cut compute')],
+          ['Multi-stream embedding', L('환경·제어·기상 변수군을 독립 스트림으로 넣어 각 특성을 유지하며 상호작용을 학습', 'Climate, control and weather groups enter as separate streams, keeping their character while learning how they interact')],
+        ] },
+        take: L('환경과 제어 변수의 상호작용을 구조적으로 학습해 예측 정확도를 끌어올림', 'Learning climate-control interactions by design raised forecast accuracy'),
+        visual: { kind: 'flow', inputs: [L('환경', 'Climate'), L('제어 설정값', 'Control settings'), L('기상 예보', 'Weather forecast')], steps: ['Multi-stream embedding', 'PatchTST', L('미래 24시간 예측', 'Next 24 hours')] },
+      },
+      {
+        tag: L('제어 데이터 구조화', 'Control data'),
+        head: L('복잡한 제어 설정값을 학습하기 좋은 구조로', 'Reshaping tangled control settings for learning'),
+        problem: { t: L('반정형 데이터와 차원의 저주', 'Semi-structured data and too many columns'), d: [
+          L('장치별·시간대별 설정값이 복잡하게 얽혀 시계열 모델 입력으로 비효율적', 'Settings per device and per time slot were tangled and awkward as model input'),
+          L('단순 전개하면 변수가 폭증해 학습이 느려지고 과적합 위험이 커짐', 'Flattening them exploded the feature count, slowing training and inviting overfitting'),
+        ] },
+        solution: { t: L('도메인 기반 압축', 'Domain-driven compression'), d: [
+          [L('제어 주기 매핑', 'Period mapping'), L('온실 제어 로직(4~6구간)을 반영해 시간대별 설정값을 재할당', 'Settings re-assigned to the 4–6 periods the greenhouse controller actually runs')],
+          [L('변수 1/3로 축소', 'One-third the features'), L('통합·재구조화로 핵심 정보는 지키고 변수 차원을 크게 줄임', 'Merging and restructuring kept the signal and cut dimensions sharply')],
+        ] },
+        take: L('도메인 지식을 데이터 구조 설계에 반영해 최적화', 'Domain knowledge built into the data structure itself'),
+        visual: { kind: 'squares' },
+      },
+      {
+        tag: L('환경 적응성', 'Robustness'),
+        head: L('계절과 환경 변화에도 버티는 예측 구조', 'A forecast that holds up through seasons and new settings'),
+        problem: { t: L('환경 변화 시 오차 급증', 'Errors spike when conditions shift'), d: [
+          L('계절 변화나 새 온실 설정값으로 데이터 분포가 바뀌면 성능이 급격히 떨어짐', 'A new season or new greenhouse settings shifted the data distribution and accuracy collapsed'),
+          L('적응하려면 매번 대량 데이터를 다시 모아 재학습해야 하는 비효율', 'Adapting meant collecting lots of new data and retraining every time'),
+        ] },
+        solution: { t: L('추세 분해 (Trend decomposition)', 'Trend decomposition'), d: [
+          [L('추세', 'Trend'), L('입력 길이만큼의 이동평균을 베이스라인으로 써서 급격한 변화를 완충', 'A moving average over the input window serves as the baseline and absorbs sudden shifts')],
+          [L('잔차 예측', 'Residuals'), L('전체 값 대신 변동분만 예측해 학습 난이도를 낮춤', 'Predicting only the deviation instead of the full value makes learning easier')],
+          ['Autoformer', L('아이디어를 적용해 변화 조건에서 성능을 80~100% 개선', 'Its idea, applied here, improved accuracy by 80–100% under changing conditions')],
+        ] },
+        take: L('환경이 바뀌어도 R² 84%, MAE 1.7로 오차 범위를 유지', 'Under changing conditions: R² 84%, MAE 1.7, still within range'),
+        visual: { kind: 'bars', items: [
+          { label: 'R²', max: 100, rows: [{ n: L('안정 조건', 'Stable'), v: 92, t: '92%', hi: true }, { n: L('변화 조건', 'Changing'), v: 84, t: '84%' }] },
+          { label: 'MAE (℃)', max: 2, note: L('낮을수록 좋음', 'lower is better'), rows: [{ n: L('안정 조건', 'Stable'), v: 1.1, t: '1.1', hi: true }, { n: L('변화 조건', 'Changing'), v: 1.7, t: '1.7' }] },
+        ] },
+      },
+    ],
+  },
+  {
+    id: 'report',
+    field: L('LLM Agent · 스마트팜', 'LLM agents · smart farming'),
+    meta: L('2025 · 스마트팜 기업', '2025 · smart-farm company'),
+    title: L('LLM Agent가 쓰는 AI 컨설팅 리포트', 'AI consulting reports written by LLM agents'),
+    lede: L('컨설턴트의 진단 과정을 LLM Agent 워크플로로 옮겨, 농가마다 그래프·표·실행 제언이 담긴 주간 컨설팅 리포트를 자동으로 만드는 서비스. 실제 딸기 농가에 PDF와 웹 링크로 배포하고 피드백을 받아 고도화 중.', 'A service that moves a consultant’s diagnosis into an LLM-agent workflow and writes each farm a weekly report with charts, tables and concrete actions. It ships to real strawberry growers as PDF and web links and keeps improving on their feedback.'),
+    stack: ['LangGraph', 'LLM Agent', 'Python', L('그래프·표 자동 생성', 'Auto charts & tables')],
+    metrics: [
+      { v: L('주간', 'Weekly'), k: L('농가별 리포트', 'report per farm') },
+      { v: '24/7', k: L('상시 컨설팅', 'always-on advice') },
+      { v: 'PDF · Web', k: L('현장 배포', 'shipped to growers') },
+    ],
+    features: [
+      { t: L('그래프·표 자동 생성', 'Charts and tables'), d: L('텍스트 답변이 아니라 시계열 그래프와 요약표가 들어간 리포트를 완전 자동으로 생성', 'Not a text reply: a full report with time-series charts and summary tables, fully automated') },
+      { t: L('실행 가능한 제언', 'Actionable advice'), d: L('"난방 온도 1℃ 상향", "환기 시간 추가"처럼 바로 실행할 수 있는 제어 가이드', 'Concrete steps such as "raise night heating by 1℃" or "add a ventilation slot"') },
+      { t: L('현장 배포', 'In growers’ hands'), d: L('딸기 농가에 PDF·웹 링크로 주간 배포, 현장 피드백으로 계속 고도화', 'Sent weekly to strawberry farms as PDF and web links, refined with their feedback') },
+    ],
+    quote: L('현장에서 전문가의 역할을 보조하는 서비스', 'A service that extends the expert, not one that replaces them'),
+    steps: [
+      {
+        tag: L('컨설팅 접근성', 'Access to experts'),
+        head: L('전문가 부족을 AI로 확장해 해결', 'Scaling scarce expertise with AI'),
+        problem: { t: L('공급 부족', 'Not enough consultants'), d: [
+          L('스마트팜 농가는 빠르게 늘지만 전문 컨설턴트는 부족하고, 소규모 농가에는 비용 부담', 'Smart farms are multiplying faster than consultants, and small farms can’t afford them'),
+          L('방문할 때만 조언이 가능해 데이터 변화를 계속 지켜보기 어려움', 'Advice only came with a visit, so nobody watched the data in between'),
+        ] },
+        solution: { t: L('전문성 확장', 'Extending the expert'), d: [
+          [L('컨설팅 로직 이식', 'Logic as a workflow'), L('현업 컨설턴트의 진단 프로세스를 LangGraph 에이전트 워크플로로 구현', 'A working consultant’s diagnosis process rebuilt as a LangGraph agent workflow')],
+          [L('상시 컨설팅', 'Always on'), L('시간과 장소 제약 없이 누구나 받을 수 있는 컨설팅', 'Advice for every farm, any time, anywhere')],
+        ] },
+        take: L('AI는 전문가를 대체하지 않고 노하우를 더 멀리 전달하는 도구', 'AI carries the expert’s know-how further instead of replacing them'),
+        visual: { kind: 'flow', inputs: [L('환경·생육 데이터', 'Climate and growth data'), L('컨설턴트 진단 로직', 'Consultant’s diagnosis')], steps: [L('LangGraph 에이전트', 'LangGraph agents'), L('주간 리포트', 'Weekly report')] },
+      },
+      {
+        tag: L('리포트 유연성', 'Flexible reports'),
+        head: L('고정 양식 대신 상황에 맞춰 다시 짜는 리포트', 'Reports that re-plan themselves instead of filling a template'),
+        problem: { t: L('경직된 템플릿', 'A rigid template'), d: [
+          L('모든 농가에 같은 템플릿을 써서 특이사항이나 돌발 변수를 담지 못함', 'Every farm got the same template, with no room for exceptions or surprises'),
+          L('수치만 나열할 뿐 현상이 왜 생겼는지 맥락 설명이 부족', 'Numbers were listed without explaining why things happened'),
+        ] },
+        solution: { t: L('LLM Agent 동적 생성', 'Dynamic generation with agents'), d: [
+          [L('동적 목차', 'Dynamic outline'), L('농가 상황과 데이터에 따라 목차와 내용을 실시간으로 재구성', 'The outline and content are rebuilt for each farm’s data and situation')],
+          [L('복합 구성', 'Mixed media'), L('설명에 맞는 그래프와 표를 에이전트가 스스로 판단해 배치', 'The agent decides which chart or table explains each point and places it')],
+        ] },
+        take: L('정성적인 기준과 요구사항까지 반영할 수 있는 리포팅 방식', 'A way of reporting that can follow qualitative criteria and requests'),
+        visual: { kind: 'docs' },
+      },
+    ],
+  },
+];
+
+const metricLine = (c: Case) => c.metrics.slice(0, 2).map((m) => `${m.k} ${m.v}`).join(' · ');
+---
+<BaseLayout lang={lang} title={L('주요 수행 프로젝트', 'Case studies')} description={L('상수도 누수 탐지, 온실 환경 시계열 예측, LLM Agent 컨설팅 리포트. 현장 데이터를 실제 서비스로 만든 프로젝트 3건을 문제와 해결 과정으로 정리함.', 'Water-leak detection, greenhouse climate forecasting and LLM-agent consulting reports: three projects that turned field data into running services, told problem by problem.')}>
+  <header class="cs-hero"><div class="shell">
+    <a class="cs-back" href={portfolioHref}>← {L('포트폴리오', 'Portfolio')}</a>
+    <div class="section-kicker"><LabMark id="portfolio" />{L('포트폴리오 / 주요 수행 프로젝트', 'Portfolio / Case studies')}</div>
+    <h1>{L('현장 데이터를', 'Field data,')} <em>{L('운영 서비스로', 'shipped as services')}</em></h1>
+    <p class="cs-lede">{L('기록이 불완전하고 변수가 얽힌 현장 데이터를 정리해, 담당자와 농가가 매일 쓰는 서비스로 납품한 프로젝트 3건. 각 프로젝트에서 부딪힌 문제와 푼 방법을 순서대로 정리함.', 'Three projects where messy, incomplete field data became services that operators and growers use every day. Each one is told through the problems it hit and how they were solved.')}</p>
+    <ol class="cs-index">
+      {cases.map((c, i) => (
+        <li><a href={`#${c.id}`}>
+          <span class="cs-index-no">{String(i + 1).padStart(2, '0')}</span>
+          <span class="cs-index-field">{c.field}</span>
+          <strong>{c.title}</strong>
+          <span class="cs-index-metric">{metricLine(c)}</span>
+        </a></li>
+      ))}
+    </ol>
+  </div></header>
+
+  <nav class="cs-nav" aria-label={L('프로젝트', 'Projects')}><div class="shell">
+    {cases.map((c, i) => <a href={`#${c.id}`}><span>{String(i + 1).padStart(2, '0')}</span>{c.title}</a>)}
+  </div></nav>
+
+  <div class="shell cs-body">
+    {cases.map((c, ci) => (
+      <section class="cs-case" id={c.id} aria-labelledby={`${c.id}-title`}>
+        <div class="cs-head">
+          <span class="cs-no">{String(ci + 1).padStart(2, '0')}</span>
+          <div>
+            <p class="cs-eyebrow">{c.field}<i>·</i>{c.meta}</p>
+            <h2 id={`${c.id}-title`}>{c.title}</h2>
+            <p class="cs-copy">{c.lede}</p>
+            <p class="cs-stack">{c.stack.map((s) => <span>{s}</span>)}</p>
+          </div>
+          <dl class="cs-metrics">
+            {c.metrics.map((m) => <div><dt>{m.v}</dt><dd>{m.k}{m.d && <small>{m.d}</small>}</dd></div>)}
+          </dl>
+        </div>
+
+        <div class="cs-service">
+          <figure class="cs-mock" aria-label={L('서비스 화면 예시', 'Example service screen')}>
+            {c.id === 'leak' && (
+              <div class="cs-win">
+                <div class="cs-bar"><i></i><i></i><i></i><span>water-leak-detection / dashboard</span></div>
+                <div class="cs-pane">
+                  <div class="cs-pane-head"><b>{L('실시간 유량 모니터링 · AI 탐지', 'Live flow monitoring · AI detection')}</b><em class="is-alert">{L('누수 의심 2건', '2 suspected leaks')}</em></div>
+                  <svg viewBox="0 0 400 150" class="cs-chart" role="img" aria-label={L('하루 유량 곡선과 EMA 기준선, 누수 의심 지점', 'A day of flow with the EMA baseline and suspected leak points')}>
+                    <g class="cs-grid"><path d="M0 30H400M0 70H400M0 110H400" /></g>
+                    <path class="cs-area" d="M0 95C30 92 50 100 70 88S95 70 105 72 120 120 130 128 150 60 175 48 220 62 240 70 270 52 290 30 330 40 350 80 380 105 400 110V150H0Z" />
+                    <path class="cs-line" d="M0 95C30 92 50 100 70 88S95 70 105 72 120 120 130 128 150 60 175 48 220 62 240 70 270 52 290 30 330 40 350 80 380 105 400 110" />
+                    <path class="cs-dash" d="M0 104C30 102 50 106 70 99S95 86 105 88 120 114 130 121 150 74 175 62 220 70 240 77 270 63 290 45 330 52 350 88 380 110 400 114" />
+                    <g class="cs-dots"><circle cx="70" cy="88" r="4" /><circle cx="86" cy="76" r="4" /><circle cx="100" cy="72" r="4" /></g>
+                    <g class="cs-axis"><text x="0" y="146">0{L('시', 'h')}</text><text x="96" y="146">6</text><text x="196" y="146">12</text><text x="296" y="146">18</text><text x="380" y="146">24</text></g>
+                  </svg>
+                  <p class="cs-legend"><span class="is-line">{L('실시간 유량', 'Flow')}</span><span class="is-dash">{L('EMA 기준선', 'EMA baseline')}</span><span class="is-dot">{L('누수 의심', 'Suspected leak')}</span></p>
+                  <table class="cs-table">
+                    <thead><tr><th>{L('시간', 'Time')}</th><th>{L('구역', 'Block')}</th><th>{L('상태', 'Status')}</th><th>{L('신뢰도', 'Conf.')}</th></tr></thead>
+                    <tbody>
+                      <tr><td>03:20</td><td>A-12</td><td class="is-alert">{L('누수 의심', 'Leak')}</td><td>92%</td></tr>
+                      <tr><td>04:15</td><td>B-05</td><td class="is-alert">{L('누수 의심', 'Leak')}</td><td>88%</td></tr>
+                      <tr><td>05:30</td><td>C-09</td><td class="is-warn">{L('주의 필요', 'Watch')}</td><td>65%</td></tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            )}
+            {c.id === 'greenhouse' && (
+              <div class="cs-win">
+                <div class="cs-bar"><i></i><i></i><i></i><span>smart-greenhouse / control-simulation</span></div>
+                <div class="cs-pane">
+                  <div class="cs-pane-head"><b>{L('온실 환경 예측 · 시뮬레이션 (온도)', 'Climate forecast · simulation (temperature)')}</b><em class="is-ok">{L('AI 제어 모드 ON', 'AI control ON')}</em></div>
+                  <svg viewBox="0 0 400 150" class="cs-chart" role="img" aria-label={L('13시까지의 실측 온도와 20시까지의 AI 예측 온도', 'Measured temperature to 13:00 and the AI forecast to 20:00')}>
+                    <g class="cs-grid"><path d="M0 50H400M0 100H400" /></g>
+                    <path class="cs-area" d="M0 95L40 80L80 62L120 48V150H0Z" />
+                    <path class="cs-now" d="M120 8V136" />
+                    <polyline class="cs-line" points="0,95 40,80 80,62 120,48" />
+                    <polyline class="cs-dash is-accent" points="120,48 160,55 200,62 240,88 280,105 320,118 360,125 400,132" />
+                    <g class="cs-dots is-pen"><circle cx="0" cy="95" r="3.5" /><circle cx="40" cy="80" r="3.5" /><circle cx="80" cy="62" r="3.5" /><circle cx="120" cy="48" r="3.5" /></g>
+                    <g class="cs-dots"><circle cx="160" cy="55" r="3" /><circle cx="200" cy="62" r="3" /><circle cx="240" cy="88" r="3" /><circle cx="280" cy="105" r="3" /><circle cx="320" cy="118" r="3" /><circle cx="360" cy="125" r="3" /></g>
+                    <g class="cs-axis"><text x="2" y="146">10:00</text><text x="104" y="146">13:00</text><text x="226" y="146">16:00</text><text x="362" y="146">20:00</text><text x="124" y="18">{L('지금', 'now')}</text><text x="380" y="46">25℃</text><text x="380" y="96">20℃</text></g>
+                  </svg>
+                  <p class="cs-legend"><span class="is-line">{L('실측 온도', 'Measured')}</span><span class="is-dash is-accent">{L('AI 예측 온도', 'AI forecast')}</span></p>
+                  <table class="cs-table">
+                    <thead><tr><th>{L('시간', 'Time')}</th><th>{L('예상 온도', 'Forecast')}</th><th>{L('천창', 'Vent')}</th><th>{L('난방기', 'Heater')}</th></tr></thead>
+                    <tbody>
+                      <tr><td>14:00</td><td>24.5℃</td><td><b>{L('개방 30%', 'Open 30%')}</b></td><td>OFF</td></tr>
+                      <tr><td>15:00</td><td>23.8℃</td><td><b>{L('개방 10%', 'Open 10%')}</b></td><td>OFF</td></tr>
+                      <tr><td>16:00</td><td>21.2℃</td><td>{L('닫힘', 'Closed')}</td><td class="is-alert">{L('ON (1단계)', 'ON (stage 1)')}</td></tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            )}
+            {c.id === 'report' && (
+              <div class="cs-win is-doc">
+                <div class="cs-bar"><i></i><i></i><i></i><span>smart-farm-consulting / report.pdf</span></div>
+                <div class="cs-paper">
+                  <div class="cs-paper-head"><b>{L('딸기 생육 주간 컨설팅 리포트', 'Weekly strawberry growth report')}</b><span>{L('3월 2주차', 'March, week 2')}</span></div>
+                  <p class="cs-paper-h">{L('주간 평균 온도 분석', 'Weekly mean temperature')}</p>
+                  <svg viewBox="0 0 400 90" class="cs-chart is-small" role="img" aria-label={L('한 주 동안 완만하게 오르는 생육 지표 그래프', 'A growth index rising gently over the week')}>
+                    <g class="cs-grid"><path d="M0 20H400M0 50H400M0 80H400" /></g>
+                    <polyline class="cs-dash is-muted" points="0,58 400,46" />
+                    <polyline class="cs-line" points="10,66 70,60 130,48 190,54 250,44 310,47 390,34" />
+                    <g class="cs-dots is-pen"><circle cx="10" cy="66" r="3" /><circle cx="70" cy="60" r="3" /><circle cx="130" cy="48" r="3" /><circle cx="190" cy="54" r="3" /><circle cx="250" cy="44" r="3" /><circle cx="310" cy="47" r="3" /><circle cx="390" cy="34" r="3" /></g>
+                  </svg>
+                  <div class="cs-chips">
+                    <div><span>{L('주간 평균 온도', 'Mean temperature')}</span><b>18.5℃ <em class="is-ok">{L('적정', 'OK')}</em></b></div>
+                    <div><span>{L('주간 평균 습도', 'Mean humidity')}</span><b>82.0% <em class="is-alert">{L('과습', 'Too humid')}</em></b></div>
+                  </div>
+                  <div class="cs-action">
+                    <b>Action plan</b>
+                    <p>{L('야간 습도 90% 이상이 이어지는 구간이 있어 잿빛곰팡이병 위험이 높음.', 'Night humidity stays above 90% for long stretches, so grey-mould risk is high.')}</p>
+                    <p>– {L('야간 난방 설정 온도 1℃ 상향', 'Raise the night heating set point by 1℃')}<br />– {L('일출 전 30분 환기 추가', 'Add 30 minutes of ventilation before sunrise')}</p>
+                  </div>
+                </div>
+              </div>
+            )}
+            <figcaption>{L('서비스 화면을 다시 그린 예시', 'Redrawn example of the service screen')}</figcaption>
+          </figure>
+          <div class="cs-features">
+            <ol>
+              {c.features.map((f) => <li><h3>{f.t}</h3><p>{f.d}</p></li>)}
+            </ol>
+            <blockquote>{c.quote}</blockquote>
+          </div>
+        </div>
+
+        <ol class="cs-steps">
+          {c.steps.map((s, si) => (
+            <li class="cs-step">
+              <p class="cs-step-tag"><span>{L('문제', 'Problem')} {si + 1}</span>{s.tag}</p>
+              <h3>{s.head}</h3>
+              <div class="cs-step-grid">
+                <div class="cs-ps">
+                  <div class="cs-p">
+                    <p class="cs-label is-p">Problem</p>
+                    <h4>{s.problem.t}</h4>
+                    <ul>{s.problem.d.map((d) => <li>{d}</li>)}</ul>
+                  </div>
+                  <div class="cs-s">
+                    <p class="cs-label is-s">Solution</p>
+                    <h4>{s.solution.t}</h4>
+                    <dl>{s.solution.d.map(([k, v]) => <div><dt>{k}</dt><dd>{v}</dd></div>)}</dl>
+                  </div>
+                </div>
+                <figure class="cs-vis">
+                  {s.visual.kind === 'timeline' && (
+                    <div class="cs-tl" role="img" aria-label={L('복구 1일 전은 비정상, 복구 1주일 뒤부터 정상으로 라벨링하는 타임라인', 'Timeline: the day before a repair is labelled abnormal, a week after the repair onward normal')}>
+                      <div class="cs-tl-track">
+                        <span class="cs-tl-seg is-unknown">{L('누수 시작 시점 미기록', 'Leak start unknown')}</span>
+                        <span class="cs-tl-seg is-bad">{L('비정상', 'Abnormal')}</span>
+                        <span class="cs-tl-seg is-gap">{L('제외', 'Excluded')}</span>
+                        <span class="cs-tl-seg is-good">{L('정상', 'Normal')}</span>
+                      </div>
+                      <div class="cs-tl-marks">
+                        <span style="left:30%">?</span>
+                        <span style="left:52%" class="is-fix">{L('복구 완료', 'Repaired')}</span>
+                        <span style="left:74%">{L('+1주', '+1 week')}</span>
+                      </div>
+                      <p class="cs-tl-note"><b>{L('복구 1일 전', 'Day before repair')}</b> → {L('비정상', 'abnormal')}<br /><b>{L('복구 1주 후부터', 'From a week after')}</b> → {L('정상', 'normal')}</p>
+                    </div>
+                  )}
+                  {s.visual.kind === 'ema' && (
+                    <svg viewBox="0 0 420 180" class="cs-chart" role="img" aria-label={L('고정 직선 기준은 여름철 정상 유량을 누수로 오인하지만 EMA 기준선은 실제 누수만 잡는 개념도', 'Concept: a fixed line flags normal summer flow as leaks while the EMA baseline catches only the real leak')}>
+                      <rect class="cs-false" x="160" y="10" width="100" height="140" />
+                      <path class="cs-fixed" d="M0 70H420" />
+                      <polyline class="cs-dash" points="0,104 30,104 60,101 90,93 120,81 150,69 180,59 210,53 240,53 270,60 300,74 330,87 360,92 390,94 420,100" />
+                      <polyline class="cs-line" points="0,120 30,118 60,112 90,100 120,86 150,74 180,64 210,60 240,64 270,78 300,94 330,106 360,80 390,110 420,116" />
+                      <circle class="cs-leak" cx="360" cy="80" r="6" />
+                      <g class="cs-axis"><text x="4" y="64">{L('고정 기준선', 'Fixed line')}</text><text x="170" y="168">{L('여름철 정상 유량 → 오탐', 'Normal summer flow → false alarm')}</text><text x="300" y="56">{L('실제 누수 탐지', 'Real leak caught')}</text><text x="4" y="142" class="is-pen">{L('EMA 동적 기준선', 'EMA baseline')}</text></g>
+                    </svg>
+                  )}
+                  {s.visual.kind === 'bars' && (
+                    <div class="cs-bars">
+                      {s.visual.items.map((it) => (
+                        <div class="cs-bars-group">
+                          <p>{it.label}{it.note && <small>{it.note}</small>}</p>
+                          {it.rows.map((r) => (
+                            <div class={r.hi ? 'cs-bars-row is-hi' : 'cs-bars-row'}>
+                              <span>{r.n}</span>
+                              <span class="cs-bars-track"><span style={`--w:${((r.v / it.max) * 100).toFixed(1)}%`}></span></span>
+                              <b>{r.t}</b>
+                            </div>
+                          ))}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                  {s.visual.kind === 'flow' && (
+                    <div class="cs-flow">
+                      <div class="cs-flow-in">{s.visual.inputs.map((x) => <span>{x}</span>)}</div>
+                      {s.visual.steps.map((x, xi, all) => <><i aria-hidden="true">→</i><span class={xi === all.length - 1 ? 'cs-flow-step is-out' : 'cs-flow-step'}>{x}</span></>)}
+                    </div>
+                  )}
+                  {s.visual.kind === 'squares' && (
+                    <div class="cs-sq" role="img" aria-label={L('장치별·시간대별로 펼친 설정값 변수를 제어 주기 기준으로 묶어 3분의 1로 줄인 그림', 'Settings flattened per device and time slot, regrouped by control period into one third as many features')}>
+                      <div><p>{L('장치별·시간대별 단순 전개', 'Flattened per device and slot')}</p><div class="cs-sq-grid">{Array.from({ length: 24 }, () => <i></i>)}</div><b>24</b></div>
+                      <span class="cs-sq-arrow" aria-hidden="true">→</span>
+                      <div><p>{L('제어 주기(4~6구간) 매핑', 'Mapped to 4–6 control periods')}</p><div class="cs-sq-grid is-after">{Array.from({ length: 8 }, () => <i></i>)}</div><b>8 <small>(1/3)</small></b></div>
+                    </div>
+                  )}
+                  {s.visual.kind === 'docs' && (
+                    <div class="cs-docs" role="img" aria-label={L('모든 농가가 같은 목차를 받는 고정 템플릿과 농가마다 목차·그래프·표가 달라지는 에이전트 리포트 비교', 'A fixed template giving every farm the same outline next to agent reports whose outline, charts and tables differ per farm')}>
+                      <div class="cs-doc is-fixed"><p>{L('고정 템플릿', 'Fixed template')}</p><i></i><i></i><i></i><i></i><small>{L('모든 농가 동일', 'Same for every farm')}</small></div>
+                      <span aria-hidden="true">→</span>
+                      <div class="cs-doc"><p>{L('농가 A', 'Farm A')}</p><i class="is-chart"></i><i></i><i class="is-alert"></i><small>{L('과습 경고 먼저', 'Humidity alert first')}</small></div>
+                      <div class="cs-doc"><p>{L('농가 B', 'Farm B')}</p><i></i><i class="is-table"></i><i class="is-chart"></i><small>{L('생육 비교 표', 'Growth table')}</small></div>
+                    </div>
+                  )}
+                </figure>
+              </div>
+              <p class="cs-take">{s.take}</p>
+            </li>
+          ))}
+        </ol>
+
+        {c.id === 'report' && (
+          <div class="cs-sample">
+            <p class="cs-step-tag"><span>{L('실제 샘플', 'Real sample')}</span>{L('에이전트가 만든 주간 리포트 한 페이지', 'One page of an agent-written weekly report')}</p>
+            <div class="cs-sample-grid">
+              <figure class="taped cs-sample-shot">
+                <img src="/images/portfolio/consulting-report-chart.webp" width="1100" height="633" loading="lazy" decoding="async" alt={L('지상부 주간 그래프: 내부 온도·습도·CO2·VPD·PAR 일주일 추이와 유의 구간 표시', 'Weekly above-ground chart: a week of inside temperature, humidity, CO2, VPD and PAR with flagged periods')} />
+              </figure>
+              <div class="cs-notes">
+                <h4>{L('내부 온도 세부 분석 결과', 'Inside temperature, in detail')}</h4>
+                <p class="cs-notes-h">{L('일별 그래프·통계', 'Daily charts and statistics')}</p>
+                <ul>
+                  <li>{L('주간 평균 18.27~20.36℃, 주간 최고 25.97~27.48℃', 'Daytime mean 18.27–20.36℃, daytime high 25.97–27.48℃')}</li>
+                  <li>{L('야간 평균 9.94~12.54℃, 야간 최저 7.85~8.91℃인 날이 여러 번', 'Night mean 9.94–12.54℃, with several nights down to 7.85–8.91℃')}</li>
+                  <li>{L('전주 대비 평균 +1.27℃로 소폭 상승', 'Mean up 1.27℃ on the previous week')}</li>
+                </ul>
+                <p class="cs-notes-h">{L('관리 범위 코멘트', 'Range advice')}</p>
+                <ul>
+                  <li>{L('후기 수확기 기준 주간 16~24℃, 야간 10~14℃를 관리 범위로 두는 편이 안전', 'For late harvest, keep 16–24℃ by day and 10–14℃ by night')}</li>
+                  <li>{L('야간 8℃대가 반복되면 과실 비대·착색에 불리해 "보온 우선, 난방 최소"로 방어 필요', 'Repeated 8℃ nights slow fruit growth and colouring: insulate first, heat minimally')}</li>
+                </ul>
+                <p class="cs-notes-h">{L('관련 변수 분석', 'Related variables')}</p>
+                <ul>
+                  <li>{L('낮에는 PAR 상승과 함께 RH가 44%까지 떨어지며 VPD가 1.8kPa까지 상승', 'By day RH fell to 44% as PAR rose, pushing VPD up to 1.8 kPa')}</li>
+                  <li>{L('밤에는 RH 80~93%, VPD 0.11~0.28로 결로 위험만 관리하면 되는 구조', 'At night RH stayed at 80–93% with VPD 0.11–0.28, so only condensation needs watching')}</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        )}
+      </section>
+    ))}
+
+    <aside class="cs-end">
+      <p>{L('다른 프로젝트, 논문, 수상, 강의는 포트폴리오에 있음.', 'Other projects, papers, awards and teaching are on the portfolio page.')}</p>
+      <a class="lab-cta" href={portfolioHref}>{L('포트폴리오로 돌아가기', 'Back to the portfolio')}<span aria-hidden="true">→</span></a>
+    </aside>
+  </div>
+
+<script is:inline>
+  // Cases and steps rise in as they scroll into view, and the case bar marks the case being read.
+  (() => {
+    if (!('IntersectionObserver' in window)) return;
+    const root = document.documentElement;
+    const links = new Map([...document.querySelectorAll('.cs-nav a')].map((a) => [a.hash.slice(1), a]));
+    if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      root.classList.add('cs-motion');
+      const reveal = new IntersectionObserver((entries) => entries.forEach((e) => { if (e.isIntersecting) { e.target.classList.add('is-in'); reveal.unobserve(e.target); } }), { rootMargin: '0px 0px -10% 0px' });
+      document.querySelectorAll('.cs-head, .cs-service, .cs-step, .cs-sample').forEach((el) => reveal.observe(el));
+    }
+    const spy = new IntersectionObserver((entries) => entries.forEach((e) => {
+      if (!e.isIntersecting) return;
+      links.forEach((a) => a.removeAttribute('aria-current'));
+      links.get(e.target.id)?.setAttribute('aria-current', 'true');
+    }), { rootMargin: '-35% 0px -60% 0px' });
+    document.querySelectorAll('.cs-case').forEach((s) => spy.observe(s));
+  })();
+</script>
+
+<style is:inline>
+.cs-hero { padding: 3.4rem 0 2.4rem; }
+.cs-back { display: inline-block; margin-bottom: 1.6rem; color: var(--muted); font-size: .86rem; font-weight: 750; transition: color .2s; }
+.cs-back:hover { color: var(--accent); }
+.cs-hero h1 { max-width: 16ch; margin: .8rem 0 1.2rem; font-size: clamp(2.5rem, 5.4vw, 4.6rem); font-weight: 820; line-height: 1.04; letter-spacing: -.065em; word-break: keep-all; }
+.cs-hero h1 em { font-style: normal; color: var(--accent); }
+.cs-lede { max-width: 640px; margin: 0; color: var(--muted); font-size: 1.05rem; line-height: 1.75; word-break: keep-all; }
+.cs-index { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); margin: 2.6rem 0 0; padding: 0; list-style: none; border-top: 2px solid var(--ink); border-bottom: 1px solid var(--line); }
+.cs-index li + li { border-left: 1px solid var(--line); }
+.cs-index a { display: grid; gap: .45rem; height: 100%; padding: 1.3rem 1.2rem 1.3rem; transition: background .2s; }
+.cs-index a:hover { background: color-mix(in srgb, var(--surface) 70%, transparent); }
+.cs-index-no { color: var(--accent); font-size: 1.6rem; font-weight: 820; line-height: 1; letter-spacing: -.05em; font-variant-numeric: tabular-nums; }
+.cs-index-field { color: var(--muted); font-size: .74rem; font-weight: 800; letter-spacing: .04em; }
+.cs-index strong { font-size: 1.12rem; font-weight: 800; line-height: 1.35; letter-spacing: -.035em; word-break: keep-all; transition: color .2s; }
+.cs-index a:hover strong { color: var(--accent); }
+.cs-index-metric { color: var(--pen); font-size: .82rem; font-weight: 750; font-variant-numeric: tabular-nums; }
+
+.cs-nav { position: sticky; top: 0; z-index: 5; background: color-mix(in srgb, var(--bg) 88%, transparent); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); border-bottom: 1px solid var(--line); }
+.cs-nav .shell { display: flex; gap: 1.8rem; overflow-x: auto; scrollbar-width: none; }
+.cs-nav a { position: relative; flex: none; display: inline-flex; gap: .45rem; padding: .95rem 0 .85rem; color: var(--muted); font-size: .86rem; font-weight: 750; transition: color .2s; }
+.cs-nav a span { color: var(--pen); font-variant-numeric: tabular-nums; opacity: .7; }
+.cs-nav a::after { content: ''; position: absolute; left: 0; right: 0; bottom: -1px; height: 2px; background: var(--accent); transform: scaleX(0); transform-origin: left; transition: transform .35s cubic-bezier(.2, .7, .2, 1); }
+.cs-nav a:hover, .cs-nav a[aria-current] { color: var(--ink); }
+.cs-nav a[aria-current]::after { transform: scaleX(1); }
+
+.cs-body { padding-bottom: 5rem; }
+.cs-case { padding: 4rem 0 3.4rem; border-top: 1px solid var(--line); scroll-margin-top: 3.4rem; }
+.cs-case:first-child { border-top: 0; }
+.cs-head { display: grid; grid-template-columns: 6rem minmax(0, 1fr) minmax(220px, 300px); gap: clamp(1.4rem, 3vw, 2.6rem); align-items: start; }
+.cs-no { color: var(--accent); font-size: clamp(2rem, 3.4vw, 2.8rem); font-weight: 800; line-height: 1; letter-spacing: -.05em; font-variant-numeric: tabular-nums; }
+.cs-eyebrow { margin: 0 0 .7rem; color: var(--accent); font-size: .74rem; font-weight: 850; letter-spacing: .08em; }
+.cs-eyebrow i { margin: 0 .45rem; font-style: normal; color: var(--muted); }
+.cs-head h2 { margin: 0 0 1rem; font-size: clamp(1.9rem, 3.4vw, 2.7rem); font-weight: 780; line-height: 1.1; letter-spacing: -.05em; word-break: keep-all; }
+.cs-copy { max-width: 62ch; margin: 0; color: var(--muted); line-height: 1.75; word-break: keep-all; }
+.cs-stack { display: flex; flex-wrap: wrap; gap: .4rem; margin: 1.2rem 0 0; }
+.cs-stack span { padding: .28rem .6rem; border: 1px solid var(--line); border-radius: 999px; font-size: .76rem; font-weight: 750; }
+.cs-metrics { margin: .3rem 0 0; border-top: 2px solid var(--ink); }
+.cs-metrics div { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: baseline; gap: .8rem; padding: .85rem 0; border-bottom: 1px solid var(--line); }
+.cs-metrics dt { order: 2; font-size: clamp(1.5rem, 2.6vw, 2rem); font-weight: 830; line-height: 1; letter-spacing: -.05em; font-variant-numeric: tabular-nums; }
+.cs-metrics div:first-child dt { color: var(--accent); }
+.cs-metrics dd { order: 1; display: grid; gap: .15rem; margin: 0; font-size: .84rem; font-weight: 750; }
+.cs-metrics dd small { color: var(--pen); font-size: .74rem; font-weight: 800; }
+
+.cs-service { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: clamp(1.8rem, 4vw, 3.4rem); align-items: center; margin: 3rem 0 0 calc(6rem + clamp(1.4rem, 3vw, 2.6rem)); }
+.cs-mock { margin: 0; }
+.cs-mock figcaption { margin-top: .7rem; color: var(--muted); font-size: .74rem; font-weight: 650; }
+.cs-win { overflow: hidden; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); box-shadow: 0 1px 2px rgba(0, 0, 0, .06), 0 24px 40px -30px rgba(0, 0, 0, .55); }
+.cs-bar { display: flex; align-items: center; gap: .35rem; padding: .55rem .8rem; border-bottom: 1px solid var(--line); background: var(--soft); }
+.cs-bar i { width: .55rem; height: .55rem; border-radius: 50%; background: var(--line); }
+.cs-bar i:first-child { background: #e8776a; } .cs-bar i:nth-child(2) { background: #e7b955; } .cs-bar i:nth-child(3) { background: #62b67a; }
+.cs-bar span { margin-left: .6rem; color: var(--muted); font-size: .7rem; font-weight: 650; font-family: ui-monospace, SFMono-Regular, Consolas, monospace; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.cs-pane { padding: 1rem 1.1rem 1.1rem; }
+.cs-pane-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: .5rem; margin-bottom: .6rem; font-size: .84rem; }
+.cs-pane-head em, .cs-chips em { padding: .12rem .45rem; border-radius: 4px; font-size: .7rem; font-style: normal; font-weight: 800; }
+em.is-alert { color: #c43d2f; background: color-mix(in srgb, #e5533f 14%, transparent); }
+em.is-ok { color: #23855b; background: color-mix(in srgb, #33a07a 16%, transparent); }
+.cs-chart { display: block; width: 100%; height: auto; overflow: visible; }
+.cs-grid path { stroke: var(--line); stroke-width: 1; }
+.cs-area { fill: color-mix(in srgb, var(--pen) 12%, transparent); }
+.cs-line { fill: none; stroke: var(--pen); stroke-width: 2.4; stroke-linejoin: round; stroke-linecap: round; }
+.cs-dash { fill: none; stroke: var(--muted); stroke-width: 1.8; stroke-dasharray: 5 4; stroke-linejoin: round; }
+.cs-dash.is-accent { stroke: var(--accent); stroke-width: 2.2; }
+.cs-dash.is-muted { stroke: var(--line); }
+.cs-now { stroke: var(--muted); stroke-width: 1; stroke-dasharray: 2 3; }
+.cs-dots circle { fill: var(--accent); stroke: var(--surface); stroke-width: 1.5; }
+.cs-dots.is-pen circle { fill: var(--pen); }
+.cs-axis text { fill: var(--muted); font-size: 10px; font-weight: 650; }
+.cs-axis text.is-pen { fill: var(--pen); font-weight: 800; }
+.cs-legend { display: flex; flex-wrap: wrap; gap: .3rem 1rem; margin: .4rem 0 .8rem; color: var(--muted); font-size: .72rem; font-weight: 700; }
+.cs-legend span::before { content: ''; display: inline-block; width: 1.1rem; height: 0; margin-right: .35rem; vertical-align: middle; border-top: 2.4px solid var(--pen); }
+.cs-legend .is-dash::before { border-top: 2px dashed var(--muted); }
+.cs-legend .is-dash.is-accent::before { border-top-color: var(--accent); }
+.cs-legend .is-dot::before { width: .5rem; height: .5rem; border: 0; border-radius: 50%; background: var(--accent); }
+.cs-table { width: 100%; border-collapse: collapse; font-size: .78rem; font-variant-numeric: tabular-nums; }
+.cs-table th { padding: .45rem .4rem .45rem 0; border-bottom: 1px solid var(--ink); color: var(--muted); font-size: .68rem; font-weight: 800; text-align: left; }
+.cs-table td { padding: .5rem .4rem .5rem 0; border-bottom: 1px solid var(--line); }
+.cs-table td.is-alert { color: #c43d2f; font-weight: 800; }
+.cs-table td.is-warn { color: #b7801c; font-weight: 800; }
+.cs-win.is-doc { background: var(--soft); }
+.cs-paper { margin: 1rem 1.2rem 0; padding: 1.1rem 1.2rem 1.2rem; background: var(--surface); border-radius: 4px 4px 0 0; box-shadow: 0 0 0 1px var(--line); }
+.cs-paper-head { display: flex; flex-wrap: wrap; justify-content: space-between; gap: .4rem; padding-bottom: .6rem; border-bottom: 2px solid var(--ink); font-size: .9rem; }
+.cs-paper-head span { color: var(--muted); font-size: .74rem; font-weight: 700; }
+.cs-paper-h { margin: .8rem 0 .3rem; color: var(--pen); font-size: .74rem; font-weight: 800; }
+.cs-chart.is-small { margin-bottom: .6rem; }
+.cs-chips { display: grid; grid-template-columns: 1fr 1fr; gap: .5rem; }
+.cs-chips div { display: grid; gap: .2rem; padding: .55rem .7rem; border-radius: 6px; background: var(--soft); }
+.cs-chips span { color: var(--muted); font-size: .68rem; font-weight: 700; }
+.cs-chips b { font-size: .9rem; font-variant-numeric: tabular-nums; }
+.cs-action { margin-top: .7rem; padding: .7rem .8rem; border-left: 3px solid var(--pen); border-radius: 0 6px 6px 0; background: color-mix(in srgb, var(--pen) 8%, transparent); font-size: .76rem; line-height: 1.55; }
+.cs-action b { color: var(--pen); font-size: .74rem; }
+.cs-action p { margin: .25rem 0 0; }
+
+.cs-features ol { margin: 0; padding: 0; list-style: none; counter-reset: f; border-top: 1px solid var(--ink); }
+.cs-features li { position: relative; padding: 1.05rem 0 1.05rem 2.4rem; border-bottom: 1px solid var(--line); counter-increment: f; }
+.cs-features li::before { content: counter(f, decimal-leading-zero); position: absolute; left: 0; top: 1.15rem; color: var(--pen); font-size: .78rem; font-weight: 850; font-variant-numeric: tabular-nums; }
+.cs-features h3 { margin: 0 0 .3rem; font-size: 1.02rem; font-weight: 800; letter-spacing: -.025em; }
+.cs-features p { margin: 0; color: var(--muted); font-size: .9rem; line-height: 1.6; word-break: keep-all; }
+.cs-features blockquote { position: relative; margin: 1.4rem 0 0; padding: .2rem 0 .2rem 1.1rem; border-left: 3px solid var(--accent); font-size: 1rem; font-weight: 780; line-height: 1.5; letter-spacing: -.02em; word-break: keep-all; }
+
+.cs-steps { margin: 3.4rem 0 0 calc(6rem + clamp(1.4rem, 3vw, 2.6rem)); padding: 0; list-style: none; }
+.cs-step { padding: 2.4rem 0 2.2rem; border-top: 1px solid var(--line); }
+.cs-step-tag { display: flex; flex-wrap: wrap; align-items: center; gap: .6rem; margin: 0 0 .6rem; font-size: .8rem; font-weight: 800; color: var(--muted); }
+.cs-step-tag span { padding: .2rem .55rem; border-radius: 999px; background: var(--ink); color: var(--bg); font-size: .7rem; font-weight: 850; letter-spacing: .04em; }
+.cs-step h3 { margin: 0 0 1.4rem; font-size: clamp(1.3rem, 2.3vw, 1.7rem); font-weight: 790; line-height: 1.25; letter-spacing: -.045em; word-break: keep-all; }
+.cs-step-grid { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); gap: clamp(1.4rem, 3.4vw, 2.8rem); align-items: center; }
+.cs-ps { display: grid; gap: .9rem; }
+.cs-p, .cs-s { position: relative; padding: 1.1rem 1.2rem 1.15rem 1.35rem; border-radius: 0 8px 8px 0; background: var(--surface); box-shadow: 0 1px 2px rgba(0, 0, 0, .05); }
+.cs-p::before, .cs-s::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: var(--accent); }
+.cs-s::before { background: var(--pen); }
+.cs-label { margin: 0 0 .35rem; font-size: .68rem; font-weight: 850; letter-spacing: .14em; text-transform: uppercase; }
+.cs-label.is-p { color: var(--accent); }
+.cs-label.is-s { color: var(--pen); }
+.cs-ps h4 { margin: 0 0 .5rem; font-size: 1.02rem; font-weight: 800; letter-spacing: -.025em; }
+.cs-p ul { margin: 0; padding-left: 1.05rem; color: var(--muted); font-size: .88rem; line-height: 1.6; word-break: keep-all; }
+.cs-p li + li { margin-top: .25rem; }
+.cs-s dl { display: grid; gap: .5rem; margin: 0; }
+.cs-s dl div { display: grid; grid-template-columns: 8.6rem minmax(0, 1fr); gap: .8rem; font-size: .88rem; line-height: 1.55; }
+.cs-s dt { font-weight: 800; color: var(--ink); word-break: keep-all; }
+.cs-s dd { margin: 0; color: var(--muted); word-break: keep-all; }
+.cs-take { position: relative; margin: 1.4rem 0 0; padding-left: 1.7rem; font-size: .98rem; font-weight: 780; line-height: 1.5; letter-spacing: -.02em; word-break: keep-all; }
+.cs-take::before { content: '→'; position: absolute; left: 0; color: var(--accent); font-weight: 850; }
+
+.cs-vis { margin: 0; padding: 1.2rem; border: 1px dashed var(--line); border-radius: 10px; }
+.cs-false { fill: color-mix(in srgb, #e5533f 10%, transparent); }
+.cs-fixed { stroke: var(--muted); stroke-width: 1.6; }
+.cs-leak { fill: var(--accent); stroke: var(--surface); stroke-width: 2; }
+.cs-tl-track { display: grid; grid-template-columns: 30% 22% 22% 26%; height: 2.6rem; border-radius: 6px; overflow: hidden; font-size: .7rem; font-weight: 800; }
+.cs-tl-seg { display: grid; place-items: center; padding: 0 .3rem; text-align: center; line-height: 1.2; }
+.cs-tl-seg.is-unknown { background: repeating-linear-gradient(-45deg, var(--soft) 0 6px, transparent 6px 12px); color: var(--muted); }
+.cs-tl-seg.is-bad { background: color-mix(in srgb, var(--accent) 80%, transparent); color: #fff; }
+.cs-tl-seg.is-gap { background: var(--soft); color: var(--muted); }
+.cs-tl-seg.is-good { background: color-mix(in srgb, var(--pen) 80%, transparent); color: #fff; }
+.cs-tl-marks { position: relative; height: 2rem; margin-top: .3rem; }
+.cs-tl-marks span { position: absolute; top: 0; transform: translateX(-50%); padding-top: .55rem; color: var(--muted); font-size: .7rem; font-weight: 800; white-space: nowrap; }
+.cs-tl-marks span::before { content: ''; position: absolute; left: 50%; top: 0; height: .4rem; border-left: 1.5px solid var(--muted); }
+.cs-tl-marks span.is-fix { color: var(--ink); }
+.cs-tl-note { margin: .8rem 0 0; font-size: .82rem; line-height: 1.7; color: var(--muted); }
+.cs-tl-note b { color: var(--ink); }
+.cs-bars { display: grid; gap: 1.3rem; }
+.cs-bars-group p { display: flex; justify-content: space-between; margin: 0 0 .5rem; font-size: .84rem; font-weight: 850; }
+.cs-bars-group small { color: var(--muted); font-size: .72rem; font-weight: 650; }
+.cs-bars-row { display: grid; grid-template-columns: 4.6rem minmax(0, 1fr) 3rem; gap: .7rem; align-items: center; margin-top: .4rem; font-size: .78rem; color: var(--muted); font-weight: 700; }
+.cs-bars-row b { justify-self: end; color: var(--ink); font-size: .92rem; font-variant-numeric: tabular-nums; }
+.cs-bars-track { height: 10px; border-radius: 5px; background: var(--soft); overflow: hidden; }
+.cs-bars-track span { display: block; height: 100%; width: var(--w); border-radius: 5px; background: color-mix(in srgb, var(--muted) 55%, transparent); transform-origin: left; transition: transform 1.1s cubic-bezier(.2, .7, .2, 1) .2s; }
+.cs-bars-row.is-hi .cs-bars-track span { background: var(--pen); }
+.cs-bars-row.is-hi b { color: var(--pen); }
+.cs-flow { display: flex; flex-wrap: wrap; align-items: center; gap: .55rem; }
+.cs-flow-in { display: grid; gap: .35rem; }
+.cs-flow-in span, .cs-flow-step { padding: .5rem .7rem; border: 1px solid var(--line); border-radius: 6px; background: var(--surface); font-size: .78rem; font-weight: 800; text-align: center; word-break: keep-all; }
+.cs-flow-in span { border-left: 3px solid var(--pen); text-align: left; }
+.cs-flow i { color: var(--accent); font-style: normal; font-weight: 850; }
+.cs-flow-step.is-out { border-color: var(--accent); color: var(--accent); }
+.cs-sq { display: flex; align-items: center; gap: 1rem; }
+.cs-sq > div { flex: 1; display: grid; gap: .5rem; }
+.cs-sq p { margin: 0; color: var(--muted); font-size: .74rem; font-weight: 750; line-height: 1.35; word-break: keep-all; }
+.cs-sq-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 3px; }
+.cs-sq-grid.is-after { grid-template-columns: repeat(4, 1fr); max-width: 66%; }
+.cs-sq-grid i { aspect-ratio: 1; border-radius: 2px; background: color-mix(in srgb, var(--muted) 35%, transparent); }
+.cs-sq-grid.is-after i { background: var(--pen); }
+.cs-sq b { font-size: 1.5rem; font-weight: 830; letter-spacing: -.04em; }
+.cs-sq b small { color: var(--accent); font-size: .55em; }
+.cs-sq-arrow { color: var(--accent); font-size: 1.3rem; font-weight: 850; }
+.cs-docs { display: flex; align-items: center; gap: .6rem; }
+.cs-docs > span { color: var(--accent); font-weight: 850; }
+.cs-doc { flex: 1; display: grid; gap: .3rem; padding: .7rem; border: 1px solid var(--line); border-radius: 4px; background: var(--surface); }
+.cs-doc p { margin: 0 0 .2rem; font-size: .72rem; font-weight: 850; }
+.cs-doc i { height: .5rem; border-radius: 2px; background: color-mix(in srgb, var(--muted) 30%, transparent); }
+.cs-doc i.is-chart { height: 1.6rem; background: linear-gradient(170deg, transparent 45%, var(--pen) 46% 52%, transparent 53%), color-mix(in srgb, var(--pen) 10%, transparent); }
+.cs-doc i.is-table { height: 1.3rem; background: repeating-linear-gradient(transparent 0 .3rem, var(--line) .3rem calc(.3rem + 1px)), color-mix(in srgb, var(--muted) 10%, transparent); }
+.cs-doc i.is-alert { background: color-mix(in srgb, var(--accent) 60%, transparent); }
+.cs-doc small { margin-top: .2rem; color: var(--muted); font-size: .64rem; font-weight: 700; line-height: 1.3; }
+.cs-doc.is-fixed i { background: color-mix(in srgb, var(--muted) 18%, transparent); }
+
+.cs-sample { margin: 1rem 0 0 calc(6rem + clamp(1.4rem, 3vw, 2.6rem)); padding-top: 2.4rem; border-top: 1px solid var(--line); }
+.cs-sample-grid { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: clamp(1.6rem, 3.6vw, 3rem); align-items: start; margin-top: 1.2rem; }
+.cs-sample-shot { --tilt: -.8deg; --tape-tilt: 3deg; margin: 0; }
+.cs-sample-shot img { height: auto; }
+.cs-notes h4 { margin: 0 0 .9rem; padding-bottom: .6rem; border-bottom: 1px solid var(--ink); font-size: 1rem; font-weight: 800; }
+.cs-notes-h { margin: .9rem 0 .35rem; color: var(--pen); font-size: .8rem; font-weight: 850; }
+.cs-notes ul { margin: 0; padding-left: 1.05rem; color: var(--muted); font-size: .86rem; line-height: 1.6; word-break: keep-all; }
+.cs-notes li + li { margin-top: .2rem; }
+
+.cs-end { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 1rem 2rem; margin-top: 1rem; padding: 2rem 0 0; border-top: 2px solid var(--ink); }
+.cs-end p { margin: 0; color: var(--muted); font-weight: 650; }
+.cs-end .lab-cta { margin-top: 0; }
+
+.cs-motion .cs-head, .cs-motion .cs-service, .cs-motion .cs-step, .cs-motion .cs-sample { transition: opacity .8s cubic-bezier(.2, .7, .2, 1), transform .8s cubic-bezier(.2, .7, .2, 1); }
+.cs-motion :is(.cs-head, .cs-service, .cs-step, .cs-sample):not(.is-in) { opacity: 0; transform: translateY(18px); }
+.cs-motion .cs-step:not(.is-in) .cs-bars-track span { transform: scaleX(0); }
+
+@media (max-width: 1080px) {
+  .cs-head { grid-template-columns: 4.5rem minmax(0, 1fr); }
+  .cs-metrics { grid-column: 2; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border-bottom: 1px solid var(--line); }
+  .cs-metrics div { grid-template-columns: 1fr; gap: .4rem; padding: .9rem .8rem; border-bottom: 0; }
+  .cs-metrics div + div { border-left: 1px solid var(--line); }
+  .cs-metrics dt { order: 0; }
+  .cs-service, .cs-steps, .cs-sample { margin-left: calc(4.5rem + clamp(1.4rem, 3vw, 2.6rem)); }
+  .cs-service, .cs-step-grid, .cs-sample-grid { grid-template-columns: 1fr; }
+  .cs-mock, .cs-vis, .cs-sample-shot { width: 100%; max-width: 580px; }
+}
+@media (max-width: 720px) {
+  .cs-hero { padding: 2.2rem 0 1.8rem; }
+  .cs-index { grid-template-columns: 1fr; }
+  .cs-index li + li { border-left: 0; border-top: 1px solid var(--line); }
+  .cs-index a { grid-template-columns: 2.4rem minmax(0, 1fr); gap: .2rem .8rem; padding: 1rem 0; }
+  .cs-index-no { grid-row: 1 / 4; font-size: 1.3rem; }
+  .cs-nav .shell { gap: 1.3rem; }
+  .cs-case { padding: 2.8rem 0 2.4rem; }
+  .cs-head { grid-template-columns: 1fr; gap: .8rem; }
+  .cs-no { font-size: 1.2rem; }
+  .cs-metrics { grid-column: auto; margin-top: .6rem; }
+  .cs-metrics div { padding: .8rem .6rem; }
+  .cs-metrics dt { font-size: 1.35rem; }
+  .cs-metrics dd { font-size: .74rem; }
+  .cs-service, .cs-steps, .cs-sample { margin-left: 0; }
+  .cs-service { margin-top: 2rem; }
+  .cs-steps { margin-top: 2.2rem; }
+  .cs-s dl div { grid-template-columns: 1fr; gap: .1rem; }
+  .cs-vis { padding: .9rem; }
+  .cs-docs { flex-wrap: wrap; }
+  .cs-docs .cs-doc { flex-basis: 28%; }
+}
+</style>
+</BaseLayout>

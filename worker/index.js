@@ -924,9 +924,9 @@ async function handle(request, env, ctx) {
       if (oldGptPost) return Response.redirect(`${origin}/${oldGptPost[1] || ''}blog/posts/gpt-6-sol-luna-opus-5-5-cost-per-success/`, 301);
       const oldAiCategory = url.pathname.match(/^\/(en\/)?(?:blog\/)?(?:agi|physical-ai|other-ai)(?:\/.*)?$/);
       if (oldAiCategory) return Response.redirect(`${origin}/${oldAiCategory[1] || ''}blog/ai/`, 301);
-      // Project stories first lived under /portfolio/<slug>/; the portfolio itself now has only its index page.
+      // Project stories first lived under /portfolio/<slug>/; the portfolio's own subpages are kept out of the redirect.
       const oldStory = url.pathname.match(/^\/(en\/)?portfolio\/([a-z0-9]+(?:-[a-z0-9]+)*)\/$/);
-      if (oldStory) return Response.redirect(`${origin}/${oldStory[1] || ''}stories/${oldStory[2]}/${url.search}`, 301);
+      if (oldStory && oldStory[2] !== 'case-studies') return Response.redirect(`${origin}/${oldStory[1] || ''}stories/${oldStory[2]}/${url.search}`, 301);
       const moved = movedBlogPath(url.pathname);
       if (moved) return Response.redirect(`${origin}${moved}${url.search}`, 301);
       // The lab home and the blog's home and category pages list the newest D1 posts.

@@ -15,12 +15,20 @@ const isKo = lang === 'ko';
 const L = (ko: string, en: string) => (isKo ? ko : en);
 const email = portfolioEmail;
 const stories = labSections.find((section) => section.id === 'stories')!;
-const weather = projects[0];
+const weather = projects.find((p) => p.id === 'beat-kma')!;
 
 const { career, education, domains, domainName, work, papers, awards, teaching, hours, longest, barWidth, stats, skills } = portfolio(lang);
+// The three main client projects, each written up on the case-studies page.
+const casesHref = `${labSectionPath(labSections.find((section) => section.id === 'portfolio')!, lang)}case-studies/`;
+const cases = [
+  { id: 'leak', field: L('이상 탐지 · 상수도', 'Anomaly detection · water'), title: L('유량 데이터로 누수 찾기', 'Finding leaks in flow data'), v: '90%', k: 'Accuracy', sub: 'F1 0.63 · XGBoost', d: L('기록이 불완전한 현장 데이터를 역추적 라벨링하고, 고정 직선 기준을 EMA 동적 기준선과 분류 모델로 바꿈.', 'Back-traced labels for incomplete field records, then a moving EMA baseline and a classifier in place of a fixed line.') },
+  { id: 'greenhouse', field: L('시계열 예측 · 스마트팜', 'Forecasting · smart farming'), title: L('온실 환경 시계열 예측 AI', 'Forecasting the greenhouse climate'), v: '92%', k: 'R²', sub: 'MAE 1.1℃ · PatchTST', d: L('환경·제어·기상 예보를 스트림별로 학습하고, 추세 분해로 계절 변화에도 버티는 24시간 예측.', 'Climate, control and weather streams learned separately, with trend decomposition to hold up across seasons.') },
+  { id: 'report', field: L('LLM Agent · 스마트팜', 'LLM agents · smart farming'), title: L('LLM Agent 컨설팅 리포트', 'LLM-agent consulting reports'), v: L('주간', 'Weekly'), k: L('농가별 리포트', 'per-farm report'), sub: 'LangGraph · PDF · Web', d: L('컨설턴트의 진단 과정을 에이전트 워크플로로 옮겨 그래프·표·실행 제언이 담긴 리포트를 자동 생성.', 'A consultant’s diagnosis rebuilt as an agent workflow that writes reports with charts, tables and concrete actions.') },
+];
 
 const sections = [
   ['pf-now', L('지금 만드는 것', 'Building now')],
+  ['pf-cases', L('주요 프로젝트', 'Case studies')],
   ['pf-career', L('경력', 'Career')],
   ['pf-work', L('프로젝트', 'Projects')],
   ['pf-research', L('연구', 'Research')],
@@ -75,6 +83,27 @@ const num = (id: string) => String(sections.findIndex(([s]) => s === id) + 1).pa
       </div>
     </section>
 
+    <section id="pf-cases" class="pf-sec">
+      <span class="pf-num">{num('pf-cases')}</span>
+      <div class="pf-sec-body">
+        <div class="pf-cases-head">
+          <h2>{L('주요 수행 프로젝트', 'Case studies')}</h2>
+          <a class="pf-link" href={casesHref}>{L('문제와 해결 과정 자세히 보기', 'Read the full case studies')} →</a>
+        </div>
+        <ol class="pf-cases">
+          {cases.map((c, i) => (
+            <li><a href={`${casesHref}#${c.id}`}>
+              <span class="pf-case-top"><b>{String(i + 1).padStart(2, '0')}</b>{c.field}</span>
+              <h3>{c.title}</h3>
+              <span class="pf-case-metric"><strong>{c.v}</strong><span>{c.k}<small>{c.sub}</small></span></span>
+              <p>{c.d}</p>
+              <span class="pf-case-go" aria-hidden="true">→</span>
+            </a></li>
+          ))}
+        </ol>
+      </div>
+    </section>
+
     <section id="pf-career" class="pf-sec">
       <span class="pf-num">{num('pf-career')}</span>
       <div class="pf-sec-body pf-split">
@@ -114,7 +143,7 @@ const num = (id: string) => String(sections.findIndex(([s]) => s === id) + 1).pa
           {work.map((w) => (
             <li data-d={w.d}>
               <span class="pf-when">{w.period}</span>
-              <div><h3>{isKo ? w.ko : w.en}</h3><p>{w.org}</p></div>
+              <div><h3>{w.case ? <a href={`${casesHref}#${w.case}`}>{isKo ? w.ko : w.en}<b class="pf-case-tag">{L('사례', 'Case study')} →</b></a> : (isKo ? w.ko : w.en)}</h3><p>{w.org}</p></div>
               <span class="pf-field"><i class={`pf-sw is-${w.d}`}></i>{domainName(w.d)}</span>
             </li>
           ))}
@@ -131,9 +160,9 @@ const num = (id: string) => String(sections.findIndex(([s]) => s === id) + 1).pa
           <h3>{L('악성 댓글 분류장치 및 그 방법', 'Device and method for classifying abusive comments')}</h3>
           <p>{L('하이웨이 네트워크 CNN 논문, 노코멘트 API와 같은 연구에서 나옴.', 'From the same work as the highway-network CNN paper and the Know Comment API.')}</p>
         </div>
-        <h2 class="pf-h-sm">{L('KCI 논문', 'KCI papers')} <sup>{papers.length}</sup></h2>
+        <h2 class="pf-h-sm">{L('논문', 'Papers')} <sup>{papers.length}</sup></h2>
         <ol class="pf-rows is-papers">
-          {papers.map((p) => <li><span class="pf-when">{p.date}</span><div><h3>{p.title}</h3><p>{p.venue}</p></div></li>)}
+          {papers.map((p) => <li><span class="pf-when">{p.date}</span><div><h3>{p.title}</h3><p><b class="pf-kind">{p.conf ? L('학술대회', 'Conference') : 'KCI'}</b>{p.venue}</p></div></li>)}
         </ol>
       </div>
     </section>
@@ -162,7 +191,7 @@ const num = (id: string) => String(sections.findIndex(([s]) => s === id) + 1).pa
         <div class="pf-teach">
           <div class="pf-total">
             <strong>{hours}<small>h+</small></strong>
-            <p>{L(`2020~2023년 ${teaching.length}개 과정. 시간이 기록된 과정만 더한 값이고, 교재 280쪽 집필과 강의 촬영도 포함.`, `${teaching.length} courses from 2020 to 2023. Only courses with recorded hours are summed; a 280-page textbook and recorded courses are among them.`)}</p>
+            <p>{L(`2020~2024년 ${teaching.length}개 과정. 시간이 기록된 과정만 더한 값이고, 교재 280쪽 집필과 강의 촬영도 포함.`, `${teaching.length} courses from 2020 to 2024. Only courses with recorded hours are summed; a 280-page textbook and recorded courses are among them.`)}</p>
           </div>
           <div class="pf-bars">
             <p class="pf-eyebrow">{L('가장 길었던 과정', 'Longest courses')}</p>
@@ -261,6 +290,26 @@ const num = (id: string) => String(sections.findIndex(([s]) => s === id) + 1).pa
 .pf-link:hover { color: var(--accent); border-color: var(--accent); }
 .pf-shot { --tilt: 1.2deg; --tape-tilt: -4deg; }
 
+.pf-cases-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: .6rem 2rem; margin-bottom: 2rem; }
+.pf-cases-head h2 { margin: 0; }
+.pf-cases { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1.2rem; margin: 0; padding: 0; list-style: none; }
+.pf-cases a { position: relative; display: grid; grid-template-rows: auto auto auto 1fr; gap: .8rem; height: 100%; padding: 1.4rem 1.4rem 3rem; border-top: 3px solid var(--ink); background: var(--surface); box-shadow: 0 1px 2px rgba(0, 0, 0, .06), 0 18px 30px -26px rgba(0, 0, 0, .5); transition: transform .3s cubic-bezier(.2, .7, .2, 1), border-color .2s, box-shadow .3s; }
+.pf-cases a:hover { transform: translateY(-4px); border-color: var(--accent); box-shadow: 0 1px 2px rgba(0, 0, 0, .06), 0 26px 40px -28px rgba(0, 0, 0, .6); }
+.pf-case-top { display: flex; align-items: baseline; gap: .6rem; color: var(--muted); font-size: .74rem; font-weight: 800; }
+.pf-case-top b { color: var(--accent); font-size: 1rem; font-weight: 850; font-variant-numeric: tabular-nums; }
+.pf-cases h3 { margin: 0; font-size: 1.2rem; font-weight: 800; line-height: 1.3; letter-spacing: -.035em; word-break: keep-all; transition: color .2s; }
+.pf-cases a:hover h3 { color: var(--accent); }
+.pf-case-metric { display: flex; align-items: baseline; gap: .7rem; padding: .7rem 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+.pf-case-metric strong { color: var(--pen); font-size: 2.2rem; font-weight: 840; line-height: 1; letter-spacing: -.06em; font-variant-numeric: tabular-nums; }
+.pf-case-metric > span { display: grid; gap: .15rem; font-size: .82rem; font-weight: 800; }
+.pf-case-metric small { color: var(--muted); font-size: .72rem; font-weight: 700; }
+.pf-cases p { margin: 0; color: var(--muted); font-size: .88rem; line-height: 1.6; word-break: keep-all; }
+.pf-case-go { position: absolute; right: 1.4rem; bottom: 1.1rem; color: var(--accent); font-weight: 850; transition: transform .3s cubic-bezier(.2, .7, .2, 1); }
+.pf-cases a:hover .pf-case-go { transform: translateX(4px); }
+.pf-list h3 a { display: inline; }
+.pf-case-tag { display: inline-block; margin-left: .55rem; padding: .1rem .45rem; border: 1px solid var(--accent); border-radius: 999px; color: var(--accent); font-size: .66rem; font-weight: 850; letter-spacing: .03em; vertical-align: .12em; white-space: nowrap; }
+.pf-kind { display: inline-block; margin-right: .5rem; padding: .05rem .4rem; border-radius: 4px; background: var(--soft); color: var(--pen); font-size: .68rem; font-weight: 850; letter-spacing: .04em; }
+
 .pf-split { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr); gap: clamp(2rem, 5vw, 4.5rem); }
 .pf-rows { margin: 0; padding: 0; list-style: none; border-top: 1px solid var(--ink); }
 .pf-rows li { display: grid; grid-template-columns: 9.5rem minmax(0, 1fr); gap: 1.2rem; padding: 1.35rem 0; border-bottom: 1px solid var(--line); }
@@ -356,6 +405,7 @@ const num = (id: string) => String(sections.findIndex(([s]) => s === id) + 1).pa
   .pf-band div:nth-child(n + 4) { border-top: 1px solid var(--line); }
   .pf-feature, .pf-split, .pf-teach { grid-template-columns: 1fr; }
   .pf-awards { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .pf-cases { grid-template-columns: 1fr; }
 }
 @media (max-width: 720px) {
   .pf-hero { padding: 2.6rem 0 1.8rem; }
