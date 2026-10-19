@@ -17,8 +17,8 @@ const stories = (await getCollection('stories', (e) => e.data.lang === lang && e
   .sort((a, b) => a.data.part - b.data.part);
 const rules = [
   [L('자금', 'Money'), L('각자 2만 달러', '$20,000 each')],
-  [L('대상', 'Universe'), L('미국 상장 주식(ADR 포함)·ETF (지수 ETF 가능)', 'US-listed stocks (ADRs too) and ETFs, index ETFs too')],
-  [L('금지', 'Not allowed'), L('레버리지·인버스, 공매도, 신용', 'Leveraged or inverse, shorts, margin')],
+  [L('대상', 'Universe'), L('미국 상장 주식(ADR 포함)·ETF (지수·레버리지·인버스 ETF 가능)', 'US-listed stocks (ADRs too) and ETFs, including index, leveraged and inverse ETFs')],
+  [L('금지', 'Not allowed'), L('공매도, 신용', 'Shorts, margin')],
   [L('체결', 'Fills'), L('다음 미국 거래일 종가', 'Next US close')],
   [L('수수료', 'Fees'), L('매매마다 0.1%', '0.1% per trade')],
   [L('리듬', 'Rhythm'), L('토요일 회의, 매일 아침 평가', 'Saturday meeting, marked daily')],
@@ -198,7 +198,7 @@ const rules = [
     const colors = Object.fromEntries(rows.map(([s]) => [s, etf(s) ? ETF_COL : PAL[n++ % PAL.length]]));
     const bar = rows.map(([s, w]) => `<span style="flex:${w};background:${colors[s]}" title="${esc(s)} ${(w * 100).toFixed(1)}%">${w >= 0.07 ? esc(s) : ''}</span>`).join('') + (cash > 0.002 ? `<span class="is-cash" style="flex:${cash}"></span>` : '');
     const max = Math.max(...rows.map((r) => r[1]), cash, 0.01);
-    const list = rows.map(([s, w]) => `<li><span class="du-sym"><i style="background:${colors[s]}"></i>${esc(s)}${etf(s) ? '<small>ETF</small>' : d.kinds?.[s] === 'DEPOSITARY_RECEIPT' ? '<small>ADR</small>' : ''}</span><span class="du-nm">${esc(d.desc?.[s]?.[ko ? 'ko' : 'en'] || (d.names?.[s] !== s ? d.names?.[s] : '') || '')}</span><span class="du-w"><span style="width:${(w / max) * 100}%;background:${colors[s]}"></span></span><b>${(w * 100).toFixed(1)}%</b></li>`).join('')
+    const list = rows.map(([s, w]) => `<li><span class="du-sym"><i style="background:${colors[s]}"></i>${esc(s)}${d.leverage?.[s] ? `<small>${d.leverage[s]}x</small>` : etf(s) ? '<small>ETF</small>' : d.kinds?.[s] === 'DEPOSITARY_RECEIPT' ? '<small>ADR</small>' : ''}</span><span class="du-nm">${esc(d.desc?.[s]?.[ko ? 'ko' : 'en'] || (d.names?.[s] !== s ? d.names?.[s] : '') || '')}</span><span class="du-w"><span style="width:${(w / max) * 100}%;background:${colors[s]}"></span></span><b>${(w * 100).toFixed(1)}%</b></li>`).join('')
       + `<li class="is-cash"><span class="du-sym"><i></i>${T.cash}</span><span class="du-nm">${live ? usd(a.cash) : ''}</span><span class="du-w"><span style="width:${(cash / max) * 100}%"></span></span><b>${(cash * 100).toFixed(1)}%</b></li>`;
     return `<article class="du-book" style="--c:${COL[a.id]}"><h3><i></i>${esc(a.name)}<small>${live ? T.holdings : T.pending}</small></h3><div class="du-stack">${bar}</div><ul class="du-list">${list}</ul></article>`;
   }
