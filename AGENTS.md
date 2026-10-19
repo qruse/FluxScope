@@ -227,6 +227,7 @@ Landscape 3:2, 1536x1024.
 - Supply descriptive alt text; dimensions recorded in the review must match the actual file
 - For an externally sourced figure, place `*출처: [기관](URL) — 자료명*` / `*Source: [Organization](URL) — title*` immediately below it
 - An API's 5 MB upload ceiling is a transport limit, **not** editorial permission for a 5 MB image
+- YouTube: a paragraph containing only a Markdown link to a YouTube video (`[Exact video title](https://www.youtube.com/watch?v=<id>)`, `youtu.be/<id>` or `/shorts/<id>`) renders as a click-to-play player (thumbnail first, `youtube-nocookie` iframe on click; `youtubeEmbeds` in `worker/index.js`, allowed by `frame-src` in both CSPs). It is not an image and does not count toward the image contract. Embed only a video that directly supports a claim, prefer the original creator's upload over re-uploads, use the video's real title as the link text and identify the uploader in the surrounding text
 
 ## 8. Currency and publication
 
