@@ -215,13 +215,70 @@ const cases: Case[] = [
 ];
 
 const metricLine = (c: Case) => c.metrics.slice(0, 2).map((m) => `${m.k} ${m.v}`).join(' · ');
+
+// Key papers, summarized from their abstracts and full texts (research/papers/papers.md, checked 2026-10-20).
+type Paper = { id: string; date: string; venue: string; kind: string; tags: string[]; short: string; title: string; v: string; k: string; rows: [string, string][]; href: string };
+const researchPapers: Paper[] = [
+  {
+    id: 'ocean', date: '2024.11', kind: L('학술대회', 'Conference'), tags: [], venue: L('한국경영정보학회 추계국제학술대회', 'KMIS International Conference'),
+    short: L('기상예보를 붙인 해양 수온 예측', 'Sea temperature forecasts that use weather forecasts'),
+    title: L('해양환경 예측을 위한 다중그룹 시계열 예측 AI 개발: 기상예보 데이터 결합 및 딥러닝 방법론 기반 해양 수온 예측', 'Multi-group time-series AI for ocean forecasting: sea-temperature prediction combining weather forecasts and deep learning'),
+    v: 'R² 0.992', k: 'MAE 0.383',
+    rows: [
+      [L('문제', 'Problem'), L('수온 상승으로 적조와 어업 피해가 커지는데, 기존 모델은 한 해역에 과적합되고 새 해역엔 1–2년치 데이터가 필요했음', 'Warming seas bring red tides and fishery losses, yet existing models overfit one area and need 1–2 years of data for a new one')],
+      [L('데이터', 'Data'), L('국내 여러 해역의 해양 관측 시계열과 기상 예보', 'Ocean time series from several Korean sea areas, plus weather forecasts')],
+      [L('방법', 'Method'), L('여러 해역을 함께 배우는 다중 그룹 GRU 인코더-디코더, 디코더에 미래 기상 예보를 결합', 'A multi-group GRU encoder-decoder that learns all areas together, with future weather forecasts fed to the decoder')],
+      [L('결과', 'Result'), L('R² 0.9919, MAE 0.3832로 비교 모델 중 가장 높음', 'Best of the compared models at R² 0.9919 and MAE 0.3832')],
+    ],
+    href: 'https://www.earticle.net/Article/A472561',
+  },
+  {
+    id: 'dental', date: '2024.12', kind: 'KCI', tags: [], venue: L('스마트미디어저널 13(12)', 'Smart Media Journal 13(12)'),
+    short: L('실제 임상 3D 치아 스캔 세분화', 'Segmenting real clinical 3D dental scans'),
+    title: L('실무 기반 3D 치아 스캔 데이터 세분화를 위한 딥러닝 모델 성능 평가: MeshSegNet과 DilatedToothSegNet 모델 활용', 'Evaluating deep-learning models for segmenting real-world 3D dental scans: MeshSegNet and DilatedToothSegNet'),
+    v: 'MDSC 0.919', k: L('상악 기준 · 하악 0.908', 'upper jaw · lower 0.908'),
+    rows: [
+      [L('문제', 'Problem'), L('기존 연구는 온전한 구강만 학습해서, 크라운·임플란트가 있거나 일부만 찍은 실제 스캔에서 잘 안 됨', 'Earlier work trained only on complete mouths, so it struggled with crowns, implants and partial scans from real clinics')],
+      [L('데이터', 'Data'), L('치과 병원 구강 스캔 910건(상악 475, 하악 435)을 치은과 치아 14개, 15개 클래스로 라벨링', '910 clinical intraoral scans (475 upper, 435 lower) labelled into 15 classes: gum and 14 teeth')],
+      [L('방법', 'Method'), L('MeshSegNet과 DilatedToothSegNet을 같은 조건으로 학습하고 그래프 컷 후처리로 비교', 'MeshSegNet and DilatedToothSegNet trained under the same settings and compared after graph-cut refinement')],
+      [L('결과', 'Result'), L('DilatedToothSegNet(16,000 셀)이 DSC·mIoU 모두 MeshSegNet보다 2–3.5% 높음', 'DilatedToothSegNet (16,000 cells) beat MeshSegNet by 2–3.5% on both DSC and mIoU')],
+    ],
+    href: 'https://doi.org/10.30693/SMJ.2024.13.12.76',
+  },
+  {
+    id: 'epc', date: '2023.11', kind: 'KCI', tags: [L('현대엔지니어링 공동연구', 'With Hyundai Engineering')], venue: L('정보처리학회논문지: 소프트웨어 및 데이터 공학 12(11)', 'KIPS Trans. Software and Data Engineering 12(11)'),
+    short: L('건설 입찰 문서의 계약 조항 분류', 'Classifying clauses in EPC bid documents'),
+    title: L('EPC ITB 프로젝트의 위험관리를 위한 문서 조항 분류 모델 연구: 딥러닝 기반 앙상블 기법 활용', 'Clause classification for risk management in EPC ITB documents: a deep-learning ensemble approach'),
+    v: 'Top-5 93%', k: L('정확도 76% · 57개 조항', 'accuracy 76% · 57 clauses'),
+    rows: [
+      [L('문제', 'Problem'), L('100쪽 안팎의 입찰 안내서(ITB)를 짧은 입찰 기간에 다 검토하기 어렵고, 위험 조항만 골라내는 기존 방식은 데이터 부족으로 실무에 못 씀', 'Bid documents run to about 100 pages with little time to review, and detecting only risky clauses failed for lack of labelled data')],
+      [L('데이터', 'Data'), L('EPC 계약 문서 77건과 공개 법률·계약 말뭉치 12GB로 사전학습, 23건을 FIDIC 57개 조항으로 라벨링한 6,190건으로 미세조정', 'Pre-trained on 12 GB including 77 EPC contracts and public legal corpora; fine-tuned on 6,190 items from 23 contracts labelled with 57 FIDIC clauses')],
+      [L('방법', 'Method'), L('직접 사전학습한 ITB-ELECTRA와 Legal-BERT 앙상블, 5개 국어 역번역과 MLM 데이터 증강', 'An ensemble of our own ITB-ELECTRA and Legal-BERT, with back-translation through five languages and MLM augmentation')],
+      [L('결과', 'Result'), L('정확도 76.38%, 상위 5개 후보 안에 정답이 있는 비율 93.03%', 'Accuracy 76.38%, with the right clause among the top five 93.03% of the time')],
+    ],
+    href: 'https://doi.org/10.3745/KTSDE.2023.12.11.471',
+  },
+  {
+    id: 'hate', date: '2020.12', kind: 'KCI', tags: [], venue: L('한국정보통신학회논문지 24(12)', 'J. KIICE 24(12)'),
+    short: L('악성 댓글을 7개 유형으로 분류', 'Sorting hateful comments into seven types'),
+    title: 'Bias & Hate Speech Detection Using Deep Learning: Multi-channel CNN Modeling with Attention',
+    v: 'F1 0.703', k: 'Ko-BERT 0.684',
+    rows: [
+      [L('문제', 'Problem'), L('단어 사전 기반 탐지는 신조어와 문맥을 놓치고, 혐오·차별 유형을 구분하지 못해 제재 근거를 주기 어려움', 'Dictionary-based detection missed slang and context, and could not say which kind of hate or bias a comment showed')],
+      [L('데이터', 'Data'), L('연예 뉴스 댓글 203만 건으로 임베딩을 학습하고, 13만 7천 건을 비난·욕설·성별·정치·연령·종교·인종으로 라벨링', '2.03M entertainment-news comments for embeddings; 137,111 labelled as offensive, abuse, gender, politics, age, religion or race')],
+      [L('방법', 'Method'), L('임베딩·Bi-LSTM·어텐션 3채널 CNN에 하이웨이 네트워크를 결합', 'A three-channel CNN over embeddings, Bi-LSTM and attention, joined by a highway network')],
+      [L('결과', 'Result'), L('가중 F1 0.7032로 Ko-BERT(0.6843)보다 높고, 인종(0.610 vs 0.406)처럼 드문 유형에서 차이가 큼', 'Weighted F1 0.7032 against 0.6843 for Ko-BERT, with the widest gap on rare types such as race (0.610 vs 0.406)')],
+    ],
+    href: 'https://doi.org/10.6109/jkiice.2020.24.12.1595',
+  },
+];
 ---
-<BaseLayout lang={lang} title={L('주요 수행 프로젝트 및 연구', 'Key projects and research')} description={L('상수도 누수 탐지, 온실 환경 시계열 예측, LLM Agent 컨설팅 리포트. 현장 데이터를 실제 서비스로 만든 프로젝트 3건을 문제와 해결 과정으로 정리함.', 'Water-leak detection, greenhouse climate forecasting and LLM-agent consulting reports: three projects that turned field data into running services, told problem by problem.')}>
+<BaseLayout lang={lang} title={L('주요 수행 프로젝트 및 연구', 'Key projects and research')} description={L('상수도 누수 탐지, 온실 환경 시계열 예측, LLM Agent 컨설팅 리포트 프로젝트 3건과, 해양 수온·3D 치아 스캔·건설 계약 조항·악성 댓글 논문 4편을 문제와 해결 과정으로 정리함.', 'Three projects (water-leak detection, greenhouse forecasting, LLM-agent reports) and four papers (sea temperature, 3D dental scans, construction contracts, hateful comments), told problem by problem.')}>
   <header class="cs-hero"><div class="shell">
     <a class="cs-back" href={portfolioHref}>← {L('포트폴리오', 'Portfolio')}</a>
     <div class="section-kicker"><LabMark id="portfolio" />{L('포트폴리오 / 주요 수행 프로젝트 및 연구', 'Portfolio / Key projects and research')}</div>
     <h1>{L('현장 데이터를', 'Field data,')} <em>{L('운영 서비스로', 'shipped as services')}</em></h1>
-    <p class="cs-lede">{L('기록이 불완전하고 변수가 얽힌 현장 데이터를 정리해, 담당자와 농가가 매일 쓰는 서비스로 납품한 프로젝트 3건. 각 프로젝트에서 부딪힌 문제와 푼 방법을 순서대로 정리함.', 'Three projects where messy, incomplete field data became services that operators and growers use every day. Each one is told through the problems it hit and how they were solved.')}</p>
+    <p class="cs-lede">{L('기록이 불완전하고 변수가 얽힌 현장 데이터를 정리해, 담당자와 농가가 매일 쓰는 서비스로 납품한 프로젝트 3건. 각 프로젝트에서 부딪힌 문제와 푼 방법을 순서대로 정리하고, 아래에 주요 논문 4편을 붙임.', 'Three projects where messy, incomplete field data became services that operators and growers use every day, each told through the problems it hit and how they were solved, followed by four key papers.')}</p>
     <ol class="cs-index">
       {cases.map((c, i) => (
         <li><a href={`#${c.id}`}>
@@ -236,6 +293,7 @@ const metricLine = (c: Case) => c.metrics.slice(0, 2).map((m) => `${m.k} ${m.v}`
 
   <nav class="cs-nav" aria-label={L('프로젝트', 'Projects')}><div class="shell">
     {cases.map((c, i) => <a href={`#${c.id}`}><span>{String(i + 1).padStart(2, '0')}</span>{c.title}</a>)}
+    <a href="#research"><span>R</span>{L('주요 연구', 'Key research')}</a>
   </div></nav>
 
   <div class="shell cs-body">
@@ -463,6 +521,34 @@ const metricLine = (c: Case) => c.metrics.slice(0, 2).map((m) => `${m.k} ${m.v}`
       </section>
     ))}
 
+    <section class="cs-case cs-research" id="research" aria-labelledby="research-title">
+      <div class="cs-head">
+        <span class="cs-no">R</span>
+        <div>
+          <p class="cs-eyebrow">{L('논문', 'Papers')}<i>·</i>2020–2024</p>
+          <h2 id="research-title">{L('주요 연구', 'Key research')}</h2>
+          <p class="cs-copy">{L('현장 문제에서 출발한 논문 4편. 바다 수온, 치과 3D 스캔, 건설 계약서, 악성 댓글처럼 데이터는 제각각이지만, 실제 데이터의 빈틈을 메우는 방법을 찾는 연구임.', 'Four papers that started from field problems. Sea temperature, dental 3D scans, construction contracts and hateful comments: different data, the same work of filling the gaps in real-world data.')}</p>
+        </div>
+        <dl class="cs-metrics">
+          <div><dt>4</dt><dd>{L('주요 논문', 'key papers')}</dd></div>
+          <div><dt>3</dt><dd>{L('KCI 학술지', 'KCI journals')}</dd></div>
+          <div><dt>1</dt><dd>{L('기업 공동연구', 'industry collaboration')}</dd></div>
+        </dl>
+      </div>
+      <div class="cs-rgrid">
+        {researchPapers.map((p) => (
+          <article class="cs-rcard" id={`paper-${p.id}`}>
+            <p class="cs-rmeta"><span>{p.date}</span><b>{p.kind}</b>{p.tags.map((t) => <b class="is-co">{t}</b>)}</p>
+            <h3>{p.short}</h3>
+            <p class="cs-rfull">{p.title}</p>
+            <p class="cs-rmetric"><strong>{p.v}</strong><span>{p.k}</span></p>
+            <dl>{p.rows.map(([k, v]) => <div><dt>{k}</dt><dd>{v}</dd></div>)}</dl>
+            <p class="cs-rfoot"><span>{p.venue}</span><a href={p.href} rel="noopener" target="_blank">{L('원문', 'Paper')} →</a></p>
+          </article>
+        ))}
+      </div>
+    </section>
+
     <aside class="cs-end">
       <p>{L('다른 프로젝트, 논문, 수상, 강의는 포트폴리오에 있음.', 'Other projects, papers, awards and teaching are on the portfolio page.')}</p>
       <a class="lab-cta" href={portfolioHref}>{L('포트폴리오로 돌아가기', 'Back to the portfolio')}<span aria-hidden="true">→</span></a>
@@ -478,7 +564,7 @@ const metricLine = (c: Case) => c.metrics.slice(0, 2).map((m) => `${m.k} ${m.v}`
     if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
       root.classList.add('cs-motion');
       const reveal = new IntersectionObserver((entries) => entries.forEach((e) => { if (e.isIntersecting) { e.target.classList.add('is-in'); reveal.unobserve(e.target); } }), { rootMargin: '0px 0px -10% 0px' });
-      document.querySelectorAll('.cs-head, .cs-service, .cs-step, .cs-sample').forEach((el) => reveal.observe(el));
+      document.querySelectorAll('.cs-head, .cs-service, .cs-step, .cs-sample, .cs-rcard').forEach((el) => reveal.observe(el));
     }
     const spy = new IntersectionObserver((entries) => entries.forEach((e) => {
       if (!e.isIntersecting) return;
@@ -676,8 +762,27 @@ em.is-ok { color: #23855b; background: color-mix(in srgb, #33a07a 16%, transpare
 .cs-end p { margin: 0; color: var(--muted); font-weight: 650; }
 .cs-end .lab-cta { margin-top: 0; }
 
-.cs-motion .cs-head, .cs-motion .cs-service, .cs-motion .cs-step, .cs-motion .cs-sample { transition: opacity .8s cubic-bezier(.2, .7, .2, 1), transform .8s cubic-bezier(.2, .7, .2, 1); }
-.cs-motion :is(.cs-head, .cs-service, .cs-step, .cs-sample):not(.is-in) { opacity: 0; transform: translateY(18px); }
+.cs-rgrid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.2rem; margin: 2.4rem 0 0 calc(6rem + clamp(1.4rem, 3vw, 2.6rem)); }
+.cs-rcard { display: flex; flex-direction: column; gap: .75rem; padding: 1.4rem 1.5rem 1.2rem; background: var(--surface); border: 1px solid var(--line); border-top: 3px solid var(--ink); scroll-margin-top: 4rem; }
+.cs-rmeta { display: flex; flex-wrap: wrap; align-items: center; gap: .4rem; margin: 0; color: var(--muted); font-size: .76rem; font-weight: 800; font-variant-numeric: tabular-nums; }
+.cs-rmeta span { margin-right: .3rem; }
+.cs-rmeta b { padding: .12rem .5rem; border: 1px solid var(--line); border-radius: 999px; color: var(--pen); font-size: .7rem; font-weight: 850; }
+.cs-rmeta b.is-co { border-color: color-mix(in srgb, var(--accent) 45%, var(--line)); color: var(--accent); }
+.cs-rcard h3 { margin: 0; font-size: 1.28rem; font-weight: 800; line-height: 1.3; letter-spacing: -.04em; word-break: keep-all; }
+.cs-rfull { margin: -.3rem 0 0; color: var(--muted); font-size: .78rem; line-height: 1.55; word-break: keep-all; }
+.cs-rmetric { display: flex; flex-wrap: wrap; align-items: baseline; gap: .3rem .7rem; margin: .2rem 0 0; padding: .7rem 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+.cs-rmetric strong { color: var(--accent); font-size: 1.6rem; font-weight: 830; letter-spacing: -.04em; font-variant-numeric: tabular-nums; }
+.cs-rmetric span { color: var(--pen); font-size: .8rem; font-weight: 750; }
+.cs-rcard dl { display: grid; gap: .55rem; margin: 0; }
+.cs-rcard dl div { display: grid; grid-template-columns: 3.4rem minmax(0, 1fr); gap: .6rem; }
+.cs-rcard dt { color: var(--accent); font-size: .74rem; font-weight: 850; padding-top: .12rem; }
+.cs-rcard dd { margin: 0; font-size: .88rem; line-height: 1.6; word-break: keep-all; }
+.cs-rfoot { display: flex; justify-content: space-between; align-items: baseline; gap: 1rem; margin: auto 0 0; padding-top: .6rem; color: var(--muted); font-size: .76rem; font-weight: 700; }
+.cs-rfoot a { flex: none; color: var(--pen); font-weight: 800; }
+.cs-rfoot a:hover { color: var(--accent); }
+
+.cs-motion .cs-head, .cs-motion .cs-service, .cs-motion .cs-step, .cs-motion .cs-sample, .cs-motion .cs-rcard { transition: opacity .8s cubic-bezier(.2, .7, .2, 1), transform .8s cubic-bezier(.2, .7, .2, 1); }
+.cs-motion :is(.cs-head, .cs-service, .cs-step, .cs-sample, .cs-rcard):not(.is-in) { opacity: 0; transform: translateY(18px); }
 .cs-motion .cs-step:not(.is-in) .cs-bars-track span { transform: scaleX(0); }
 
 @media (max-width: 1080px) {
@@ -686,7 +791,8 @@ em.is-ok { color: #23855b; background: color-mix(in srgb, #33a07a 16%, transpare
   .cs-metrics div { grid-template-columns: 1fr; gap: .4rem; padding: .9rem .8rem; border-bottom: 0; }
   .cs-metrics div + div { border-left: 1px solid var(--line); }
   .cs-metrics dt { order: 0; }
-  .cs-service, .cs-steps, .cs-sample { margin-left: calc(4.5rem + clamp(1.4rem, 3vw, 2.6rem)); }
+  .cs-service, .cs-steps, .cs-sample, .cs-rgrid { margin-left: calc(4.5rem + clamp(1.4rem, 3vw, 2.6rem)); }
+  .cs-rgrid { grid-template-columns: 1fr; max-width: 640px; }
   .cs-service, .cs-step-grid, .cs-sample-grid { grid-template-columns: 1fr; }
   .cs-mock, .cs-vis, .cs-sample-shot { width: 100%; max-width: 580px; }
 }
@@ -704,7 +810,8 @@ em.is-ok { color: #23855b; background: color-mix(in srgb, #33a07a 16%, transpare
   .cs-metrics div { padding: .8rem .6rem; }
   .cs-metrics dt { font-size: 1.35rem; }
   .cs-metrics dd { font-size: .74rem; }
-  .cs-service, .cs-steps, .cs-sample { margin-left: 0; }
+  .cs-service, .cs-steps, .cs-sample, .cs-rgrid { margin-left: 0; }
+  .cs-rcard { padding: 1.2rem 1.1rem 1rem; }
   .cs-service { margin-top: 2rem; }
   .cs-steps { margin-top: 2.2rem; }
   .cs-s dl div { grid-template-columns: 1fr; gap: .1rem; }

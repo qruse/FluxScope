@@ -141,6 +141,7 @@ const casesHref = casesPath(lang);
         <p>{isKo ? '현장 데이터를 담당자와 농가가 매일 쓰는 서비스로 만든 프로젝트를, 부딪힌 문제와 푼 방법 순서로 정리함.' : 'Projects that turned field data into services people use every day, told through the problems they hit and how they were solved.'}</p>
         <ol class="lab-parts">
           {cv.cases.map((c, i) => <li><a href={`${casesHref}#${c.id}`}><span>{String(i + 1).padStart(2, '0')}</span>{c.title}</a></li>)}
+          <li><a href={`${casesHref}#research`}><span>R</span>{isKo ? '주요 연구 · 논문 4편' : 'Key research · 4 papers'}</a></li>
         </ol>
         <a class="lab-cta" href={casesHref}>{isKo ? '사례 보기' : 'Read the case studies'}<span aria-hidden="true">→</span></a>
       </div>
