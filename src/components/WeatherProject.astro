@@ -41,8 +41,8 @@ const vars = isKo
         </table>
         <p class="wx-cost"><b>{isKo ? '총 개발 비용 약 2만 원' : 'Total development cost: about 20,000 KRW'}</b>{isKo ? ' · Colab 구독비와 Claude 토큰 사용량이 전부임' : ' (roughly 15 USD) · just a Colab subscription and Claude tokens'}</p>
         <p class="wx-note">{isKo
-          ? '2026년 7월~10월 12일 발표 33번 · ASOS 97곳 · 발표 후 48시간 기준. 한정된 기간의 결과이고 다른 계절·큰 사건까지 이긴다는 뜻은 아님. 기상청 값은 5km 격자 예보라, 관측소별 평균 오차를 보정해 줘도(기온 1.02℃) 우리가 앞섰음.'
-          : '33 issuances from July to October 12, 2026 · 97 ASOS stations · 48 hours after issuance. A limited period; it does not show wins in every season or major event. KMA values are 5 km grid forecasts; even with its per-station bias removed (1.02 °C) ours stayed ahead.'}</p>
+          ? '2026년 7월~10월 12일 발표 33번 · ASOS 97곳 · 발표 후 48시간 기준. 한정된 기간의 결과이고 다른 계절·큰 사건까지 이긴다는 뜻은 아님. 기상청 값은 5km 격자 예보라, 관측소별 평균 오차를 보정해 줘도(기온 1.02℃) 우리가 앞섰음. 이슬비까지 비로 치는 0.1mm 기준(약한 비)에서도 F1 0.51로 기상청 0.37보다 높았음.'
+          : '33 issuances from July to October 12, 2026 · 97 ASOS stations · 48 hours after issuance. A limited period; it does not show wins in every season or major event. KMA values are 5 km grid forecasts; even with its per-station bias removed (1.02 °C) ours stayed ahead. Counting drizzle as rain (0.1 mm, light rain), our F1 was 0.51 against the KMA’s 0.37.'}</p>
       </div>
     </div>
   </header>
@@ -55,6 +55,7 @@ const vars = isKo
     <symbol id="wx-partn" viewBox="0 0 32 32"><path class="i-moon" d="M13 3a8 8 0 1 0 4 12.5A6.5 6.5 0 0 1 13 3z" /><path class="i-cloud" d="M10 27h14a5 5 0 0 0 0-10 7 7 0 0 0-13.4 1.6A4.3 4.3 0 0 0 10 27z" /></symbol>
     <symbol id="wx-cloud" viewBox="0 0 32 32"><path class="i-cloud" d="M8 25h16a6 6 0 0 0 0-12 8 8 0 0 0-15.3 2A5 5 0 0 0 8 25z" /></symbol>
     <symbol id="wx-rain" viewBox="0 0 32 32"><path class="i-cloud" d="M8 20h16a6 6 0 0 0 0-12 8 8 0 0 0-15.3 2A5 5 0 0 0 8 20z" /><path class="i-drop" d="M11 23l-2 5M17 23l-2 5M23 23l-2 5" /></symbol>
+    <symbol id="wx-drizzle" viewBox="0 0 32 32"><path class="i-cloud" d="M8 20h16a6 6 0 0 0 0-12 8 8 0 0 0-15.3 2A5 5 0 0 0 8 20z" /><path class="i-dot" d="M11 25v.1M17 27v.1M23 25v.1" /></symbol>
   </svg>
 
   <div class="wx-layout shell" data-wx data-lang={lang} data-src="/api/weather/">
@@ -96,7 +97,7 @@ const vars = isKo
 
       <section aria-labelledby="wx-week-title">
         <h2 id="wx-week-title" class="wx-h2"><span class="pen-under">{isKo ? '지난 7일 성적표' : 'Last 7 days'}</span></h2>
-        <p class="wx-meta">{isKo ? '지난 발표들을 실제 ASOS 관측과 맞춰 본 결과. 굵은 쪽이 이긴 쪽, MAE는 낮을수록 · 비 F1은 높을수록 좋음.' : 'Past issuances checked against ASOS observations. Bold marks the winner; lower MAE and higher rain F1 are better.'}</p>
+        <p class="wx-meta">{isKo ? '지난 발표들을 실제 ASOS 관측과 맞춰 본 결과. 굵은 쪽이 이긴 쪽, MAE는 낮을수록 · F1은 높을수록 좋음. 비 F1은 1mm 이상, 약한 비 F1은 이슬비까지 넣은 0.1mm 이상 기준.' : 'Past issuances checked against ASOS observations. Bold marks the winner; lower MAE and higher F1 are better. Rain F1 counts 1 mm or more; light-rain F1 counts 0.1 mm or more, drizzle included.'}</p>
         <div class="wx-table-wrap"><table class="wx-week" data-wx-week></table></div>
         <div class="wx-replay" hidden data-wx-replay>
           <label>{isKo ? '다시 보기' : 'Replay'} <select data-wx-run></select></label>
@@ -130,7 +131,7 @@ const vars = isKo
   type Run = { base: string; times: string[]; stations: Record<string, Stn> };
   type Score = Record<string, number | null>;
   type Site = {
-    updated: string; cut: number; forecast: Run;
+    updated: string; cut: number; cut01?: number | null; forecast: Run;
     stations: { stn: number; name: string; nameEn: string; lat: number; lon: number }[];
     week: null | { runs: ({ base: string; ours: Score; kma: Score })[]; total: { ours: Score; kma: Score }; stations: Record<string, { ours: Score; kma: Score }> };
   };
@@ -142,8 +143,8 @@ const vars = isKo
     const ko = root.dataset.lang === 'ko';
     const $ = <T extends Element>(s: string) => root.querySelector<T>(s)!;
     const T = ko
-      ? { fail: '예보를 불러오지 못했음. 잠시 뒤 다시 열어 주셈.', issued: '발표', updated: '갱신', ours: '우리 AI', kma: '기상청', obs: '관측', sky: '하늘', temp: '기온', pop: '강수확률', rn: '강수량', ws: '풍속', hm: '습도', am: '오전', pm: '오후', none: '아직 채점할 지난 예보가 없음', total: '7일 합계', run: '발표', f1: '비 F1', st: '이 관측소', wd: ['일', '월', '화', '수', '목', '금', '토'], h: '시' }
-      : { fail: 'Could not load the forecast. Please try again later.', issued: 'Issued', updated: 'updated', ours: 'Our AI', kma: 'KMA', obs: 'Observed', sky: 'Sky', temp: 'Temp', pop: 'Rain chance', rn: 'Rain', ws: 'Wind', hm: 'Humidity', am: 'AM', pm: 'PM', none: 'No past forecasts to score yet', total: '7-day total', run: 'Issued', f1: 'Rain F1', st: 'This station', wd: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'], h: ':00' };
+      ? { fail: '예보를 불러오지 못했음. 잠시 뒤 다시 열어 주셈.', issued: '발표', updated: '갱신', ours: '우리 AI', kma: '기상청', obs: '관측', sky: '하늘', temp: '기온', pop: '강수확률', rn: '강수량', ws: '풍속', hm: '습도', am: '오전', pm: '오후', none: '아직 채점할 지난 예보가 없음', total: '7일 합계', run: '발표', f1: '비 F1', f101: '약한 비 F1', d1: '약한 비', st: '이 관측소', wd: ['일', '월', '화', '수', '목', '금', '토'], h: '시' }
+      : { fail: 'Could not load the forecast. Please try again later.', issued: 'Issued', updated: 'updated', ours: 'Our AI', kma: 'KMA', obs: 'Observed', sky: 'Sky', temp: 'Temp', pop: 'Rain chance', rn: 'Rain', ws: 'Wind', hm: 'Humidity', am: 'AM', pm: 'PM', none: 'No past forecasts to score yet', total: '7-day total', run: 'Issued', f1: 'Rain F1', f101: 'Light-rain F1', d1: 'Light rain', st: 'This station', wd: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'], h: ':00' };
     const src = root.dataset.src!;
     let site: Site;
     try { site = await (await fetch(`${src}latest.json`)).json(); } catch { $('[data-wx-meta]').textContent = T.fail; return; }
@@ -164,19 +165,23 @@ const vars = isKo
     const when = (iso: string) => `${md(iso)}(${dow(iso)}) ${hour(iso)}${T.h}`;
     const name = (stn: number | string) => { const s = site.stations.find((x) => String(x.stn) === String(stn)); return s ? (ko ? s.name : s.nameEn) : String(stn); };
     const fc = site.forecast, cut = site.cut * 100, N = fc.times.length;
+    // Light rain (0.1 mm or more): our separate classifier, shown only when the 1 mm rain call is off.
+    const cut01 = site.cut01 == null ? null : site.cut01 * 100;
     const units: Record<string, string> = { ta: '°', pop: '%', ws: '', hm: '%' };
     const digits: Record<string, number> = { ta: 1, pop: 0, ws: 1, hm: 0 };
 
-    // Sky icon: ours from the rain chance and Aurora cloud cover, the KMA from its sky and precipitation codes.
+    // Sky icon: ours from the rain chances and Aurora cloud cover, the KMA from its sky and precipitation codes.
+    // Light rain = drizzle icon: ours when only the 0.1 mm classifier fires, the KMA when it calls rain under 1 mm.
     const night = (iso: string) => hour(iso) < 6 || hour(iso) >= 19;
     const sky = (who: 'ours' | 'kma', s: Stn, i: number) => {
       let k: string | null;
       if (who === 'ours') {
-        const c = s.ours.cc?.[i];
-        k = (s.ours.pop[i] ?? 0) >= cut ? 'rain' : c == null ? null : c < 30 ? 'sun' : c < 70 ? 'part' : 'cloud';
+        const c = s.ours.cc?.[i], p01 = s.ours.pop01?.[i];
+        k = (s.ours.pop[i] ?? 0) >= cut ? 'rain' : cut01 != null && p01 != null && p01 >= cut01 ? 'drizzle'
+          : c == null ? null : c < 30 ? 'sun' : c < 70 ? 'part' : 'cloud';
       } else {
-        const p = s.kma.pty?.[i], q = s.kma.sky?.[i];
-        k = p != null && p > 0 ? 'rain' : q === 1 ? 'sun' : q === 3 ? 'part' : q === 4 ? 'cloud' : null;
+        const p = s.kma.pty?.[i], q = s.kma.sky?.[i], r = s.kma.rn?.[i];
+        k = p != null && p > 0 ? (r != null && r < 1 ? 'drizzle' : 'rain') : q === 1 ? 'sun' : q === 3 ? 'part' : q === 4 ? 'cloud' : null;
       }
       if (k && night(fc.times[i] ?? '')) k = k === 'sun' ? 'moon' : k === 'part' ? 'partn' : k;
       return k;
@@ -196,7 +201,8 @@ const vars = isKo
       const s = fc.stations[curStn];
       $('[data-wx-time]').textContent = when(fc.times[ti]);
       const col = (who: 'ours' | 'kma') => {
-        const rain = who === 'ours' ? `${T.pop} ${fmt(value(s, who, 'pop', ti), 0)}%` : `${T.pop} ${fmt(value(s, who, 'pop', ti), 0)}% · ${T.rn} ${fmt(value(s, who, 'rn', ti))}mm`;
+        const p01 = value(s, 'ours', 'pop01', ti);
+        const rain = who === 'ours' ? `${T.pop} ${fmt(value(s, who, 'pop', ti), 0)}%${p01 != null ? ` · ${T.d1} ${fmt(p01, 0)}%` : ''}` : `${T.pop} ${fmt(value(s, who, 'pop', ti), 0)}% · ${T.rn} ${fmt(value(s, who, 'rn', ti))}mm`;
         return `<div class="wx-now-col is-${who}"><p class="wx-who">${who === 'ours' ? T.ours : T.kma}</p><div class="wx-now-main">${icon(sky(who, s, ti), 'wx-i wx-i-big')}<span class="wx-big">${fmt(value(s, who, 'ta', ti))}°</span></div><p>${rain}</p><p>${T.ws} ${fmt(value(s, who, 'ws', ti))}m/s · ${T.hm} ${fmt(value(s, who, 'hm', ti), 0)}%</p></div>`;
       };
       const o = value(s, 'obs' as 'ours', 'ta', ti);
@@ -341,7 +347,7 @@ const vars = isKo
         const idx = fc.times.map((t, i) => (day(t) === d && (hour(t) >= 12) === pm ? i : -1)).filter((i) => i >= 0);
         if (!idx.length) return icon(null);
         const ks = idx.map((i) => sky(who, s, i)).filter(Boolean) as string[];
-        const pick = ks.includes('rain') ? 'rain' : ks.sort((a, b) => ks.filter((x) => x === b).length - ks.filter((x) => x === a).length)[0] ?? null;
+        const pick = ks.includes('rain') ? 'rain' : ks.includes('drizzle') ? 'drizzle' : ks.sort((a, b) => ks.filter((x) => x === b).length - ks.filter((x) => x === a).length)[0] ?? null;
         return icon(pick ? pick.replace('moon', 'sun').replace('partn', 'part') : null);
       };
       const stat = (who: 'ours' | 'kma', d: string) => {
@@ -371,6 +377,7 @@ const vars = isKo
         + row(T.temp, `<td colspan="${N}" class="wx-curve-cell"><svg class="wx-curve" width="${N * CW}" height="120" data-wx-curve></svg></td>`)
         + (hasObs ? row(`${T.obs} ${T.temp}`, num('obs', 'ta', 1), 'is-obs') : '')
         + row(`${T.pop} <i class="o">${T.ours}</i>`, num('ours', 'pop', 0), 'is-o')
+        + (s.ours.pop01?.some((v) => v != null) ? row(`${T.d1} <i class="o">${T.ours}</i>`, num('ours', 'pop01', 0), 'is-o') : '')
         + row(`${T.pop} <i class="k">${T.kma}</i>`, num('kma', 'pop', 0), 'is-k')
         + row(`${T.rn} <i class="k">${T.kma}</i>`, cells((i) => { const r = value(s, 'kma', 'rn', i); return r ? fmt(r) : '–'; }), 'is-k')
         + row(`${T.ws} <i class="o">${T.ours}</i>`, num('ours', 'ws', 1), 'is-o')
@@ -417,7 +424,9 @@ const vars = isKo
       const tbl = $('[data-wx-week]');
       const wk = site.week;
       if (!wk) { tbl.innerHTML = `<caption>${T.none}</caption>`; return; }
-      const cells = (o: Score, k: Score) => [['ta', 2, 1], ['hm', 1, 1], ['ws', 2, 1], ['f1', 2, -1]].map(([key, d, dir]) => {
+      const has01 = wk.total.ours.f1_01 !== undefined;
+      const cols: [string, number, number][] = [['ta', 2, 1], ['hm', 1, 1], ['ws', 2, 1], ['f1', 2, -1], ...(has01 ? [['f1_01', 2, -1] as [string, number, number]] : [])];
+      const cells = (o: Score, k: Score) => cols.map(([key, d, dir]) => {
         const a = o[key as string], b = k[key as string];
         const win = a != null && b != null && (dir as number) * ((a as number) - (b as number)) < 0;
         const lose = a != null && b != null && (dir as number) * ((a as number) - (b as number)) > 0;
@@ -425,7 +434,7 @@ const vars = isKo
       }).join('');
       const row = (th: string, s: { ours: Score; kma: Score }, cls = '') => `<tr class="${cls}"><th>${th}</th>${cells(s.ours, s.kma)}</tr>`;
       const st = wk.stations[curStn];
-      tbl.innerHTML = `<thead><tr><th>${T.run}</th><th>${T.temp} MAE</th><th>${T.hm} MAE</th><th>${T.ws} MAE</th><th>${T.f1}</th></tr><tr class="wx-sub"><th></th>${`<th><span>${T.ours}</span><span class="k">${T.kma}</span></th>`.repeat(4)}</tr></thead><tbody>`
+      tbl.innerHTML = `<thead><tr><th>${T.run}</th><th>${T.temp} MAE</th><th>${T.hm} MAE</th><th>${T.ws} MAE</th><th>${T.f1}</th>${has01 ? `<th>${T.f101}</th>` : ''}</tr><tr class="wx-sub"><th></th>${`<th><span>${T.ours}</span><span class="k">${T.kma}</span></th>`.repeat(cols.length)}</tr></thead><tbody>`
         + wk.runs.map((r) => row(when(r.base), r)).join('')
         + row(T.total, wk.total, 'is-total') + (st ? row(`${T.st}: ${name(curStn)}`, st, 'is-station') : '') + '</tbody>';
     }
@@ -491,6 +500,7 @@ const vars = isKo
   .i-moon { fill: #f2d98a; stroke: #b99a3c; stroke-width: 1.6; stroke-linejoin: round; }
   .i-cloud { fill: var(--surface); stroke: var(--muted); stroke-width: 1.8; stroke-linejoin: round; }
   .i-drop { fill: none; stroke: #3b82d6; stroke-width: 2.2; stroke-linecap: round; }
+  .i-dot { fill: none; stroke: #3b82d6; stroke-width: 3.2; stroke-linecap: round; }
   .wx-i { display: inline-block; width: 28px; height: 28px; vertical-align: middle; }
   .wx-i-big { width: 56px; height: 56px; }
   .wx-badge { max-width: 640px; margin-top: 1.6rem; padding: 1rem 1.2rem; background: var(--surface); box-shadow: 0 1px 2px rgba(0, 0, 0, .08), 0 12px 20px -16px rgba(0, 0, 0, .45); }
