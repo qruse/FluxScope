@@ -52,6 +52,7 @@ export function portfolio(lang: Lang) {
   // Journal papers are KCI-indexed; `conf` marks a conference paper, which the KCI counts leave out.
   const papers: { date: string; venue: string; title: string; conf?: boolean }[] = [
     { date: '2024', venue: L('한국경영정보학회 추계학술대회', 'KMIS Fall Conference'), title: L('해양환경 예측을 위한 다중그룹 시계열 예측 AI 개발: 기상예보 데이터 결합 및 딥러닝 방법론 기반 해양 수온 예측', 'Multi-group time-series AI for ocean forecasting: sea-temperature prediction combining weather forecasts and deep learning'), conf: true },
+    { date: '2024', venue: L('한국스마트미디어학회', 'Korean Institute of Smart Media'), title: L('실무 기반 3D 치아 스캔 데이터 세분화를 위한 딥러닝 모델 성능 평가: MeshSegNet과 DilatedToothSegNet 모델 활용', 'Evaluating deep-learning models for segmenting real-world 3D dental scans: MeshSegNet and DilatedToothSegNet') },
     { date: '2023', venue: L('한국정보처리학회', 'KIPS'), title: L('EPC ITB 프로젝트의 위험관리를 위한 문서 조항 분류 모델 연구: 딥러닝 기반 앙상블 기법 활용', 'Clause classification for risk management in EPC ITB documents: a deep-learning ensemble approach') },
     { date: '2021', venue: L('정보시스템연구', 'The Journal of Information Systems'), title: L('섬유소재 분야 특허 기술 동향 분석: DETM & STM 텍스트마이닝 방법론 활용', 'Patent trends in textile materials with DETM and STM text mining') },
     { date: '2020', venue: L('한국정보통신학회', 'KIICE'), title: 'Bias & Hate Speech Detection Using Deep Learning: Multi-channel CNN Modeling with Attention' },

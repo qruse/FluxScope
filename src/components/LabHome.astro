@@ -128,7 +128,7 @@ const casesHref = casesPath(lang);
         <span class="lab-card-kicker">{isKo ? '하이라이트' : 'Highlights'}</span>
         <ol>
           {cv.awards.slice(0, 3).map((a) => <li class={a.top ? 'is-top' : undefined}><b>{a.rank}</b><span>{isKo ? a.ko : a.en}<small>{a.note}</small></span></li>)}
-          <li><b>KCI</b><span>{isKo ? `논문 ${cv.kci}편 · 특허 출원 1건` : `${cv.kci} papers · 1 patent filed`}<small>{isKo ? '텍스트 분류, 시계열 딥러닝, 토픽모델링' : 'Text classification, time-series deep learning, topic models'}</small></span></li>
+          <li><b>KCI</b><span>{isKo ? `논문 ${cv.kci}편 · 특허 출원 1건` : `${cv.kci} papers · 1 patent filed`}<small>{isKo ? '텍스트 분류, 시계열 딥러닝, 3D 세그멘테이션' : 'Text classification, time-series deep learning, 3D segmentation'}</small></span></li>
         </ol>
       </a>
     </article>
