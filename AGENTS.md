@@ -141,6 +141,7 @@ Section headings (H2):
 4. Final H2: `## Q&A 또 궁금한 것은?` / `## Q&A (Field Notes)`
    - 3–5 real reader questions, each followed by a concise nested answer
    - Address mistakes, limits or choices; do not merely repeat three summary bullets as questions
+   - Skip setup trivia the reader does not need to decide, such as why a particular CLI flag or option value is passed (e.g. "why `--dangerously-skip-permissions` and `--print-timeout 3300s`?"); the same applies to body bullets (user instruction, 2026-10-20)
 5. End after the final answer. No trailing separator, review-date footer, generic disclaimer, or extra conclusion
 
 ## 6. Experience must remain honest
@@ -220,6 +221,7 @@ Landscape 3:2, 1536x1024.
 - Avoid polished card layouts, symmetric infographic panels, studio props, beautiful calligraphy, glossy 3D art and generic AI decoration
 - The sketch explains a concept, not unverified product internals or measurements. Add a nearby qualification if it could be mistaken for a real device drawing or test
 - Within the total cap of 10, new articles include at least **three distinct useful body visuals** in addition to the sketch thumbnail: original sourced figures, deterministic diagrams or data charts; each must answer a different reader need rather than duplicate another image to reach the count
+- Keep text inside body visuals minimal so each reads at a glance: one short title, at most one subtitle, names plus 2–4 word labels in boxes, a one-line source; no sentences or explanatory paragraphs inside diagrams; the body text explains (user instruction, 2026-10-20)
 - Exact metrics, labels and architecture must use code/vector/chart tools, not image generation. Generate raster art only for the sketch or illustration that benefits from it
 - Read each image visually. Verify title, units, series, labels and meaning against the text. Reusing a wrong chart is a factual error
 - Width 800–1600 px recommended, hard maximum 1600 px; target <250 KiB, hard cap 500 KiB per image
