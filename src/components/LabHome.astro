@@ -3,7 +3,8 @@ import { getCollection } from 'astro:content';
 import { blogPath, categories, categoryPath, labSectionPath, labSections, projectPath, projects, storyPath, type Category } from '../lib/site';
 import { useTranslations, type Lang } from '../i18n/ui';
 import LabMark from './LabMark.astro';
-import { portfolio } from '../lib/portfolio';
+import LabFace from './LabFace.astro';
+import { casesPath, portfolio } from '../lib/portfolio';
 
 interface Props { lang: Lang; }
 const { lang } = Astro.props;
@@ -28,6 +29,7 @@ const storyPins = [
   { part: 4, img: 'part4-test', h: 537, ko: '4편 테스트 기간 점수 차트', en: 'Part 4 test-period score chart' },
 ];
 const cv = portfolio(lang);
+const casesHref = casesPath(lang);
 ---
 <h1 class="sr-only">{t('lab.title')}</h1>
 <!-- Background layer behind the home content: scattered pen-drawn triangles gather into two hatched
@@ -127,6 +129,26 @@ const cv = portfolio(lang);
         <ol>
           {cv.awards.slice(0, 3).map((a) => <li class={a.top ? 'is-top' : undefined}><b>{a.rank}</b><span>{isKo ? a.ko : a.en}<small>{a.note}</small></span></li>)}
           <li><b>KCI</b><span>{isKo ? `논문 ${cv.kci}편 · 특허 출원 1건` : `${cv.kci} papers · 1 patent filed`}<small>{isKo ? '텍스트 분류, 시계열 딥러닝, 토픽모델링' : 'Text classification, time-series deep learning, topic models'}</small></span></li>
+        </ol>
+      </a>
+    </article>
+    <!-- 05: the portfolio's case studies, numbered after the four sections. It belongs to the portfolio, so it
+         keeps the portfolio's tetrahedron face. -->
+    <article class="lab-entry" id="case-studies" data-face="3">
+      <span class="lab-mark lab-entry-num">05<LabFace face={3} /></span>
+      <div class="lab-entry-copy">
+        <h3><a class="pen-under" href={casesHref}>{cv.casesTitle}</a></h3>
+        <p>{isKo ? '현장 데이터를 담당자와 농가가 매일 쓰는 서비스로 만든 프로젝트를, 부딪힌 문제와 푼 방법 순서로 정리함.' : 'Projects that turned field data into services people use every day, told through the problems they hit and how they were solved.'}</p>
+        <ol class="lab-parts">
+          {cv.cases.map((c, i) => <li><a href={`${casesHref}#${c.id}`}><span>{String(i + 1).padStart(2, '0')}</span>{c.title}</a></li>)}
+        </ol>
+        <a class="lab-cta" href={casesHref}>{isKo ? '사례 보기' : 'Read the case studies'}<span aria-hidden="true">→</span></a>
+      </div>
+      <!-- The headline result of each case, as an index card. -->
+      <a class="taped lab-card lab-card-cases" href={casesHref}>
+        <span class="lab-card-kicker">{isKo ? '주요 성과' : 'Results'}</span>
+        <ol>
+          {cv.cases.map((c) => <li><b>{c.v}</b><span>{c.k} · {c.field}<small>{c.sub}</small></span></li>)}
         </ol>
       </a>
     </article>
@@ -420,6 +442,8 @@ a.lab-pin:hover { z-index: 3; transform: rotate(0) translateY(-6px) scale(1.06);
 .lab-card li.is-top b { color: var(--accent); }
 .lab-card li span { display: grid; gap: .15rem; font-size: .92rem; font-weight: 720; line-height: 1.4; letter-spacing: -.02em; word-break: keep-all; }
 .lab-card small { color: var(--muted); font-size: .78rem; font-weight: 600; }
+.lab-card-cases { --tilt: -1.4deg; --tape-tilt: 3deg; }
+.lab-card-cases li { grid-template-columns: 4.6rem minmax(0, 1fr); }
 @media (max-width: 860px) {
   .lab-pins, .lab-card { grid-column: 2 / -1; justify-self: start; }
   .lab-pins { max-width: 400px; }

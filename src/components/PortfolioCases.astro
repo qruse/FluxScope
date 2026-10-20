@@ -216,10 +216,10 @@ const cases: Case[] = [
 
 const metricLine = (c: Case) => c.metrics.slice(0, 2).map((m) => `${m.k} ${m.v}`).join(' · ');
 ---
-<BaseLayout lang={lang} title={L('주요 수행 프로젝트', 'Case studies')} description={L('상수도 누수 탐지, 온실 환경 시계열 예측, LLM Agent 컨설팅 리포트. 현장 데이터를 실제 서비스로 만든 프로젝트 3건을 문제와 해결 과정으로 정리함.', 'Water-leak detection, greenhouse climate forecasting and LLM-agent consulting reports: three projects that turned field data into running services, told problem by problem.')}>
+<BaseLayout lang={lang} title={L('주요 수행 프로젝트 및 연구', 'Key projects and research')} description={L('상수도 누수 탐지, 온실 환경 시계열 예측, LLM Agent 컨설팅 리포트. 현장 데이터를 실제 서비스로 만든 프로젝트 3건을 문제와 해결 과정으로 정리함.', 'Water-leak detection, greenhouse climate forecasting and LLM-agent consulting reports: three projects that turned field data into running services, told problem by problem.')}>
   <header class="cs-hero"><div class="shell">
     <a class="cs-back" href={portfolioHref}>← {L('포트폴리오', 'Portfolio')}</a>
-    <div class="section-kicker"><LabMark id="portfolio" />{L('포트폴리오 / 주요 수행 프로젝트', 'Portfolio / Case studies')}</div>
+    <div class="section-kicker"><LabMark id="portfolio" />{L('포트폴리오 / 주요 수행 프로젝트 및 연구', 'Portfolio / Key projects and research')}</div>
     <h1>{L('현장 데이터를', 'Field data,')} <em>{L('운영 서비스로', 'shipped as services')}</em></h1>
     <p class="cs-lede">{L('기록이 불완전하고 변수가 얽힌 현장 데이터를 정리해, 담당자와 농가가 매일 쓰는 서비스로 납품한 프로젝트 3건. 각 프로젝트에서 부딪힌 문제와 푼 방법을 순서대로 정리함.', 'Three projects where messy, incomplete field data became services that operators and growers use every day. Each one is told through the problems it hit and how they were solved.')}</p>
     <ol class="cs-index">

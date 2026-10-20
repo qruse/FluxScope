@@ -1,6 +1,7 @@
 // Portfolio data compiled from the owner's CVs, shared by the portfolio page and its lab home entry.
 // Never add the owner's real name, photo, phone, address, birth date, ID number or employer names.
 import type { Lang } from '../i18n/ui';
+import { labSectionPath, labSections } from './site';
 
 export const portfolioEmail = 'coolwin200@gmail.com';
 
@@ -113,5 +114,15 @@ export function portfolio(lang: Lang) {
   ];
 
 
-  return { career, education, domains, domainName, work, papers, kci, awards, teaching, hours, longest, barWidth, stats, skills };
+  // The three main client projects, each written up on the case-studies page; shown on the portfolio and the lab home.
+  const casesTitle = L('주요 수행 프로젝트 및 연구', 'Key projects and research');
+  const cases = [
+    { id: 'leak', field: L('이상 탐지 · 상수도', 'Anomaly detection · water'), title: L('유량 데이터로 누수 찾기', 'Finding leaks in flow data'), v: '90%', k: 'Accuracy', sub: 'F1 0.63 · XGBoost', d: L('기록이 불완전한 현장 데이터를 역추적 라벨링하고, 고정 직선 기준을 EMA 동적 기준선과 분류 모델로 바꿈.', 'Back-traced labels for incomplete field records, then a moving EMA baseline and a classifier in place of a fixed line.') },
+    { id: 'greenhouse', field: L('시계열 예측 · 스마트팜', 'Forecasting · smart farming'), title: L('온실 환경 시계열 예측 AI', 'Forecasting the greenhouse climate'), v: '92%', k: 'R²', sub: 'MAE 1.1℃ · PatchTST', d: L('환경·제어·기상 예보를 스트림별로 학습하고, 추세 분해로 계절 변화에도 버티는 24시간 예측.', 'Climate, control and weather streams learned separately, with trend decomposition to hold up across seasons.') },
+    { id: 'report', field: L('LLM Agent · 스마트팜', 'LLM agents · smart farming'), title: L('LLM Agent 컨설팅 리포트', 'LLM-agent consulting reports'), v: L('주간', 'Weekly'), k: L('농가별 리포트', 'per-farm report'), sub: 'LangGraph · PDF · Web', d: L('컨설턴트의 진단 과정을 에이전트 워크플로로 옮겨 그래프·표·실행 제언이 담긴 리포트를 자동 생성.', 'A consultant’s diagnosis rebuilt as an agent workflow that writes reports with charts, tables and concrete actions.') },
+  ];
+
+  return { career, education, domains, domainName, work, papers, kci, awards, teaching, hours, longest, barWidth, stats, skills, cases, casesTitle };
 }
+
+export const casesPath = (lang: Lang) => `${labSectionPath(labSections.find((section) => section.id === 'portfolio')!, lang)}case-studies/`;
