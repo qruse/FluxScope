@@ -1,23 +1,43 @@
 ---
+import { getCollection } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import LabPageStyles from './LabPageStyles.astro';
-import { projectPath, projects } from '../lib/site';
+import { projectPath, projects, storyPath } from '../lib/site';
 import type { Lang } from '../i18n/ui';
 
 interface Props { lang: Lang; }
 const { lang } = Astro.props;
 const isKo = lang === 'ko';
+// Each project lists how it runs and its development story parts, so the index says more than the names.
+const stories = (await getCollection('stories', (entry) => entry.data.lang === lang)).sort((a, b) => a.data.part - b.data.part);
+const runs: Record<string, { ko: string; en: string }> = {
+  'beat-kma': { ko: '매일 아침 새 예보를 올리고, 지난 예보를 실제 관측값으로 채점함.', en: 'A new forecast goes up every morning, and past forecasts are scored against what was actually observed.' },
+  'ai-duel': { ko: '매주 세 AI가 각자 주문을 내고, 매일 미국장 종가로 수익률과 위험 지표를 갱신함.', en: 'Each AI places its orders every week, and returns and risk figures update at every US close.' },
+};
 ---
-<BaseLayout lang={lang} title={isKo ? '프로젝트' : 'Projects'} description={isKo ? 'HSL Lab에서 직접 만들어 돌리는 프로젝트.' : 'Projects built and run at HSL Lab.'}>
-  <header class="page-top"><div class="shell"><div class="section-kicker">{isKo ? '프로젝트' : 'Projects'}</div><h1>{isKo ? '만들어서 돌려 보는 것들' : 'Things built and running'}</h1><p>{isKo ? '궁금한 걸 직접 만들어 보고, 돌아가는 채로 공개함.' : 'Built out of curiosity and published while they run.'}</p></div></header>
+<BaseLayout lang={lang} title={isKo ? '프로젝트' : 'Projects'} description={isKo ? 'HSL Lab에서 직접 만들어 돌리는 프로젝트. AI 기상 예보로 기상청과 겨루기, 세 AI의 미국 주식 모의투자 대결을 매일 갱신되는 성적과 함께 공개함.' : 'Projects built and run at HSL Lab: an AI weather forecast racing the KMA and three AIs running US stock paper portfolios, published with scores that update every day.'}>
+  <header class="page-top"><div class="shell"><div class="section-kicker">{isKo ? '프로젝트' : 'Projects'}</div><h1>{isKo ? '만들어서 돌려 보는 것들' : 'Things built and running'}</h1><p>{isKo ? '궁금한 걸 직접 만들어 보고, 돌아가는 채로 공개함. 결과는 매일 갱신되고, 만든 과정은 프로젝트 스토리에 편마다 정리함.' : 'Built out of curiosity and published while they run. Results update daily, and how each one was built is written up part by part in the project stories.'}</p></div></header>
   <div class="shell portfolio-list">
-    {projects.map((project) => (
-      <section class="portfolio-project">
-        <h2><a class="pen-under" href={projectPath(project.id, lang)}>{isKo ? project.nameKo : project.name}</a></h2>
-        <p>{isKo ? project.summaryKo : project.summary}</p>
-        <a class="lab-cta" href={projectPath(project.id, lang)}>{isKo ? project.ctaKo : project.cta}<span aria-hidden="true">→</span></a>
-      </section>
-    ))}
+    {projects.map((project) => {
+      const parts = stories.filter((s) => s.data.project === project.id);
+      const run = runs[project.id];
+      return (
+        <section class="portfolio-project">
+          <h2><a class="pen-under" href={projectPath(project.id, lang)}>{isKo ? project.nameKo : project.name}</a></h2>
+          <p>{isKo ? project.summaryKo : project.summary}</p>
+          {run && <p>{isKo ? run.ko : run.en}</p>}
+          {parts.length > 0 && (
+            <>
+              <p><strong>{isKo ? '만든 과정' : 'How it was built'}</strong></p>
+              <ol>
+                {parts.map((s) => <li><a href={storyPath(s.id.split('/')[1], lang)}>{isKo ? `${s.data.part}편` : `Part ${s.data.part}`}: {s.data.title}</a></li>)}
+              </ol>
+            </>
+          )}
+          <a class="lab-cta" href={projectPath(project.id, lang)}>{isKo ? project.ctaKo : project.cta}<span aria-hidden="true">→</span></a>
+        </section>
+      );
+    })}
   </div>
   <LabPageStyles />
 </BaseLayout>
