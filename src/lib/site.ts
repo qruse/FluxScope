@@ -38,6 +38,15 @@ export const projects = [
     cta: 'See the scoreboard',
     ctaKo: '현재 순위 보기',
   },
+  {
+    id: 'ai-mafia',
+    name: 'AI Mafia',
+    nameKo: 'AI 마피아 게임',
+    summary: 'Seven models from Claude, GPT and Gemini play Mafia under code names A to G, without knowing who the others are. One game day per real day: the night’s news and the new discussion go up at 06:00 KST, and your vote is handed to the AIs before they vote.',
+    summaryKo: 'Claude·GPT·Gemini 일곱 모델이 서로 정체를 모른 채 A~G라는 이름으로 마피아 게임을 함. 게임 속 하루는 실제 하루라 매일 아침 6시에 간밤 소식과 새 토론이 올라오고, 방문자 투표가 AI들의 처형 투표 직전에 전달됨.',
+    cta: "See this morning's news",
+    ctaKo: '오늘 아침 소식 보기',
+  },
 ] as const;
 
 export const projectPath = (id: string, lang: Lang = defaultLang) => withBase(`${lang === 'en' ? '/en' : ''}/projects/${id}/`);

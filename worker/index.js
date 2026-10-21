@@ -201,6 +201,15 @@ const commentSchema = [
   // Comments written before the blog moved under /blog/ (or by an old Worker during a deploy) follow their article.
   `UPDATE comments SET page = CASE WHEN page LIKE '/en/%' THEN '/en/blog/' || substr(page, 5) ELSE '/blog/' || substr(page, 2) END
     WHERE page NOT LIKE '/blog/%' AND page NOT LIKE '/en/blog/%'`,
+  // Visitor votes on /projects/ai-mafia/: one per visitor (hashed IP) per game day, changeable until the vote closes.
+  `CREATE TABLE IF NOT EXISTS mafia_votes (
+    game INTEGER NOT NULL,
+    day INTEGER NOT NULL,
+    voter TEXT NOT NULL,
+    seat TEXT NOT NULL,
+    created_at TEXT NOT NULL,
+    PRIMARY KEY (game, day, voter)
+  )`,
   // Working files per slug (both payloads and the internal review record), so article handoffs never go through Git.
   `CREATE TABLE IF NOT EXISTS drafts (
     slug TEXT PRIMARY KEY,
@@ -467,9 +476,10 @@ async function submitRecentlyChanged(env) {
 }
 
 // Data for the project pages, uploaded once a day with PUBLISH_TOKEN and kept in R2 under the project's prefix:
-// weather/ for /projects/beat-kma/ (weather_forecasting repository) and duel/ for /projects/ai-duel/ (ai_portfolio_duel).
+// weather/ for /projects/beat-kma/ (weather_forecasting repository), duel/ for /projects/ai-duel/ (ai_portfolio_duel)
+// and mafia/ for /projects/ai-mafia/ (ai_mafia: latest.json plus one game-NNN.json per finished game).
 async function projectData(request, env, url) {
-  const match = url.pathname.match(/^\/api\/(weather|duel)\/((?:verify\/)?[a-z0-9_-]+\.json)$/);
+  const match = url.pathname.match(/^\/api\/(weather|duel|mafia)\/((?:verify\/)?[a-z0-9_-]+\.json)$/);
   if (!match) return json({ error: 'Not found' }, 404);
   if (!env.IMAGES) return json({ error: 'Storage is unavailable' }, 503);
   const key = `${match[1]}/${match[2]}`;
@@ -489,9 +499,44 @@ async function projectData(request, env, url) {
   });
 }
 
+// Visitor votes for the AI Mafia game. The open game, day and living seats come from the uploaded mafia/latest.json,
+// so a vote only counts for the day currently shown; ai_mafia closes voting (vote.open = false) before it reads the tally.
+async function mafiaVotes(request, env, url) {
+  if (!env.IMAGES) return json({ error: 'Storage is unavailable' }, 503);
+  const tally = async (game, day) => {
+    const { results } = await env.DB.prepare('SELECT seat, COUNT(*) AS n FROM mafia_votes WHERE game = ? AND day = ? GROUP BY seat').bind(game, day).all();
+    const counts = Object.fromEntries(results.map((r) => [r.seat, r.n]));
+    return { game, day, total: results.reduce((t, r) => t + r.n, 0), tally: counts };
+  };
+  if (request.method === 'GET') {
+    const game = Number(url.searchParams.get('game'));
+    const day = Number(url.searchParams.get('day'));
+    if (!Number.isInteger(game) || !Number.isInteger(day) || game < 1 || day < 1) return json({ error: 'invalid_day' }, 400);
+    return json(await tally(game, day));
+  }
+  if (request.method !== 'POST') return json({ error: 'method_not_allowed' }, 405);
+  if (botAgent.test(request.headers.get('User-Agent') || '')) return json({ error: 'invalid_request' }, 400);
+  const payload = await readJson(request, 500);
+  const state = await env.IMAGES.get('mafia/latest.json').then((o) => (o ? o.json() : null)).catch(() => null);
+  const vote = state?.vote;
+  const seat = String(payload?.seat || '');
+  if (!vote?.open) return json({ error: 'closed' }, 409);
+  if (Number(payload?.game) !== vote.game || Number(payload?.day) !== vote.day) return json({ error: 'stale_day' }, 409);
+  if (!Array.isArray(vote.targets) || !vote.targets.includes(seat)) return json({ error: 'invalid_seat' }, 400);
+  const ip = request.headers.get('CF-Connecting-IP') || 'unknown';
+  const voter = toBase64(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(`fluxscope-mafia:${vote.game}:${vote.day}:${ip}`))).slice(0, 24);
+  await env.DB.prepare('INSERT INTO mafia_votes (game, day, voter, seat, created_at) VALUES (?, ?, ?, ?, ?) ON CONFLICT(game, day, voter) DO UPDATE SET seat = excluded.seat, created_at = excluded.created_at')
+    .bind(vote.game, vote.day, voter, seat, new Date().toISOString()).run();
+  return json({ ...(await tally(vote.game, vote.day)), mine: seat });
+}
+
 async function api(request, env, url, ctx) {
   if (url.pathname === '/api/images') return images(request, env, url);
-  if (/^\/api\/(weather|duel)\//.test(url.pathname)) return projectData(request, env, url);
+  if (url.pathname === '/api/mafia/vote' || url.pathname === '/api/mafia/votes') {
+    if (!env.DB) return json({ error: 'Database binding is unavailable' }, 503);
+    return mafiaVotes(request, env, url);
+  }
+  if (/^\/api\/(weather|duel|mafia)\//.test(url.pathname)) return projectData(request, env, url);
   if (!env.DB) return json({ error: 'Database binding is unavailable' }, 503);
   if (url.pathname === '/api/comments') return comments(request, env, url);
   if (url.pathname === '/api/views') return views(request, env, url);
