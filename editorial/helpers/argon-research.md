@@ -1,5 +1,5 @@
-<!-- Antigravity research brief (AGENTS §7, stage 1). Fill {{…}}, save as <workdir>/argon-research.md, run run_helpers.py <workdir> research.
-     Claude and Codex research the same topic at the same time; Argon later drafts from all three files. -->
+<!-- Antigravity research brief (AGENTS §7). Fill {{…}}, save as <workdir>/argon-research.md, run run_helpers.py <workdir>.
+     Claude and Codex research the same topic at the same time; Claude then writes the article from all three files. -->
 블로그 글 한 편의 자료조사만 한다. 글은 쓰지 않는다. 저장소 파일은 건드리지 않고 `{{workdir}}/research-argon.md` 하나만 만든다.
 
 - 주제: {{topic}} · 독자 질문: {{question}}

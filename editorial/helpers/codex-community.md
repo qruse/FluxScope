@@ -1,4 +1,4 @@
-<!-- Codex brief (AGENTS §7, stage 1). Fill {{…}}, save as <workdir>/codex.md, run run_helpers.py <workdir> research. -->
+<!-- Codex brief (AGENTS §7). Fill {{…}}, save as <workdir>/codex.md, run run_helpers.py <workdir>. -->
 Research one blog article together with two other AIs. Work only in the current folder; write `research-codex.md` and `community.md`.
 
 Article: {{title}} · Reader question: {{question}} · Topic: {{topic}} · Look into: {{items}}

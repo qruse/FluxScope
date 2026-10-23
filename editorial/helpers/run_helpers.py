@@ -1,43 +1,40 @@
-"""Run the helper AIs for one article (AGENTS §7 role split), in two stages.
+"""Run the helper AIs' research for one article (AGENTS §7 role split).
 
-Usage: python editorial/helpers/run_helpers.py <workdir> research|draft
-<workdir> (outside the repo) holds the filled briefs.
-- research: Antigravity (argon-research.md -> research-argon.md) and Codex (codex.md -> research-codex.md and
-  community.md) research in parallel, while Claude writes research-claude.md itself
-- draft: Antigravity (argon.md) runs in the blog repo and writes the payloads, review record and body charts
-  from all three research files
-Run it detached (Start-Process); background shell tasks are killed after 10 minutes. Writes <workdir>/done-<stage>.txt.
-If Argon's weekly quota is used up, the same brief reruns on Gemini 3.8 Flash and done-<stage>.txt says "(Flash fallback)".
+Usage: python editorial/helpers/run_helpers.py <workdir>
+<workdir> (outside the repo) holds the filled briefs. Antigravity (argon-research.md -> research-argon.md) and Codex
+(codex.md -> research-codex.md and community.md) research in parallel, while Claude writes research-claude.md itself.
+Claude writes the article from the three files (user instruction, 2026-10-24); there is no helper draft stage.
+Run it detached (Start-Process); background shell tasks are killed after 10 minutes. Writes <workdir>/done-research.txt.
+Antigravity researches on Gemini 3.8 Flash (user instruction, 2026-10-24). Argon's remaining weekly share is still read
+from `agy -p=/usage` and recorded in done-research.txt so it can be reported to the user.
 """
-import os, pathlib, subprocess, sys, time
+import os, pathlib, re, subprocess, sys, time
 
 work = pathlib.Path(sys.argv[1]).resolve()
-stage = sys.argv[2] if len(sys.argv) > 2 else "research"
-blog = pathlib.Path(__file__).resolve().parents[2]
 local = pathlib.Path(os.environ["LOCALAPPDATA"])
 agy = local / "agy" / "bin" / "agy.exe"
 codex = next((local / "OpenAI" / "Codex" / "bin").glob("*/codex.exe"))
 
-
-ARGON, FLASH = "gemini-4-argon-medium", "gemini-3.8-flash-medium"
-QUOTA_ERR = ("RESOURCE_EXHAUSTED", "quota reached")
+FLASH = "gemini-3.8-flash-medium"
 
 
-def argon(brief, cwd, model=ARGON):
+def argon_usage():
+    """Argon weekly limit remaining (%) and its reset time (UTC) from `agy -p=/usage`, or None."""
+    out = subprocess.run([str(agy), "--print-timeout", "60s", "-p=/usage"], capture_output=True, text=True,
+                         encoding="utf-8", timeout=120).stdout
+    m = re.search(r"Gemini 4 Argon Weekly Limit\s+(\d+)%\s+(\S+)", out)
+    return (int(m.group(1)), m.group(2)) if m else None
+
+
+usage = argon_usage()
+jobs = {
     # Prompt on stdin: as an argument it hits the Windows command-line length limit.
-    return ([str(agy), "--model", model, "--dangerously-skip-permissions", "--print-timeout", "3300s"],
-            cwd, (work / brief).read_text(encoding="utf-8"))
-
-
-if stage == "research":
-    jobs = {
-        "argon-research": argon("argon-research.md", work),
-        "codex": ([str(codex), "exec", "-C", str(work), "--skip-git-repo-check", "-s", "workspace-write", "-m", "gpt-6.1-sol",
-                   "-c", 'model_reasoning_effort="high"', "-c", 'web_search="live"', "-"], work,
-                  (work / "codex.md").read_text(encoding="utf-8")),
-    }
-else:
-    jobs = {"argon-draft": argon("argon.md", blog)}
+    "argon-research": ([str(agy), "--model", FLASH,"--dangerously-skip-permissions", "--print-timeout", "3300s"], work,
+                       (work / "argon-research.md").read_text(encoding="utf-8")),
+    "codex": ([str(codex), "exec", "-C", str(work), "--skip-git-repo-check", "-s", "workspace-write", "-m", "gpt-6.1-sol",
+               "-c", 'model_reasoning_effort="high"', "-c", 'web_search="live"', "-"], work,
+              (work / "codex.md").read_text(encoding="utf-8")),
+}
 
 procs, start = {}, time.time()
 for name, (cmd, cwd, stdin) in jobs.items():
@@ -46,7 +43,7 @@ for name, (cmd, cwd, stdin) in jobs.items():
     p.stdin.write(stdin)
     p.stdin.close()
     procs[name] = (p, log)
-lines = []
+lines = [f"argon weekly remaining: {f'{usage[0]}% (resets {usage[1]})' if usage else 'unknown'}"]
 for name, (p, log) in procs.items():
     try:
         code = p.wait(timeout=3500)
@@ -54,16 +51,5 @@ for name, (p, log) in procs.items():
         p.kill()
         code = "timeout"
     log.close()
-    note = ""
-    if name.startswith("argon") and any(e in (work / f"{name}.log").read_text(encoding="utf-8", errors="replace") for e in QUOTA_ERR):
-        # Argon's weekly quota is used up: Flash (separate quota) runs the same brief (user instruction, 2026-10-23)
-        cmd, cwd, stdin = jobs[name]
-        cmd = [FLASH if c == ARGON else c for c in cmd]
-        with open(work / f"{name}.log", "a", encoding="utf-8") as log:
-            log.write("\n--- Argon quota exhausted, rerunning with Flash ---\n")
-            log.flush()
-            code = subprocess.run(cmd, cwd=cwd, input=stdin, stdout=log, stderr=subprocess.STDOUT, text=True,
-                                  encoding="utf-8", timeout=3500).returncode
-        note = " (Flash fallback)"
-    lines.append(f"{name}: exit {code} after {int(time.time() - start)}s{note}")
-(work / f"done-{stage}.txt").write_text("\n".join(lines) + "\n", encoding="utf-8")
+    lines.append(f"{name}: exit {code} after {int(time.time() - start)}s")
+(work / "done-research.txt").write_text("\n".join(lines) + "\n", encoding="utf-8")
