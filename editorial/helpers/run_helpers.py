@@ -7,6 +7,7 @@ Usage: python editorial/helpers/run_helpers.py <workdir> research|draft
 - draft: Antigravity (argon.md) runs in the blog repo and writes the payloads, review record and body charts
   from all three research files
 Run it detached (Start-Process); background shell tasks are killed after 10 minutes. Writes <workdir>/done-<stage>.txt.
+If Argon's weekly quota is used up, the same brief reruns on Gemini 3.8 Flash and done-<stage>.txt says "(Flash fallback)".
 """
 import os, pathlib, subprocess, sys, time
 
@@ -18,9 +19,13 @@ agy = local / "agy" / "bin" / "agy.exe"
 codex = next((local / "OpenAI" / "Codex" / "bin").glob("*/codex.exe"))
 
 
-def argon(brief, cwd):
+ARGON, FLASH = "gemini-4-argon-medium", "gemini-3.8-flash-medium"
+QUOTA_ERR = ("RESOURCE_EXHAUSTED", "quota reached")
+
+
+def argon(brief, cwd, model=ARGON):
     # Prompt on stdin: as an argument it hits the Windows command-line length limit.
-    return ([str(agy), "--model", "gemini-4-argon-medium", "--dangerously-skip-permissions", "--print-timeout", "3300s"],
+    return ([str(agy), "--model", model, "--dangerously-skip-permissions", "--print-timeout", "3300s"],
             cwd, (work / brief).read_text(encoding="utf-8"))
 
 
@@ -49,5 +54,16 @@ for name, (p, log) in procs.items():
         p.kill()
         code = "timeout"
     log.close()
-    lines.append(f"{name}: exit {code} after {int(time.time() - start)}s")
+    note = ""
+    if name.startswith("argon") and any(e in (work / f"{name}.log").read_text(encoding="utf-8", errors="replace") for e in QUOTA_ERR):
+        # Argon's weekly quota is used up: Flash (separate quota) runs the same brief (user instruction, 2026-10-23)
+        cmd, cwd, stdin = jobs[name]
+        cmd = [FLASH if c == ARGON else c for c in cmd]
+        with open(work / f"{name}.log", "a", encoding="utf-8") as log:
+            log.write("\n--- Argon quota exhausted, rerunning with Flash ---\n")
+            log.flush()
+            code = subprocess.run(cmd, cwd=cwd, input=stdin, stdout=log, stderr=subprocess.STDOUT, text=True,
+                                  encoding="utf-8", timeout=3500).returncode
+        note = " (Flash fallback)"
+    lines.append(f"{name}: exit {code} after {int(time.time() - start)}s{note}")
 (work / f"done-{stage}.txt").write_text("\n".join(lines) + "\n", encoding="utf-8")

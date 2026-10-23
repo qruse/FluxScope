@@ -217,7 +217,7 @@ const rules = [
       const l = (a.log || []).find((x) => x.week === w);
       if (!l) return `<div class="du-entry is-empty" style="--c:${COL[a.id]}"></div>`;
       const top = Object.entries(l.targets || {}).sort((p, q) => q[1] - p[1]).slice(0, 6).map(([s, v]) => `<span>${esc(s)} ${(v * 100).toFixed(0)}%</span>`).join('');
-      return `<div class="du-entry" style="--c:${COL[a.id]}"><p class="du-who">${esc(a.name)} <span>${l.filled_on ? `${T.filled} ${esc(l.filled_on)}` : T.waiting}</span></p><p>${esc((!ko && l.summary_en) || l.summary)}</p><p class="du-top">${top}</p></div>`;
+      return `<div class="du-entry" style="--c:${COL[a.id]}"><p class="du-who">${esc(a.name)} <span>${l.filled_on ? `${T.filled} ${esc(l.filled_on)}` : T.waiting}${l.by ? ` · ${esc(ko ? `${l.by} 대행` : `decided by ${l.by}`)}` : ''}</span></p><p>${esc((!ko && l.summary_en) || l.summary)}</p><p class="du-top">${top}</p></div>`;
     }).join('')}</div>`).join('');
   }
 

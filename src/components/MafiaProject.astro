@@ -124,6 +124,8 @@ const rules = [
     const items = [];
     if (prev && prev.votes?.length) items.push(voteResult(prev, en));
     items.push(morning(cur));
+    // Seats Gemini 3.8 Flash played for the day because Argon's usage limit ran out (engine records them as subs)
+    if (cur.subs?.length) items.push(`<p class="mf-clock">${cur.subs.map(esc).join(', ')} ${en ? 'seat was played by Gemini 3.8 Flash today (Argon usage limit)' : '자리는 오늘 사용 한도 때문에 Gemini 3.8 Flash가 대신 뒀음'}</p>`);
     if (cur.votes?.length) items.push(voteResult(cur, en));
     if (g.result) items.push(`<p class="mf-win is-${g.result.winner}">${g.result.winner === 'town' ? T.townWin : T.mafiaWin}</p>`);
     h += `<div class="mf-day-tag">${T.day(cur.day)}</div>${items.join('')}`;
