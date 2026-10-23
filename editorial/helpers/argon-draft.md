@@ -16,9 +16,9 @@
 
 # 맡을 일
 - 만들 파일: `editorial/api-posts/{en,ko}-{{slug}}.json`, `editorial/reviews/{{slug}}.md`, 본문 그림 3장(`public/images/posts/{{category}}/{{slug}}-<name>.webp`, 그린 코드는 `{{workdir}}/make_charts.py`). 이 밖의 파일은 건드리지 않는다
-- 썸네일은 Claude 몫: `imageUrl`은 `/images/posts/{{category}}/{{slug}}-notebook.webp`
+- 썸네일은 Claude 몫: `imageUrl`은 `/images/posts/{{category}}/{{slug}}-notebook.webp`, 장면은 {{thumbnail scene and exact English labels}}. `imageAlt`와 리뷰의 Sketch brief는 이 장면 그대로 쓴다
 - 커뮤니티 반응 섹션은 쓰지 않는다 (Codex가 쓰고 Claude가 붙임). 레딧 조사도 하지 않는다
-- 그림은 `editorial/helpers/chart_style_reference.py` 스타일, 글자는 최소(짧은 제목, 상자엔 2–4단어 라벨, 출처 한 줄). 그린 뒤 직접 열어 확인
+- 본문 그림은 형식을 섞는다 (사용자 요청 10/23): 막대 차트는 최대 1장, 나머지는 타임라인·흐름도(`pipeline`), 픽토그램·선 그래프·표 그림, 그리고 `source` 1장 이상(조사 자료의 `## Images`에 적힌 공식 문서·정부 자료·우리 프로젝트 페이지를 직접 캡처해 핵심 부분만 자르고, 강조는 "added by HSL"로 밝힘. 언론사·남의 사진은 쓰지 않음). 차트는 `editorial/helpers/chart_style_reference.py` 색·글꼴을 따르고 글자는 최소(짧은 제목, 2–4단어 라벨, 출처 한 줄). 그린 뒤 직접 열어 확인
 - 게시·`--preview`·git은 하지 않는다
 
 # 지난 초안들이 반복한 실수 (하지 않는다)
