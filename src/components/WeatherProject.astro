@@ -95,6 +95,8 @@ const vars = isKo
         <div class="wx-hours-wrap" hidden data-wx-hours-wrap><table class="wx-hours" data-wx-hours></table></div>
       </section>
 
+      <div data-ad></div>
+
       <section aria-labelledby="wx-week-title">
         <h2 id="wx-week-title" class="wx-h2"><span class="pen-under">{isKo ? '지난 7일 성적표' : 'Last 7 days'}</span></h2>
         <p class="wx-meta">{isKo ? '지난 발표들을 실제 ASOS 관측과 맞춰 본 결과. 굵은 쪽이 이긴 쪽, MAE는 낮을수록 · F1은 높을수록 좋음. 비 F1은 1mm 이상, 약한 비 F1은 이슬비까지 넣은 0.1mm 이상 기준.' : 'Past issuances checked against ASOS observations. Bold marks the winner; lower MAE and higher F1 are better. Rain F1 counts 1 mm or more; light-rain F1 counts 0.1 mm or more, drizzle included.'}</p>

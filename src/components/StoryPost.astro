@@ -27,7 +27,7 @@ const date = entry.data.publishedAt.toLocaleDateString(isKo ? 'ko-KR' : 'en-US',
     </div>
   </header>
   <div class="story-layout shell">
-    <article class="article-body article-shell"><Content /></article>
+    <article class="article-body article-shell"><Content /><div data-ad></div></article>
     <aside class="story-side" aria-label={isKo ? '개발 스토리 목록' : 'Development story parts'}>
       {project && <p class="story-side-project"><a href={projectPath(project.id, lang)}>{isKo ? project.nameKo : project.name}</a></p>}
       <ol>

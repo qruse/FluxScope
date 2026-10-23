@@ -799,8 +799,15 @@ async function article(post, env, request, token) {
       ],
     },
   ];
-  const head = `<meta property="article:published_time" content="${escape(post.published_at)}"><meta property="article:modified_time" content="${escape(post.updated_at)}"><script type="application/ld+json">${JSON.stringify(jsonLd).replace(/</g, '\\u003c')}</script>`;
-  const html = `<article><header class="article-header article-shell">${token ? `<p class="preview-banner" role="note"><strong>${lang === 'ko' ? '미리보기' : 'Preview'}</strong> — ${lang === 'ko' ? '아직 발행 전인 글이며 목록·검색에 나오지 않음' : 'not published; hidden from listings and search'}</p>` : ''}<nav class="breadcrumbs" aria-label="Breadcrumb"><a href="${home}">${lang === 'ko' ? '블로그' : 'Blog'}</a><span>/</span><a href="${home}${escape(category)}/">${escape(categoryName)}</a><span>/</span><span aria-current="page">${lang === 'ko' ? '글' : 'Article'}</span></nav><h1>${escape(post.title)}</h1><p class="article-dek">${escape(post.description)}</p><div class="article-meta"><span>${lang === 'ko' ? '작성자' : 'By'}: <strong>HSL</strong></span><span>${lang === 'ko' ? '발행일' : 'Published'}: <time datetime="${escape(post.published_at)}">${escape(date)}</time></span><span>${lang === 'ko' ? '수정일' : 'Updated'}: <time datetime="${escape(post.updated_at)}">${escape(updatedDate)}</time></span></div></header>${post.image_url ? `<div class="article-shell article-figure"><div class="taped"><img class="article-visual" src="${escape(post.image_url)}" alt="${escape(imageAlt)}"${sizeAttributes(dimensions, post.image_url)} loading="eager" fetchpriority="high" decoding="async" /></div></div>` : ''}<div class="article-body article-shell">${youtubeEmbeds(currentLinks(micromark(post.body, { extensions: [gfm()], htmlExtensions: [gfmHtml()] })).replace(/<img src="([^"]+)"/g, (tag, src) => `<img src="${src}"${sizeAttributes(dimensions, src.replace(/&amp;/g, '&'))} loading="lazy" decoding="async"`))}</div><div class="article-end article-shell"><div class="tag-list">${tags.map((tag) => `<span>#${escape(tag)}</span>`).join('')}</div><p class="author-note">${lang === 'ko' ? '글: <strong>HSL</strong> · 사실 주장엔 1차 출처 링크를 닮 · 안 써 본 제품을 써 본 척하지 않음 · <a href="${about}">검증 방식 보기</a>' : 'By <strong>HSL</strong> · Factual claims link to their primary sources · Nothing is written up as hands-on testing unless it was · <a href="${about}">How posts are checked</a>'}</p></div></article>${token ? '' : `<section class="comments article-shell" id="comments" data-comments data-lang="${lang}" data-page="${escape(pathFor(post))}"></section><script src="/comments.js" defer></script>`}`;
+  // Published articles carry one ad after the 3-line summary (before the second heading) and one after the body.
+  const ads = !token && adsOn(env);
+  const ad = ads ? adUnit(env, lang) : '';
+  const withArticleAd = (body) => {
+    const second = body.indexOf('<h2', body.indexOf('<h2') + 1);
+    return ad && body.indexOf('<h2') >= 0 && second > 0 ? `${body.slice(0, second)}${ad}${body.slice(second)}` : body;
+  };
+  const head = `${ads ? adHead(env) : ''}<meta property="article:published_time" content="${escape(post.published_at)}"><meta property="article:modified_time" content="${escape(post.updated_at)}"><script type="application/ld+json">${JSON.stringify(jsonLd).replace(/</g, '\\u003c')}</script>`;
+  const html = `<article><header class="article-header article-shell">${token ? `<p class="preview-banner" role="note"><strong>${lang === 'ko' ? '미리보기' : 'Preview'}</strong> — ${lang === 'ko' ? '아직 발행 전인 글이며 목록·검색에 나오지 않음' : 'not published; hidden from listings and search'}</p>` : ''}<nav class="breadcrumbs" aria-label="Breadcrumb"><a href="${home}">${lang === 'ko' ? '블로그' : 'Blog'}</a><span>/</span><a href="${home}${escape(category)}/">${escape(categoryName)}</a><span>/</span><span aria-current="page">${lang === 'ko' ? '글' : 'Article'}</span></nav><h1>${escape(post.title)}</h1><p class="article-dek">${escape(post.description)}</p><div class="article-meta"><span>${lang === 'ko' ? '작성자' : 'By'}: <strong>HSL</strong></span><span>${lang === 'ko' ? '발행일' : 'Published'}: <time datetime="${escape(post.published_at)}">${escape(date)}</time></span><span>${lang === 'ko' ? '수정일' : 'Updated'}: <time datetime="${escape(post.updated_at)}">${escape(updatedDate)}</time></span></div></header>${post.image_url ? `<div class="article-shell article-figure"><div class="taped"><img class="article-visual" src="${escape(post.image_url)}" alt="${escape(imageAlt)}"${sizeAttributes(dimensions, post.image_url)} loading="eager" fetchpriority="high" decoding="async" /></div></div>` : ''}<div class="article-body article-shell">${withArticleAd(youtubeEmbeds(currentLinks(micromark(post.body, { extensions: [gfm()], htmlExtensions: [gfmHtml()] })).replace(/<img src="([^"]+)"/g, (tag, src) => `<img src="${src}"${sizeAttributes(dimensions, src.replace(/&amp;/g, '&'))} loading="lazy" decoding="async"`)))}</div>${ad ? `<div class="article-shell">${ad}</div>` : ''}<div class="article-end article-shell"><div class="tag-list">${tags.map((tag) => `<span>#${escape(tag)}</span>`).join('')}</div><p class="author-note">${lang === 'ko' ? '글: <strong>HSL</strong> · 사실 주장엔 1차 출처 링크를 닮 · 안 써 본 제품을 써 본 척하지 않음 · <a href="' + about + '">검증 방식 보기</a>' : 'By <strong>HSL</strong> · Factual claims link to their primary sources · Nothing is written up as hands-on testing unless it was · <a href="' + about + '">How posts are checked</a>'}</p></div></article>${token ? '' : `<section class="comments article-shell" id="comments" data-comments data-lang="${lang}" data-page="${escape(pathFor(post))}"></section><script src="/comments.js" defer></script>`}`;
   const shell = await env.ASSETS.fetch(new Request(new URL(about, request.url)));
   if (!shell.ok) return new Response('Template unavailable', { status: 503 });
   const alternateLang = lang === 'ko' ? 'en' : 'ko';
@@ -826,7 +833,7 @@ async function article(post, env, request, token) {
     .on(`.lang-switcher a[hreflang="${lang}"]`, new SetAttribute('href', token ? previewPath(lang, token) : pathFor(post)))
     .on(`.lang-switcher a[hreflang="${alternateLang}"]`, new SetAttribute('href', token ? previewPath(alternateLang, token) : alternate.replace(origin, '')));
   if (token) rewriter.on('meta[name="robots"]', new SetAttribute('content', 'noindex, nofollow'));
-  return rewriter.transform(new Response(shell.body, { headers: token ? { ...responseHeaders, 'Cache-Control': 'no-store', 'X-Robots-Tag': 'noindex, nofollow' } : responseHeaders }));
+  return rewriter.transform(new Response(shell.body, { headers: token ? { ...responseHeaders, 'Cache-Control': 'no-store', 'X-Robots-Tag': 'noindex, nofollow' } : ads ? { ...responseHeaders, 'Content-Security-Policy': adCsp } : responseHeaders }));
 }
 
 // The static sitemap lists home and category pages; their lastmod is the newest D1 post they show.
@@ -885,6 +892,42 @@ const securityHeaders = {
   'Permissions-Policy': 'camera=(), microphone=(), geolocation=(), browsing-topics=()',
   'Cross-Origin-Opener-Policy': 'same-origin',
 };
+
+// AdSense loads only once ADSENSE_PUBLISHER_ID (pub-…) is set; ad units also need ADSENSE_SLOT (the display unit id).
+// Ads go on articles, project pages and project stories; the portfolio, home, listings, previews and policy pages never get them.
+const adPath = /^\/(?:en\/)?(?:blog\/posts|projects|stories)\/[a-z0-9]+(?:-[a-z0-9]+)*\/$/;
+const adsOn = (env) => /^pub-\d+$/.test(env.ADSENSE_PUBLISHER_ID || '');
+const adHead = (env) => `<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-${env.ADSENSE_PUBLISHER_ID}" crossorigin="anonymous"></script>`;
+const adUnit = (env, lang) => (/^\d+$/.test(env.ADSENSE_SLOT || '')
+  ? `<aside class="ad-unit" aria-label="${lang === 'ko' ? '광고' : 'Advertisement'}" style="margin:2.5rem 0;min-height:120px"><p style="margin:0 0 .3rem;font-size:.7rem;opacity:.6">${lang === 'ko' ? '광고' : 'Advertisement'}</p><ins class="adsbygoogle" style="display:block" data-ad-client="ca-${env.ADSENSE_PUBLISHER_ID}" data-ad-slot="${env.ADSENSE_SLOT}" data-ad-format="auto" data-full-width-responsive="true"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({});</script></aside>`
+  : '');
+// Google's ad scripts and frames come from many hosts, so pages with ads allow any https source for scripts, frames and connections.
+const adCsp = securityHeaders['Content-Security-Policy']
+  .replace("script-src 'self'", "script-src 'self' https:").replace('frame-src https://www.youtube-nocookie.com', 'frame-src https:').replace("connect-src 'self'", "connect-src 'self' https:");
+
+class FillAd {
+  constructor(html) { this.html = html; }
+  element(element) { if (this.html) element.replace(this.html, { html: true }); else element.remove(); }
+}
+class AdBeforeSecondHeading {
+  constructor(html) { this.html = html; this.seen = 0; }
+  element(element) { if (++this.seen === 2 && this.html) element.before(this.html, { html: true }); }
+}
+
+// Static project and story pages mark ad spots with <div data-ad>; they are filled here, or removed while ads are off.
+function withAds(response, env, url) {
+  if (response.status !== 200 || !(response.headers.get('Content-Type') || '').includes('text/html')) return response;
+  const on = adsOn(env) && adPath.test(url.pathname);
+  const unit = on ? adUnit(env, url.pathname.startsWith('/en/') ? 'en' : 'ko') : '';
+  const rewriter = new HTMLRewriter().on('[data-ad]', new FillAd(unit));
+  if (!on) return rewriter.transform(response);
+  rewriter.on('head', new AppendHead(adHead(env)));
+  if (/^\/(?:en\/)?stories\//.test(url.pathname)) rewriter.on('article.article-body > h2', new AdBeforeSecondHeading(unit));
+  const out = rewriter.transform(response);
+  const headers = new Headers(out.headers);
+  headers.set('Content-Security-Policy', adCsp);
+  return new Response(out.body, { status: out.status, statusText: out.statusText, headers });
+}
 
 function withSecurityHeaders(response) {
   if (response.status === 101) return response;
@@ -990,7 +1033,7 @@ async function handle(request, env, ctx) {
           const moved = await env.DB.prepare('SELECT lang, slug FROM posts WHERE lang = ? AND slug = ?').bind(legacy[1] ? 'en' : 'ko', legacy[2]).first();
           if (moved) return Response.redirect(`${origin}${pathFor(moved)}`, 301);
         }
-        return env.ASSETS.fetch(request);
+        return withAds(await env.ASSETS.fetch(request), env, url);
       }
       const post = await env.DB.prepare('SELECT * FROM posts WHERE lang = ? AND slug = ?').bind(match[1] ? 'en' : 'ko', match[2]).first();
       return post ? article(post, env, request) : notFound(env, request);
