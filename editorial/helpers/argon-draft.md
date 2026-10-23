@@ -1,4 +1,4 @@
-<!-- Antigravity brief (AGENTS §7 role split). Fill {{…}}, save as <workdir>/argon.md, run run_helpers.py.
+<!-- Antigravity draft brief (AGENTS §7, stage 2). Fill {{…}}, save as <workdir>/argon.md, run run_helpers.py <workdir> draft.
      Keep it short: rules live in AGENTS.md; list here only what the article needs and mistakes drafts actually repeated. -->
 너는 HSL 블로그 글 한 편을 검수 없이 미리보기에 올릴 수 있는 상태까지 혼자 끝낸다. 작업 폴더는 블로그 저장소다.
 
@@ -10,6 +10,7 @@
 - 독자 질문: {{question}}
 - 결론: {{conclusion}}
 - 글쓴이 경험 (이 밖의 경험·숫자는 지어내지 않음): {{experience or 없음}}
+- 조사 자료: `{{workdir}}/research-claude.md`, `research-argon.md`, `research-codex.md`를 먼저 다 읽고 합친다. 셋이 엇갈리면 1차 출처를 직접 열어 확인한다. 새 조사는 빈 곳만
 - 조사할 것: {{items}}
 - 조심할 것: {{topic traps, or 생략}}
 
