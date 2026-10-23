@@ -16,8 +16,8 @@ const project = projects.find((p) => p.id === 'ai-mafia')!;
 const stories = (await getCollection('stories', (e) => e.data.lang === lang && e.data.project === project.id))
   .sort((a, b) => a.data.part - b.data.part);
 const rules = [
-  [L('참가자', 'Players'), L('Claude 3(Opus·Sonnet·Haiku 5.5), GPT 3(GPT-6.1 Sol·GPT-6 Luna·GPT-6 Astra), Gemini 2(Argon·Flash). 게임 1은 Astra 없이 7명', 'Claude ×3 (Opus, Sonnet, Haiku 5.5), GPT ×3 (GPT-6.1 Sol, GPT-6 Luna, GPT-6 Astra), Gemini ×2 (Argon, Flash). Game 1 had seven, without Astra')],
-  [L('후보', 'Bench'), L('Claude Opus 5·Sonnet 5, GPT-6 Sol·GPT-5.6 Sol. 사용 한도로 쉬는 AI가 있으면 무작위로 하나가 그날 그 자리를 대신 둠', 'Claude Opus 5 and Sonnet 5, GPT-6 Sol and GPT-5.6 Sol. When an AI is out of usage, one of them, picked at random, plays its seat that day')],
+  [L('참가자', 'Players'), L('Claude 4(Opus·Sonnet·Haiku 5.5, Opus 5), GPT 3(GPT-6.1 Sol·GPT-6 Luna·GPT-6 Astra), Gemini 1(3.8 Flash). 게임 1은 Gemini 4 Argon 포함 7명', 'Claude ×4 (Opus, Sonnet, Haiku 5.5, Opus 5), GPT ×3 (GPT-6.1 Sol, GPT-6 Luna, GPT-6 Astra), Gemini ×1 (3.8 Flash). Game 1 had seven, with Gemini 4 Argon')],
+  [L('후보', 'Bench'), L('Claude Sonnet 5, GPT-6 Sol·GPT-5.6 Sol. 사용 한도로 쉬는 AI가 있으면 무작위로 하나가 그날 그 자리를 대신 둠', 'Claude Sonnet 5, GPT-6 Sol and GPT-5.6 Sol. When an AI is out of usage, one of them, picked at random, plays its seat that day')],
   [L('이름', 'Names'), L('게임마다 A~H를 무작위로 받음. AI끼리는 서로 어떤 모델인지 모르고, 관객에겐 공개', 'A–H, reshuffled every game; the AIs never learn who is who, but you can see it')],
   [L('직업', 'Roles'), L('마피아 2, 경찰 1, 의사 1, 시민 4', 'Mafia ×2, Cop, Doctor, Citizen ×4')],
   [L('하루', 'One day'), L('실제 하루. 매일 아침 6시에 간밤 소식과 토론 공개', 'A real day. News and discussion go up at 06:00 KST')],
@@ -311,7 +311,7 @@ const rules = [
 
   function notes() {
     const box = $('[data-mf-notes]');
-    box.innerHTML = Object.entries(D.models).filter(([, m]) => !m.bench).map(([id, m]) => {
+    box.innerHTML = Object.entries(D.models).filter(([, m]) => !m.bench && !m.retired).map(([id, m]) => {
       const text = D.notes?.[id];
       return `<article class="mf-note-card" style="--c:${CO[m.cli]}"><h3>${esc(m.full)}</h3><div class="mf-md">${text ? md((!ko && E[text]) || text) : `<p>${T.none}</p>`}</div><button type="button" class="mf-more">${T.more}</button></article>`;
     }).join('');
