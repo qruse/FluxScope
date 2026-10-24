@@ -530,8 +530,53 @@ async function mafiaVotes(request, env, url) {
   return json({ ...(await tally(vote.game, vote.day)), mine: seat });
 }
 
+// My-voice TTS (/projects/my-voice-tts/): the model runs on the owner's home GPU behind a Cloudflare quick tunnel.
+// my_voice_tts/server/tunnel.py re-registers the tunnel URL every minute (PUT /api/tts/backend, PUBLISH_TOKEN); the page
+// talks only to this Worker, which adds the shared key and a hashed visitor id. A stale heartbeat means the PC is off.
+const ttsStale = 3 * 60 * 1000;
+async function ttsBackend(env) {
+  const b = await env.IMAGES.get('tts/backend.json').then((o) => (o ? o.json() : null)).catch(() => null);
+  return b && Date.now() - Date.parse(b.at) < ttsStale ? b.url : null;
+}
+async function tts(request, env, url) {
+  if (!env.IMAGES) return json({ error: 'Storage is unavailable' }, 503);
+  const route = url.pathname.slice('/api/tts/'.length);
+  if (route === 'backend') {
+    if (request.method !== 'PUT') return json({ error: 'method_not_allowed' }, 405);
+    if (!authorized(request, env.PUBLISH_TOKEN)) return json({ error: 'Unauthorized' }, 401);
+    const target = String((await readJson(request, 500))?.url || '');
+    if (!/^https:\/\/[a-z0-9-]+\.trycloudflare\.com$/.test(target)) return json({ error: 'invalid_url' }, 400);
+    await env.IMAGES.put('tts/backend.json', JSON.stringify({ url: target, at: new Date().toISOString() }), { httpMetadata: { contentType: 'application/json' } });
+    return json({ saved: true });
+  }
+  const backend = await ttsBackend(env);
+  const headers = { 'X-HSL-Key': env.PUBLISH_TOKEN || '' };
+  if (route === 'status') {
+    if (!backend) return json({ online: false });
+    try {
+      const r = await fetch(`${backend}/health`, { headers, signal: AbortSignal.timeout(5000) });
+      return json(r.ok ? { online: true, ...(await r.json()) } : { online: false });
+    } catch { return json({ online: false }); }
+  }
+  if (route !== 'verify' && route !== 'speak') return json({ error: 'Not found' }, 404);
+  if (request.method !== 'POST') return json({ error: 'method_not_allowed' }, 405);
+  if (botAgent.test(request.headers.get('User-Agent') || '')) return json({ error: 'invalid_request' }, 400);
+  if (!backend) return json({ error: 'offline' }, 503);
+  const body = await request.arrayBuffer();
+  if (body.byteLength > 2 * 1024 * 1024) return json({ error: 'too_large' }, 413);
+  const ip = request.headers.get('CF-Connecting-IP') || 'unknown';
+  headers['X-Client'] = toBase64(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(`fluxscope-tts:${ip}`))).slice(0, 24);
+  headers['Content-Type'] = route === 'verify' ? 'audio/wav' : 'application/json';
+  if (route === 'verify') headers['X-Lang'] = url.searchParams.get('lang') === 'en' ? 'en' : 'ko';
+  try {
+    const r = await fetch(`${backend}/${route}`, { method: 'POST', headers, body, signal: AbortSignal.timeout(90000) });
+    return new Response(r.body, { status: r.status, headers: { 'Content-Type': r.headers.get('Content-Type') || 'application/json', 'Cache-Control': 'no-store' } });
+  } catch { return json({ error: 'offline' }, 503); }
+}
+
 async function api(request, env, url, ctx) {
   if (url.pathname === '/api/images') return images(request, env, url);
+  if (url.pathname.startsWith('/api/tts/')) return tts(request, env, url);
   if (url.pathname === '/api/mafia/vote' || url.pathname === '/api/mafia/votes') {
     if (!env.DB) return json({ error: 'Database binding is unavailable' }, 503);
     return mafiaVotes(request, env, url);
@@ -929,10 +974,16 @@ function withAds(response, env, url) {
   return new Response(out.body, { status: out.status, statusText: out.statusText, headers });
 }
 
-function withSecurityHeaders(response) {
+// The my-voice TTS page records from the microphone and plays the generated audio from a blob: URL; every other page keeps both off.
+const micPage = /^\/(?:en\/)?projects\/my-voice-tts\/$/;
+function withSecurityHeaders(response, url) {
   if (response.status === 101) return response;
   const headers = new Headers(response.headers);
   for (const [name, value] of Object.entries(securityHeaders)) if (!headers.has(name)) headers.set(name, value);
+  if (url && micPage.test(url.pathname)) {
+    headers.set('Permissions-Policy', securityHeaders['Permissions-Policy'].replace('microphone=()', 'microphone=(self)'));
+    headers.set('Content-Security-Policy', `${headers.get('Content-Security-Policy')}; media-src 'self' blob:`);
+  }
   return new Response(response.body, { status: response.status, statusText: response.statusText, headers });
 }
 
@@ -943,7 +994,7 @@ async function edgeCached(request, env, ctx) {
   const url = new URL(request.url);
   const bypass = request.method !== 'GET' || !edgeCachedPath.test(url.pathname) || /no-cache|max-age=0/i.test(`${request.headers.get('Cache-Control')} ${request.headers.get('Pragma')}`);
   const cache = globalThis.caches?.default;
-  if (bypass || !cache) return withSecurityHeaders(await handle(request, env, ctx));
+  if (bypass || !cache) return withSecurityHeaders(await handle(request, env, ctx), url);
   const key = new Request(`${url.origin}${url.pathname}`);
   const hit = await cache.match(key);
   if (hit) {
@@ -952,7 +1003,7 @@ async function edgeCached(request, env, ctx) {
     fresh.headers.set('Cache-Control', 'public, max-age=0, must-revalidate');
     return fresh;
   }
-  const response = withSecurityHeaders(await handle(request, env, ctx));
+  const response = withSecurityHeaders(await handle(request, env, ctx), url);
   if (response.status === 200) {
     const stored = new Response(response.clone().body, response);
     stored.headers.set('Cache-Control', 'public, max-age=60');

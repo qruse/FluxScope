@@ -1,0 +1,216 @@
+---
+// "TTS in your own voice" project page. The model (OmniVoice, zero-shot voice cloning) runs on the owner's home RTX 3070
+// (my_voice_tts repository: server/app.py + server/tunnel.py) and is reached only through /api/tts/ on the Worker.
+// A visitor reads one fixed consent sentence; Whisper checks it was read, then any text is spoken in that voice.
+// Styles are inline: the shared CSS bundle is at its performance budget.
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { projects, projectPath } from '../lib/site';
+import type { Lang } from '../i18n/ui';
+
+interface Props { lang: Lang; }
+const { lang } = Astro.props;
+const isKo = lang === 'ko';
+const L = (ko: string, en: string) => (isKo ? ko : en);
+const project = projects.find((p) => p.id === 'my-voice-tts')!;
+const consent = L('이 목소리는 제 목소리이고, 오늘 이 문장으로 음성 합성을 만드는 데 동의합니다.', 'This is my own voice, and I agree to let it be used for speech synthesis today.');
+// Same stand-in reference voice and the same Korean target sentence for every model (my_voice_tts/bench, 2026-10-24).
+const bench = [
+  ['OmniVoice', '0%', '0.812', L('2.2초', '2.2 s'), '2.2 GB'],
+  ['Fun-CosyVoice3 0.5B', '3.1%', '0.808', L('7.1초', '7.1 s'), '3.6 GB'],
+  ['VoxCPM2', '0%', '0.783', L('17초', '17 s'), '5.9 GB'],
+  ['Chatterbox Multilingual', '0%', '0.749', L('11초', '11 s'), '3.6 GB'],
+  ['GPT-SoVITS v2ProPlus', '0%', '0.687', L('7.5초', '7.5 s'), '1.9 GB'],
+];
+---
+<BaseLayout lang={lang} title={isKo ? project.nameKo : project.name} description={isKo ? project.summaryKo : project.summary}>
+  <header class="vt-hero">
+    <div class="shell">
+      <div class="section-kicker">{L('프로젝트', 'Project')}</div>
+      <h1>{isKo ? project.nameKo : project.name}</h1>
+      <p class="vt-lede">{isKo ? project.summaryKo : project.summary}</p>
+    </div>
+  </header>
+
+  <div class="shell vt-body" data-vt data-lang={lang}>
+    <p class="vt-status" data-vt-status>{L('PC 상태 확인 중…', 'Checking the PC…')}</p>
+
+    <section class="vt-step">
+      <h2><span>1</span>{L('이 문장을 소리 내어 읽기', 'Read this sentence out loud')}</h2>
+      <blockquote class="vt-line">{consent}</blockquote>
+      <div class="vt-row">
+        <button type="button" class="vt-btn" data-vt-rec>{L('녹음 시작', 'Start recording')}</button>
+        <audio controls hidden data-vt-mine></audio>
+      </div>
+      <p class="vt-msg" data-vt-msg1>{L('조용한 곳에서 평소 말투로 읽으면 가장 비슷하게 나옴', 'A quiet room and your normal speaking voice give the closest match')}</p>
+    </section>
+
+    <section class="vt-step is-off" data-vt-step2>
+      <h2><span>2</span>{L('읽힐 문장 쓰기', 'Type what it should say')}</h2>
+      <textarea maxlength="200" rows="3" data-vt-text placeholder={L('예: 오늘 저녁은 내가 쏠게. 진짜로.', 'e.g. Dinner is on me tonight. Really.')}></textarea>
+      <div class="vt-row">
+        <button type="button" class="vt-btn" data-vt-speak disabled>{L('내 목소리로 만들기', 'Say it in my voice')}</button>
+        <small data-vt-count>0 / 200</small>
+      </div>
+      <p class="vt-msg" data-vt-msg2></p>
+      <div class="vt-out" hidden data-vt-out>
+        <audio controls data-vt-audio></audio>
+        <a class="vt-dl" download="my-voice.wav" data-vt-dl>{L('WAV 내려받기', 'Download WAV')}</a>
+      </div>
+    </section>
+
+    <section class="vt-sec">
+      <h2>{L('지켜 주세요', 'Ground rules')}</h2>
+      <ul>
+        <li>{L('본인 목소리만 쓰기. 그래서 녹음 파일 업로드는 없고, 마이크로 동의 문장을 직접 읽어야 다음 단계가 열림', 'Use only your own voice. There is no file upload: the next step opens only after you read the consent sentence into the mic')}</li>
+        <li>{L('만든 음성은 AI 합성임. 남을 속이거나 다른 사람인 척하는 데 쓰지 않기', 'The result is synthetic speech. Do not use it to deceive anyone or to pass as someone else')}</li>
+        <li>{L('녹음은 집 PC의 임시 폴더에 30분만 두고 지움. 학습에 쓰지 않고, 입력한 문장도 저장하지 않음', 'Your recording sits in a temporary folder on the home PC for 30 minutes and is then deleted. It is never used for training, and the text you type is not stored')}</li>
+        <li>{L('요청 횟수는 IP를 해시로 바꾼 값으로만 셈. 한 시간에 녹음 10번, 생성 40번까지', 'Rate limits count a hash of your IP, never the IP itself: 10 recordings and 40 generations an hour')}</li>
+      </ul>
+    </section>
+
+    <section class="vt-sec">
+      <h2>{L('왜 OmniVoice인가', 'Why OmniVoice')}</h2>
+      <p>{L('수익화에 걸리지 않는 라이선스(Apache 2.0·MIT)인 오픈소스 다섯 개를 같은 RTX 3070에서 돌려 봄. 같은 참고 목소리로 같은 한국어 문장을 만들게 하고, Whisper로 다시 받아 적어 발음 오류를, 화자 인식 모델(ECAPA)로 참고 목소리와 닮은 정도를 쟀음.', 'Five open-source models under licenses that allow commercial use (Apache 2.0, MIT) ran on the same RTX 3070. Each cloned the same reference voice saying the same Korean sentence; Whisper transcribed the result for pronunciation errors, and a speaker-verification model (ECAPA) scored how close it sounded to the reference.')}</p>
+      <div class="vt-table"><table>
+        <thead><tr><th>{L('모델', 'Model')}</th><th>{L('발음 오류', 'Char. errors')}</th><th>{L('목소리 유사도', 'Similarity')}</th><th>{L('5초 음성 생성', 'Time for 5 s')}</th><th>{L('GPU 메모리', 'GPU memory')}</th></tr></thead>
+        <tbody>{bench.map((r, i) => <tr class={i === 0 ? 'is-pick' : ''}>{r.map((c) => <td>{c}</td>)}</tr>)}</tbody>
+      </table></div>
+      <p class="vt-note">{L('문장 하나, 참고 목소리 하나로 잰 작은 시험임. 참고 목소리는 실제 사람 대신 TTS 기본 목소리를 썼음. 최신 논문(MiniMax 다국어 시험)에서도 OmniVoice와 VoxCPM2가 한국어 목소리 유사도 0.83 안팎으로 공개 모델 중 최상위권이었음.', 'A small test: one sentence and one reference voice, a stock TTS voice rather than a real person. In recent papers (MiniMax multilingual test), OmniVoice and VoxCPM2 also sit at the top of open models for Korean speaker similarity, around 0.83.')}
+        {' '}<a href="https://arxiv.org/abs/2604.00688">OmniVoice</a> · <a href="https://arxiv.org/html/2608.11650v1">{L('다국어 비교표', 'multilingual comparison')}</a></p>
+    </section>
+
+    <div data-ad></div>
+
+    <section class="comments" id="comments" data-comments data-lang={lang} data-page={projectPath('my-voice-tts', lang)}
+      data-intro={L('써 보고 훈수 환영', 'Tried it? Backseat feedback welcome')}></section>
+  </div>
+  <script is:inline src="/comments.js" defer></script>
+
+<style is:inline>
+.vt-hero { padding: 3rem 0 1.4rem; }
+.vt-hero h1 { margin: .4rem 0 .8rem; }
+.vt-lede { max-width: 46rem; color: var(--muted); }
+.vt-body { max-width: 50rem; padding-bottom: 4rem; }
+.vt-status { display: inline-block; margin: 0 0 1.2rem; padding: .35rem .8rem; border-radius: 999px; background: var(--soft); font-size: .85rem; font-weight: 700; }
+.vt-status.is-on { background: #e3f4e8; color: #1f6b3a; }
+.vt-status.is-off { background: #f6e6e3; color: #8a2f22; }
+.vt-step { margin: 0 0 1.4rem; padding: 1.3rem 1.4rem; border: 1.5px solid var(--line, #d8d2c2); border-radius: 12px; background: var(--paper, #fff); }
+.vt-step.is-off { opacity: .45; pointer-events: none; }
+.vt-step h2 { display: flex; gap: .6rem; align-items: center; margin: 0 0 .9rem; font-size: 1.1rem; }
+.vt-step h2 span { display: grid; place-items: center; width: 1.7rem; height: 1.7rem; border-radius: 50%; background: var(--ink, #1d2433); color: #fff; font-size: .85rem; }
+.vt-line { margin: 0 0 1rem; padding: .9rem 1.1rem; border-left: 4px solid #c0392b; background: var(--soft); font-size: 1.15rem; line-height: 1.6; }
+.vt-row { display: flex; flex-wrap: wrap; gap: .8rem; align-items: center; }
+.vt-btn { padding: .7rem 1.3rem; border: 0; border-radius: 999px; background: var(--ink, #1d2433); color: #fff; font: inherit; font-weight: 800; cursor: pointer; }
+.vt-btn.is-rec { background: #c0392b; }
+.vt-btn:disabled { opacity: .5; cursor: default; }
+.vt-msg { min-height: 1.4em; margin: .7rem 0 0; color: var(--muted); font-size: .9rem; }
+.vt-msg.is-err { color: #a3301f; }
+.vt-step textarea { box-sizing: border-box; width: 100%; margin: 0 0 .8rem; padding: .7rem; border: 1.5px solid var(--line, #d8d2c2); border-radius: 8px; font: inherit; resize: vertical; }
+.vt-out { display: flex; flex-wrap: wrap; gap: .8rem; align-items: center; margin-top: .9rem; }
+.vt-out audio, .vt-row audio { max-width: 100%; }
+.vt-sec { margin: 2rem 0; }
+.vt-sec li { margin: .3rem 0; }
+.vt-table { overflow-x: auto; }
+.vt-table table { width: 100%; border-collapse: collapse; font-size: .9rem; }
+.vt-table th, .vt-table td { padding: .45rem .6rem; border-bottom: 1px solid var(--line, #d8d2c2); text-align: left; white-space: nowrap; }
+.vt-table tr.is-pick td { font-weight: 800; }
+.vt-note { color: var(--muted); font-size: .85rem; }
+</style>
+
+<script is:inline>
+(() => {
+  const root = document.querySelector('[data-vt]');
+  if (!root) return;
+  const ko = root.dataset.lang === 'ko';
+  const $ = (s) => root.querySelector(s);
+  const T = ko
+    ? { on: '켜져 있음 · 집 PC의 RTX 3070에서 바로 만듦', off: '지금은 PC가 꺼져 있어서 쉬는 중. 나중에 다시 와 주세요', start: '녹음 시작', stop: '녹음 끝', again: '다시 녹음', recording: '녹음 중… 다 읽으면 "녹음 끝"', checking: '문장을 맞게 읽었는지 확인 중…', ok: (h) => `확인됨: "${h}" · 이제 2단계에서 문장을 써 주세요`, making: '만드는 중… 몇 초 걸림', done: '완성. AI로 만든 음성임', noMic: '마이크를 쓸 수 없음. 브라우저에서 마이크 권한을 허용해 주세요',
+        err: { mismatch: (h) => `문장이 다르게 들렸음${h ? `: "${h}"` : ''}. 위 문장 그대로 다시 읽어 주세요`, too_quiet: '소리가 너무 작음. 마이크에 조금 더 가까이', bad_length: '2초에서 20초 사이로 녹음해 주세요', too_many: '이번 한 시간 사용량을 다 썼음. 조금 뒤에 다시', offline: '지금은 PC가 꺼져 있음', expired: '녹음한 지 30분이 지났음. 1단계부터 다시', bad_text: '문장을 1~200자로 써 주세요', other: '처리하지 못했음. 잠시 뒤 다시 시도해 주세요' } }
+    : { on: 'Online · generated right now on an RTX 3070 at home', off: 'The PC is off right now, so this is resting. Please come back later', start: 'Start recording', stop: 'Stop', again: 'Record again', recording: 'Recording… press "Stop" when you are done', checking: 'Checking that you read the sentence…', ok: (h) => `Got it: "${h}" · now type something in step 2`, making: 'Generating… a few seconds', done: 'Done. This audio is AI-generated', noMic: 'The microphone is unavailable. Please allow microphone access in your browser',
+        err: { mismatch: (h) => `That sounded different${h ? `: "${h}"` : ''}. Please read the sentence exactly as written`, too_quiet: 'Too quiet. Move a little closer to the mic', bad_length: 'Please record between 2 and 20 seconds', too_many: 'You have used this hour’s limit. Please try again later', offline: 'The PC is off right now', expired: 'Your recording is over 30 minutes old. Please start again from step 1', bad_text: 'Please write 1–200 characters', other: 'Something went wrong. Please try again' } };
+  const status = $('[data-vt-status]'), recBtn = $('[data-vt-rec]'), mine = $('[data-vt-mine]'), msg1 = $('[data-vt-msg1]');
+  const step2 = $('[data-vt-step2]'), text = $('[data-vt-text]'), speakBtn = $('[data-vt-speak]'), msg2 = $('[data-vt-msg2]');
+  const out = $('[data-vt-out]'), audio = $('[data-vt-audio]'), dl = $('[data-vt-dl]'), count = $('[data-vt-count]');
+  let token = null, rec = null, online = false;
+  const say = (el, s, bad) => { el.textContent = s; el.classList.toggle('is-err', !!bad); };
+
+  fetch('/api/tts/status', { cache: 'no-store' }).then((r) => r.json()).then((d) => { online = !!d.online; }).catch(() => {}).finally(() => {
+    status.textContent = online ? T.on : T.off;
+    status.classList.add(online ? 'is-on' : 'is-off');
+    recBtn.disabled = !online;
+  });
+
+  // Browser recording (webm/ogg/mp4) -> decode -> 24 kHz mono 16-bit WAV, so the PC never needs ffmpeg.
+  async function toWav(blob) {
+    const ctx = new AudioContext();
+    const decoded = await ctx.decodeAudioData(await blob.arrayBuffer());
+    ctx.close();
+    const sr = 24000;
+    const off = new OfflineAudioContext(1, Math.ceil(decoded.duration * sr), sr);
+    const src = off.createBufferSource();
+    src.buffer = decoded; src.connect(off.destination); src.start();
+    const pcm = (await off.startRendering()).getChannelData(0);
+    const v = new DataView(new ArrayBuffer(44 + pcm.length * 2));
+    const w = (o, s) => [...s].forEach((c, i) => v.setUint8(o + i, c.charCodeAt(0)));
+    w(0, 'RIFF'); v.setUint32(4, 36 + pcm.length * 2, true); w(8, 'WAVEfmt '); v.setUint32(16, 16, true); v.setUint16(20, 1, true);
+    v.setUint16(22, 1, true); v.setUint32(24, sr, true); v.setUint32(28, sr * 2, true); v.setUint16(32, 2, true); v.setUint16(34, 16, true);
+    w(36, 'data'); v.setUint32(40, pcm.length * 2, true);
+    pcm.forEach((x, i) => v.setInt16(44 + i * 2, Math.max(-1, Math.min(1, x)) * 0x7fff, true));
+    return new Blob([v], { type: 'audio/wav' });
+  }
+  const failure = async (r) => {
+    let detail = '';
+    try { const j = await r.json(); detail = String(j.detail || j.error || ''); } catch { /* not json */ }
+    if (r.status === 503) return T.err.offline;
+    if (detail.startsWith('mismatch')) return T.err.mismatch(detail.slice(9));
+    return T.err[detail] || T.err.other;
+  };
+
+  recBtn.addEventListener('click', async () => {
+    if (rec && rec.state === 'recording') { rec.stop(); return; }
+    let stream;
+    try { stream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: false, noiseSuppression: true, autoGainControl: true } }); }
+    catch { say(msg1, T.noMic, true); return; }
+    const chunks = [];
+    rec = new MediaRecorder(stream);
+    rec.ondataavailable = (e) => chunks.push(e.data);
+    rec.onstop = async () => {
+      stream.getTracks().forEach((t) => t.stop());
+      recBtn.classList.remove('is-rec'); recBtn.textContent = T.again; recBtn.disabled = true;
+      say(msg1, T.checking);
+      try {
+        const wav = await toWav(new Blob(chunks, { type: rec.mimeType }));
+        mine.src = URL.createObjectURL(wav); mine.hidden = false;
+        const r = await fetch(`/api/tts/verify?lang=${ko ? 'ko' : 'en'}`, { method: 'POST', headers: { 'Content-Type': 'audio/wav' }, body: wav });
+        if (!r.ok) { say(msg1, await failure(r), true); return; }
+        const d = await r.json();
+        token = d.token;
+        say(msg1, T.ok(d.heard));
+        step2.classList.remove('is-off');
+        speakBtn.disabled = !text.value.trim();
+        text.focus();
+      } catch { say(msg1, T.err.other, true); }
+      finally { recBtn.disabled = false; }
+    };
+    rec.start();
+    recBtn.classList.add('is-rec'); recBtn.textContent = T.stop;
+    say(msg1, T.recording);
+  });
+
+  text.addEventListener('input', () => { count.textContent = `${text.value.length} / 200`; speakBtn.disabled = !token || !text.value.trim(); });
+  speakBtn.addEventListener('click', async () => {
+    speakBtn.disabled = true;
+    say(msg2, T.making);
+    try {
+      const r = await fetch('/api/tts/speak', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ token, text: text.value }) });
+      if (!r.ok) { say(msg2, await failure(r), true); return; }
+      const url = URL.createObjectURL(await r.blob());
+      audio.src = url; dl.href = url; out.hidden = false;
+      audio.play().catch(() => {});
+      say(msg2, T.done);
+    } catch { say(msg2, T.err.other, true); }
+    finally { speakBtn.disabled = !text.value.trim(); }
+  });
+})();
+</script>
+</BaseLayout>
