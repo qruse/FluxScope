@@ -14,7 +14,7 @@ const runs: Record<string, { ko: string; en: string }> = {
   'beat-kma': { ko: '매일 아침 새 예보를 올리고, 지난 예보를 실제 관측값으로 채점함.', en: 'A new forecast goes up every morning, and past forecasts are scored against what was actually observed.' },
   'ai-duel': { ko: '매주 세 AI가 각자 주문을 내고, 매일 미국장 종가로 수익률과 위험 지표를 갱신함.', en: 'Each AI places its orders every week, and returns and risk figures update at every US close.' },
   'ai-mafia': { ko: '하루에 한 번 밤과 낮이 지나가고, 게임이 끝나면 정체와 속마음을 전부 공개함. 지난 게임도 다시 볼 수 있음.', en: 'One night and one day pass per real day; when a game ends, every identity and private thought is revealed, and past games stay replayable.' },
-  'my-voice-tts': { ko: '집 PC가 켜져 있을 때 바로 써 볼 수 있음. 녹음은 30분 뒤 지움.', en: 'Usable whenever the home PC is on. Recordings are deleted after 30 minutes.' },
+  'my-voice-tts': { ko: '한 문장만 읽으면 바로 써 볼 수 있음. 녹음은 30분 뒤 지움.', en: 'Read one sentence and try it right away. Recordings are deleted after 30 minutes.' },
 };
 ---
 <BaseLayout lang={lang} title={isKo ? '프로젝트' : 'Projects'} description={isKo ? 'HSL Lab에서 직접 만들어 돌리는 프로젝트. AI 기상 예보로 기상청과 겨루기, 세 AI의 미국 주식 모의투자 대결, 여덟 AI의 마피아 게임, 내 목소리로 읽어 주는 TTS를 돌아가는 채로 공개함.' : 'Projects built and run at HSL Lab: an AI weather forecast racing the KMA, three AIs running US stock paper portfolios, eight AIs playing Mafia and a TTS that speaks in your own voice, published while they run.'}>
