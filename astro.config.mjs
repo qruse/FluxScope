@@ -66,7 +66,7 @@ export default defineConfig({
     },
   },
   integrations: [mdx({ rehypePlugins: [rehypeOptimizeImages] }), sitemap({
-    filter: (page) => !/\/search\/$/.test(page),
+    filter: (page) => !/\/search\/$/.test(page) && !/\/my-voice-tts\/rec\/$/.test(page),  // rec/: temporary owner tool
     i18n: { defaultLocale: 'ko', locales: { ko: 'ko', en: 'en' } },
     serialize(item) {
       const lastmod = updatedDates.get(new URL(item.url).pathname.replace(base.replace(/\/$/, ''), ''));

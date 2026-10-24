@@ -558,6 +558,27 @@ async function tts(request, env, url) {
       return json(r.ok ? { online: true, ...(await r.json()) } : { online: false });
     } catch { return json({ online: false }); }
   }
+  // Temporary (10/24): the owner records the Shorts narration on /projects/my-voice-tts/rec/. The PC checks X-Rec-Pass
+  // (a passcode kept only on the PC). Remove together with that page.
+  if (route === 'rec' || route === 'rec/script' || route === 'rec/tts') {
+    if (!backend) return json({ error: 'offline' }, 503);
+    const post = route === 'rec';
+    if (request.method !== (post ? 'POST' : 'GET')) return json({ error: 'method_not_allowed' }, 405);
+    const ip = request.headers.get('CF-Connecting-IP') || 'unknown';
+    headers['X-Client'] = toBase64(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(`fluxscope-tts:${ip}`))).slice(0, 24);
+    headers['X-Rec-Pass'] = (request.headers.get('X-Rec-Pass') || '').slice(0, 100);
+    const line = /^\d{1,2}$/.test(url.searchParams.get('line') || '') ? `?line=${url.searchParams.get('line')}` : '';
+    let body;
+    if (post) {
+      body = await request.arrayBuffer();
+      if (body.byteLength > 8 * 1024 * 1024) return json({ error: 'too_large' }, 413);
+      headers['Content-Type'] = 'audio/wav';
+    }
+    try {
+      const r = await fetch(`${backend}/${route}${line}`, { method: request.method, headers, body, signal: AbortSignal.timeout(90000) });
+      return new Response(r.body, { status: r.status, headers: { 'Content-Type': r.headers.get('Content-Type') || 'application/json', 'Cache-Control': 'no-store' } });
+    } catch { return json({ error: 'offline' }, 503); }
+  }
   if (route !== 'verify' && route !== 'speak') return json({ error: 'Not found' }, 404);
   if (request.method !== 'POST') return json({ error: 'method_not_allowed' }, 405);
   if (botAgent.test(request.headers.get('User-Agent') || '')) return json({ error: 'invalid_request' }, 400);
@@ -975,7 +996,7 @@ function withAds(response, env, url) {
 }
 
 // The my-voice TTS page records from the microphone and plays the generated audio from a blob: URL; every other page keeps both off.
-const micPage = /^\/(?:en\/)?projects\/my-voice-tts\/$/;
+const micPage = /^\/(?:en\/)?projects\/my-voice-tts\/(?:rec\/)?$/;  // rec/: temporary narration recorder (10/24)
 function withSecurityHeaders(response, url) {
   if (response.status === 101) return response;
   const headers = new Headers(response.headers);

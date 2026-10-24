@@ -1,0 +1,176 @@
+---
+// TEMPORARY owner tool (10/24): record the Shorts narration one script line at a time. The script and the takes live on
+// the home PC (my_voice_tts/server/app.py /rec/*, via the Worker's /api/tts/rec*). noindex, out of the sitemap, linked
+// from nowhere. Delete this file, the Worker's rec routes and micPage's rec/ when the recording is done.
+// No <style>: the site's CSS budget is nearly full, so only inline styles.
+---
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>녹음 (임시)</title>
+</head>
+<body style="font-family: system-ui, sans-serif; max-width: 720px; margin: 0 auto; padding: 16px; line-height: 1.5;">
+  <h1 style="font-size: 20px;">나레이션 녹음 (임시)</h1>
+  <p id="login">
+    암호 <input id="pass" type="password" autocomplete="off" style="font-size: 16px;" />
+    <button id="go" type="button">열기</button>
+  </p>
+  <p id="status"></p>
+
+  <div id="work" hidden>
+    <p>
+      <button id="prev" type="button">← 이전</button>
+      <b id="pos"></b>
+      <button id="next" type="button">다음 →</button>
+    </p>
+    <p id="text" style="font-size: 24px; font-weight: 700; border: 1px solid #888; padding: 16px;"></p>
+    <p>
+      <button id="ref" type="button">TTS 듣기 (영상 속도 1.5배)</button>
+      <button id="rec" type="button" style="font-size: 18px;">● 녹음</button>
+      <span id="clock">0.0초</span>
+      <span style="display: inline-block; width: 120px; height: 10px; border: 1px solid #888; vertical-align: middle;">
+        <span id="level" style="display: block; height: 100%; width: 0; background: #e33;"></span>
+      </span>
+    </p>
+    <p><audio id="mine" controls hidden></audio></p>
+    <p>
+      <button id="save" type="button" disabled style="font-size: 18px;">저장</button>
+      <span id="result"></span>
+    </p>
+    <p style="color: #888; font-size: 14px;">단축키: 스페이스 = 녹음/정지, 엔터 = 저장, ←/→ = 이전/다음. 저장은 몇 번이든 됨(덮어쓰지 않고 쌓임).</p>
+    <ol id="list" start="0" style="font-size: 14px;"></ol>
+  </div>
+
+  <script>
+    const $ = (id) => document.getElementById(id);
+    const MAX_S = 40;
+    let lines = [], cur = 0, pass = '', rec = null, wav = null;
+    try { pass = localStorage.getItem('recPass') || ''; $('pass').value = pass; } catch { /* storage blocked */ }
+
+    const api = (path, opts = {}) => fetch(`/api/tts/${path}`, { ...opts, headers: { ...(opts.headers || {}), 'X-Rec-Pass': pass }, cache: 'no-store' });
+    const say = (el, s) => { $(el).textContent = s; };
+
+    async function load() {
+      pass = $('pass').value.trim();
+      say('status', '불러오는 중…');
+      const r = await api('rec/script').catch(() => null);
+      if (!r || !r.ok) { say('status', r && r.status === 403 ? '암호가 틀림' : '집 PC 서버 연결 안 됨'); return; }
+      try { localStorage.setItem('recPass', pass); } catch { /* storage blocked */ }
+      lines = (await r.json()).lines;
+      say('status', '');
+      $('login').hidden = true; $('work').hidden = false;
+      show();
+    }
+
+    function show() {
+      const l = lines[cur];
+      say('pos', `${cur} / ${lines.length - 1}`);
+      say('text', l.text);
+      $('mine').hidden = true; wav = null; $('save').disabled = true; say('result', `저장된 테이크 ${l.saved}개`);
+      $('list').innerHTML = '';
+      lines.forEach((x, i) => {
+        const li = document.createElement('li');
+        li.textContent = `${x.saved ? '✔ ' : ''}${x.text}`;
+        li.style.cursor = 'pointer';
+        if (i === cur) li.style.fontWeight = '700';
+        li.onclick = () => { cur = i; show(); };
+        $('list').append(li);
+      });
+    }
+
+    // Browser recording -> 48 kHz mono 16-bit WAV (no browser noise suppression or auto gain: cleaner narration).
+    async function toWav(blob) {
+      const ctx = new AudioContext();
+      const decoded = await ctx.decodeAudioData(await blob.arrayBuffer());
+      ctx.close();
+      const sr = 48000;
+      const off = new OfflineAudioContext(1, Math.ceil(decoded.duration * sr), sr);
+      const src = off.createBufferSource();
+      src.buffer = decoded; src.connect(off.destination); src.start();
+      const pcm = (await off.startRendering()).getChannelData(0);
+      const v = new DataView(new ArrayBuffer(44 + pcm.length * 2));
+      const w = (o, s) => [...s].forEach((c, i) => v.setUint8(o + i, c.charCodeAt(0)));
+      w(0, 'RIFF'); v.setUint32(4, 36 + pcm.length * 2, true); w(8, 'WAVEfmt '); v.setUint32(16, 16, true); v.setUint16(20, 1, true);
+      v.setUint16(22, 1, true); v.setUint32(24, sr, true); v.setUint32(28, sr * 2, true); v.setUint16(32, 2, true); v.setUint16(34, 16, true);
+      w(36, 'data'); v.setUint32(40, pcm.length * 2, true);
+      pcm.forEach((x, i) => v.setInt16(44 + i * 2, Math.max(-1, Math.min(1, x)) * 0x7fff, true));
+      return new Blob([v], { type: 'audio/wav' });
+    }
+
+    function watch(stream) {
+      const ctx = new AudioContext();
+      const an = ctx.createAnalyser();
+      an.fftSize = 512;
+      ctx.createMediaStreamSource(stream).connect(an);
+      const buf = new Float32Array(an.fftSize), t0 = performance.now();
+      let raf = 0;
+      const tick = () => {
+        an.getFloatTimeDomainData(buf);
+        const rms = Math.sqrt(buf.reduce((a, x) => a + x * x, 0) / buf.length);
+        $('level').style.width = `${Math.min(100, rms * 400)}%`;
+        const s = (performance.now() - t0) / 1000;
+        say('clock', `${s.toFixed(1)}초`);
+        if (s >= MAX_S && rec && rec.state === 'recording') rec.stop();
+        raf = requestAnimationFrame(tick);
+      };
+      tick();
+      return () => { cancelAnimationFrame(raf); ctx.close(); $('level').style.width = '0'; };
+    }
+
+    async function toggle() {
+      if (rec && rec.state === 'recording') { rec.stop(); return; }
+      let stream;
+      try { stream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: false, noiseSuppression: false, autoGainControl: false } }); }
+      catch { say('result', '마이크 권한이 필요함'); return; }
+      const chunks = [], unwatch = watch(stream);
+      rec = new MediaRecorder(stream);
+      rec.ondataavailable = (e) => chunks.push(e.data);
+      rec.onstop = async () => {
+        unwatch();
+        stream.getTracks().forEach((t) => t.stop());
+        say('rec', '● 다시 녹음');
+        wav = await toWav(new Blob(chunks, { type: rec.mimeType }));
+        $('mine').src = URL.createObjectURL(wav); $('mine').hidden = false;
+        $('save').disabled = false;
+        say('result', '들어 보고 괜찮으면 저장');
+      };
+      rec.start();
+      say('rec', '■ 정지'); $('save').disabled = true; say('result', '녹음 중…');
+    }
+
+    async function save() {
+      if (!wav) return;
+      $('save').disabled = true;
+      say('result', '저장하고 받아쓰는 중…');
+      const r = await api(`rec?line=${cur}`, { method: 'POST', headers: { 'Content-Type': 'audio/wav' }, body: wav }).catch(() => null);
+      if (!r || !r.ok) { say('result', `저장 실패 (${r ? r.status : '연결 안 됨'})`); $('save').disabled = false; return; }
+      const d = await r.json();
+      lines[cur].saved = d.saved;
+      say('result', `저장됨 (${d.sec}초, 테이크 ${d.saved}개${d.peak >= 0.99 ? ', 소리 너무 큼: 클리핑' : ''}) · 들린 말: ${d.heard}`);
+      wav = null;
+    }
+
+    $('go').onclick = load;
+    $('pass').onkeydown = (e) => { if (e.key === 'Enter') load(); };
+    $('prev').onclick = () => { if (cur > 0) { cur--; show(); } };
+    $('next').onclick = () => { if (cur < lines.length - 1) { cur++; show(); } };
+    $('rec').onclick = toggle;
+    $('save').onclick = save;
+    $('ref').onclick = async () => {
+      const r = await api(`rec/tts?line=${cur}`).catch(() => null);
+      if (!r || !r.ok) { say('result', 'TTS 테이크 없음'); return; }
+      new Audio(URL.createObjectURL(await r.blob())).play();
+    };
+    document.addEventListener('keydown', (e) => {
+      if ($('work').hidden || e.target instanceof HTMLInputElement) return;
+      if (e.code === 'Space') { e.preventDefault(); toggle(); }
+      else if (e.key === 'Enter') { e.preventDefault(); save(); }
+      else if (e.key === 'ArrowLeft') $('prev').click();
+      else if (e.key === 'ArrowRight') $('next').click();
+    });
+  </script>
+</body>
+</html>
