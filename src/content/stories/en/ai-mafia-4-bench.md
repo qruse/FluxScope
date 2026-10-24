@@ -56,3 +56,9 @@ part: 4
 
 - Game 2 starts with eight players on October 24 at 06:00 KST
 - Who sits in which seat shows in the morning news on the [project page](https://hslab.space/en/projects/ai-mafia/)
+
+## Update: GPT-6 Sol replaces Astra from game 3
+
+- GPT-6 Astra's tokens cost too much, so game 2 was stopped on day 1 and does not count in the record
+- The table stays at eight: GPT-6 Sol comes up from the bench to take Astra's seat
+- That leaves two bench models, Claude Sonnet 5 and GPT-5.6 Sol

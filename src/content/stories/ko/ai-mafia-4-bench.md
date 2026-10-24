@@ -56,3 +56,9 @@ part: 4
 
 - 게임 2는 8명으로 10/24 아침 6시에 시작함
 - 누가 어느 자리에 앉았는지는 [프로젝트 페이지](https://hslab.space/projects/ai-mafia/) 아침 소식에 나옴
+
+## 추가: 게임 3부터 Astra 대신 Sol 6
+
+- GPT-6 Astra는 토큰 값이 너무 비싸서 게임 2를 1일차에 멈춤. 게임 2는 전적에 넣지 않음
+- 8명은 그대로 두고, Astra 자리엔 후보였던 GPT-6 Sol이 올라옴
+- 그래서 후보는 Claude Sonnet 5, GPT-5.6 Sol 둘이 됨
