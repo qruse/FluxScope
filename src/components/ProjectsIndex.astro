@@ -16,7 +16,7 @@ const runs: Record<string, { ko: string; en: string }> = {
   'ai-mafia': { ko: '하루에 한 번 밤과 낮이 지나가고, 게임이 끝나면 정체와 속마음을 전부 공개함. 지난 게임도 다시 볼 수 있음.', en: 'One night and one day pass per real day; when a game ends, every identity and private thought is revealed, and past games stay replayable.' },
 };
 ---
-<BaseLayout lang={lang} title={isKo ? '프로젝트' : 'Projects'} description={isKo ? 'HSL Lab에서 직접 만들어 돌리는 프로젝트. AI 기상 예보로 기상청과 겨루기, 세 AI의 미국 주식 모의투자 대결, 일곱 AI의 마피아 게임을 매일 갱신되는 결과와 함께 공개함.' : 'Projects built and run at HSL Lab: an AI weather forecast racing the KMA, three AIs running US stock paper portfolios and seven AIs playing Mafia, published with results that update every day.'}>
+<BaseLayout lang={lang} title={isKo ? '프로젝트' : 'Projects'} description={isKo ? 'HSL Lab에서 직접 만들어 돌리는 프로젝트. AI 기상 예보로 기상청과 겨루기, 세 AI의 미국 주식 모의투자 대결, 여덟 AI의 마피아 게임을 매일 갱신되는 결과와 함께 공개함.' : 'Projects built and run at HSL Lab: an AI weather forecast racing the KMA, three AIs running US stock paper portfolios and eight AIs playing Mafia, published with results that update every day.'}>
   <header class="page-top"><div class="shell"><div class="section-kicker">{isKo ? '프로젝트' : 'Projects'}</div><h1>{isKo ? '만들어서 돌려 보는 것들' : 'Things built and running'}</h1><p>{isKo ? '궁금한 걸 직접 만들어 보고, 돌아가는 채로 공개함. 결과는 매일 갱신되고, 만든 과정은 프로젝트 스토리에 편마다 정리함.' : 'Built out of curiosity and published while they run. Results update daily, and how each one was built is written up part by part in the project stories.'}</p></div></header>
   <div class="shell portfolio-list">
     {projects.map((project) => {
