@@ -16,6 +16,7 @@ community.md: search Reddit ({{subreddits}}), then Hacker News if thin; last 12 
 Only list pages you opened and read in this session; never construct a URL. Each line says only what its source says.
 
 illustration.png — one picture for the middle of the article (1600x900 PNG), drawn with code (Python + Pillow or an SVG you render), NOT with an image-generation model:
+- The thumbnail already shows {{thumbnail idea}}; this picture must be a DIFFERENT idea, about {{section point}}
 - Scene, with a little wit: {{scene}}. Keep the joke readable at a glance; you may simplify the scene
 - No real logos or brand marks; products are generic characters
 - Style: flat, hand-drawn feel (slightly uneven strokes, rounded shapes), 4–5 muted colors on an off-white background (#F6F2E8-ish), dark ink outlines. No gradients, no glow, no neon, no 3D, no clichés
