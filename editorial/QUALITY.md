@@ -32,7 +32,7 @@ Every row must pass. A polished title cannot compensate for fabricated experienc
 | Readability | Familiar words and short sentences; essential jargon explained once; repeated conclusions and captions cut; decision-changing evidence and qualifications retained | Human review |
 | Evidence | Core claims traceable to opened original sources; market/model/date/units stated; calculations reproducible | Human review |
 | Reasoning | Conclusion follows from the actual metric; opinion, calculation and observation remain distinct | Human review |
-| Voice | One coherent question per article; headline titles with a hook the article answers (Korean titles not in 음슴체); natural witty humor grounded in facts; no fake experience, forced drama or repetitive filler | Human review |
+| Voice | One coherent question per article; the body answers the user's title (titles are the user's, AGENTS §1.1); natural witty humor grounded in facts; no fake experience, forced drama or repetitive filler | Human review |
 | Structure | Exactly 3 summary bullets; final Q&A with 3–5 answered questions; community immediately before it when present, each reaction linked and Reddit or Hacker News represented | Shared validator |
 | Metadata | Correct category; 5–15 unique kebab-case tags; useful title/description/alt; original date/URL preserved | Validator plus human |
 | SEO | Title ≤ 70 chars with the product first; description states the answer; stable slug; body starts at H2; alt text 5–150 chars; no manual SEO tags | Validator plus human |
@@ -75,11 +75,11 @@ Create `editorial/reviews/<slug>.md` before drafting. Replace every placeholder 
 - Scope: market/model/version/trim or test environment:
 - User experience: actual supplied wording and provenance, or unavailable/published-material analysis
 
-## Title confirmation (AGENTS §1.1)
-- Final Korean title:
-- Final English title:
-- User's exact confirming message and date/context:
-- Status: pending / confirmed / invalidated
+## User title (AGENTS §1.1)
+- Korean title (user's exact wording):
+- English title (Claude's translation):
+- User's message giving the title, and date:
+- Status: awaiting title / given
 - Pre-publication payload titles match:
 
 ## Claim ledger

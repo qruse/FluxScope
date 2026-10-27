@@ -20,18 +20,17 @@ This is the single authoritative project rulebook. Read it completely before edi
 5. Create `editorial/reviews/<slug>.md` using the evidence and review template in `editorial/QUALITY.md`
 6. Draft English as the primary edition, verify every material claim, then adapt naturally into Korean with identical facts and qualifications
 7. Run the automatic checks, then the manual rubric — a passing build does not certify facts or good prose
-8. Show the completed draft and final bilingual title pair; obtain and record user title confirmation under section 1.1 before any public write
+8. Show the completed draft and ask the user for its title; record the user's title under section 1.1 before any public write
 9. Publish with `scripts/publish-post.mjs` (no build or merge), verify both live URLs, images, category listings and language switch, then report exactly what is live
 
 ### 1.1 Mandatory user title confirmation
 
-- **Do not publish an article until the user has explicitly confirmed its final title.** Apply this to new articles and title changes on existing articles; a previously confirmed, unchanged title can retain that confirmation for later body edits
-- Finish the research, bilingual draft, visuals and checks before requesting confirmation, so the user is choosing a concrete title for a reviewable article. While waiting, continue authorized preparation, draft saving and unlisted preview work; do not run a public article write
-- When proposing a title, offer 3–5 distinct candidates and one recommendation; a specific title supplied by the user may be used directly. Show the final Korean title and its English counterpart before publication; selecting the Korean candidate approves the corresponding English title if that pair was already shown
-- A clear selection such as “1번”, “이 제목으로”, or “ㄱㄱ” after the specific final title/pair was shown counts as confirmation. Silence, the author's recommendation, or a generic “write and publish immediately” request made before any title was shown does not
-- Publish the confirmed wording exactly. If either title changes afterward, or the article's angle changes so the approved headline no longer fits, show the revised pair and obtain confirmation again; do not replace it with another “better” title unilaterally
-- Record the exact approved Korean/English titles, the user's confirming message and date/context in the review. Verify the payload titles against that record immediately before public publication; do not infer missing approval from an old published page
-- Without confirmation, report “draft ready; awaiting title confirmation” with the candidates or preview. This gate applies to public article publication, not to requested rule/code maintenance or draft/image preparation
+- **The user writes every title, for blog articles and project stories alike (section 12). Claude does not write, suggest or recommend titles or candidates** (user instruction, 2026-10-27). Do not publish an article until the user has given its Korean title. Apply this to new articles and title changes on existing articles; an unchanged title stays for later body edits
+- Finish the research, bilingual draft, visuals and checks first, keeping the title empty in the draft (use a neutral placeholder such as the slug only where a tool requires a value, never shown as a proposal). Then ask the user for the title. While waiting, continue authorized preparation, draft saving and unlisted preview work; do not run a public article write
+- Use the user's Korean wording exactly, punctuation and spoken style included. Claude writes only the English counterpart, as a faithful translation, and shows it with the published result; if the user corrects it, apply the correction
+- Never change a title on your own, including to fit length limits; if a user title breaks a validated limit, tell the user and wait for their wording
+- Record the exact Korean/English titles, the user's message giving the title and its date in the review. Verify the payload titles against that record immediately before public publication
+- Without the user's title, report “draft ready; awaiting your title” with the preview. This gate applies to public article publication, not to requested rule/code maintenance or draft/image preparation
 - This is a human workflow gate: structural validation and a successful API request cannot prove that the user approved a title
 
 Do not stop after writing advice when asked to edit. Do not report an API response, commit, build, or preview as a verified production deployment.
@@ -87,9 +86,8 @@ Korean is primarily short bullets with natural 반말/음슴체. **One point, on
 - Preserve natural wit where it reads easily; remove a joke or metaphor that needs an explanation. Use no fixed length target that encourages padding or deletion of necessary facts
 - Read each edition alone after shortening: a reader should be able to explain the main point without decoding jargon or rereading a sentence. For an existing text-only edit, preserve the confirmed title, images, URL and original publication date
 
-- Titles are headlines, not memo lines. Put the model/product near the start, then a sharp hook: a pointed question, a blunt contrast, a decisive number or a verdict some readers will dispute. The article must pay the hook off with evidence; no bait the body does not answer, no implied test results or defects
-- **Natural, witty humor is especially important in the title.** Give the headline a natural, immediately understandable witty twist tied to the article's concrete situation; avoid bland product summaries such as "the AI bot I have been waiting for". For an article about a persistent assistant, "OpenAI Dots, 이제 AI도 출근은 해야지" is an appropriate expectation-led hook, not a claim of tested performance. Do not make the author sound lazy or imply that the product has already completed work the author has not tested. Offer 3–5 distinct headline candidates when proposing a title, with one recommendation; use a specific user-supplied title directly when requested. Obtain confirmation under section 1.1, and never force wordplay or sacrifice factual accuracy
-- Korean titles do **not** use 음슴체; write them as natural headline phrasing (question, contrast, noun ending). Wrong: `출시 베팅만 벌써 네 번 틀림`; right: `출시 베팅은 벌써 4연패`. Korean descriptions and narrative headings still use natural 음슴체 (e.g. `검수는 내 몫임`, `예산도 커짐`). English titles use punchy headline phrasing, not artificial Korean grammar
+- Titles belong to the user (section 1.1): Claude neither writes nor suggests them. The English title is a faithful, natural English rendering of the user's Korean title, not artificial Korean grammar. The body must pay off the user's hook; if it cannot, say so instead of changing the title
+- Korean descriptions and narrative headings use natural 음슴체 (e.g. `검수는 내 몫임`, `예산도 커짐`)
 - Rebuild a confused draft around ONE reader question before polishing sentences. Every section must advance that question; delete tangents, repeated caveats and jokes that need their own explanation
 - Humor follows the concrete fact. Prefer 2–4 restrained observations over an analogy in every bullet; never let a joke imply unsupported test results or product defects
 - Keep the humor free of profanity, insults and degrading slang; aim criticism at verified claims, sales tactics and workflow friction
@@ -291,7 +289,7 @@ Template-owned (keep working when editing layouts or the Worker):
 - The LCP hero image loads eagerly with `fetchpriority="high"`; body images carry width/height and load lazily; unknown URLs return the bilingual 404 page with status 404
 
 Author checklist (validated where marked):
-- Title: final bilingual wording confirmed and recorded under section 1.1; model/product first, a real question or judgment, **≤ 70 characters** (validated), unique across the site. No clickbait that the article does not answer
+- Title: the user's Korean wording and its faithful English translation, recorded under section 1.1; **≤ 70 characters** (validated) and unique across the site, otherwise ask the user for new wording
 - Description: 50–180 characters (validated), states the actual answer or angle; it becomes the search snippet
 - Slug: lowercase English kebab-case, short, the same for both languages, and **never changed after publication**
 - Headings: the template renders the only H1; the body starts at H2 (validated: no `# ` headings) and does not skip levels
@@ -351,7 +349,7 @@ Privacy and security (check every screenshot zoomed in before committing):
 - The rec passcode, `PUBLISH_TOKEN` and similar values never appear, even partially
 
 Titles (user instruction, 2026-10-27):
-- **The user writes every story title.** Draft a new part with `title: ""` in `editorial/story-drafts/<lang>/<slug>.md` (outside the content folder, not committed) and do not propose candidates; to review it rendered, build with a temporary title and remove it again; ask for the title when the part is ready and use the user's wording exactly. Never change an existing title on your own
+- **The user writes every story title; Claude does not suggest titles or candidates** (same rule as blog articles, section 1.1). Draft a new part with `title: ""` in `editorial/story-drafts/<lang>/<slug>.md` (outside the content folder, not committed); to review it rendered, build with a temporary title and remove it again. Ask for the title when the part is ready and use the user's wording exactly. Never change an existing title on your own
 - The English title is a faithful translation of the user's Korean title; show it with the part for the user to check
 - The template adds `· <project> <N>편` / `· <project> Part N` to the page title, so the title need not repeat the project name
 - The build rejects an empty title, so a part without the user's title is not committed
