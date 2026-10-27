@@ -1,7 +1,7 @@
 ---
 title: "Two weeks of running the forecast service - pretty accurate, actually"
 description: "Two live weeks, 14 issuances: more accurate than the KMA on temperature, humidity and wind every time. Rain swung day to day, and a check found our own bug in the KMA wind numbers."
-publishedAt: 2026-10-30
+publishedAt: 2026-10-27
 lang: en
 project: beat-kma
 part: 6

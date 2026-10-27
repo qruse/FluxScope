@@ -1,7 +1,7 @@
 ---
 title: "Doesn't every TTS sound the same these days? Let's make one with my own voice!"
 description: "Five open-source voice-cloning models run on the same sentence on a home RTX 3070, why OmniVoice won, and how a visitor's voice travels through a tunnel to the home PC and back."
-publishedAt: 2026-11-02
+publishedAt: 2026-10-27
 lang: en
 project: my-voice-tts
 part: 1

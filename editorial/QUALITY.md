@@ -27,7 +27,7 @@ Every row must pass. A polished title cannot compensate for fabricated experienc
 
 | Gate | Pass only if | Automatic coverage |
 | --- | --- | --- |
-| Title approval | Final bilingual titles match the user's recorded confirmation; changed titles require confirmation again | Human workflow check |
+| User title | The Korean title is the user's exact wording and the English title its faithful translation (AGENTS §1.1) | Human workflow check |
 | Reader value | One clear question; an answer and an actionable choice; each section adds a new fact or decision | Human review |
 | Readability | Familiar words and short sentences; essential jargon explained once; repeated conclusions and captions cut; decision-changing evidence and qualifications retained | Human review |
 | Evidence | Core claims traceable to opened original sources; market/model/date/units stated; calculations reproducible | Human review |
@@ -35,14 +35,14 @@ Every row must pass. A polished title cannot compensate for fabricated experienc
 | Voice | One coherent question per article; the body answers the user's title (titles are the user's, AGENTS §1.1); natural witty humor grounded in facts; no fake experience, forced drama or repetitive filler | Human review |
 | Structure | Exactly 3 summary bullets; final Q&A with 3–5 answered questions; community immediately before it when present, each reaction linked and Reddit or Hacker News represented | Shared validator |
 | Metadata | Correct category; 5–15 unique kebab-case tags; useful title/description/alt; original date/URL preserved | Validator plus human |
-| SEO | Title ≤ 70 chars with the product first; description states the answer; stable slug; body starts at H2; alt text 5–150 chars; no manual SEO tags | Validator plus human |
+| SEO | Title ≤ 70 chars; description states the answer; stable slug; body starts at H2; alt text 5–150 chars; no manual SEO tags | Validator plus human |
 | Images | New articles: 4–10 distinct visuals, exactly one generated rough sketch hero plus at least three useful body visuals; previously published articles and dated reference fixtures retain their prior 2–10 range under AGENTS §7; English text and USD labels; meaningful choice among five types; verified labels and dimensions; optimized files | Partial file/structure checks, then visual review |
 | Bilingual | Same claims, prices, units, limitations and meaning; natural English | Pair existence/metadata plus human |
 | Delivery | Both live pages and discovery paths work; actual production content matches the reviewed revision | Live checks |
 
 ### Stop publishing immediately when
 
-- The final title has not been confirmed by the user, or a payload title differs from the confirmed bilingual pair (AGENTS §1.1)
+- The user has not given the title, or a payload title differs from the user's wording or its recorded translation (AGENTS §1.1)
 - A core claim has no checked source, a supplied experience has been embellished, or a diagram contradicts the text
 - A key price/spec is disputed and the disagreement changes the conclusion
 - One language is missing, a required image is broken, or a core build/check fails
@@ -109,4 +109,4 @@ If omitted: list searches, date and why no usable reaction was found
 
 ## Prompt for the next writing agent
 
-“Read AGENTS.md and editorial/QUALITY.md. Retrieve the newest relevant published bilingual article and its available review; use the three technique references as supplements. State the reader question internally. Verify sources and fill the claim ledger before drafting. Preserve only the user's actual experience. Write the English master and natural Korean counterpart with matching facts, USD prices and English-only shared images. Apply every release gate; fix failures instead of relaxing checks. Present the final bilingual title pair and obtain user confirmation under AGENTS §1.1 before publication; save drafts or unlisted previews while awaiting the decision. Publish the paired payloads with scripts/publish-post.mjs through D1/API and verify the live result. Report changes, checks and any unfinished publication separately.”
+“Read AGENTS.md and editorial/QUALITY.md. Retrieve the newest relevant published bilingual article and its available review; use the three technique references as supplements. State the reader question internally. Verify sources and fill the claim ledger before drafting. Preserve only the user's actual experience. Write the English master and natural Korean counterpart with matching facts, USD prices and English-only shared images. Apply every release gate; fix failures instead of relaxing checks. Titles are the user's: never suggest one; ask for it under AGENTS §1.1 and save drafts or unlisted previews while waiting. Publish the paired payloads with scripts/publish-post.mjs through D1/API and verify the live result. Report changes, checks and any unfinished publication separately.”

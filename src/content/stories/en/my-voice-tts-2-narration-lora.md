@@ -1,7 +1,7 @@
 ---
 title: "How can I make a TTS of my own voice even better?"
 description: "Narrating the KMA Short in my own voice: a blind test of Qwen3-TTS against OmniVoice, endings clipped at 1.5x speed, and a LoRA run that mattered less than a better reference recording."
-publishedAt: 2026-11-04
+publishedAt: 2026-10-27
 lang: en
 project: my-voice-tts
 part: 2

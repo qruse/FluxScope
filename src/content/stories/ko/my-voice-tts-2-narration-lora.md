@@ -1,7 +1,7 @@
 ---
 title: "내 목소리 전용 TTS를 어떻게 더 잘 만들까?"
 description: "기상청 쇼츠 나레이션을 내 목소리로 만들면서 Qwen3-TTS와 OmniVoice를 블라인드로 비교하고, 1.5배속에서 말끝이 잘리는 문제를 풀고, LoRA 학습보다 참고 녹음 교체가 더 효과 있었던 과정."
-publishedAt: 2026-11-04
+publishedAt: 2026-10-27
 lang: ko
 project: my-voice-tts
 part: 2

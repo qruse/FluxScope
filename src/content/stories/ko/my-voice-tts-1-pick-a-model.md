@@ -1,7 +1,7 @@
 ---
 title: "요즘 TTS 너무 다 똑같지 않음? 내 목소리로 한번 만들어보자!"
 description: "오픈소스 음성 복제 모델 다섯 개를 집 RTX 3070에서 같은 문장으로 돌려 OmniVoice를 고르고, 방문자 목소리가 터널을 지나 집 PC까지 왔다 가는 서비스를 만든 과정."
-publishedAt: 2026-11-02
+publishedAt: 2026-10-27
 lang: ko
 project: my-voice-tts
 part: 1
