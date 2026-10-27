@@ -1,7 +1,8 @@
 ---
 import BaseLayout from '../../../layouts/BaseLayout.astro';
+import { authorProfileJsonLd } from '../../../lib/site';
 ---
-<BaseLayout lang="en" title="About & editorial policy" description="About HSL's Blog and how its posts are written.">
+<BaseLayout lang="en" title="About & editorial policy" description="Who writes HSL's Blog and how: reader questions first, official sources beside each claim, credited benchmarks, labeled opinions and how to report an error." jsonLd={authorProfileJsonLd('en')}>
   <header class="page-top"><div class="article-shell"><div class="section-kicker">About this blog</div><h1>Looking into things.<br />Writing them down.</h1><p>I write about things that catch my interest, from AI and cars to devices. This is a place to keep useful notes, sources, and thoughts that I can return to and share with others.</p></div></header>
   <div class="article-body article-shell">
     <h2>How we work</h2>

@@ -844,11 +844,14 @@ async function article(post, env, request, token) {
   const home = blogHome(lang);
   const about = `${home}about/`;
   const tags = JSON.parse(post.tags);
+  // Google prefers several representative images: the thumbnail first, then the body figures with known sizes.
+  const figures = [...new Set(bodyImages)].filter((src) => src.startsWith('/') && dimensions[src])
+    .map((src) => ({ '@type': 'ImageObject', url: `${origin}${src}`, width: dimensions[src][0], height: dimensions[src][1] }));
   const jsonLd = [
     {
       '@context': 'https://schema.org', '@type': 'BlogPosting', headline: post.title, inLanguage: lang,
       description: post.description, mainEntityOfPage: canonical,
-      image: imageSize ? { '@type': 'ImageObject', url: image, width: imageSize[0], height: imageSize[1] } : image,
+      image: [imageSize ? { '@type': 'ImageObject', url: image, width: imageSize[0], height: imageSize[1] } : image, ...figures],
       datePublished: post.published_at, dateModified: post.updated_at,
       author: { '@type': 'Person', name: 'HSL', url: `${origin}${about}` },
       publisher: { '@type': 'Organization', name: 'HSL Lab', url: `${origin}/`, logo: { '@type': 'ImageObject', url: `${origin}/images/logo.png`, width: 512, height: 512 } },
@@ -948,9 +951,10 @@ async function rssFeed(env, lang) {
   return new Response(feed, { headers: { 'Content-Type': 'application/rss+xml; charset=utf-8', 'Cache-Control': 'public, max-age=300' } });
 }
 
-// Mirrors public/_headers for responses the Worker builds itself.
+// Mirrors public/_headers for responses the Worker builds itself. Cloudflare Web Analytics (cookieless, injected by the zone)
+// loads its beacon from static.cloudflareinsights.com and reports to cloudflareinsights.com; it was blocked until 2026-10-27.
 const securityHeaders = {
-  'Content-Security-Policy': "default-src 'self'; script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; frame-src https://www.youtube-nocookie.com; font-src 'self' data:; connect-src 'self'; worker-src 'self' blob:; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'; upgrade-insecure-requests",
+  'Content-Security-Policy': "default-src 'self'; script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval' https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; frame-src https://www.youtube-nocookie.com; font-src 'self' data:; connect-src 'self' https://cloudflareinsights.com; worker-src 'self' blob:; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'; upgrade-insecure-requests",
   'Strict-Transport-Security': 'max-age=31536000; includeSubDomains',
   'X-Content-Type-Options': 'nosniff',
   'X-Frame-Options': 'DENY',
@@ -995,6 +999,13 @@ function withAds(response, env, url) {
   return new Response(out.body, { status: out.status, statusText: out.statusText, headers });
 }
 
+// AdSense checks site ownership on any page, the home page included, so every HTML page names the account once it is set.
+// This meta tag is not an ad; ads themselves stay on adPath pages.
+function withAdsenseAccount(response, env) {
+  if (!adsOn(env) || response.status !== 200 || !(response.headers.get('Content-Type') || '').includes('text/html')) return response;
+  return new HTMLRewriter().on('head', new AppendHead(`<meta name="google-adsense-account" content="ca-${env.ADSENSE_PUBLISHER_ID}">`)).transform(response);
+}
+
 // The my-voice TTS page records from the microphone and plays the generated audio from a blob: URL; every other page keeps both off.
 const micPage = /^\/(?:en\/)?projects\/my-voice-tts\/(?:rec\/)?$/;  // rec/: temporary narration recorder (10/24)
 function withSecurityHeaders(response, url) {
@@ -1015,7 +1026,7 @@ async function edgeCached(request, env, ctx) {
   const url = new URL(request.url);
   const bypass = request.method !== 'GET' || !edgeCachedPath.test(url.pathname) || /no-cache|max-age=0/i.test(`${request.headers.get('Cache-Control')} ${request.headers.get('Pragma')}`);
   const cache = globalThis.caches?.default;
-  if (bypass || !cache) return withSecurityHeaders(await handle(request, env, ctx), url);
+  if (bypass || !cache) return withSecurityHeaders(withAdsenseAccount(await handle(request, env, ctx), env), url);
   const key = new Request(`${url.origin}${url.pathname}`);
   const hit = await cache.match(key);
   if (hit) {
@@ -1024,7 +1035,7 @@ async function edgeCached(request, env, ctx) {
     fresh.headers.set('Cache-Control', 'public, max-age=0, must-revalidate');
     return fresh;
   }
-  const response = withSecurityHeaders(await handle(request, env, ctx), url);
+  const response = withSecurityHeaders(withAdsenseAccount(await handle(request, env, ctx), env), url);
   if (response.status === 200) {
     const stored = new Response(response.clone().body, response);
     stored.headers.set('Cache-Control', 'public, max-age=60');

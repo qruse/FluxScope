@@ -58,6 +58,19 @@ export const projects = [
   },
 ] as const;
 
+// The blog's about page is the author page every BlogPosting points to (author.url); it declares that author.
+// The author is only ever "HSL": never the owner's real name, photo or employer.
+export const authorProfileJsonLd = (lang: Lang) => {
+  const url = `${lab.url}${lang === 'en' ? '/en' : ''}/blog/about/`;
+  return {
+    '@context': 'https://schema.org', '@type': 'ProfilePage', url, inLanguage: lang,
+    mainEntity: {
+      '@type': 'Person', name: 'HSL', url, email: 'mailto:coolwin200@gmail.com',
+      knowsAbout: ['Artificial intelligence', 'Cars', 'Consumer electronics', 'Weather forecasting'],
+    },
+  };
+};
+
 export const projectPath = (id: string, lang: Lang = defaultLang) => withBase(`${lang === 'en' ? '/en' : ''}/projects/${id}/`);
 export const storyPath = (slug: string, lang: Lang = defaultLang) => withBase(`${lang === 'en' ? '/en' : ''}/stories/${slug}/`);
 export type LabSection = (typeof labSections)[number];
