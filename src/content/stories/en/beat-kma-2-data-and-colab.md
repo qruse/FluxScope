@@ -2,6 +2,7 @@
 title: "No decent GPU at home.. so let's try Colab!"
 description: "Gathering the answers (ASOS), the opponent (KMA forecasts) and the starting point (AIFS analysis), then running Aurora 195 times overnight on one Colab L4."
 publishedAt: 2026-10-16
+updatedAt: 2026-10-27
 lang: en
 project: beat-kma
 part: 2
@@ -52,6 +53,12 @@ part: 2
 - The data.go.kr key comes in an "Encoding" form that gets encoded twice by the HTTP library and is then rejected as unregistered
 - That bit on the first day, and again on the last
 
+![The project page's hourly table: sky, temperature, rain chance, light rain, wind and humidity from 6:00 on October 27 to midnight, with our AI and the KMA on facing rows](/images/stories/beat-kma/part2-live-hourly.webp)
+
+*Made by HSL — hourly table for Seoul on the project page, 05:00 issuance on Oct 27*
+
+- The KMA forecasts that started piling up then now sit hour by hour right under ours
+
 ## Aurora boxes
 
 - For each issuance Aurora 1.5 runs on the whole globe, hourly, for 60 hours or more
@@ -78,4 +85,11 @@ part: 2
 - A Colab Pro month (about 10,000 KRW) includes 100 units, so all the boxes cost about a third of a month
 - **Counting the Colab subscription and the Claude tokens, the whole project cost about 20,000 KRW (roughly 15 USD)**
 - Cheap enough to feel sorry for the L4 that worked all night
+
+## If I did it again
+
+- Starting the collector on day one was the best call; one day later and the opponent's record would have a hole
+- Add `Pacer` before bulk-downloading the archive; skipping it cost a 19-hour IP block
+- Fetch Colab results as soon as they exist; 19 boxes vanished while the watcher was asleep
+- The same retry and fetch-back pieces now run the daily service (part 6)
 - Next: pitting untouched Aurora against the KMA

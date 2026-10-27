@@ -3,7 +3,7 @@
 // every morning at 06:00 KST, and one game-NNN.json per finished game. Seats are code names A–H shuffled every game;
 // the models behind them, living players' roles, night moves and private thoughts appear only after a game ends.
 // Visitors vote for the seat they suspect (/api/mafia/vote); the tally is handed to the AIs before their own vote.
-import { getCollection } from 'astro:content';
+import { getStories } from '../lib/stories';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { projects, projectPath, storyPath } from '../lib/site';
 import type { Lang } from '../i18n/ui';
@@ -13,7 +13,7 @@ const { lang } = Astro.props;
 const isKo = lang === 'ko';
 const L = (ko: string, en: string) => (isKo ? ko : en);
 const project = projects.find((p) => p.id === 'ai-mafia')!;
-const stories = (await getCollection('stories', (e) => e.data.lang === lang && e.data.project === project.id))
+const stories = (await getStories((e) => e.data.lang === lang && e.data.project === project.id))
   .sort((a, b) => a.data.part - b.data.part);
 const rules = [
   [L('참가자', 'Players'), L('Claude 4(Opus·Sonnet·Haiku 5.5, Opus 5), GPT 3(GPT-6.1 Sol·GPT-6 Luna·GPT-6 Sol), Gemini 1(3.8 Flash). 게임 1은 Gemini 4 Argon 포함 7명, 게임 2는 GPT-6 Astra가 있었지만 비용 때문에 1일차에 멈춤', 'Claude ×4 (Opus, Sonnet, Haiku 5.5, Opus 5), GPT ×3 (GPT-6.1 Sol, GPT-6 Luna, GPT-6 Sol), Gemini ×1 (3.8 Flash). Game 1 had seven, with Gemini 4 Argon; game 2 had GPT-6 Astra but was stopped on day 1 over cost')],

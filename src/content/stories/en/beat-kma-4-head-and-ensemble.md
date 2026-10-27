@@ -2,6 +2,7 @@
 title: "Added a head and fine-tuned it. So, how did it go?!"
 description: "Freezing Aurora, adding a station correction head, and mixing LightGBM with neural heads into an ensemble that beat the KMA on four metrics in the test period, with its limits."
 publishedAt: 2026-10-16
+updatedAt: 2026-10-27
 lang: en
 project: beat-kma
 part: 4
@@ -69,6 +70,10 @@ Test period (2026-07 to 10-12): 33 issuances × 97 stations × 48 hours. Models 
 
 *Made by HSL: test, 33 issues x 97 stations x 48 hours, scored once*
 
+![The test-period box at the top of the project page: temperature, humidity and wind MAE and rain F1 for our AI and the KMA, with the note on the roughly 20,000 KRW development cost](/images/stories/beat-kma/part4-live-test.webp)
+
+*Made by HSL — the box at the top of the project page where these results live*
+
 ## So nobody gets the wrong idea
 
 - The win covers this test period, these 97 stations and 48 hours after issuance
@@ -105,6 +110,13 @@ Test period (2026-07 to 10-12): 33 issuances × 97 stations × 48 hours. Models 
 - With more GPU, the same framework can fine-tune Aurora on Korean observations or even pretrain it
 - A 10-day forecast fits the same framework too: roll the boxes to 240 hours and train the head out to a 240-hour lead
 - What changes is GPU time; the code stays almost the same
+
+## If I did it again
+
+- With only 122 training issuances, start with a tree model (LightGBM); the whole neural ladder never beat LightGBM alone
+- But keep the neural nets; they made different mistakes, and mixing them helped at once
+- Do the fairness correction (grid vs point) at the first scoring; done later, it explained a quarter of the gap
+- Keep opening the test set only once; when part 5 made me want to change the rule, this is what kept the main score as it was
 
 ## What's next
 

@@ -1,5 +1,5 @@
 ---
-import { getCollection } from 'astro:content';
+import { getStories } from '../lib/stories';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import LabPageStyles from './LabPageStyles.astro';
 import { projectPath, projects, storyPath } from '../lib/site';
@@ -9,7 +9,7 @@ interface Props { lang: Lang; }
 const { lang } = Astro.props;
 const isKo = lang === 'ko';
 // Each project lists how it runs and its development story parts, so the index says more than the names.
-const stories = (await getCollection('stories', (entry) => entry.data.lang === lang)).sort((a, b) => a.data.part - b.data.part);
+const stories = (await getStories((entry) => entry.data.lang === lang)).sort((a, b) => a.data.part - b.data.part);
 const runs: Record<string, { ko: string; en: string }> = {
   'beat-kma': { ko: '매일 아침 새 예보를 올리고, 지난 예보를 실제 관측값으로 채점함.', en: 'A new forecast goes up every morning, and past forecasts are scored against what was actually observed.' },
   'ai-duel': { ko: '매주 세 AI가 각자 주문을 내고, 매일 미국장 종가로 수익률과 위험 지표를 갱신함.', en: 'Each AI places its orders every week, and returns and risk figures update at every US close.' },

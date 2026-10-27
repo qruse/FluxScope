@@ -39,7 +39,7 @@ Do not stop after writing advice when asked to edit. Do not report an API respon
 ## 2. Identity and hard requirements
 
 - The repository is FluxScope. The main site is **HSL Lab** at `https://hslab.space` (lab home `/` and `/en/`); the blog is one of its projects, served under `/blog/` and `/en/blog/`, and its displayed name remains **HSL의 블로그 / HSL's Blog** unless the user asks to rename it. The former domain `hslblog.com` only redirects (301) to the same page under `/blog/`. The logo is the `hsl.` wordmark (header; blog pages add a `블로그 / blog` section link) and the `h.` mark (favicon, `/images/logo.png`); blog page titles, metadata and the footer keep the blog's full name, lab pages use HSL Lab
-- Lab sections (projects, project stories, blog, portfolio) are listed once in `labSections` in `src/lib/site.ts`, which the lab home list and the header nav read; keep this order (user instruction, 2026-10-19), with portfolio last. The lab home adds one entry after them, 05 "주요 수행 프로젝트 및 연구 / Key projects and research" (the portfolio case studies, `cases` in `src/lib/portfolio.ts`); it is not a section and keeps the portfolio's face. Every section has its pages under its `path` (`/blog/`, `/projects/`, `/stories/`, `/portfolio/`). Projects are listed in `projects` in the same file and get a page under `/projects/<id>/`, which ends with the same guest comments as blog articles (`public/comments.js`, `data-intro` line inviting feedback, "훈수 환영" / "Backseat … welcome"); the weather project (`beat-kma`) draws forecast data that the separate `weather_forecasting` pipeline uploads daily to `/api/weather/` (R2, `PUBLISH_TOKEN`). Project stories (development write-ups, one part at a time) are static Markdown in `src/content/stories/<lang>/<slug>.md` served under `/stories/<slug>/` (old `/portfolio/<slug>/` URLs redirect there), not D1 blog articles; escape `~` in their bodies (`\~`) so ranges do not turn into strikethrough, give each part at least two images under `public/images/stories/<project>/`, and call a prediction head 헤드(head), never 머리. The portfolio page (`src/components/PortfolioIndex.astro`) is compiled from the owner's CVs: never show the owner's real name, photo, phone, address, birth date, ID number or employer names there (say "smart-farm company" and "co-founded AI startup"); the only contact is coolwin200@gmail.com. Each section owns the tetrahedron face at its index and the number index + 1 (`LabMark`). Site-wide pages (`/privacy/`, `/contact/`) cover every section
+- Lab sections (projects, project stories, blog, portfolio) are listed once in `labSections` in `src/lib/site.ts`, which the lab home list and the header nav read; keep this order (user instruction, 2026-10-19), with portfolio last. The lab home adds one entry after them, 05 "주요 수행 프로젝트 및 연구 / Key projects and research" (the portfolio case studies, `cases` in `src/lib/portfolio.ts`); it is not a section and keeps the portfolio's face. Every section has its pages under its `path` (`/blog/`, `/projects/`, `/stories/`, `/portfolio/`). Projects are listed in `projects` in the same file and get a page under `/projects/<id>/`, which ends with the same guest comments as blog articles (`public/comments.js`, `data-intro` line inviting feedback, "훈수 환영" / "Backseat … welcome"); the weather project (`beat-kma`) draws forecast data that the separate `weather_forecasting` pipeline uploads daily to `/api/weather/` (R2, `PUBLISH_TOKEN`). Project stories (development write-ups, one part at a time) are static Markdown in `src/content/stories/<lang>/<slug>.md` served under `/stories/<slug>/` (old `/portfolio/<slug>/` URLs redirect there), not D1 blog articles; section 12 is their contract. The portfolio page (`src/components/PortfolioIndex.astro`) is compiled from the owner's CVs: never show the owner's real name, photo, phone, address, birth date, ID number or employer names there (say "smart-farm company" and "co-founded AI startup"); the only contact is coolwin200@gmail.com. Each section owns the tetrahedron face at its index and the number index + 1 (`LabMark`). Site-wide pages (`/privacy/`, `/contact/`) cover every section
 - Shared look: graph-paper page background with reading areas (`.article-shell`) on plain paper; photos use `.taped`; pen underlines use `.pen-under` (article h2 get one automatically); blog pages get the reading aids in `src/components/ReadingAids.astro` (contents list, reading progress)
 - Purpose: useful notes by someone curious about AI, cars and devices, for readers deciding what to use, buy or investigate
 - **This is an international blog.** Write for a global reader first: pick topics, markets, prices, sources and examples that matter across major markets (US, EU/UK, China, Japan, Korea). Korea-only facts (Korean prices, laws, insurers, dealers, subsidies) enter only as one clearly labeled market example or when the topic itself is Korean; never frame a global question around the Korean market alone. The Korean edition is a translation of that global article, not a Korea-specific version
@@ -315,3 +315,48 @@ Manual release checks:
 - Record checks actually performed and any limitations in the review record
 
 If a check fails, fix the article or real validation bug. Do not disable a gate, exclude a troublesome reference, invent evidence, or label unfinished work as published merely to finish the task.
+
+## 12. Project stories
+
+Project stories are the lab's first-hand record: what we built, what broke, the numbers, and what we would change. Nobody else can write them, which makes them the site's most original pages; hold them to the bar of `beat-kma-4-head-and-ensemble` (measured tables, a fair comparison, stated limits). Rules from sections 3, 4 and 6 apply unless this section says otherwise (user instruction, 2026-10-27).
+
+Files and format:
+- One part per file: `src/content/stories/ko/<slug>.md` and `src/content/stories/en/<slug>.md`, same slug, same facts, numbers, images and caveats. Slug `<project>-<part>-<short-topic>`, never changed after publication
+- Front matter: `title`, `description` (30–200 characters, the actual answer of the part), `publishedAt`, optional `updatedAt`, `lang`, `project` (an id from `projects` in `src/lib/site.ts`), `part`
+- Escape `~` as `\~`; call a prediction head 헤드(head), never 머리
+- Internal links are relative (`/projects/beat-kma/`, `/en/stories/...`), never `https://hslab.space/...`
+
+Shape:
+1. `## 3줄 요약` / `## In three lines`: exactly three bullets — what this part tried, the key result or number, what it means or what is next
+2. 2–5 body sections that follow the work: goal → what got in the way → what we did, with the measured result. Headings follow section 4 (specific claims, read as a story in order)
+3. A closing section `## 다시 한다면` / `## If I did it again` (or `## 배운 것` / `## What I learned`) with concrete, checkable lessons
+4. At most one line pointing to the next part or the project page. No community reactions, Q&A or appended "추가:" / "Update:" sections
+
+Substance:
+- One reader question per part. A reader should be able to reproduce the step or reuse the decision
+- Each part contains at least two kinds of first-hand evidence: a measured table, a short code or config excerpt (≤ 15 lines, the part that mattered), a real screenshot of our system (project page, notebook, terminal, dashboard), or a log excerpt. No word-count target; a part without evidence is merged into another or not published
+- Numbers come only from our own records (`docs/devlog.md` of the project, result files, the project API, D1 rows) and carry their date or period ("10/27 기준"). List each number's source path in `editorial/reviews/story-<slug>.md`; never round a loss into a win
+- Experience stays honest (section 6): describe what actually happened, including mistakes and costs; no invented struggles or jokes about events that did not occur
+- External facts (model specs, prices, papers) follow section 3 with a primary link beside them
+
+Images (at least three per part, under `public/images/stories/<project>/part<N>-<name>.webp`):
+- At least one real capture of our own system, cropped to what matters; the rest code-drawn charts, pipelines or tables (section 7 rules: English text inside images, minimal labels, USD)
+- The first image becomes the share image and search thumbnail, so lead with the most representative one
+- Caption each with `*HSL 제작 — <what it shows>*` / `*Made by HSL — <what it shows>*` or a source line for an external figure
+- Width ≤ 1600 px, target < 250 KiB, descriptive alt text
+
+Privacy and security (check every screenshot zoomed in before committing):
+- Never show the Windows user path (it contains the owner's real name), real name, account e-mails other than coolwin200@gmail.com, tokens, API keys, tunnel URLs, IP addresses, home location or device serials. Crop or redact; a blurred secret still counts as shown
+- AI Mafia: never reveal the role of any living player in an ongoing game
+- The rec passcode, `PUBLISH_TOKEN` and similar values never appear, even partially
+
+Titles (user instruction, 2026-10-27):
+- **The user writes every story title.** Draft a new part with `title: ""` in `editorial/story-drafts/<lang>/<slug>.md` (outside the content folder, not committed) and do not propose candidates; to review it rendered, build with a temporary title and remove it again; ask for the title when the part is ready and use the user's wording exactly. Never change an existing title on your own
+- The English title is a faithful translation of the user's Korean title; show it with the part for the user to check
+- The template adds `· <project> <N>편` / `· <project> Part N` to the page title, so the title need not repeat the project name
+- The build rejects an empty title, so a part without the user's title is not committed
+
+Updates and cadence:
+- A later development becomes the next part. A correction or small addition edits the part in place and sets `updatedAt` (shown on the page and used as `dateModified`)
+- Publish new parts spread out, 2–3 per week, with `publishedAt` set to the real publication day; a part whose `publishedAt` is in the future is left out of the build (listings, sitemap, page) until a build on or after that day
+- Publishing a part is a code change: run `npm run check`, commit and push to `main`, then verify the live page in both languages

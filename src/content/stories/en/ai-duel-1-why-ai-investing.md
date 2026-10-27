@@ -2,6 +2,7 @@
 title: "Why I started an AI investing experiment"
 description: "Looking for ways to make money with AI turned out harder than expected, so I picked the one where results show up as a number: a fully public AI stock portfolio."
 publishedAt: 2026-10-18
+updatedAt: 2026-10-27
 lang: en
 project: ai-duel
 part: 1
@@ -39,6 +40,12 @@ part: 1
 - Losing weeks stay up too, so anyone can watch whether AI really beats the market
 - It starts as paper trading with no real money. Prices are regular-session closes from the Toss Securities Open API
 
+![Score cards at the top of the project page: returns for GPT-6.1 Sol, Claude Opus 5.5 and Gemini 4 Argon, their gap to the S&P 500 and Nasdaq-100, max drawdown, volatility and beta](/images/stories/ai-duel/part1-live-scoreboard.webp)
+
+*Made by HSL — score cards on the project page, as of Oct 27 07:31 KST*
+
+- The top of the page updates every morning with each AI's return and its gap to the indexes
+
 ## How it runs
 
 ![Flow from Toss Open API prices to the Saturday meeting, strategy rewrite, orders and a fill at the next US close, with results fed back into the next briefing](/images/stories/ai-duel/part1-loop.webp)
@@ -50,4 +57,9 @@ part: 1
 - Code checks the orders and fills them at the next US close
 - Books are marked to the close every morning and published
 - Those results go into the next briefing, which closes the feedback loop
-- The next part covers the two AIs in this race and the rules they play by
+
+## If I did it again
+
+- Keep the 0.1% trading cost from day one; all three first-day values started below $20,000, so the cost showed up in the numbers at once
+- The Toss Securities Open API can place real orders but has no paper-trading mode, so code simulates fills at the close. Before putting in real money, the gap between simulated and real fills would need measuring first
+- The next part covers the AIs in this race and the rules they play by

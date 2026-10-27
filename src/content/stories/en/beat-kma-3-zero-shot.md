@@ -2,6 +2,7 @@
 title: "A global AI model vs the KMA: who forecasts better?"
 description: "Untouched (zero-shot) Aurora against the KMA short-range forecast at 97 stations, from a sun that rose four hours late to a win on rain F1."
 publishedAt: 2026-10-16
+updatedAt: 2026-10-27
 lang: en
 project: beat-kma
 part: 3
@@ -69,4 +70,17 @@ Validation period (2026-03 to 06), 40 issuances × 97 stations × 48 hours
 - The KMA forecast rain for many hours and had lots of false alarms (precision 0.30)
 - Aurora hit precision and recall evenly at 0.55–0.63
 - So Aurora has the big picture, and the KMA knows the stations
-- The fix is a head on top of Aurora that learns the stations; that is part 4
+- The fix is a head on top of Aurora that learns the stations
+
+![The project page's replay chart: the 48-hour temperature for Seoul from the October 26 05:00 issuance, with our AI as a solid line, the KMA dashed and observations as dots](/images/stories/beat-kma/part3-live-replay.webp)
+
+*Made by HSL — replay on the project page, Seoul, Oct 26 05:00 issuance (today's service, with the head)*
+
+- This is the replay on today's service, head included: both forecasts from a past issuance laid over what was actually observed
+
+## If I did it again
+
+- When results look wrong, check that the input matches what the model was trained on before digging through time-conversion code; the culprit was the cropped longitude
+- The first round should not have run on reanalysis initial conditions; starting with real-time AIFS conditions would have saved rerunning everything
+- Noting in the table that a rain cutoff picked on validation flatters Aurora a little was the right call
+- The results with a head are in part 4

@@ -2,6 +2,7 @@
 title: "Argon ran out of usage, so I added bench models"
 description: "Game 1 ended in a Mafia win, and Gemini 4 Argon fell to 1% of its weekly usage. Argon now plays only the stock duel; from game 2 the table seats eight, with three bench models."
 publishedAt: 2026-10-24
+updatedAt: 2026-10-27
 lang: en
 project: ai-mafia
 part: 4
@@ -49,16 +50,32 @@ part: 4
 
 ## The stock duel waits for Argon
 
-- The [AI portfolio duel](https://hslab.space/en/projects/ai-duel/) has to keep running the same portfolio, so no other model decides for Argon
-- This week GPT and Opus decide on Saturday at 10:00 as usual, and Argon decides on Sunday around 21:00, once its limit is back
+- The [AI portfolio duel](/en/projects/ai-duel/) has to keep running the same portfolio, so no other model decides for Argon
+- So GPT and Opus met on Saturday at 10:00 as usual, and Argon met at 21:01 on October 25, once its limit was back (stock duel part 3)
 
-## Game 2 starts October 24 at 06:00
+## Game 2 stopped, GPT-6 Sol from game 3
 
-- Game 2 starts with eight players on October 24 at 06:00 KST
-- Who sits in which seat shows in the morning news on the [project page](https://hslab.space/en/projects/ai-mafia/)
-
-## Update: GPT-6 Sol replaces Astra from game 3
-
-- GPT-6 Astra's tokens cost too much, so game 2 was stopped on day 1 and does not count in the record
-- The table stays at eight: GPT-6 Sol comes up from the bench to take Astra's seat
+- Game 2 started with eight players on October 24 at 06:00 KST
+- GPT-6 Astra's tokens cost too much, though, so it was stopped on day 1 and does not count in the record
+- The table stays at eight: GPT-6 Sol came up from the bench to take Astra's seat
 - That leaves two bench models, Claude Sonnet 5 and GPT-5.6 Sol
+
+![The eight seats of game 3: dead seats show their roles, while the living B, G and H show only the model name and a Suspect button](/images/stories/ai-mafia/part4-live-players.webp)
+
+*Made by HSL — game 3 players on the project page, day 4 (Oct 27)*
+
+- Game 3 seats both GPT-6 Sol and Claude Opus 5, who came up from the bench
+- Living players' roles stay hidden until the game ends
+
+![Record by AI: game 1 is the only finished game; Claude Opus 5.5 and GPT-6 Luna, the Mafia, have one win, the other five one loss](/images/stories/ai-mafia/part4-live-record.webp)
+
+*Made by HSL — record by AI on the project page, as of Oct 27*
+
+- The record holds only the finished game 1; the stopped game 2 is left out, and game 3 joins when it ends
+
+## If I did it again
+
+- Check each model's usage limit and token price before starting; Argon's limit and Astra's cost changed the lineup twice in three days
+- Build the bench from day one, so an AI that is out of usage never stops the game
+- Keep the bench split between Claude and GPT, so one company's limit running dry still leaves the other
+- This morning's news and the vote are on the [project page](/en/projects/ai-mafia/)

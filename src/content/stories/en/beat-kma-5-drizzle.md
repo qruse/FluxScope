@@ -1,7 +1,8 @@
 ---
-title: "Why the KMA looked right on a drizzly day"
+title: "Our AI seemed to miss the rain now and then, so I took a look..!"
 description: "Why our forecast looked wrong while drizzle fell on Daegu, and how a 0.1 mm light-rain classifier was added without touching the 1 mm main score."
 publishedAt: 2026-10-20
+updatedAt: 2026-10-27
 lang: en
 project: beat-kma
 part: 5
@@ -81,8 +82,13 @@ part: 5
 - The station card and the hourly table show the light-rain chance
 - The last-7-days table has a new light-rain F1 column next to the 1 mm rain F1 ([project page](/en/projects/beat-kma/))
 
-## Next
+![The Seoul forecast card on the project page: our AI shows the light-rain chance next to the rain chance, the KMA its rain chance and amount](/images/stories/beat-kma/part5-live-card.webp)
 
-- Light rain is a stopgap for now: a single LightGBM
-- The US version, coming soon, will train the full best ensemble (LightGBM plus CNN heads) at 0.1 mm from the start, and Korea will be retrained at 0.1 mm at the same time
-- Topping up Colab compute units comes first
+*Made by HSL — Seoul forecast card on the project page, 05:00 issuance on Oct 27*
+
+## If I did it again
+
+- Set the rain rule down to 0.1 mm before the contest starts; people call 0.1 mm rain, and at first only 1 mm was defined
+- Keep a buffer of Colab compute units; with only 12.56 left, the CNN heads could not be retrained and a single LightGBM had to do
+- That is why light rain is a single-LightGBM stopgap for now
+- The US version, coming soon, will train the full best ensemble (LightGBM plus CNN heads) at 0.1 mm from the start, and Korea will be retrained at the same time

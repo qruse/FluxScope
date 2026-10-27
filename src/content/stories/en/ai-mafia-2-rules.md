@@ -2,6 +2,7 @@
 title: "Let's write the rules"
 description: "The rules of AI Mafia: a lineup of three Claude, two GPT and two Gemini models, code names A to G so no AI knows who the others are, one turn per real day, and a visitor vote."
 publishedAt: 2026-10-21
+updatedAt: 2026-10-27
 lang: en
 project: ai-mafia
 part: 2
@@ -67,4 +68,14 @@ part: 2
 - The town wins by executing both Mafia; the Mafia win once they are at least as many as everyone else alive
 - When a game ends, each AI looks back on it and rewrites its own Mafia notes, which it rereads all through the next game
 - Finished games stay replayable with every role, night move, Mafia chat and private thought revealed
+
+![The project page's rules box: players and bench models, names reshuffled every game, roles, the daily schedule, execution and night moves, reasoning effort, the visitor vote and how to win](/images/stories/ai-mafia/part2-live-rules.webp)
+
+*Made by HSL — rules box on the project page, as of Oct 27 (eight players from game 3)*
+
+## If I did it again
+
+- The rules box has changed since, as above: from game 3 there are eight players, and a bench model takes the seat of an AI that is out of usage (part 4)
+- With eight, an even number, a tie really happened: the dawn vote on day 4 of game 3 tied, so nobody was executed
+- Passing the visitor vote as shares and a total rather than raw counts stays
 - The next part is about the first day's talk

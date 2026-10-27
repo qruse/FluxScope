@@ -2,6 +2,7 @@
 title: "Can AI beat the KMA? Which AI model should I use?"
 description: "Picking a pretrained global AI weather model that forecasts hour by hour and fits on one L4 GPU, and why Aurora 1.5 won."
 publishedAt: 2026-10-16
+updatedAt: 2026-10-27
 lang: en
 project: beat-kma
 part: 1
@@ -31,6 +32,12 @@ part: 1
 - Always saying "no rain" scores 97% accuracy and zero skill, so F1 it is
 - One more rule: inputs must be data that was actually public at the KMA issuance time
 - Starting from a reanalysis (ERA5) built days later would be reading an answer sheet from the future
+
+![The project page's forecast map: below the Seoul cards for our AI and the KMA, every station shows the two forecast temperatures side by side](/images/stories/beat-kma/part1-live-map.webp)
+
+*Made by HSL — forecast map on the live project page, 05:00 issuance on Oct 27*
+
+- The ring set up here is still what the live page shows: our forecast and the KMA's side by side at each station
 
 ## Training from scratch is out
 
@@ -83,5 +90,11 @@ Recomputed from the official WeatherBench 2 results for East Asian land only (20
 - The documentation puts Aurora 1.5 on the full 0.25° globe at about 32 GB
 - So the first idea was to feed only the area around Korea
 - That is how the sun ended up rising four hours late (part 3)
-- In the end a memory setting change put the whole globe on the L4: 19.5 GB peak, about six minutes for 48 hours
+- In the end a memory setting change put the whole globe on the L4, with a 19.5 GB peak and about six minutes for 48 hours
+
+## If I did it again
+
+- When memory runs short, change the memory settings before cropping the input; the cropped input sent me hunting a time-zone bug for nothing (part 3)
+- Fixing hourly resolution as a condition first was a good call; that one condition cut the list fastest
+- Keep F1 instead of accuracy for rain; even in two live weeks, hours with more than 1 mm made up under 10%
 - Next: collecting the data and settling into Colab

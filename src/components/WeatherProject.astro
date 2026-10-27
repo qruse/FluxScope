@@ -2,7 +2,7 @@
 // "Can AI beat the KMA?" project page. The forecast pipeline (weather_forecasting repository, scripts/service.py)
 // uploads latest.json and verify/<base>.json to /api/weather/ once a day. The page draws them with a small
 // built-in tile map (OpenStreetMap standard tiles) and plain SVG; no map or chart library.
-import { getCollection } from 'astro:content';
+import { getStories } from '../lib/stories';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { storyPath, projects, projectPath } from '../lib/site';
 import type { Lang } from '../i18n/ui';
@@ -11,7 +11,7 @@ interface Props { lang: Lang; }
 const { lang } = Astro.props;
 const isKo = lang === 'ko';
 const project = projects.find((p) => p.id === 'beat-kma')!;
-const stories = (await getCollection('stories', (e) => e.data.lang === lang && e.data.project === project.id))
+const stories = (await getStories((e) => e.data.lang === lang && e.data.project === project.id))
   .sort((a, b) => a.data.part - b.data.part);
 // Test period result (2026-07-01 to 2026-10-12 issuances, scored once; see project story part 4).
 const test = [

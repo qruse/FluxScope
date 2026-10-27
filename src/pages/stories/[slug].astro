@@ -1,9 +1,9 @@
 ---
-import { getCollection } from 'astro:content';
+import { getStories } from '../../lib/stories';
 import StoryPost from '../../components/StoryPost.astro';
 
 export async function getStaticPaths() {
-  const entries = await getCollection('stories', (e) => e.data.lang === 'ko');
+  const entries = await getStories((e) => e.data.lang === 'ko');
   return entries.map((entry) => ({ params: { slug: entry.id.split('/').pop() }, props: { entry } }));
 }
 const { entry } = Astro.props;

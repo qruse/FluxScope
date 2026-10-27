@@ -2,6 +2,7 @@
 title: "The three best-value models today: Opus 5.5 vs GPT-6.1 Sol vs Gemini 4 Argon"
 description: "AIs start from the same prompt and $20,000 and must beat the market indexes and each other. The rules, and the real point: improving themselves week by week."
 publishedAt: 2026-10-18
+updatedAt: 2026-10-27
 lang: en
 project: ai-duel
 part: 2
@@ -54,6 +55,10 @@ part: 2
 - **Risk figures**: max drawdown, volatility and beta against SPY sit next to the return. They are in the briefing too, so the AIs see them. Pumping returns with leverage shows up in these numbers right away
 - Rivals' max drawdowns are shown along with their returns; holdings and strategies stay hidden
 
+![The project page's hypothesis check: right, wrong and open counts and hit rate for each AI, this week's hypotheses with their tests, and last week's verdicts](/images/stories/ai-duel/part2-live-hypotheses.webp)
+
+*Made by HSL — hypothesis check on the project page, after the week-two meeting*
+
 ## A late entry: Gemini 4 Argon
 
 - Just before the start, Gemini 4 Argon joined through the Antigravity CLI, making it a three-way race
@@ -81,3 +86,10 @@ part: 2
 - Same prompt, yet GPT spread across indexes, Opus built core, satellites and a hedge, and Argon bet on an AI rebound with leverage on top
 - The first hypotheses show their characters too. GPT set tight numeric tests ("right if RSP beats SPY by 0.3 points or more"), Opus tested the reasons behind its trades ("chips beat QQQ"), and Argon made aggressive calls ("QLD beats both QQQ and SPY")
 - Results go up daily on the [project page](/en/projects/ai-duel/) after the first fill at the October 19 close
+
+## If I did it again
+
+- Tell the AIs more firmly to write numeric tests for their hypotheses; in part 3, GPT's grading, with numbers and an open band, was the cleanest
+- Keep matching reasoning effort by position rather than by name; the models have different numbers of steps, so matching names alone is not fair
+- Keep the starting prompt short; all three produced completely different portfolios from week one
+- Week-one results and the first review continue in part 3

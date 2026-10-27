@@ -4,7 +4,8 @@
 // A visitor reads one fixed consent sentence; Whisper checks it was read, then any text is spoken in that voice.
 // Styles are inline: the shared CSS bundle is at its performance budget. Colors come only from the theme tokens.
 import BaseLayout from '../layouts/BaseLayout.astro';
-import { projects, projectPath } from '../lib/site';
+import { getStories } from '../lib/stories';
+import { projects, projectPath, storyPath } from '../lib/site';
 import type { Lang } from '../i18n/ui';
 
 interface Props { lang: Lang; }
@@ -12,6 +13,8 @@ const { lang } = Astro.props;
 const isKo = lang === 'ko';
 const L = (ko: string, en: string) => (isKo ? ko : en);
 const project = projects.find((p) => p.id === 'my-voice-tts')!;
+const stories = (await getStories((e) => e.data.lang === lang && e.data.project === project.id))
+  .sort((a, b) => a.data.part - b.data.part);
 const consent = L('이 목소리는 제 목소리이고, 오늘 이 문장으로 음성 합성을 만드는 데 동의합니다.', 'This is my own voice, and I agree to let it be used for speech synthesis today.');
 const samples = isKo
   ? ['오늘 저녁은 내가 쏠게. 진짜로.', '회의는 십 분 뒤에 시작합니다. 커피 챙겨 오세요.', '생일 축하해! 올해는 하고 싶은 거 다 하자.']
@@ -90,6 +93,13 @@ const bench = [
         {' '}<a href="https://arxiv.org/abs/2604.00688">OmniVoice</a> · <a href="https://arxiv.org/html/2608.11650v1">{L('다국어 비교표', 'multilingual comparison')}</a></p>
     </section>
 
+    {stories.length > 0 && (
+      <section class="vt-sec">
+        <h2>{L('프로젝트 스토리', 'Project stories')}</h2>
+        <ol class="vt-stories">{stories.map((s) => <li><a href={storyPath(s.id.split('/').pop()!, lang)}><span>{isKo ? `${s.data.part}편` : `Part ${s.data.part}`}</span><strong>{s.data.title}</strong><em>{s.data.description}</em></a></li>)}</ol>
+      </section>
+    )}
+
     <div data-ad></div>
 
     <section class="comments" id="comments" data-comments data-lang={lang} data-page={projectPath('my-voice-tts', lang)}
@@ -161,6 +171,11 @@ html[data-theme="dark"] .vt-body { --vt-ok: #6fd39a; --vt-err: #ff8f7d; }
 .vt-table tr.is-pick td:first-child { box-shadow: inset 3px 0 var(--accent); }
 .vt-note { color: var(--muted); font-size: .85rem; }
 .vt-note a { text-decoration: underline; text-underline-offset: 2px; }
+.vt-stories { display: grid; gap: .8rem; margin: 1rem 0 0; padding: 0; list-style: none; }
+.vt-stories a { display: grid; gap: .25rem; padding: 1rem 1.1rem; background: var(--surface); box-shadow: 0 1px 2px rgba(0, 0, 0, .08); }
+.vt-stories span { color: var(--accent); font-size: .74rem; font-weight: 850; }
+.vt-stories strong { font-size: 1rem; letter-spacing: -.02em; word-break: keep-all; }
+.vt-stories em { color: var(--muted); font-size: .84rem; font-style: normal; line-height: 1.55; word-break: keep-all; }
 @media (max-width: 560px) {
   .vt-step { padding: 1.1rem 1rem; }
   .vt-line { font-size: 1.05rem; }

@@ -3,7 +3,7 @@
 // latest.json to /api/duel/ after every US close; the page draws the head-to-head, a return chart, each AI's book,
 // the weekly decisions and its own strategy and review from it with plain SVG and text.
 // Paper trading only; prices come from the Toss Securities Open API.
-import { getCollection } from 'astro:content';
+import { getStories } from '../lib/stories';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { projects, projectPath, storyPath } from '../lib/site';
 import type { Lang } from '../i18n/ui';
@@ -13,7 +13,7 @@ const { lang } = Astro.props;
 const isKo = lang === 'ko';
 const L = (ko: string, en: string) => (isKo ? ko : en);
 const project = projects.find((p) => p.id === 'ai-duel')!;
-const stories = (await getCollection('stories', (e) => e.data.lang === lang && e.data.project === project.id))
+const stories = (await getStories((e) => e.data.lang === lang && e.data.project === project.id))
   .sort((a, b) => a.data.part - b.data.part);
 const rules = [
   [L('자금', 'Money'), L('각자 2만 달러', '$20,000 each')],

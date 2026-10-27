@@ -37,9 +37,13 @@ const stories = defineCollection({
     title: z.string().min(8),
     description: z.string().min(30).max(200),
     publishedAt: z.coerce.date(),
+    updatedAt: z.coerce.date().optional(),
     lang: z.enum(['ko', 'en']),
     project: z.string(),
     part: z.number().int().positive(),
+  }).refine((story) => !story.updatedAt || story.updatedAt >= story.publishedAt, {
+    message: 'updatedAt must be on or after publishedAt',
+    path: ['updatedAt'],
   }),
 });
 

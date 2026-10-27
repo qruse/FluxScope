@@ -1,6 +1,7 @@
 ---
 // One part of a project story, with the project's other parts in a side list.
-import { getCollection, render, type CollectionEntry } from 'astro:content';
+import { render, type CollectionEntry } from 'astro:content';
+import { getStories } from '../lib/stories';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import LabPageStyles from './LabPageStyles.astro';
 import { lab, labSectionPath, labSections, storyPath, projectPath, projects } from '../lib/site';
@@ -11,12 +12,17 @@ interface Props { entry: CollectionEntry<'stories'>; lang: Lang; }
 const { entry, lang } = Astro.props;
 const isKo = lang === 'ko';
 const { Content } = await render(entry);
-const parts = (await getCollection('stories', (e) => e.data.lang === lang && e.data.project === entry.data.project))
+const parts = (await getStories((e) => e.data.lang === lang && e.data.project === entry.data.project))
   .sort((a, b) => a.data.part - b.data.part);
 const slugOf = (e: CollectionEntry<'stories'>) => e.id.split('/').pop()!;
 const project = projects.find((p) => p.id === entry.data.project);
 const next = parts.find((p) => p.data.part === entry.data.part + 1);
-const date = entry.data.publishedAt.toLocaleDateString(isKo ? 'ko-KR' : 'en-US', { year: 'numeric', month: 'long', day: 'numeric', timeZone: 'Asia/Seoul' });
+const formatDate = (d: Date) => d.toLocaleDateString(isKo ? 'ko-KR' : 'en-US', { year: 'numeric', month: 'long', day: 'numeric', timeZone: 'Asia/Seoul' });
+const date = formatDate(entry.data.publishedAt);
+const updatedAt = entry.data.updatedAt ?? entry.data.publishedAt;
+const updated = entry.data.updatedAt && formatDate(entry.data.updatedAt) !== date ? formatDate(entry.data.updatedAt) : undefined;
+// The page title names the project and part so a search result says what the story belongs to.
+const pageTitle = project ? `${entry.data.title} · ${isKo ? `${project.nameKo} ${entry.data.part}편` : `${project.name} Part ${entry.data.part}`}` : entry.data.title;
 
 // The part's first figure is its share image; search engines get the part as a BlogPosting inside the lab's breadcrumbs.
 const images = [...(entry.body || '').matchAll(/!\[([^\]]*)\]\((\/images\/stories\/[^\s)]+)\)/g)]
@@ -30,7 +36,7 @@ const jsonLd = [
     '@context': 'https://schema.org', '@type': 'BlogPosting', headline: entry.data.title, inLanguage: lang,
     description: entry.data.description, mainEntityOfPage: abs(storyPath(slugOf(entry), lang)),
     ...(images.length && { image: images.map((i) => ({ '@type': 'ImageObject', url: abs(i.src), width: i.size!.width, height: i.size!.height })) }),
-    datePublished: entry.data.publishedAt.toISOString(), dateModified: entry.data.publishedAt.toISOString(),
+    datePublished: entry.data.publishedAt.toISOString(), dateModified: updatedAt.toISOString(),
     author: { '@type': 'Person', name: 'HSL', url: abs(isKo ? '/blog/about/' : '/en/blog/about/') },
     publisher: { '@type': 'Organization', name: lab.name, url: abs('/'), logo: { '@type': 'ImageObject', url: abs('/images/logo.png'), width: 512, height: 512 } },
     ...(project && { about: { '@type': 'CreativeWork', name: isKo ? project.nameKo : project.name, url: abs(projectPath(project.id, lang)) } }),
@@ -45,13 +51,13 @@ const jsonLd = [
   },
 ];
 ---
-<BaseLayout lang={lang} title={entry.data.title} description={entry.data.description} image={cover?.src} imageAlt={cover?.alt} imageWidth={cover?.size?.width} imageHeight={cover?.size?.height} type="article" publishedAt={entry.data.publishedAt} updatedAt={entry.data.publishedAt} jsonLd={jsonLd}>
+<BaseLayout lang={lang} title={pageTitle} description={entry.data.description} image={cover?.src} imageAlt={cover?.alt} imageWidth={cover?.size?.width} imageHeight={cover?.size?.height} type="article" publishedAt={entry.data.publishedAt} updatedAt={updatedAt} jsonLd={jsonLd}>
   <header class="page-top">
     <div class="article-shell">
       <div class="section-kicker">{isKo ? `프로젝트 스토리 · ${entry.data.part}편` : `Project Stories · Part ${entry.data.part}`}</div>
       <h1 class="story-title">{entry.data.title}</h1>
       <p>{entry.data.description}</p>
-      <p class="story-meta"><time datetime={entry.data.publishedAt.toISOString()}>{date}</time></p>
+      <p class="story-meta"><time datetime={entry.data.publishedAt.toISOString()}>{date}</time>{updated && <>{isKo ? ' · 수정 ' : ' · Updated '}<time datetime={updatedAt.toISOString()}>{updated}</time></>}</p>
     </div>
   </header>
   <div class="story-layout shell">

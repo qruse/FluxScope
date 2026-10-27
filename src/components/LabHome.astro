@@ -1,5 +1,5 @@
 ---
-import { getCollection } from 'astro:content';
+import { getStories } from '../lib/stories';
 import { blogPath, categories, categoryPath, labSectionPath, labSections, projectPath, projects, storyPath, type Category } from '../lib/site';
 import { useTranslations, type Lang } from '../i18n/ui';
 import LabMark from './LabMark.astro';
@@ -19,7 +19,7 @@ const blog = {
     ? '내가 궁금해서 만든 블로그.'
     : 'A blog I started because I was curious.',
 };
-const stories = (await getCollection('stories', (entry) => entry.data.lang === lang)).sort((a, b) => a.data.part - b.data.part);
+const stories = (await getStories((entry) => entry.data.lang === lang)).sort((a, b) => a.data.part - b.data.part);
 // Parts grouped by project, in the projects list order; the pinned charts come from the weather project.
 const storyGroups = projects.map((project) => ({ project, parts: stories.filter((s) => s.data.project === project.id) })).filter((g) => g.parts.length);
 const weatherStories = stories.filter((s) => s.data.project === 'beat-kma');
