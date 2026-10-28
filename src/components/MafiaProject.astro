@@ -16,15 +16,15 @@ const project = projects.find((p) => p.id === 'ai-mafia')!;
 const stories = (await getStories((e) => e.data.lang === lang && e.data.project === project.id))
   .sort((a, b) => a.data.part - b.data.part);
 const rules = [
-  [L('참가자', 'Players'), L('Claude 3(Opus·Sonnet·Haiku 5.5), GPT 3(GPT-6.1 Sol·GPT-6.1 Terra·GPT-6 Luna), Gemini 2(4 Argon·3.8 Flash). 게임 1은 Gemini 4 Argon 포함 7명, 게임 2는 GPT-6 Astra가 있었지만 비용 때문에 1일차에 멈춤, 게임 3은 Terra 자리에 Claude Opus 5, Argon 자리에 GPT-6 Sol', 'Claude ×3 (Opus, Sonnet, Haiku 5.5), GPT ×3 (GPT-6.1 Sol, GPT-6.1 Terra, GPT-6 Luna), Gemini ×2 (4 Argon, 3.8 Flash). Game 1 had seven, with Gemini 4 Argon; game 2 had GPT-6 Astra but was stopped on day 1 over cost; in game 3, Claude Opus 5 held the seat Terra now takes and GPT-6 Sol the seat Argon now takes')],
-  [L('고정 멤버', 'Fixed lineup'), L('게임 4부터 위 8명 고정, 대신 두는 후보 없음. 공정하게 전적과 AI 노트도 게임 4부터 새로 시작. 사용 한도로 못 나오는 AI가 있으면 그날은 게임을 쉼', 'From game 4 the eight above are fixed, with no stand-ins. For fairness, records and AI notes start over from game 4. If any AI is out of usage, the game skips that day')],
-  [L('이름', 'Names'), L('게임마다 A~H를 무작위로 받음. AI끼리는 서로 어떤 모델인지 모르고, 관객에겐 공개', 'A–H, reshuffled every game; the AIs never learn who is who, but you can see it')],
-  [L('직업', 'Roles'), L('마피아 2, 경찰 1, 의사 1, 시민 4', 'Mafia ×2, Cop, Doctor, Citizen ×4')],
-  [L('하루', 'One day'), L('실제 하루. 매일 아침 6시에 간밤 소식과 토론 공개', 'A real day. News and discussion go up at 06:00 KST')],
-  [L('토론', 'Talk'), L('1라운드는 동시에, 2라운드는 차례로', 'Round 1 all at once, round 2 in turn')],
-  [L('처형', 'Execution'), L('다음 날 새벽 공개 투표, 동률이면 없음. 게임 4부터 최다 득표자가 최후 변론을 하고 나머지가 찬반 투표, 찬성이 과반이면 처형', 'Open vote the next dawn; a tie executes nobody. From game 4 the top vote-getter gives a final defense, then the rest vote for or against, and a majority for executes')],
-  [L('밤', 'Night'), L('마피아 살해, 의사 보호, 경찰 조사', 'Mafia kill, Doctor protects, Cop investigates')],
-  [L('추론 강도', 'Reasoning effort'), L('Claude·GPT high, Gemini medium', 'Claude and GPT high, Gemini medium')],
+  [L('참가자', 'Players'), L('Claude 3 · GPT 3 · Gemini 2, 게임 4부터 고정', 'Claude ×3 · GPT ×3 · Gemini ×2, fixed from game 4')],
+  [L('직업', 'Roles'), L('마피아 2 · 경찰 · 의사 · 시민 4', 'Mafia ×2 · Cop · Doctor · Citizen ×4')],
+  [L('하루', 'A day'), L('06시 소식·토론 공개 → 다음 날 05시 투표', 'News and talk at 06:00 → vote at 05:00 next day')],
+  [L('처형', 'Execution'), L('최다 득표자 최후 변론 → 찬반 과반이면 처형', 'Top vote-getter defends → executed on a majority for')],
+  [L('밤', 'Night'), L('마피아 살해 · 의사 보호 · 경찰 조사', 'Mafia kill · Doctor protects · Cop checks')],
+  [L('승리', 'Win'), L('마피아 전원 처형 → 시민팀 / 마피아 ≥ 나머지 → 마피아', 'Both Mafia executed → town / Mafia ≥ the rest → Mafia')],
+  [L('이름', 'Names'), L('매 게임 A~H 섞음, AI끼리는 서로 모델 모름', 'A–H reshuffled each game; the AIs never learn who is who')],
+  [L('관객 투표', 'Your vote'), L('하루 한 표, AI들이 투표 직전에 참고로 봄', 'One a day; the AIs see it as a hint before voting')],
+  [L('쉬는 날', 'Days off'), L('사용 한도로 못 나오는 AI가 있으면 그날 쉼', 'If any AI is out of usage, that day is skipped')],
 ];
 ---
 <BaseLayout lang={lang} title={isKo ? project.nameKo : project.name} description={isKo ? project.summaryKo : project.summary}>
@@ -40,39 +40,36 @@ const rules = [
     <p class="mf-meta" data-mf-meta>{L('불러오는 중…', 'Loading…')}</p>
     <div data-mf-live></div>
 
-    <section class="mf-sec" id="history">
-      <div class="mf-head"><h2>{L('지난 게임', 'Past games')}</h2><p class="mf-sub">{L('끝난 게임은 직업·정체·밤 행동·속마음까지 전부 공개', 'Finished games show every role, model, night move and private thought')}</p></div>
-      <div data-mf-history></div>
-      <div data-mf-viewer></div>
-    </section>
-
-    <section class="mf-sec">
-      <div class="mf-head"><h2>{L('AI별 전적', 'Record by AI')}</h2><p class="mf-sub">{L('끝난 게임 기준, 팀이 이기면 승', 'Finished games; a win means the AI’s team won')}</p></div>
-      <div data-mf-standings></div>
+    <section class="mf-sec mf-more-sec" id="history">
+      <div class="mf-tabs" role="tablist">
+        <button type="button" role="tab" data-tab="standings">{L('전적', 'Records')}</button>
+        <button type="button" role="tab" data-tab="history">{L('지난 게임', 'Past games')}</button>
+        <button type="button" role="tab" data-tab="notes">{L('AI 노트', 'AI notes')}</button>
+        <button type="button" role="tab" data-tab="rules">{L('규칙', 'Rules')}</button>
+      </div>
+      <div class="mf-panel" data-panel="standings">
+        <p class="mf-sub">{L('게임 4부터 · 고정 멤버 8명 · 팀이 이기면 승', 'From game 4 · the fixed eight · a win means the team won')}</p>
+        <div data-mf-standings></div>
+      </div>
+      <div class="mf-panel" data-panel="history" hidden><div data-mf-history></div><div data-mf-viewer></div></div>
+      <div class="mf-panel" data-panel="notes" hidden>
+        <p class="mf-sub">{L('게임이 끝날 때마다 각자 고쳐 쓰고, 다음 게임 내내 다시 읽음', 'Each AI rewrites its notes after every game and rereads them through the next')}</p>
+        <div class="mf-notes" data-mf-notes></div>
+      </div>
+      <div class="mf-panel" data-panel="rules" hidden>
+        <dl class="mf-rules">{rules.map(([k, v]) => <div><dt>{k}</dt><dd>{v}</dd></div>)}</dl>
+      </div>
     </section>
 
     <div data-ad></div>
 
-    <section class="mf-sec">
-      <div class="mf-head"><h2>{L('AI가 직접 쓰는 마피아 노트', 'Mafia notes, written by the AIs')}</h2><p class="mf-sub">{L('게임이 끝날 때마다 각자 고쳐 쓰고, 다음 게임 내내 다시 읽음', 'Each AI rewrites its own notes after every game and rereads them all through the next one')}</p></div>
-      <div class="mf-notes" data-mf-notes></div>
-    </section>
-
-    <section class="mf-sec mf-about">
-      <div>
-        <h2>{L('규칙', 'Rules')}</h2>
-        <dl class="mf-rules">{rules.map(([k, v]) => <div><dt>{k}</dt><dd>{v}</dd></div>)}</dl>
-        <p class="mf-goal"><b>{L('관객 투표', 'Your vote')}</b>{L('낮 동안 누가 마피아 같은지 투표할 수 있음. 다음 날 새벽 AI들이 처형 투표를 하기 직전에 비율과 총 표 수로 전달되고, "관객은 공개 발언만 봤으니 참고만 하라, 마피아도 이용할 수 있다"는 안내가 붙음. 하루 한 표, 마감 전까지 바꿀 수 있음.', 'During the day you can vote for the seat you suspect. Just before their execution vote the next dawn, the AIs get the shares and the total, with a note that visitors only saw the public talk, that it is a hint at most, and that the Mafia can use it too. One vote a day, changeable until it closes.')}</p>
-        <p class="mf-goal is-note"><b>{L('승리 조건', 'How to win')}</b>{L('마피아 2명을 모두 처형하면 시민팀(경찰·의사·시민) 승리. 살아 있는 마피아 수가 나머지 수 이상이 되면 마피아 승리.', 'The town (Cop, Doctor, Citizens) wins by executing both Mafia. The Mafia win once they are at least as many as everyone else alive.')}</p>
-      </div>
-      {stories.length > 0 && (
-        <div>
-          <h2>{L('프로젝트 스토리', 'Project stories')}</h2>
-          <ol class="mf-stories">{stories.map((s) => <li><a href={storyPath(s.id.split('/').pop()!, lang)}><span>{isKo ? `${s.data.part}편` : `Part ${s.data.part}`}</span><strong>{s.data.title}</strong><em>{s.data.description}</em></a></li>)}</ol>
-        </div>
-      )}
-    </section>
-    <p class="mf-note">{L('모든 발언과 속마음은 AI가 직접 쓴 것이며 사람이 고치지 않음. 투표는 방문자 IP를 해시로만 구분하고 원래 IP는 저장하지 않음.', 'Every line and private thought is written by the AIs and left unedited. Votes are told apart by a hash of the visitor’s IP; the IP itself is not stored.')}</p>
+    {stories.length > 0 && (
+      <section class="mf-sec">
+        <div class="mf-head"><h2>{L('프로젝트 스토리', 'Project stories')}</h2></div>
+        <ol class="mf-stories">{stories.map((s) => <li><a href={storyPath(s.id.split('/').pop()!, lang)}><span>{isKo ? `${s.data.part}편` : `Part ${s.data.part}`}</span><strong>{s.data.title}</strong><em>{s.data.description}</em></a></li>)}</ol>
+      </section>
+    )}
+    <p class="mf-note">{L('발언·속마음은 AI가 쓴 그대로이며, 투표는 IP 해시로만 구분함.', 'Every line is the AIs’ own, unedited. Votes are told apart by an IP hash only.')}</p>
     <section class="comments" id="comments" data-comments data-lang={lang} data-page={projectPath('ai-mafia', lang)}
       data-intro={L('추리 훈수 환영', 'Armchair detectives welcome')}></section>
   </div>
@@ -86,6 +83,9 @@ const rules = [
   const T = ko
     ? { fail: '데이터를 불러오지 못했음. 잠시 뒤 다시 열어 주세요.', game: '게임', day: (n) => `${n}일차`, updated: '갱신', news: '오늘 아침 소식', start: 'AI들이 모였습니다. 이 중 2명이 마피아입니다.', died: (s) => `간밤에 ${s}가 살해당했습니다`, quiet: '간밤에는 아무도 죽지 않았습니다', executed: (s) => `투표로 ${s}가 처형됐습니다`, tie: '동률이라 아무도 처형되지 않았습니다', lastWords: '유언', defense: '최후 변론', finalVote: (y, n) => `처형 찬반 투표 · 찬성 ${y} · 반대 ${n}`, yes: '찬성', no: '반대', spared: (s) => `${s}는 찬반 투표에서 살아남았습니다`, townWin: '시민팀 승리', mafiaWin: '마피아 승리', next: '다음 아침', closes: '투표 마감', seats: '참가자', alive: '생존', killed: (d) => `${d}일차 밤 사망`, hanged: (d) => `${d}일차 처형`, hidden: 'AI들은 서로 누가 어떤 모델인지 모름. 직업은 죽거나 게임이 끝나면 공개', voteBtn: '마피아 같음', voted: '내 표', votes: (n) => `${n}표`, voteHint: '누가 마피아 같은지 투표해 주세요. 내일 새벽 AI들이 투표 직전에 이 결과를 봄.', voteClosed: '오늘 투표는 마감됐음', voteErr: { closed: '투표 마감됨 (집계 중)', stale_day: '새 날이 시작됐음. 새로고침해 주세요', invalid_seat: '투표할 수 없는 자리임', other: '투표를 저장하지 못했음. 잠시 뒤 다시 시도해 주세요' }, talk: '오늘의 토론', r1: '1라운드 · 동시에 첫 발언', r2: '2라운드 · 차례로 반응', log: '지난 날들', visitors: (n) => `관객 투표 ${n}표`, noVisitors: '관객 투표 없음', aiVotes: 'AI 처형 투표', abstain: '기권', reveal: '전체 공개', roles: '직업과 정체', nights: '밤에 있었던 일', mafiaChat: '마피아 밀담', doctor: '의사 보호', cop: '경찰 조사', isMafia: '마피아', notMafia: '마피아 아님', saved: '의사가 살림', thoughts: '속마음', reviews: '게임 뒤 한 줄 회고', none: '아직 없음', open: '다시 보기', close: '닫기', winner: '승리', days: (n) => `${n}일`, mafiaWere: '마피아', noHistory: '첫 게임이 끝나면 여기에 쌓임', model: 'AI', games: '게임', wins: '승', rate: '승률', asMafia: '마피아로', asTown: '시민팀으로', survived: '생존', more: '펼쳐 보기', less: '접기', waitTalk: '토론 준비 중', steps: {} }
     : { fail: 'Could not load the data. Please try again later.', game: 'Game', day: (n) => `Day ${n}`, updated: 'Updated', news: 'This morning', start: 'The AIs sit down at the table. Two of them are the Mafia.', died: (s) => `${s} was killed in the night`, quiet: 'Nobody died last night', executed: (s) => `${s} was executed by vote`, tie: 'A tie: nobody was executed', lastWords: 'Last words', defense: 'Final defense', finalVote: (y, n) => `Execution vote · ${y} for · ${n} against`, yes: 'For', no: 'Against', spared: (s) => `${s} survived the execution vote`, townWin: 'The town wins', mafiaWin: 'The Mafia win', next: 'Next morning', closes: 'Voting closes', seats: 'Players', alive: 'Alive', killed: (d) => `Killed, night ${d}`, hanged: (d) => `Executed, day ${d}`, hidden: 'The AIs don’t know which model is which. Roles show when a player dies or the game ends', voteBtn: 'Suspect', voted: 'Your vote', votes: (n) => `${n} vote${n === 1 ? '' : 's'}`, voteHint: 'Who do you think is Mafia? The AIs see this tally right before they vote tomorrow at dawn.', voteClosed: 'Voting for today is closed', voteErr: { closed: 'Voting is closed (counting)', stale_day: 'A new day has started. Please reload', invalid_seat: 'You cannot vote for that seat', other: 'Could not save your vote. Please try again' }, talk: 'Today’s discussion', r1: 'Round 1 · everyone at once', r2: 'Round 2 · in turn', log: 'Earlier days', visitors: (n) => `Visitor vote, ${n} total`, noVisitors: 'No visitor votes', aiVotes: 'AI execution vote', abstain: 'Abstain', reveal: 'Full reveal', roles: 'Roles and identities', nights: 'What happened at night', mafiaChat: 'Mafia chat', doctor: 'Doctor protects', cop: 'Cop checks', isMafia: 'Mafia', notMafia: 'not Mafia', saved: 'saved by the Doctor', thoughts: 'Private thoughts', reviews: 'One-line reviews after the game', none: 'None yet', open: 'Replay', close: 'Close', winner: 'won', days: (n) => `${n} day${n === 1 ? '' : 's'}`, mafiaWere: 'Mafia', noHistory: 'Finished games will collect here', model: 'AI', games: 'Games', wins: 'Wins', rate: 'Win rate', asMafia: 'As Mafia', asTown: 'As town', survived: 'Survived', more: 'Show all', less: 'Collapse', waitTalk: 'Discussion coming up', steps: { '토론1': 'Talk 1', '토론2': 'Talk 2', '투표': 'Vote', '밤': 'Night', '유언': 'Last words', '최후 변론': 'Final defense', '찬반 투표': 'Execution vote' } };
+  Object.assign(T, ko
+    ? { hidden: '직업은 죽거나 게임이 끝나면 공개', voteHint: '마피아 같은 AI에 투표. 내일 새벽 AI들이 투표 전에 봄.', evVote: '투표', evNight: '밤', evStart: '시작', oldLineup: '이전 멤버', noRecord: '게임 4가 끝나면 집계 시작', record: (w, l) => `${w}승 ${l}패`, foldNights: '밤에 있었던 일', foldThoughts: (n) => `속마음 ${n}개`, foldReviews: '게임 뒤 한 줄 회고', open: '다시 보기' }
+    : { hidden: 'Roles show when a player dies or the game ends', voteHint: 'Vote for the AI you suspect. The AIs see it before voting tomorrow at dawn.', evVote: 'Vote', evNight: 'Night', evStart: 'Start', oldLineup: 'Earlier lineup', noRecord: 'Records start once game 4 ends', record: (w, l) => `${w}–${l}`, foldNights: 'What happened at night', foldThoughts: (n) => `${n} private thoughts`, foldReviews: 'One-line reviews after the game', open: 'Replay' });
   const ROLE = ko ? { mafia: '마피아', cop: '경찰', doctor: '의사', citizen: '시민' } : { mafia: 'Mafia', cop: 'Cop', doctor: 'Doctor', citizen: 'Citizen' };
   const SC = { A: '#e0603f', B: '#3446a3', C: '#2f9e5b', D: '#b7791f', E: '#7a4ea3', F: '#2b8a9e', G: '#c2477a', H: '#6b7d2a' };
   const CO = { claude: '#d97757', codex: '#10a37f', agy: '#4f7be8' };
@@ -111,8 +111,21 @@ const rules = [
     pastGames();
     standings();
     notes();
+    tabs();
     const m = location.hash.match(/^#game-(\d+)$/);
-    if (m) openGame(Number(m[1]));
+    if (m) { showTab('history'); openGame(Number(m[1])); }
+  }
+
+  // ---------- tabs under the live game ----------
+  function showTab(name) {
+    root.querySelectorAll('[data-tab]').forEach((b) => { const on = b.dataset.tab === name; b.classList.toggle('is-on', on); b.setAttribute('aria-selected', on); });
+    root.querySelectorAll('[data-panel]').forEach((el) => { el.hidden = el.dataset.panel !== name; });
+    store.set('mafia-tab', name);
+    if (name === 'notes') fitNotes();
+  }
+  function tabs() {
+    root.querySelectorAll('[data-tab]').forEach((b) => b.addEventListener('click', () => showTab(b.dataset.tab)));
+    showTab(store.get('mafia-tab') || 'standings');
   }
 
   // ---------- one game (live or replay) ----------
@@ -125,14 +138,15 @@ const rules = [
     SEATM = Object.fromEntries(g.seats.filter((s) => models?.[s.model]).map((s) => [s.seat, models[s.model]]));
     let h = `<section class="mf-news"><p class="mf-kicker">${live ? T.news : `${T.game} ${g.game} · ${esc(g.started)} – ${esc(g.ended || '')}`}</p>`;
     const items = [];
-    if (prev && prev.votes?.length) items.push(voteResult(prev, en));
-    items.push(morning(cur));
+    const ev = (k, day, body) => `<div class="mf-ev"><span class="mf-ev-k">${k}<small>${T.day(day)}</small></span><div>${body}</div></div>`;
+    if (prev && prev.votes?.length) items.push(ev(T.evVote, prev.day, voteResult(prev, en)));
+    items.push(cur.morning?.start ? ev(T.evStart, cur.day, morning(cur)) : ev(T.evNight, cur.day - 1, morning(cur)));
     // AIs out of usage sit out ("이번 주는 쉼") and a random bench model plays their seat that day (engine records them as rest)
     const full = (id) => esc(models?.[id]?.full || id);
     for (const r of cur.rest || []) items.push(`<p class="mf-clock">${en ? `${full(r.model)} is sitting out this week (usage limit) · ${full(r.by)} played seat ${esc(r.seat)} today` : `${full(r.model)}: 사용 한도로 이번 주는 쉼 · 오늘 ${esc(r.seat)} 자리는 ${full(r.by)}가 대신 둠`}</p>`);
-    if (cur.votes?.length) items.push(voteResult(cur, en));
+    if (cur.votes?.length) items.push(ev(T.evVote, cur.day, voteResult(cur, en)));
     if (g.result) items.push(`<p class="mf-win is-${g.result.winner}">${g.result.winner === 'town' ? T.townWin : T.mafiaWin}</p>`);
-    h += `<div class="mf-day-tag">${T.day(cur.day)}</div>${items.join('')}`;
+    h += `<div class="mf-day-tag">${T.day(cur.day)}</div><div class="mf-evs">${items.join('')}</div>`;
     if (live && !over) h += `<p class="mf-clock">${T.next} <b>${nextSix()}</b> · ${T.closes} <b>05:00</b> KST</p>`;
     h += `</section>`;
     h += seatsHTML(g, models, live && D.vote?.open);
@@ -211,7 +225,8 @@ const rules = [
 
   function revealHTML(g, en, models) {
     const name = (seat) => { const s = g.seats.find((x) => x.seat === seat); const m = s?.model && models?.[s.model]; return m ? m.full : ''; };
-    const roles = `<div class="mf-roles">${g.seats.map((s) => `<p style="--s:${SC[s.seat]}">${av(s.seat)}<b>${esc(name(s.seat))}</b>${roleChip(s.role)}${g.reviews?.[s.seat] ? `<span class="mf-rv">${tx(g.reviews[s.seat], en)}</span>` : ''}</p>`).join('')}</div>`;
+    const roles = `<div class="mf-roles">${g.seats.map((s) => `<p style="--s:${SC[s.seat]}">${av(s.seat)}<b>${esc(name(s.seat))}</b>${roleChip(s.role)}</p>`).join('')}</div>`;
+    const reviews = g.seats.filter((s) => g.reviews?.[s.seat]).map((s) => `<p class="mf-thought">${av(s.seat)}<small>${esc(name(s.seat))}</small><span>${tx(g.reviews[s.seat], en)}</span></p>`).join('');
     const nights = (g.nights || []).map((n) => `<div class="mf-night"><h4>${T.day(n.day)}</h4>`
       + (n.mafia || []).map((x) => `<div class="mf-msg is-dark" style="--s:${SC[x.seat]}">${av(x.seat)}<p><small>${T.mafiaChat} → ${esc(x.target || '')}</small>${tx(x.msg, en)}</p></div>`).join('')
       + (n.doctor ? `<p class="mf-act">${av(n.doctor.seat)} ${T.doctor} → ${av(n.doctor.target)}${n.saved ? ` <em class="mf-role is-doctor">${T.saved}</em>` : ''}</p>` : '')
@@ -220,10 +235,11 @@ const rules = [
     const byDay = {};
     (g.thoughts || []).forEach((t) => { (byDay[t.day] = byDay[t.day] || []).push(t); });
     const thoughts = Object.entries(byDay).map(([day, list]) => `<div class="mf-night"><h4>${T.day(day)}</h4>${list.map((t) => `<p class="mf-thought">${av(t.seat)}<small>${esc(T.steps[t.step] || t.step)}</small><span>${tx(t.text, en)}</span></p>`).join('')}</div>`).join('');
-    return `<section class="mf-sec mf-reveal"><div class="mf-head"><h2>${T.reveal}</h2></div>
-      <h3>${T.roles}</h3>${roles}
-      <h3>${T.nights}</h3><div class="mf-two">${nights || `<p class="mf-sub">${T.none}</p>`}</div>
-      <h3>${T.thoughts}</h3><div class="mf-two">${thoughts || `<p class="mf-sub">${T.none}</p>`}</div></section>`;
+    const fold = (title, inner) => (inner ? `<details class="mf-fold"><summary>${title}</summary>${inner}</details>` : '');
+    return `<section class="mf-sec mf-reveal"><div class="mf-head"><h2>${T.reveal}</h2></div>${roles}
+      ${fold(T.foldReviews, reviews && `<div class="mf-night">${reviews}</div>`)}
+      ${fold(T.foldNights, nights && `<div class="mf-two">${nights}</div>`)}
+      ${fold(T.foldThoughts((g.thoughts || []).length), thoughts && `<div class="mf-two">${thoughts}</div>`)}</section>`;
   }
 
   // ---------- visitor vote ----------
@@ -262,7 +278,8 @@ const rules = [
     if (!list.length) { $('[data-mf-history]').innerHTML = `<p class="mf-sub">${T.noHistory}</p>`; return; }
     $('[data-mf-history]').innerHTML = `<ol class="mf-games">${list.map((x) => {
       const mafia = Object.entries(x.roles).filter(([, r]) => r === 'mafia').map(([m]) => D.models[m]?.full || m);
-      return `<li><b>${T.game} ${x.game}</b><span>${esc(x.started)} – ${esc(x.ended)} · ${T.days(x.days)}</span><em class="mf-win-chip is-${x.winner}">${x.winner === 'town' ? T.townWin : T.mafiaWin}</em><span class="mf-mafia">${T.mafiaWere}: ${mafia.map(esc).join(', ')}</span><button type="button" data-game="${x.game}">${T.open}</button></li>`;
+      const old = x.game < (D.season_start || 4) ? `<em class="mf-old">${T.oldLineup}</em>` : '';
+      return `<li><b>${T.game} ${x.game}</b><em class="mf-win-chip is-${x.winner}">${x.winner === 'town' ? T.townWin : T.mafiaWin}</em>${old}<span>${esc(x.started)} · ${T.days(x.days)} · ${T.mafiaWere} ${mafia.map(esc).join(', ')}</span><button type="button" data-game="${x.game}">${T.open}</button></li>`;
     }).join('')}</ol>`;
     root.querySelectorAll('[data-game]').forEach((b) => b.addEventListener('click', () => openGame(Number(b.dataset.game))));
   }
@@ -277,22 +294,27 @@ const rules = [
     }).catch(() => { box.innerHTML = `<p class="mf-sub">${T.fail}</p>`; });
   }
 
+  // records count only games with the fixed lineup (from D.season_start); earlier games stay in Past games
   function standings() {
-    const rows = {};
+    const fixed = Object.entries(D.models).filter(([, m]) => !m.retired).map(([id]) => id);
+    const rows = Object.fromEntries(fixed.map((m) => [m, { m, g: 0, w: 0, mg: 0, mw: 0, tg: 0, tw: 0 }]));
     for (const x of D.history || []) {
+      if (x.game < (D.season_start || 4)) continue;
       for (const [m, r] of Object.entries(x.roles)) {
-        const s = (rows[m] = rows[m] || { m, g: 0, w: 0, mg: 0, mw: 0, tg: 0, tw: 0, sv: 0 });
+        const s = rows[m];
+        if (!s) continue;
         const won = (r === 'mafia') === (x.winner === 'mafia');
-        s.g++; s.w += won; s.sv += (x.survivors || []).includes(m);
+        s.g++; s.w += won;
         if (r === 'mafia') { s.mg++; s.mw += won; } else { s.tg++; s.tw += won; }
       }
     }
-    const list = Object.values(rows).sort((a, b) => b.w / b.g - a.w / a.g || b.w - a.w);
-    if (!list.length) { $('[data-mf-standings]').innerHTML = `<p class="mf-sub">${T.noHistory}</p>`; return; }
+    const list = Object.values(rows).sort((a, b) => (b.g ? b.w / b.g : -1) - (a.g ? a.w / a.g : -1) || b.w - a.w);
     const pct = (w, g) => (g ? `${Math.round((w / g) * 100)}%` : '–');
-    $('[data-mf-standings]').innerHTML = `<div class="mf-tbl"><table><tr><th>${T.model}</th><th>${T.games}</th><th>${T.wins}</th><th>${T.rate}</th><th>${T.asMafia}</th><th>${T.asTown}</th><th>${T.survived}</th></tr>${list.map((s) => {
+    const frac = (w, g) => (g ? `${w}/${g}` : '–');
+    const empty = list.every((s) => !s.g) ? `<p class="mf-sub mf-empty">${T.noRecord}</p>` : '';
+    $('[data-mf-standings]').innerHTML = empty + `<div class="mf-tbl"><table><tr><th>${T.model}</th><th>${T.games}</th><th>${T.rate}</th><th>${T.asMafia}</th><th>${T.asTown}</th></tr>${list.map((s) => {
       const m = D.models[s.m] || { full: s.m, cli: '' };
-      return `<tr><td><i style="background:${CO[m.cli] || '#888'}"></i>${esc(m.full)}</td><td>${s.g}</td><td>${s.w}</td><td><b>${pct(s.w, s.g)}</b></td><td>${s.mw}/${s.mg}</td><td>${s.tw}/${s.tg}</td><td>${s.sv}</td></tr>`;
+      return `<tr><td><i style="background:${CO[m.cli] || '#888'}"></i>${esc(m.full)}</td><td>${s.g ? T.record(s.w, s.g - s.w) : '–'}</td><td><b>${pct(s.w, s.g)}</b></td><td>${frac(s.mw, s.mg)}</td><td>${frac(s.tw, s.tg)}</td></tr>`;
     }).join('')}</table></div>`;
   }
 
@@ -316,14 +338,18 @@ const rules = [
 
   function notes() {
     const box = $('[data-mf-notes]');
-    box.innerHTML = Object.entries(D.models).filter(([, m]) => !m.bench && !m.retired).map(([id, m]) => {
+    box.innerHTML = Object.entries(D.models).filter(([, m]) => !m.retired).map(([id, m]) => {
       const text = D.notes?.[id];
       return `<article class="mf-note-card" style="--c:${CO[m.cli]}"><h3>${esc(m.full)}</h3><div class="mf-md">${text ? md((!ko && E[text]) || text) : `<p>${T.none}</p>`}</div><button type="button" class="mf-more">${T.more}</button></article>`;
     }).join('');
-    box.querySelectorAll('.mf-md').forEach((el) => {
-      const btn = el.nextElementSibling;
-      if (el.scrollHeight <= el.clientHeight + 4) { el.classList.add('is-open'); btn.hidden = true; return; }
-      btn.addEventListener('click', () => { const open = el.classList.toggle('is-open'); btn.textContent = open ? T.less : T.more; });
+    box.querySelectorAll('.mf-more').forEach((btn) => btn.addEventListener('click', () => { const el = btn.previousElementSibling; const open = el.classList.toggle('is-open'); btn.textContent = open ? T.less : T.more; }));
+    if (!box.closest('[hidden]')) fitNotes();
+  }
+  // short notes need no "show all" button; measured once the panel is visible
+  function fitNotes() {
+    root.querySelectorAll('.mf-md:not(.is-fit)').forEach((el) => {
+      el.classList.add('is-fit');
+      if (el.scrollHeight <= el.clientHeight + 4) { el.classList.add('is-open'); el.nextElementSibling.hidden = true; }
     });
   }
 
@@ -362,8 +388,22 @@ const rules = [
 .mf-role.is-cop { background: #3446a3; color: #fff; }
 .mf-role.is-doctor { background: #2f9e5b; color: #fff; }
 .mf-sec { padding-top: 3.2rem; }
+.mf-ev { display: grid; grid-template-columns: 3.4rem minmax(0, 1fr); gap: .8rem; padding: .7rem 0; border-top: 1px solid rgba(255, 255, 255, .1); }
+.mf-evs > .mf-ev:first-child { border-top: 0; }
+.mf-ev-k small { display: block; margin-top: .15rem; color: #6f7b8e; font-size: .66rem; letter-spacing: 0; }
+.mf-ev-k { padding-top: .95rem; color: #9aa6b8; font-size: .7rem; font-weight: 850; letter-spacing: .1em; }
+.mf-ev .mf-headline { margin-top: .55rem; }
+.mf-tabs { display: flex; flex-wrap: wrap; gap: .4rem; margin-bottom: 1.2rem; padding-bottom: .8rem; border-bottom: 2px solid var(--ink); }
+.mf-tabs button { padding: .5rem 1rem; border: 1.5px solid var(--line); border-radius: 999px; background: none; color: var(--muted); font: inherit; font-size: .88rem; font-weight: 800; cursor: pointer; }
+.mf-tabs button.is-on { border-color: var(--ink); background: var(--ink); color: var(--bg); }
+.mf-panel > .mf-sub { margin-bottom: 1rem; }
+.mf-empty { margin: 0 0 .6rem; font-weight: 700; }
+.mf-old { padding: .12rem .55rem; border: 1px solid var(--line); border-radius: 999px; color: var(--muted); font-size: .72rem; font-style: normal; font-weight: 800; }
+.mf-fold { margin-top: 1rem; border-top: 1px solid var(--line); }
+.mf-fold summary { padding: .9rem 0; cursor: pointer; font-size: 1rem; font-weight: 800; }
+.mf-fold[open] summary { margin-bottom: .4rem; }
 .mf-head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: .4rem 1.4rem; margin-bottom: 1.2rem; padding-bottom: .8rem; border-bottom: 2px solid var(--ink); }
-.mf-head h2, .mf-about h2 { margin: 0; font-size: clamp(1.4rem, 2.4vw, 1.85rem); font-weight: 780; letter-spacing: -.045em; }
+.mf-head h2 { margin: 0; font-size: clamp(1.4rem, 2.4vw, 1.85rem); font-weight: 780; letter-spacing: -.045em; }
 .mf-sub { margin: 0; color: var(--muted); font-size: .84rem; word-break: keep-all; }
 .mf-hint { margin: 0 0 1rem; font-size: .92rem; font-weight: 700; word-break: keep-all; }
 .mf-seats { display: grid; grid-template-columns: repeat(var(--n, 8), minmax(0, 1fr)); gap: .7rem; }
@@ -446,15 +486,10 @@ const rules = [
 .mf-md ul, .mf-md ol { margin: .35rem 0; padding-left: 1.2rem; }
 .mf-md code { padding: .05rem .3rem; border-radius: 3px; background: var(--soft); font-size: .82em; }
 .mf-more { margin-top: .4rem; padding: .35rem 0; border: 0; background: none; color: var(--c); font: inherit; font-size: .82rem; font-weight: 800; cursor: pointer; }
-.mf-about { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 3rem; }
-.mf-rules { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 1.2rem; margin: 1.1rem 0 0; border-top: 2px solid var(--ink); }
+.mf-rules { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 1.2rem; margin: 0; }
 .mf-rules div { padding: .85rem .2rem; border-bottom: 1px solid var(--line); }
 .mf-rules dt { color: var(--muted); font-size: .72rem; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; }
 .mf-rules dd { margin: .25rem 0 0; font-size: .92rem; font-weight: 720; word-break: keep-all; }
-.mf-goal { margin: 1rem 0 0; padding: .9rem 1rem; border-left: 3px solid var(--accent); background: color-mix(in srgb, var(--accent) 8%, transparent); font-size: .9rem; line-height: 1.6; word-break: keep-all; }
-.mf-goal b { margin-right: .5rem; color: var(--accent); }
-.mf-goal.is-note { border-left-color: #c43d2f; background: color-mix(in srgb, #c43d2f 8%, transparent); }
-.mf-goal.is-note b { color: #c43d2f; }
 .mf-stories { display: grid; gap: .8rem; margin: 1.1rem 0 0; padding: 0; list-style: none; }
 .mf-stories a { display: grid; gap: .25rem; padding: 1rem 1.1rem; background: var(--surface); box-shadow: 0 1px 2px rgba(0, 0, 0, .08); }
 .mf-stories span { color: var(--accent); font-size: .74rem; font-weight: 850; }
@@ -464,8 +499,7 @@ const rules = [
 @media (max-width: 860px) {
   .mf-seats { grid-template-columns: repeat(4, minmax(0, 1fr)); }
   .mf-votes { grid-template-columns: 1fr; }
-  .mf-about { grid-template-columns: 1fr; }
-}
+  }
 @media (max-width: 520px) {
   .mf-hero { padding-top: 2.6rem; }
   .mf-news { padding: 1.4rem 1.1rem 1.2rem; }
