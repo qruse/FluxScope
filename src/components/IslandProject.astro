@@ -1,0 +1,132 @@
+---
+// Island survival RL project page: three lightweight RL brains (RePPO, PQN, AGaLiTe) as three castaways on a 3D
+// tutorial island (hslab_island repository: sim/ batched GPU simulator, train/ brains, viewer/ Three.js replays).
+// TEMPORARY (2026-10-29): kept out of `projects`, the listings and search (noindex) until the first video is up.
+// Going live: add the project to `projects` in src/lib/site.ts with the user's title, drop `noindex`, fill the
+// replay and video slots, and vendor three.js under /public (the CSP only allows scripts from 'self').
+// Styles are inline: the shared CSS bundle is at its performance budget. Colors come only from the theme tokens.
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { getStories } from '../lib/stories';
+import { projectPath, storyPath } from '../lib/site';
+import type { Lang } from '../i18n/ui';
+
+interface Props { lang: Lang; }
+const { lang } = Astro.props;
+const isKo = lang === 'ko';
+const L = (ko: string, en: string) => (isKo ? ko : en);
+const id = 'hslab-island';
+const title = L('무인도에서 살아남기 - 세 얼간이', 'Surviving a Desert Island - Three Idiots');   // the user's title (2026-10-29)
+const summary = L(
+  '개성이 다른 세 캐릭터가 무인도에서 살아남는 법을 스스로 배움. 셋의 두뇌는 각기 다른 최신 경량 강화학습 알고리즘이고, 처음엔 바다에 빠져 죽던 애들이 시도를 거듭하며 어떻게 성장하는지 단계별 리플레이로 보여 줌.',
+  'Three castaways with different personalities teach themselves to survive on a desert island. Each brain is a different recent lightweight reinforcement-learning algorithm, and stage-by-stage replays show how they grow from drowning on day one to living off the island.',
+);
+const stories = (await getStories((e) => e.data.lang === lang && e.data.project === id))
+  .sort((a, b) => a.data.part - b.data.part);
+const cast = [
+  { name: 'Peppo', brain: 'RePPO', color: '#e0782f', trait: L('탐험가: 안 가 본 곳에 갈수록 보상', 'Explorer: rewarded for going somewhere new'),
+    look: L('주황 셔츠 · 밀짚모자', 'Orange shirt · straw hat') },
+  { name: 'Pickle', brain: 'PQN', color: '#4c9a4a', trait: L('조커: 안 해 본 행동을 할수록 보상', 'Joker: rewarded for trying something different'),
+    look: L('초록 셔츠 · 버킷햇 · 제일 작음', 'Green shirt · bucket hat · the smallest') },
+  { name: 'Galoot', brain: 'AGaLiTe', color: '#3d6fc4', trait: L('먹보: 많이 먹을수록 보상', 'Glutton: rewarded for eating more'),
+    look: L('파란 셔츠 · 빨간 머리띠 · 배낭 · 제일 큼', 'Blue shirt · red headband · backpack · the biggest') },
+];
+const rules = isKo
+  ? ['한 판은 최대 30일. 기본 보상은 살아 있는 하루마다 1점', '열매·코코넛·풀은 다시 자라지 않음. 다 먹으면 끝', '캐릭터들은 모르는 숨은 낚시터 3곳. 곳마다 하루에 나오는 물고기 수가 다름', '나무 1 + 돌 1로 작살을 만들어야 낚시 가능', '투명 벽 없음. 깊은 물에서 기력이 바닥나면 익사', '하루 한 번 아무 때나 해안에 상자가 떠밀려 오고, 2시간 뒤 사라짐 (통조림 또는 그물)', '북쪽 언덕 뒤에 숨은 동굴. 안에서는 밤에도 따뜻함']
+  : ['A life lasts up to 30 days. The base reward is one point per day alive', 'Berries, coconuts and grass never grow back. Once eaten, they are gone', 'Three hidden fishing spots the castaways know nothing about, each with its own daily catch', 'Fishing needs a spear: one wood and one stone', 'No invisible walls. Run out of energy in deep water and you drown', 'Once a day, at a random time, a crate washes ashore and the sea takes it back two hours later (a can or a net)', 'A cave hidden behind the north hill stays warm through the night'];
+---
+<BaseLayout lang={lang} title={title} description={summary} noindex>
+  <header class="page-top">
+    <div class="shell">
+      <div class="section-kicker">{L('프로젝트', 'Project')}</div>
+      <h1>{title}</h1>
+      <p>{summary}</p>
+    </div>
+  </header>
+
+  <div class="shell isl-body">
+    <section class="isl-sec isl-slot" data-slot="video">
+      <h2>{L('영상', 'Video')}</h2>
+      <p class="isl-wait">{L('첫 영상 공개 후 추가', 'Added when the first video is out')}</p>
+    </section>
+
+    <section class="isl-sec">
+      <h2>{L('세 캐릭터, 세 두뇌', 'Three castaways, three brains')}</h2>
+      <p>{L('같은 섬, 같은 규칙. 다른 건 두뇌(알고리즘)와 성격(살아남기 위에 얹은 보너스 보상)뿐. 튜토리얼 섬에서는 각자 따로 살아서, 서로 다른 성격이 어떻게 생기는지 봄.', 'Same island, same rules. Only the brain (the algorithm) and the personality (a bonus reward on top of survival) differ. On the tutorial island each lives alone, so their personalities form separately.')}</p>
+      <div class="isl-cast">{cast.map((c) => (
+        <article style={`--c:${c.color}`}>
+          <strong>{c.name}</strong>
+          <span class="isl-brain">{c.brain}</span>
+          <p>{c.trait}</p>
+          <small>{c.look}</small>
+        </article>
+      ))}</div>
+      <p class="isl-note">{L('화면 밖 기준선으로 PPO + GRU 메모리를 같은 조건에서 함께 돌림.', 'An off-screen baseline, PPO with a GRU memory, trains under the same conditions.')}
+        {' '}<a href="https://github.com/nissymori/remax-rl">RePPO</a> · <a href="https://arxiv.org/abs/2407.04811">PQN</a> · <a href="https://arxiv.org/abs/2310.15719">AGaLiTe</a></p>
+    </section>
+
+    <section class="isl-sec">
+      <h2>{L('튜토리얼 섬 규칙', 'Tutorial island rules')}</h2>
+      <ul>{rules.map((r) => <li>{r}</li>)}</ul>
+    </section>
+
+    <section class="isl-sec isl-slot" data-slot="replays">
+      <h2>{L('시도할수록 달라지는 모습', 'How they change, attempt by attempt')}</h2>
+      <p>{L('학습 중 딱 떨어지는 시도 수마다 두뇌를 저장해 두고, 행동이 가장 크게 달라진 단계의 리플레이를 3D로 다시 봄.', 'Brains are saved at round attempt counts during training, and the stages where behaviour changed the most can be replayed in 3D.')}</p>
+      <ol class="isl-stages">
+        {['Attempt 1', '…', '…', '…'].map((s) => <li><b>{s}</b><span>{L('영상 공개 후 추가', 'Added with the video')}</span></li>)}
+      </ol>
+    </section>
+
+    <section class="isl-sec isl-slot" data-slot="play">
+      <h2>{L('직접 살아남아 보기', 'Try to survive yourself')}</h2>
+      <p class="isl-wait">{L('캐릭터들과 같은 섬, 같은 규칙으로 직접 조종하는 모드. 영상 공개 후 열림', 'The same island and rules, with you at the controls. Opens with the video')}</p>
+    </section>
+
+    {stories.length > 0 && (
+      <section class="isl-sec">
+        <h2>{L('프로젝트 스토리', 'Project stories')}</h2>
+        <ol class="isl-stories">{stories.map((s) => <li><a href={storyPath(s.id.split('/').pop()!, lang)}><span>{isKo ? `${s.data.part}편` : `Part ${s.data.part}`}</span><strong>{s.data.title}</strong><em>{s.data.description}</em></a></li>)}</ol>
+      </section>
+    )}
+
+    <div data-ad></div>
+
+    <section class="comments" id="comments" data-comments data-lang={lang} data-page={projectPath(id, lang)}
+      data-intro={L('누가 제일 오래 살 것 같은지, 훈수 환영', 'Who will last longest? Backseat feedback welcome')}></section>
+  </div>
+  <script is:inline src="/comments.js" defer></script>
+
+<style is:inline>
+.isl-body { padding: 2rem 0 4rem; }
+.isl-body > * { max-width: 50rem; }
+.isl-sec { margin: 0 0 2.6rem; }
+.isl-sec h2 { margin: 0 0 .8rem; font-size: 1.35rem; font-weight: 800; letter-spacing: -.02em; }
+.isl-sec p { line-height: 1.7; }
+.isl-sec ul { margin: 0; padding-left: 1.2rem; list-style: disc; line-height: 1.65; }
+.isl-sec li { margin: .35rem 0; }
+.isl-sec li::marker { color: var(--accent); }
+.isl-slot { padding: 1.2rem 1.3rem; border: 1.5px dashed var(--line); border-radius: 14px; }
+.isl-wait { margin: 0; color: var(--muted); }
+.isl-cast { display: grid; grid-template-columns: repeat(3, 1fr); gap: .8rem; margin: 1rem 0; }
+.isl-cast article { display: grid; gap: .3rem; align-content: start; padding: 1rem 1.1rem; border-top: 4px solid var(--c); border-radius: 10px; background: var(--surface); box-shadow: 0 1px 2px rgba(0, 0, 0, .08); }
+.isl-cast strong { font-size: 1.15rem; letter-spacing: -.02em; }
+.isl-brain { justify-self: start; padding: .1rem .55rem; border-radius: 999px; background: var(--soft); font-size: .78rem; font-weight: 800; }
+.isl-cast p { margin: .2rem 0 0; font-size: .9rem; line-height: 1.55; word-break: keep-all; }
+.isl-cast small { color: var(--muted); font-size: .8rem; }
+.isl-note { color: var(--muted); font-size: .85rem; }
+.isl-note a { text-decoration: underline; text-underline-offset: 2px; }
+.isl-stages { display: grid; grid-template-columns: repeat(4, 1fr); gap: .6rem; margin: 1rem 0 0; padding: 0; list-style: none; }
+.isl-stages li { display: grid; gap: .2rem; padding: .8rem .9rem; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); }
+.isl-stages b { font-size: .95rem; }
+.isl-stages span { color: var(--muted); font-size: .78rem; }
+.isl-stories { display: grid; gap: .8rem; margin: 1rem 0 0; padding: 0; list-style: none; }
+.isl-stories a { display: grid; gap: .25rem; padding: 1rem 1.1rem; background: var(--surface); box-shadow: 0 1px 2px rgba(0, 0, 0, .08); }
+.isl-stories span { color: var(--accent); font-size: .74rem; font-weight: 850; }
+.isl-stories strong { font-size: 1rem; letter-spacing: -.02em; word-break: keep-all; }
+.isl-stories em { color: var(--muted); font-size: .84rem; font-style: normal; line-height: 1.55; word-break: keep-all; }
+@media (max-width: 640px) {
+  .isl-cast { grid-template-columns: 1fr; }
+  .isl-stages { grid-template-columns: repeat(2, 1fr); }
+}
+</style>
+</BaseLayout>
