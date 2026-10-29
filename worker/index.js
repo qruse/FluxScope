@@ -333,7 +333,7 @@ async function comments(request, env, url) {
 }
 
 // Cookie-free visit counts: page path and daily total only, no IP or device data.
-const countedPage = /^\/(?:en\/)?(?:blog\/(?:(?:ai|mobility|it-devices|posts|about)\/(?:[a-z0-9]+(?:-[a-z0-9]+)*\/)?)?|privacy\/|contact\/)?$/;
+const countedPage = /^\/(?:en\/)?(?:blog\/(?:(?:ai|mobility|it-devices|posts|about)\/(?:[a-z0-9]+(?:-[a-z0-9]+)*\/)?)?|(?:projects|stories|portfolio)\/(?:[a-z0-9]+(?:-[a-z0-9]+)*\/)?|privacy\/|contact\/)?$/;
 const botAgent = /bot|crawl|spider|slurp|headless|lighthouse|preview|monitor|curl|wget|python|java\//i;
 
 async function views(request, env, url) {
