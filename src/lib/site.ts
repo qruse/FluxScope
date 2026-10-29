@@ -80,7 +80,13 @@ export function labSectionPath(section: LabSection, lang: Lang = defaultLang): s
   return withBase(`${root}${section.path}`);
 }
 
-export const labSectionNumber = (id: LabSection['id']) => String(labSections.findIndex((section) => section.id === id) + 1).padStart(2, '0');
+// The lab home lists the YouTube channel as 03, between the stories and the blog (user instruction, 2026-10-29),
+// so the blog and the portfolio number one higher than their place in labSections.
+export const labSectionNumber = (id: LabSection['id']) => {
+  const index = labSections.findIndex((section) => section.id === id);
+  return String(index + (index >= 2 ? 2 : 1)).padStart(2, '0');
+};
+export const youtubeChannel = 'https://www.youtube.com/@hslab-b5b';
 
 export const site = {
   name: "HSL's Blog",
