@@ -1,6 +1,7 @@
 ---
-// Island survival RL project page: three lightweight RL brains (RePPO, PQN, AGaLiTe) as three castaways on a 3D
-// tutorial island (hslab_island repository: sim/ batched GPU simulator, train/ brains, viewer/ Three.js replays).
+// Island survival RL project page: three castaways on a 3D tutorial island (hslab_island repository: sim/ batched GPU
+// simulator, train/ brains, viewer/ Three.js replays). The page presents them as three different characters: no
+// brain or reward talk here (user rule); the technology belongs to the separate Mk.1 brain write-up.
 // TEMPORARY (2026-10-29): kept out of `projects`, the listings and search (noindex) until the first video is up.
 // Going live: add the project to `projects` in src/lib/site.ts with the user's title, drop `noindex`, fill the
 // replay and video slots, and vendor three.js under /public (the CSP only allows scripts from 'self').
@@ -17,22 +18,22 @@ const L = (ko: string, en: string) => (isKo ? ko : en);
 const id = 'hslab-island';
 const title = L('AI가 무인도에서 살아남을 수 있을까?', 'Can AI survive on a desert island?');   // the user's title (2026-10-29)
 const summary = L(
-  '개성이 다른 세 캐릭터가 무인도에서 살아남는 법을 스스로 배움. 셋의 두뇌는 각기 다른 최신 경량 강화학습 알고리즘이고, 처음엔 바다에 빠져 죽던 애들이 시도를 거듭하며 어떻게 성장하는지 단계별 리플레이로 보여 줌.',
-  'Three castaways with different personalities teach themselves to survive on a desert island. Each brain is a different recent lightweight reinforcement-learning algorithm, and stage-by-stage replays show how they grow from drowning on day one to living off the island.',
+  '성격이 완전히 다른 세 캐릭터가 무인도에서 살아남는 법을 스스로 배움. 처음엔 첫날부터 바다에 빠져 죽던 애들이 시도를 거듭하며 어떻게 달라지는지 단계별 리플레이로 보여 줌.',
+  'Three castaways with nothing in common teach themselves to survive on a desert island. Stage-by-stage replays show how they go from drowning on day one to living off the island.',
 );
 const stories = (await getStories((e) => e.data.lang === lang && e.data.project === id))
   .sort((a, b) => a.data.part - b.data.part);
 const cast = [
-  { name: 'Peppo', brain: 'RePPO', color: '#e0782f', trait: L('탐험가: 안 가 본 곳에 갈수록 보상', 'Explorer: rewarded for going somewhere new'),
+  { name: 'Peppo', role: L('탐험가', 'The explorer'), color: '#e0782f', trait: L('안 가 본 곳이 보이면 일단 가 봄. 오늘 간 데는 내일 또 새로움', 'Sees somewhere new, goes there. Yesterday’s map does not count today'),
     look: L('주황 셔츠 · 밀짚모자', 'Orange shirt · straw hat') },
-  { name: 'Pickle', brain: 'PQN', color: '#4c9a4a', trait: L('조커: 안 해 본 행동을 할수록 보상', 'Joker: rewarded for trying something different'),
+  { name: 'Pickle', role: L('조커', 'The joker'), color: '#4c9a4a', trait: L('같은 짓 두 번은 재미없음. 오늘 안 해 본 걸 해야 직성이 풀림', 'Doing the same thing twice is boring. Has to try something new every day'),
     look: L('초록 셔츠 · 버킷햇 · 제일 작음', 'Green shirt · bucket hat · the smallest') },
-  { name: 'Galoot', brain: 'AGaLiTe', color: '#3d6fc4', trait: L('먹보: 많이 먹을수록 보상', 'Glutton: rewarded for eating more'),
+  { name: 'Galoot', role: L('먹보', 'The glutton'), color: '#3d6fc4', trait: L('배불러도 먹음. 먹을 게 보이면 그게 오늘의 할 일', 'Eats even when full. If there is food in sight, that is the plan for today'),
     look: L('파란 셔츠 · 빨간 머리띠 · 배낭 · 제일 큼', 'Blue shirt · red headband · backpack · the biggest') },
 ];
 const rules = isKo
-  ? ['한 판은 최대 30일. 기본 보상은 살아 있는 하루마다 1점', '열매·코코넛·풀은 다시 자라지 않음. 다 먹으면 끝', '캐릭터들은 모르는 숨은 낚시터 3곳. 곳마다 하루에 나오는 물고기 수가 다름', '나무 1 + 돌 1로 작살을 만들어야 낚시 가능', '투명 벽 없음. 깊은 물에서 기력이 바닥나면 익사', '하루 한 번 아무 때나 해안에 상자가 떠밀려 오고, 2시간 뒤 사라짐 (통조림 또는 그물)', '북쪽 언덕 뒤에 숨은 동굴. 안에서는 밤에도 따뜻함']
-  : ['A life lasts up to 30 days. The base reward is one point per day alive', 'Berries, coconuts and grass never grow back. Once eaten, they are gone', 'Three hidden fishing spots the castaways know nothing about, each with its own daily catch', 'Fishing needs a spear: one wood and one stone', 'No invisible walls. Run out of energy in deep water and you drown', 'Once a day, at a random time, a crate washes ashore and the sea takes it back two hours later (a can or a net)', 'A cave hidden behind the north hill stays warm through the night'];
+  ? ['한 판은 최대 30일','열매·코코넛·풀은 다시 자라지 않음. 다 먹으면 끝', '캐릭터들은 모르는 숨은 낚시터 3곳. 곳마다 하루에 나오는 물고기 수가 다름', '나무 1 + 돌 1로 작살을 만들어야 낚시 가능', '투명 벽 없음. 깊은 물에서 기력이 바닥나면 익사', '하루 한 번 아무 때나 해안에 상자가 떠밀려 오고, 2시간 뒤 사라짐 (통조림 또는 그물)', '북쪽 언덕 뒤에 숨은 동굴. 안에서는 밤에도 따뜻함']
+  : ['A life lasts up to 30 days','Berries, coconuts and grass never grow back. Once eaten, they are gone', 'Three hidden fishing spots the castaways know nothing about, each with its own daily catch', 'Fishing needs a spear: one wood and one stone', 'No invisible walls. Run out of energy in deep water and you drown', 'Once a day, at a random time, a crate washes ashore and the sea takes it back two hours later (a can or a net)', 'A cave hidden behind the north hill stays warm through the night'];
 ---
 <BaseLayout lang={lang} title={title} description={summary} noindex>
   <header class="page-top">
@@ -50,18 +51,16 @@ const rules = isKo
     </section>
 
     <section class="isl-sec">
-      <h2>{L('세 캐릭터, 세 두뇌', 'Three castaways, three brains')}</h2>
-      <p>{L('같은 섬, 같은 규칙. 다른 건 두뇌(알고리즘)와 성격(살아남기 위에 얹은 보너스 보상)뿐. 튜토리얼 섬에서는 각자 따로 살아서, 서로 다른 성격이 어떻게 생기는지 봄.', 'Same island, same rules. Only the brain (the algorithm) and the personality (a bonus reward on top of survival) differ. On the tutorial island each lives alone, so their personalities form separately.')}</p>
+      <h2>{L('세 얼간이', 'The three')}</h2>
+      <p>{L('튜토리얼 섬에서는 셋이 각자 다른 섬에서 따로 살아남음. 다음 섬부터는 한 섬에서 같이 삶.', 'On the tutorial island each one is stranded alone. From the next island on, they share one.')}</p>
       <div class="isl-cast">{cast.map((c) => (
         <article style={`--c:${c.color}`}>
           <strong>{c.name}</strong>
-          <span class="isl-brain">{c.brain}</span>
+          <span class="isl-brain">{c.role}</span>
           <p>{c.trait}</p>
           <small>{c.look}</small>
         </article>
       ))}</div>
-      <p class="isl-note">{L('화면 밖 기준선으로 PPO + GRU 메모리를 같은 조건에서 함께 돌림.', 'An off-screen baseline, PPO with a GRU memory, trains under the same conditions.')}
-        {' '}<a href="https://github.com/nissymori/remax-rl">RePPO</a> · <a href="https://arxiv.org/abs/2407.04811">PQN</a> · <a href="https://arxiv.org/abs/2310.15719">AGaLiTe</a></p>
     </section>
 
     <section class="isl-sec">
@@ -71,7 +70,7 @@ const rules = isKo
 
     <section class="isl-sec isl-slot" data-slot="replays">
       <h2>{L('시도할수록 달라지는 모습', 'How they change, attempt by attempt')}</h2>
-      <p>{L('학습 중 딱 떨어지는 시도 수마다 두뇌를 저장해 두고, 행동이 가장 크게 달라진 단계의 리플레이를 3D로 다시 봄.', 'Brains are saved at round attempt counts during training, and the stages where behaviour changed the most can be replayed in 3D.')}</p>
+      <p>{L('1번째 시도부터 수만 번째 시도까지, 가장 크게 달라진 순간들을 3D 리플레이로 다시 봄.', 'From the first attempt to the tens of thousandth, the moments where they changed the most, replayed in 3D.')}</p>
       <ol class="isl-stages">
         {['Attempt 1', '…', '…', '…'].map((s) => <li><b>{s}</b><span>{L('영상 공개 후 추가', 'Added with the video')}</span></li>)}
       </ol>
