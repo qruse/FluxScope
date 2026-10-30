@@ -60,7 +60,8 @@ const { lang } = Astro.props;
   };
 
   function card(id: string, t: any) {
-    const lims = (t.limits || []).map((l: any) => `
+    // A snapshot older than its window's reset (Codex reports only when it is used) means that window is empty now.
+    const lims = (t.limits || []).map((l: any) => (l.resets_at && new Date(l.resets_at).getTime() < Date.now() ? { ...l, used: 0 } : l)).map((l: any) => `
       <div class="us-lim" title="${esc(l.resets_at || '')}">
         <div><span>${esc(l.label)} · <b>${l.used}%</b></span><span>${l.resets_at ? when(l.resets_at) : ''}</span></div>
         <div class="us-bar"><b class="${l.used >= 80 ? 'hot' : ''}" style="width:${Math.min(100, l.used)}%"></b></div>
