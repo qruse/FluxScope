@@ -66,8 +66,8 @@ export default defineConfig({
     },
   },
   integrations: [mdx({ rehypePlugins: [rehypeOptimizeImages] }), sitemap({
-    // rec/: temporary owner tool; hslab-island: hidden (noindex) until its first video is out
-    filter: (page) => !/\/search\/$/.test(page) && !/\/my-voice-tts\/rec\/$/.test(page) && !/\/projects\/hslab-island\/$/.test(page),
+    // rec/: temporary owner tool; hslab-island: hidden (noindex) until its first video is out; usage/: unlisted owner page
+    filter: (page) => !/\/search\/$/.test(page) && !/\/my-voice-tts\/rec\/$/.test(page) && !/\/projects\/hslab-island\/$/.test(page) && !/\/usage\/$/.test(page),
     i18n: { defaultLocale: 'ko', locales: { ko: 'ko', en: 'en' } },
     serialize(item) {
       const lastmod = updatedDates.get(new URL(item.url).pathname.replace(base.replace(/\/$/, ''), ''));
