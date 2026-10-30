@@ -496,7 +496,10 @@ async function projectData(request, env, url) {
   const object = request.method === 'HEAD' ? await env.IMAGES.head(key) : await env.IMAGES.get(key);
   if (!object) return json({ error: 'Not found' }, 404);
   return new Response(object.body ?? null, {
-    headers: { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'public, max-age=300', 'X-Content-Type-Options': 'nosniff' },
+    headers: {
+      'Content-Type': 'application/json; charset=utf-8', 'X-Content-Type-Options': 'nosniff',
+      'Cache-Control': match[1] === 'usage' ? 'no-store' : 'public, max-age=300',     // usage/ is re-uploaded every minute
+    },
   });
 }
 

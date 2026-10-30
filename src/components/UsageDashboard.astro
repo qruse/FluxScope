@@ -1,8 +1,8 @@
 ---
 // Unlisted page (2026-10-30, user request): the user's own Claude, Codex and Antigravity usage at a glance.
-// Workplace/usage_dashboard/collect.py uploads latest.json to /api/usage/ every hour; this page only draws it.
-// Kept out of the listings, sitemaps and search (noindex); nothing links here. Korean only: /en/usage/ exists so the
-// language switch has somewhere to go.
+// Workplace/usage_dashboard/collect.py re-uploads latest.json to /api/usage/ every minute and this page re-reads it
+// every 60 s. Kept out of the listings, sitemaps and search (noindex); nothing links here. Korean only: /en/usage/
+// exists so the language switch has somewhere to go.
 import BaseLayout from '../layouts/BaseLayout.astro';
 import type { Lang } from '../i18n/ui';
 
@@ -10,84 +10,188 @@ interface Props { lang: Lang; }
 const { lang } = Astro.props;
 ---
 <BaseLayout lang={lang} title="사용량" description="Claude, Codex, Antigravity 사용량" noindex>
-  <div class="shell us" data-us>
-    <h1>사용량</h1>
-    <p class="us-meta" data-us-meta>불러오는 중…</p>
-    <div class="us-grid" data-us-grid></div>
+  <div class="shell us">
+    <header class="us-head">
+      <div>
+        <div class="section-kicker">Usage</div>
+        <h1>AI 사용량</h1>
+      </div>
+      <div class="us-live" data-us-live>
+        <span class="us-dot"></span>
+        <span data-us-meta>불러오는 중…</span>
+        <span class="us-ring" aria-hidden="true"><svg viewBox="0 0 20 20"><circle cx="10" cy="10" r="8"></circle><circle class="us-ring-p" cx="10" cy="10" r="8" data-us-tick></circle></svg></span>
+      </div>
+    </header>
+
+    <section class="us-tiles" data-us-tiles aria-label="가장 빠듯한 한도"></section>
+    <section class="us-grid" data-us-grid></section>
+    <p class="us-foot">토큰은 입력 + 캐시 + 출력 합계, 한국 시간 기준 하루. Codex 한도는 마지막으로 쓴 시점 값이라 오래될 수 있고, 초기화 시각이 지난 칸은 0%로 봅니다.</p>
   </div>
+  <div class="us-tip" data-us-tip hidden></div>
 </BaseLayout>
 
 <style is:global>
-  .us { padding: 2.5rem 0 4rem; }
-  .us h1 { margin: 0 0 .25rem; font-size: 1.8rem; }
-  .us-meta { color: var(--muted); margin: 0 0 1.5rem; font-size: .9rem; }
-  .us-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem; }
-  .us-card { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 1.1rem 1.2rem; }
-  .us-card h2 { margin: 0 0 .9rem; font-size: 1.1rem; display: flex; align-items: center; gap: .5rem; }
-  .us-card h2 i { width: 10px; height: 10px; border-radius: 50%; background: var(--c); display: inline-block; }
-  .us-card h2 small { color: var(--muted); font-weight: 400; font-size: .8rem; margin-left: auto; }
-  .us-lim { margin: 0 0 .75rem; }
-  .us-lim div:first-child { display: flex; justify-content: space-between; font-size: .85rem; margin-bottom: .3rem; }
-  .us-lim span:last-child { color: var(--muted); }
+  .us { padding: 2.4rem 0 4rem; --warn: #c98a12; --hot: var(--accent); }
+  .us-head { display: flex; justify-content: space-between; align-items: flex-end; gap: 1rem; flex-wrap: wrap; margin-bottom: 1.6rem; }
+  .us-head h1 { margin: .2rem 0 0; font-size: clamp(1.7rem, 4vw, 2.3rem); letter-spacing: -.02em; }
+  .us-live { display: inline-flex; align-items: center; gap: .55rem; padding: .45rem .8rem; border: 1px solid var(--line); border-radius: 999px; background: var(--surface); color: var(--muted); font-size: .82rem; }
+  .us-dot { width: 8px; height: 8px; border-radius: 50%; background: #2f9e6e; box-shadow: 0 0 0 0 rgba(47, 158, 110, .5); animation: us-pulse 2s infinite; }
+  .us-live.stale .us-dot { background: var(--warn); animation: none; }
+  .us-live.down .us-dot { background: var(--hot); animation: none; }
+  @keyframes us-pulse { 70% { box-shadow: 0 0 0 7px rgba(47, 158, 110, 0); } 100% { box-shadow: 0 0 0 0 rgba(47, 158, 110, 0); } }
+  .us-ring svg { width: 16px; height: 16px; display: block; transform: rotate(-90deg); }
+  .us-ring circle { fill: none; stroke: var(--line); stroke-width: 3; }
+  .us-ring .us-ring-p { stroke: var(--muted); stroke-dasharray: 50.27; transition: stroke-dashoffset 1s linear; }
+
+  .us-tiles { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; margin-bottom: 1rem; }
+  .us-tile { display: flex; align-items: center; gap: 1rem; padding: 1rem 1.1rem; border-radius: 16px; background: var(--surface); border: 1px solid var(--line); position: relative; overflow: hidden; }
+  .us-tile::before { content: ''; position: absolute; inset: 0 auto 0 0; width: 4px; background: var(--c); }
+  .us-gauge { width: 68px; height: 68px; flex: none; position: relative; }
+  .us-gauge svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+  .us-gauge circle { fill: none; stroke-width: 7; stroke-linecap: round; }
+  .us-gauge .bg { stroke: var(--line); }
+  .us-gauge .fg { stroke: var(--g); transition: stroke-dashoffset .8s cubic-bezier(.2, .7, .2, 1); }
+  .us-gauge b { position: absolute; inset: 0; display: grid; place-items: center; font-size: 1.05rem; font-variant-numeric: tabular-nums; }
+  .us-tile h2 { margin: 0; font-size: 1rem; }
+  .us-tile p { margin: .15rem 0 0; color: var(--muted); font-size: .8rem; line-height: 1.4; }
+
+  .us-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; }
+  .us-card { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 1.15rem 1.2rem 1rem; display: flex; flex-direction: column; }
+  .us-card h3 { margin: 0 0 1rem; font-size: 1.05rem; display: flex; align-items: center; gap: .55rem; }
+  .us-mark { width: 26px; height: 26px; border-radius: 8px; background: var(--c); color: #fff; display: grid; place-items: center; font-size: .8rem; font-weight: 700; }
+  .us-badge { margin-left: auto; font-size: .72rem; font-weight: 500; color: var(--muted); border: 1px solid var(--line); border-radius: 999px; padding: .1rem .5rem; }
+  .us-lim { margin: 0 0 .8rem; }
+  .us-lim-top { display: flex; justify-content: space-between; gap: .5rem; font-size: .84rem; margin-bottom: .32rem; }
+  .us-lim-top b { font-variant-numeric: tabular-nums; }
+  .us-lim-top span:last-child { color: var(--muted); font-size: .76rem; white-space: nowrap; }
   .us-bar { height: 8px; border-radius: 4px; background: var(--line); overflow: hidden; }
-  .us-bar b { display: block; height: 100%; border-radius: 4px; background: var(--c); }
-  .us-bar b.hot { background: var(--accent); }
-  .us-none { color: var(--muted); font-size: .85rem; margin: 0 0 .75rem; }
-  .us-tok { margin-top: 1rem; border-top: 1px solid var(--line); padding-top: .8rem; font-size: .85rem; }
-  .us-tok p { margin: 0 0 .5rem; display: flex; justify-content: space-between; }
-  .us-tok p span { color: var(--muted); }
-  .us-days { display: flex; align-items: flex-end; gap: 2px; height: 56px; }
-  .us-days b { flex: 1; background: var(--c); border-radius: 2px 2px 0 0; min-height: 1px; opacity: .85; }
-  .us-days b:hover { opacity: 1; }
-  .us-axis { display: flex; justify-content: space-between; color: var(--muted); font-size: .72rem; margin-top: .25rem; }
+  .us-bar i { display: block; height: 100%; border-radius: 4px; background: var(--c); width: 0; transition: width .8s cubic-bezier(.2, .7, .2, 1); }
+  .us-bar i.warn { background: var(--warn); }
+  .us-bar i.hot { background: var(--hot); }
+  .us-note { color: var(--muted); font-size: .76rem; margin: -.2rem 0 .6rem; }
+  .us-tok { margin-top: auto; border-top: 1px dashed var(--line); padding-top: .9rem; }
+  .us-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: .4rem; margin-bottom: .7rem; }
+  .us-stats div { font-size: .72rem; color: var(--muted); }
+  .us-stats b { display: block; font-size: 1.05rem; color: var(--ink); font-variant-numeric: tabular-nums; }
+  .us-days { display: flex; align-items: flex-end; gap: 2px; height: 70px; }
+  .us-days span { flex: 1; height: 100%; display: flex; align-items: flex-end; cursor: default; }
+  .us-days i { display: block; width: 100%; background: var(--c); border-radius: 3px 3px 0 0; opacity: .5; min-height: 2px; transition: height .8s cubic-bezier(.2, .7, .2, 1), opacity .15s; }
+  .us-days span:last-child i { opacity: 1; }
+  .us-days span:hover i { opacity: 1; }
+  .us-axis { display: flex; justify-content: space-between; color: var(--muted); font-size: .7rem; margin-top: .3rem; }
+  .us-foot { color: var(--muted); font-size: .76rem; margin-top: 1.4rem; }
+  .us-tip { position: fixed; z-index: 50; pointer-events: none; background: var(--ink); color: var(--bg); font-size: .76rem; padding: .4rem .55rem; border-radius: 8px; white-space: nowrap; transform: translate(-50%, calc(-100% - 10px)); }
+  @media (max-width: 860px) { .us-tiles, .us-grid { grid-template-columns: 1fr; } }
 </style>
 
 <script>
-  const COLOR = { claude: '#d97757', codex: '#4a7fd6', antigravity: '#2f9e6e' };
-  const NAME = { claude: 'Claude', codex: 'Codex', antigravity: 'Antigravity' };
+  const TOOLS = [
+    { id: 'claude', name: 'Claude', mark: 'C', color: '#d97757' },
+    { id: 'codex', name: 'Codex', mark: 'X', color: '#4a7fd6' },
+    { id: 'antigravity', name: 'Antigravity', mark: 'A', color: '#2f9e6e' },
+  ];
+  const REFRESH = 60;
   const $ = (s: string) => document.querySelector(s) as HTMLElement;
-  const esc = (s: string) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]!);
-  const fmt = (n: number) => (n >= 1e9 ? (n / 1e9).toFixed(1) + 'B' : n >= 1e6 ? (n / 1e6).toFixed(1) + 'M' : n >= 1e3 ? (n / 1e3).toFixed(0) + 'K' : String(n));
-  const when = (iso: string) => {
+  const esc = (s: unknown) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]!);
+  const fmt = (n: number) => (n >= 1e9 ? (n / 1e9).toFixed(2) + 'B' : n >= 1e6 ? (n / 1e6).toFixed(1) + 'M' : n >= 1e3 ? Math.round(n / 1e3) + 'K' : String(n));
+  const level = (p: number) => (p >= 90 ? 'hot' : p >= 70 ? 'warn' : '');
+  const left = (iso?: string) => {
+    if (!iso) return '';
     const ms = new Date(iso).getTime() - Date.now();
     if (!(ms > 0)) return '초기화됨';
     const h = Math.floor(ms / 3.6e6), m = Math.floor((ms % 3.6e6) / 6e4);
-    return h >= 24 ? `${Math.floor(h / 24)}일 ${h % 24}시간 뒤 초기화` : h ? `${h}시간 ${m}분 뒤 초기화` : `${m}분 뒤 초기화`;
+    return h >= 24 ? `${Math.floor(h / 24)}일 ${h % 24}시간 뒤` : h ? `${h}시간 ${m}분 뒤` : `${m}분 뒤`;
   };
   const ago = (iso: string) => {
-    const m = Math.round((Date.now() - new Date(iso).getTime()) / 6e4);
-    return m < 60 ? `${m}분 전` : m < 1440 ? `${Math.round(m / 60)}시간 전` : `${Math.round(m / 1440)}일 전`;
+    const s = Math.max(0, Math.round((Date.now() - new Date(iso).getTime()) / 1000));
+    return s < 60 ? `${s}초 전` : s < 3600 ? `${Math.round(s / 60)}분 전` : s < 86400 ? `${Math.round(s / 3600)}시간 전` : `${Math.round(s / 86400)}일 전`;
   };
+  // A snapshot older than its window's reset (Codex reports only when it is used) means that window is empty now.
+  const limits = (t: any) => (t.limits || []).map((l: any) => (l.resets_at && new Date(l.resets_at).getTime() < Date.now() ? { ...l, used: 0 } : l));
 
-  function card(id: string, t: any) {
-    // A snapshot older than its window's reset (Codex reports only when it is used) means that window is empty now.
-    const lims = (t.limits || []).map((l: any) => (l.resets_at && new Date(l.resets_at).getTime() < Date.now() ? { ...l, used: 0 } : l)).map((l: any) => `
-      <div class="us-lim" title="${esc(l.resets_at || '')}">
-        <div><span>${esc(l.label)} · <b>${l.used}%</b></span><span>${l.resets_at ? when(l.resets_at) : ''}</span></div>
-        <div class="us-bar"><b class="${l.used >= 80 ? 'hot' : ''}" style="width:${Math.min(100, l.used)}%"></b></div>
-      </div>`).join('') || `<p class="us-none">${esc(t.limits_note || '한도 정보 없음')}</p>`;
-    const days = t.daily || [];
-    const max = Math.max(1, ...days.map((d: any) => d.total));
-    const today = days.at(-1)?.total || 0;
-    const week = days.slice(-7).reduce((s: number, d: any) => s + d.total, 0);
-    const bars = days.map((d: any) => `<b style="height:${(d.total / max) * 100}%" title="${d.date} · ${fmt(d.total)} (출력 ${fmt(d.output)})"></b>`).join('');
-    return `<section class="us-card" style="--c:${COLOR[id as keyof typeof COLOR]}">
-      <h2><i></i>${NAME[id as keyof typeof NAME]}${t.plan ? `<small>${esc(t.plan)}</small>` : ''}</h2>
-      ${lims}
-      ${t.limits_checked ? `<p class="us-none" style="margin-top:-.3rem">한도 확인 ${ago(t.limits_checked)}</p>` : ''}
-      <div class="us-tok">
-        <p>토큰 오늘 <b>${fmt(today)}</b><span>7일 ${fmt(week)}</span></p>
-        <div class="us-days">${bars}</div>
-        <div class="us-axis"><span>${days[0]?.date.slice(5) || ''}</span><span>${days.at(-1)?.date.slice(5) || ''}</span></div>
-      </div>
-    </section>`;
+  function tile(tool: typeof TOOLS[number], t: any) {
+    const ls = limits(t);
+    const top = ls.reduce((a: any, b: any) => (!a || b.used > a.used ? b : a), null);
+    const p = top ? top.used : 0, C = 2 * Math.PI * 28;
+    const g = level(p) === 'hot' ? 'var(--hot)' : level(p) === 'warn' ? 'var(--warn)' : tool.color;
+    return `<div class="us-tile" style="--c:${tool.color};--g:${g}">
+      <div class="us-gauge"><svg viewBox="0 0 68 68"><circle class="bg" cx="34" cy="34" r="28"></circle>
+        <circle class="fg" cx="34" cy="34" r="28" stroke-dasharray="${C}" stroke-dashoffset="${C * (1 - Math.min(p, 100) / 100)}"></circle></svg>
+        <b>${top ? p + '%' : '–'}</b></div>
+      <div><h2>${tool.name}</h2><p>${top ? `${esc(top.label)} 한도가 가장 빠듯함<br>${left(top.resets_at)} 초기화` : esc(t.limits_note || '한도 정보 없음')}</p></div>
+    </div>`;
   }
 
-  fetch('/api/usage/latest.json', { cache: 'no-store' })
-    .then((r) => (r.ok ? r.json() : Promise.reject(r.status)))
-    .then((d) => {
-      $('[data-us-meta]').textContent = `업데이트 ${ago(d.updated)} · 토큰은 입력+캐시+출력, 최근 ${d.days}일`;
-      $('[data-us-grid]').innerHTML = ['claude', 'codex', 'antigravity'].map((k) => card(k, d.tools[k] || {})).join('');
-    })
-    .catch(() => { $('[data-us-meta]').textContent = '데이터를 불러오지 못했습니다.'; });
+  function card(tool: typeof TOOLS[number], t: any) {
+    const ls = limits(t);
+    const lims = ls.map((l: any) => `
+      <div class="us-lim">
+        <div class="us-lim-top"><span>${esc(l.label)} <b>${l.used}%</b></span><span>${l.resets_at ? (left(l.resets_at) === '초기화됨' ? '초기화됨' : left(l.resets_at) + ' 초기화') : ''}</span></div>
+        <div class="us-bar"><i class="${level(l.used)}" data-w="${Math.min(100, l.used)}"></i></div>
+      </div>`).join('') || `<p class="us-note">${esc(t.limits_note || '한도 정보 없음')}</p>`;
+    const stale = t.limits_checked && Date.now() - new Date(t.limits_checked).getTime() > 3.6e6;
+    const days = t.daily || [];
+    const max = Math.max(1, ...days.map((d: any) => d.total));
+    const sum = (n: number) => days.slice(-n).reduce((s: number, d: any) => s + d.total, 0);
+    const bars = days.map((d: any) => `<span data-tip="${d.date} · ${fmt(d.total)} 토큰 · 출력 ${fmt(d.output)}"><i data-h="${(d.total / max) * 100}"></i></span>`).join('');
+    return `<article class="us-card" style="--c:${tool.color}">
+      <h3><span class="us-mark">${tool.mark}</span>${tool.name}${t.plan ? `<span class="us-badge">${esc(t.plan)}</span>` : ''}</h3>
+      ${lims}
+      ${stale ? `<p class="us-note">한도는 ${ago(t.limits_checked)} 마지막 사용 기준</p>` : ''}
+      <div class="us-tok">
+        <div class="us-stats"><div>오늘<b>${fmt(sum(1))}</b></div><div>7일<b>${fmt(sum(7))}</b></div><div>30일<b>${fmt(sum(30))}</b></div></div>
+        <div class="us-days">${bars}</div>
+        <div class="us-axis"><span>${days[0]?.date.slice(5).replace('-', '/') || ''}</span><span>하루 최대 ${fmt(max)}</span><span>오늘</span></div>
+      </div>
+    </article>`;
+  }
+
+  let data: any = null, nextAt = 0, firstDraw = true;
+  function draw() {
+    if (!data) return;
+    $('[data-us-tiles]').innerHTML = TOOLS.map((tl) => tile(tl, data.tools[tl.id] || {})).join('');
+    $('[data-us-grid]').innerHTML = TOOLS.map((tl) => card(tl, data.tools[tl.id] || {})).join('');
+    const grow = () => {
+      document.querySelectorAll<HTMLElement>('.us-bar i').forEach((e) => (e.style.width = e.dataset.w + '%'));
+      document.querySelectorAll<HTMLElement>('.us-days i').forEach((e) => (e.style.height = e.dataset.h + '%'));
+    };
+    if (firstDraw) { requestAnimationFrame(() => requestAnimationFrame(grow)); firstDraw = false; } else grow();
+  }
+  function status() {
+    const live = $('[data-us-live]');
+    if (!data) return;
+    const age = Date.now() - new Date(data.updated).getTime();
+    live.classList.toggle('stale', age > 5 * 60e3);
+    $('[data-us-meta]').textContent = `${ago(data.updated)} 업데이트`;
+    const frac = Math.max(0, Math.min(1, (nextAt - Date.now()) / (REFRESH * 1000)));
+    ($('[data-us-tick]') as any).style.strokeDashoffset = String(50.27 * (1 - frac));
+  }
+  async function load() {
+    nextAt = Date.now() + REFRESH * 1000;
+    try {
+      const r = await fetch('/api/usage/latest.json', { cache: 'no-store' });
+      if (!r.ok) throw r.status;
+      data = await r.json();
+      $('[data-us-live]').classList.remove('down');
+      draw();
+    } catch {
+      $('[data-us-live]').classList.add('down');
+      if (!data) $('[data-us-meta]').textContent = '데이터를 불러오지 못했습니다';
+    }
+    status();
+  }
+  load();
+  setInterval(() => { if (Date.now() >= nextAt) load(); else status(); }, 1000);
+  document.addEventListener('visibilitychange', () => { if (!document.hidden && Date.now() >= nextAt - 50e3) load(); });
+
+  const tip = $('[data-us-tip]');
+  document.addEventListener('pointermove', (e) => {
+    const s = (e.target as HTMLElement).closest?.('[data-tip]') as HTMLElement | null;
+    if (!s) { tip.hidden = true; return; }
+    tip.textContent = s.dataset.tip!;
+    const r = s.getBoundingClientRect();
+    tip.style.left = `${r.left + r.width / 2}px`;
+    tip.style.top = `${r.top}px`;
+    tip.hidden = false;
+  });
 </script>
