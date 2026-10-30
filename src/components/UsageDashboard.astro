@@ -30,7 +30,7 @@ const { lang } = Astro.props;
   <div class="us-tip" data-us-tip hidden></div>
 </BaseLayout>
 
-<style is:global>
+<style is:inline>  /* inline: an unlisted page should not count against the site's shared CSS budget */
   .us { padding: 2.4rem 0 4rem; --warn: #c98a12; --hot: var(--accent); }
   .us-head { display: flex; justify-content: space-between; align-items: flex-end; gap: 1rem; flex-wrap: wrap; margin-bottom: 1.6rem; }
   .us-head h1 { margin: .2rem 0 0; font-size: clamp(1.7rem, 4vw, 2.3rem); letter-spacing: -.02em; }
