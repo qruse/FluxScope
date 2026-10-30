@@ -498,7 +498,7 @@ async function projectData(request, env, url) {
   return new Response(object.body ?? null, {
     headers: {
       'Content-Type': 'application/json; charset=utf-8', 'X-Content-Type-Options': 'nosniff',
-      'Cache-Control': match[1] === 'usage' ? 'no-store' : 'public, max-age=300',     // usage/ is re-uploaded every minute
+      'Cache-Control': match[1] === 'usage' ? 'no-store' : 'public, max-age=300',     // usage/ is re-uploaded every 10 minutes
     },
   });
 }

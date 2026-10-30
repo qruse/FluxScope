@@ -1,7 +1,7 @@
 ---
 // Unlisted page (2026-10-30, user request): the user's own Claude, Codex and Antigravity usage at a glance.
-// Workplace/usage_dashboard/collect.py re-uploads latest.json to /api/usage/ every minute and this page re-reads it
-// every 60 s. Kept out of the listings, sitemaps and search (noindex); nothing links here. Korean only: /en/usage/
+// Workplace/usage_dashboard/collect.py re-uploads latest.json to /api/usage/ every 10 minutes and this page
+// re-reads it on the same beat. Kept out of the listings, sitemaps and search (noindex); nothing links here. Korean only: /en/usage/
 // exists so the language switch has somewhere to go.
 import BaseLayout from '../layouts/BaseLayout.astro';
 import type { Lang } from '../i18n/ui';
@@ -90,7 +90,7 @@ const { lang } = Astro.props;
     { id: 'codex', name: 'Codex', mark: 'X', color: '#4a7fd6' },
     { id: 'antigravity', name: 'Antigravity', mark: 'A', color: '#2f9e6e' },
   ];
-  const REFRESH = 60;
+  const REFRESH = 600;
   const $ = (s: string) => document.querySelector(s) as HTMLElement;
   const esc = (s: unknown) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]!);
   const fmt = (n: number) => (n >= 1e9 ? (n / 1e9).toFixed(2) + 'B' : n >= 1e6 ? (n / 1e6).toFixed(1) + 'M' : n >= 1e3 ? Math.round(n / 1e3) + 'K' : String(n));
@@ -161,7 +161,7 @@ const { lang } = Astro.props;
     const live = $('[data-us-live]');
     if (!data) return;
     const age = Date.now() - new Date(data.updated).getTime();
-    live.classList.toggle('stale', age > 5 * 60e3);
+    live.classList.toggle('stale', age > 25 * 60e3);
     $('[data-us-meta]').textContent = `${ago(data.updated)} 업데이트`;
     const frac = Math.max(0, Math.min(1, (nextAt - Date.now()) / (REFRESH * 1000)));
     ($('[data-us-tick]') as any).style.strokeDashoffset = String(50.27 * (1 - frac));
@@ -182,7 +182,7 @@ const { lang } = Astro.props;
   }
   load();
   setInterval(() => { if (Date.now() >= nextAt) load(); else status(); }, 1000);
-  document.addEventListener('visibilitychange', () => { if (!document.hidden && Date.now() >= nextAt - 50e3) load(); });
+  document.addEventListener('visibilitychange', () => { if (!document.hidden && Date.now() >= nextAt - (REFRESH - 60) * 1000) load(); });
 
   const tip = $('[data-us-tip]');
   document.addEventListener('pointermove', (e) => {
