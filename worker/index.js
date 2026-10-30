@@ -477,9 +477,10 @@ async function submitRecentlyChanged(env) {
 
 // Data for the project pages, uploaded once a day with PUBLISH_TOKEN and kept in R2 under the project's prefix:
 // weather/ for /projects/beat-kma/ (weather_forecasting repository), duel/ for /projects/ai-duel/ (ai_portfolio_duel)
-// and mafia/ for /projects/ai-mafia/ (ai_mafia: latest.json plus one game-NNN.json per finished game).
+// and mafia/ for /projects/ai-mafia/ (ai_mafia: latest.json plus one game-NNN.json per finished game),
+// usage/ for the unlisted /usage/ page (usage_dashboard: Claude, Codex and Antigravity limits and tokens).
 async function projectData(request, env, url) {
-  const match = url.pathname.match(/^\/api\/(weather|duel|mafia)\/((?:verify\/)?[a-z0-9_-]+\.json)$/);
+  const match = url.pathname.match(/^\/api\/(weather|duel|mafia|usage)\/((?:verify\/)?[a-z0-9_-]+\.json)$/);
   if (!match) return json({ error: 'Not found' }, 404);
   if (!env.IMAGES) return json({ error: 'Storage is unavailable' }, 503);
   const key = `${match[1]}/${match[2]}`;
@@ -602,7 +603,7 @@ async function api(request, env, url, ctx) {
     if (!env.DB) return json({ error: 'Database binding is unavailable' }, 503);
     return mafiaVotes(request, env, url);
   }
-  if (/^\/api\/(weather|duel|mafia)\//.test(url.pathname)) return projectData(request, env, url);
+  if (/^\/api\/(weather|duel|mafia|usage)\//.test(url.pathname)) return projectData(request, env, url);
   if (!env.DB) return json({ error: 'Database binding is unavailable' }, 503);
   if (url.pathname === '/api/comments') return comments(request, env, url);
   if (url.pathname === '/api/views') return views(request, env, url);

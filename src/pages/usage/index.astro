@@ -1,0 +1,87 @@
+---
+// Unlisted page (2026-10-30, user request): the user's own Claude, Codex and Antigravity usage at a glance.
+// Workplace/usage_dashboard/collect.py uploads latest.json to /api/usage/ every hour; this page only draws it.
+// Kept out of the listings, sitemaps and search (noindex); nothing links here.
+import BaseLayout from '../../layouts/BaseLayout.astro';
+---
+<BaseLayout lang="ko" title="사용량" description="Claude, Codex, Antigravity 사용량" noindex>
+  <div class="shell us" data-us>
+    <h1>사용량</h1>
+    <p class="us-meta" data-us-meta>불러오는 중…</p>
+    <div class="us-grid" data-us-grid></div>
+  </div>
+</BaseLayout>
+
+<style is:global>
+  .us { padding: 2.5rem 0 4rem; }
+  .us h1 { margin: 0 0 .25rem; font-size: 1.8rem; }
+  .us-meta { color: var(--muted); margin: 0 0 1.5rem; font-size: .9rem; }
+  .us-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem; }
+  .us-card { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 1.1rem 1.2rem; }
+  .us-card h2 { margin: 0 0 .9rem; font-size: 1.1rem; display: flex; align-items: center; gap: .5rem; }
+  .us-card h2 i { width: 10px; height: 10px; border-radius: 50%; background: var(--c); display: inline-block; }
+  .us-card h2 small { color: var(--muted); font-weight: 400; font-size: .8rem; margin-left: auto; }
+  .us-lim { margin: 0 0 .75rem; }
+  .us-lim div:first-child { display: flex; justify-content: space-between; font-size: .85rem; margin-bottom: .3rem; }
+  .us-lim span:last-child { color: var(--muted); }
+  .us-bar { height: 8px; border-radius: 4px; background: var(--line); overflow: hidden; }
+  .us-bar b { display: block; height: 100%; border-radius: 4px; background: var(--c); }
+  .us-bar b.hot { background: var(--accent); }
+  .us-none { color: var(--muted); font-size: .85rem; margin: 0 0 .75rem; }
+  .us-tok { margin-top: 1rem; border-top: 1px solid var(--line); padding-top: .8rem; font-size: .85rem; }
+  .us-tok p { margin: 0 0 .5rem; display: flex; justify-content: space-between; }
+  .us-tok p span { color: var(--muted); }
+  .us-days { display: flex; align-items: flex-end; gap: 2px; height: 56px; }
+  .us-days b { flex: 1; background: var(--c); border-radius: 2px 2px 0 0; min-height: 1px; opacity: .85; }
+  .us-days b:hover { opacity: 1; }
+  .us-axis { display: flex; justify-content: space-between; color: var(--muted); font-size: .72rem; margin-top: .25rem; }
+</style>
+
+<script>
+  const COLOR = { claude: '#d97757', codex: '#4a7fd6', antigravity: '#2f9e6e' };
+  const NAME = { claude: 'Claude', codex: 'Codex', antigravity: 'Antigravity' };
+  const $ = (s: string) => document.querySelector(s) as HTMLElement;
+  const esc = (s: string) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]!);
+  const fmt = (n: number) => (n >= 1e9 ? (n / 1e9).toFixed(1) + 'B' : n >= 1e6 ? (n / 1e6).toFixed(1) + 'M' : n >= 1e3 ? (n / 1e3).toFixed(0) + 'K' : String(n));
+  const when = (iso: string) => {
+    const ms = new Date(iso).getTime() - Date.now();
+    if (!(ms > 0)) return '초기화됨';
+    const h = Math.floor(ms / 3.6e6), m = Math.floor((ms % 3.6e6) / 6e4);
+    return h >= 24 ? `${Math.floor(h / 24)}일 ${h % 24}시간 뒤 초기화` : h ? `${h}시간 ${m}분 뒤 초기화` : `${m}분 뒤 초기화`;
+  };
+  const ago = (iso: string) => {
+    const m = Math.round((Date.now() - new Date(iso).getTime()) / 6e4);
+    return m < 60 ? `${m}분 전` : m < 1440 ? `${Math.round(m / 60)}시간 전` : `${Math.round(m / 1440)}일 전`;
+  };
+
+  function card(id: string, t: any) {
+    const lims = (t.limits || []).map((l: any) => `
+      <div class="us-lim" title="${esc(l.resets_at || '')}">
+        <div><span>${esc(l.label)} · <b>${l.used}%</b></span><span>${l.resets_at ? when(l.resets_at) : ''}</span></div>
+        <div class="us-bar"><b class="${l.used >= 80 ? 'hot' : ''}" style="width:${Math.min(100, l.used)}%"></b></div>
+      </div>`).join('') || `<p class="us-none">${esc(t.limits_note || '한도 정보 없음')}</p>`;
+    const days = t.daily || [];
+    const max = Math.max(1, ...days.map((d: any) => d.total));
+    const today = days.at(-1)?.total || 0;
+    const week = days.slice(-7).reduce((s: number, d: any) => s + d.total, 0);
+    const bars = days.map((d: any) => `<b style="height:${(d.total / max) * 100}%" title="${d.date} · ${fmt(d.total)} (출력 ${fmt(d.output)})"></b>`).join('');
+    return `<section class="us-card" style="--c:${COLOR[id as keyof typeof COLOR]}">
+      <h2><i></i>${NAME[id as keyof typeof NAME]}${t.plan ? `<small>${esc(t.plan)}</small>` : ''}</h2>
+      ${lims}
+      ${t.limits_checked ? `<p class="us-none" style="margin-top:-.3rem">한도 확인 ${ago(t.limits_checked)}</p>` : ''}
+      <div class="us-tok">
+        <p>토큰 오늘 <b>${fmt(today)}</b><span>7일 ${fmt(week)}</span></p>
+        <div class="us-days">${bars}</div>
+        <div class="us-axis"><span>${days[0]?.date.slice(5) || ''}</span><span>${days.at(-1)?.date.slice(5) || ''}</span></div>
+      </div>
+    </section>`;
+  }
+
+  fetch('/api/usage/latest.json', { cache: 'no-store' })
+    .then((r) => (r.ok ? r.json() : Promise.reject(r.status)))
+    .then((d) => {
+      $('[data-us-meta]').textContent = `업데이트 ${ago(d.updated)} · 토큰은 입력+캐시+출력, 최근 ${d.days}일`;
+      $('[data-us-grid]').innerHTML = ['claude', 'codex', 'antigravity'].map((k) => card(k, d.tools[k] || {})).join('');
+    })
+    .catch(() => { $('[data-us-meta]').textContent = '데이터를 불러오지 못했습니다.'; });
+</script>
