@@ -25,7 +25,7 @@ const { lang } = Astro.props;
 
     <section class="us-tiles" data-us-tiles aria-label="가장 빠듯한 한도"></section>
     <section class="us-grid" data-us-grid></section>
-    <p class="us-foot">토큰은 입력 + 캐시 + 출력 합계, 한국 시간 기준 하루. Codex 한도는 마지막으로 쓴 시점 값이라 오래될 수 있고, 초기화 시각이 지난 칸은 0%로 봅니다.</p>
+    <p class="us-foot">토큰은 입력 + 캐시 + 출력 합계, 한국 시간 기준 하루. 한도는 각 서비스에서 10분마다 직접 읽고, 초기화 시각이 지난 칸은 0%로 봅니다.</p>
   </div>
   <div class="us-tip" data-us-tip hidden></div>
 </BaseLayout>
