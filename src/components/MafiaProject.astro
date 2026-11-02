@@ -375,7 +375,8 @@ const rules = [
 .mf-headline.is-sub { font-size: 1.05rem; color: #c9d0db; }
 .mf-headline.is-quiet { color: #b7e4c7; }
 .mf-last { margin: .7rem 0 0; padding: .7rem 1rem; border-left: 3px solid #e0603f; background: rgba(255, 255, 255, .05); font-size: .95rem; line-height: 1.6; word-break: keep-all; }
-.mf-last span { display: block; margin-bottom: .2rem; color: #9aa6b8; font-size: .7rem; font-weight: 850; letter-spacing: .1em; text-transform: uppercase; }
+.mf-last > span { display: flex; align-items: center; gap: .45rem; margin-bottom: .35rem; color: #9aa6b8; font-size: .7rem; font-weight: 850; letter-spacing: .1em; text-transform: uppercase; }
+.mf-last .mf-av { width: 1.5rem; height: 1.5rem; font-size: .75rem; letter-spacing: 0; }
 .mf-win { display: inline-block; margin: 1.1rem 0 0; padding: .45rem 1rem; border-radius: 999px; font-size: 1.15rem; font-weight: 850; }
 .mf-win.is-town { background: #2f9e5b; color: #fff; }
 .mf-win.is-mafia { background: #c43d2f; color: #fff; }
@@ -445,7 +446,7 @@ const rules = [
 .mf-dayx-body .mf-headline.is-sub { color: var(--ink); }
 .mf-dayx-body .mf-headline.is-quiet { color: #2f9e5b; }
 .mf-dayx-body .mf-last { background: var(--soft); }
-.mf-dayx-body .mf-last span { color: var(--muted); }
+.mf-dayx-body .mf-last > span { color: var(--muted); }
 .mf-dayx-body .mf-round { margin: 1rem 0; }
 .mf-roles { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr)); gap: .7rem; }
 .mf-roles p { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem; margin: 0; padding: .8rem 1rem; background: var(--surface); border-left: 4px solid var(--s); box-shadow: 0 1px 2px rgba(0, 0, 0, .08); }
