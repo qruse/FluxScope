@@ -308,6 +308,8 @@ const casesHref = casesPath(lang);
 
     const LIGHT = unit([-.6, -.7, -.9]);
     let W = 0, H = 0, R = 0, queued = false, tiltX = 0, tiltY = 0, aimX = 0, aimY = 0, current = 0;
+    // Scroll distance over which the shapes assemble, and each face's slice of it, set by measure().
+    let range = 1, stages = FACES.map(() => ({ from: 0, len: 1 }));
     let turn = poses[0].yaw, pitch = poses[0].pitch, rail = false;
     // On touch screens, where nothing follows a pointer, scrolling kicks the shape into a spin that swings
     // back to rest.
@@ -318,6 +320,7 @@ const casesHref = casesPath(lang);
     let shown = -1, lastT = 0;
     // Once assembled the shapes breathe slowly so they never look frozen.
     let lastP = -1;
+    let idleTimer = 0;
     const glow = [1, 0, 0, 0];
     let accent: V3 = [230, 96, 67], bg: V3 = [246, 245, 241], pen: V3 = [52, 70, 163];
     const rgb = (value: string): V3 => {
@@ -331,8 +334,22 @@ const casesHref = casesPath(lang);
       accent = rgb(style.getPropertyValue('--accent')); bg = rgb(style.getPropertyValue('--bg')); pen = rgb(style.getPropertyValue('--pen'));
     };
     // Each tetrahedron sits in the margin beside the content column. Where the margin is too narrow it
-    // tucks half off-screen and fades so it never competes with the text; on the mobile layout both swarms
-    // gather into one small tetrahedron riding the number column, and the second one dissolves.
+    // tucks half off-screen and fades so it never competes with the text; on the mobile layout one swarm
+    // spreads over the whole width and gathers into a small tetrahedron riding the number column.
+    // Assembly is a share of the page's actual scroll length, so it still ends at the bottom when the page
+    // grows. The faces lock one at a time on the way down, each settled by the time its first entry becomes
+    // active; the base lights up at the portfolio and finishes settling at the page bottom.
+    const measure = () => {
+      const at = (face: number) => (document.querySelector(`[data-face="${face}"]`)?.getBoundingClientRect().top ?? 0) + scrollY - H * .45;
+      range = Math.max(1, document.documentElement.scrollHeight - H);
+      const stories = clamp(at(1) / range), news = clamp(at(2) / range);
+      const ends = [stories * .8, stories, news, 1];
+      let from = 0, len = ends[0];
+      stages = ends.map((end, i) => {
+        if (i) { from += len * .7; len = Math.max(.001, end - from); }
+        return { from, len };
+      });
+    };
     const layout = () => {
       W = innerWidth; H = innerHeight;
       R = Math.min(Math.max(Math.min(W, H) * .09, 44), 110);
@@ -346,8 +363,11 @@ const casesHref = casesPath(lang);
       for (const side of sides) {
         side.x = rail ? column!.left + column!.width / 2 - W / 2 : side.dir * (W / 2 - (fits ? gutter / 2 : R * .3));
         side.y = rail ? H * .14 : H * (side.dir < 0 ? -.12 : .22);
-        fade(side, fits || rail ? '1' : '.4');
+        fade(side, rail && side.dir > 0 ? '0' : fits || rail ? '1' : '.4');
       }
+      // On the mobile layout the column of text is the whole page, so only the shards stay, and quietly.
+      for (const b of bits) b.g.style.display = rail ? 'none' : '';
+      measure();
     };
     // The entry whose top has passed 45% of the viewport is active; the last one once the page bottom is reached.
     const pick = () => {
@@ -362,11 +382,9 @@ const casesHref = casesPath(lang);
       return Number(entries[k]?.dataset.face ?? 0);
     };
 
-    // p runs from 0 at the top of the page to 1 after 120% of a viewport of scrolling, or at the page bottom on
-    // a window so tall that the page scrolls less than that.
+    // p runs from 0 at the top of the page to 1 at the page bottom.
     function draw(now = performance.now()) {
       queued = false;
-      const range = Math.min(H * 1.2, document.documentElement.scrollHeight - H);
       const target = live && range > 1 ? clamp(scrollY / range) : 1;
       // Frame-rate independent smoothing: the assembly closes 1 - 1/e of the gap every .8 s, face turns every .3 s.
       const dt = lastT ? Math.min(.1, (now - lastT) / 1000) : 1 / 60;
@@ -388,21 +406,21 @@ const casesHref = casesPath(lang);
       moving += Math.abs(turnTo(turn, pose.yaw));
       const vel = live && lastP >= 0 ? (p - lastP) / dt : 0;
       lastP = p;
-      // The shards look settled near p = .8 (the eased flight is almost over), so breathing starts there.
-      const rest = live && p > .8;
-      const breathe = rest ? Math.sin(now / 1000 * 1.1) * clamp((p - .8) / .1) : 0;
-      if (rest) moving += 1;
+      // A half-built shape stays on screen for several screens of scrolling, so it breathes from the start.
+      const rest = live && p > .02;
+      const breathe = rest ? Math.sin(now / 1000 * 1.1) * clamp(p / .1) : 0;
+      const busy = moving > .002;
       const f = R * 5;
       for (const side of sides) {
+        if (rail && side.dir > 0) continue;
         // Exactly one full turn while the shards assemble (p 0 → 1), fast at first and settling at the end,
         // then the shape rests on the active face with a slow breathing sway.
         const yaw = turn + swing + (ease(p) - 1) * TAU * side.dir + tiltX * .5 * side.dir + breathe * .06, tip = pitch + tiltY * .2 + breathe * .03;
         const oy = side.y + breathe * R * .05;
-        if (rail && side.dir > 0) fade(side, String(1 - ease(p)));
-        const farAt = (s: Shard, at: number) => 1 - ease(clamp((at - s.delay) / .7));
+        const farAt = (s: Shard, at: number) => 1 - ease(clamp(((at - stages[s.face].from) / stages[s.face].len - s.delay) / .7));
         // Shards spiral in: the offset from the resting place shrinks and unwinds as they land.
         const place = (s: Shard, far: number, centre: V3): V3 => {
-          const ox = (s.sx * W - side.x - centre[0]) * far, oyy = (s.sy * H - side.y - centre[1]) * far;
+          const ox = ((rail ? (s.sx + .225) * 2 : s.sx) * W - side.x - centre[0]) * far, oyy = (s.sy * H - side.y - centre[1]) * far;
           const a = side.dir * 2.4 * far * far;
           return [ox * Math.cos(a) - oyy * Math.sin(a), ox * Math.sin(a) + oyy * Math.cos(a), -centre[2] * far];
         };
@@ -417,7 +435,7 @@ const casesHref = casesPath(lang);
             return [q[0] * R + shift[0], q[1] * R + shift[1], q[2] * R + shift[2]] as V3;
           });
           // Speed line from where the shard was a moment ago, only while it is moving.
-          const lock = clamp((.2 - far) / .2), speed = clamp(Math.abs(vel) * 4) * (1 - lock);
+          const lock = clamp((.2 - far) / .2), speed = rail ? 0 : clamp(Math.abs(vel) * range / H * 3.3) * (1 - lock);
           if (speed > .02) {
             const back = place(s, farAt(s, p - Math.min(.05, Math.max(-.05, vel * .12))), centre);
             const [x2, y2] = screen([centre[0] + shift[0], centre[1] + shift[1], centre[2] + shift[2]]);
@@ -433,31 +451,37 @@ const casesHref = casesPath(lang);
           const shimmer = rest ? Math.sin(now / 1000 * 2 + s.c[0] * 5 + s.c[1] * 3) * .08 : 0;
           return { s, world, far, lock, lit: clamp(.1 + .9 * Math.abs(n[0] * LIGHT[0] + n[1] * LIGHT[1] + n[2] * LIGHT[2]) + shimmer), z: world[0][2] + world[1][2] + world[2][2] };
         }).sort((a, b) => b.z - a.z); // far faces first
+        // Reordering the DOM is the costly part of a frame, so it happens only when the depth order changes.
+        const reorder = drawn.some((d, i) => side.g.children[i] !== d.s.el);
         for (const { s, world, far, lock, lit } of drawn) {
           s.el.setAttribute('points', world.map((w) => screen(w).map((v) => v.toFixed(1)).join(',')).join(' '));
           const on = glow[s.face] * lock;
           const shade = mix(mix(accent, [0, 0, 0], .3), mix(accent, [255, 255, 255], .4), lit);
           // In flight the outline takes on the accent colour; once locked it settles into pen hatching, or the
           // accent fill on the active entry's face.
-          const tint = Math.sin(Math.PI * far) * .85 * (1 - lock);
+          const tint = Math.sin(Math.PI * far) * (rail ? .3 : .85) * (1 - lock);
           s.el.style.fill = !lock ? 'none' : on > .02 ? css(mix(bg, shade, on)) : hatch[lit > .7 ? 0 : lit > .4 ? 1 : 2];
           s.el.style.fillOpacity = String(on > .02 ? 1 : lock);
-          s.el.style.stroke = css(mix(mix(mix(bg, pen, .35 + .55 * lock), accent, tint), mix(shade, bg, .35), on));
-          side.g.appendChild(s.el);
+          s.el.style.stroke = css(mix(mix(mix(bg, pen, (rail ? .2 : .35) + (rail ? .7 : .55) * lock), accent, tint), mix(shade, bg, .35), on));
+          if (reorder) side.g.appendChild(s.el);
         }
       }
-      for (const b of bits) {
+      if (!rail) for (const b of bits) {
         const t = ease(clamp((p - b.delay) / .6)), far = 1 - t;
         const x = b.side.x + (b.x * W - b.side.x) * far, y = b.side.y + (b.y * H - b.side.y) * far;
         b.g.setAttribute('transform', `translate(${x.toFixed(1)} ${y.toFixed(1)}) rotate(${(b.rot + b.spin * t).toFixed(1)}) scale(${Math.max(0, b.size * (1 - t * 1.05)).toFixed(3)})`);
       }
-      if (moving > .002) schedule();
+      if (busy) schedule();
+      // Breathing alone needs far fewer frames, and phones keep the battery for the rest.
+      else if (rest) { clearTimeout(idleTimer); idleTimer = window.setTimeout(schedule, touch || rail ? 66 : 33); }
     }
     const schedule = () => { if (!queued) { queued = true; requestAnimationFrame(draw); } };
 
     colors(); layout(); draw();
     svg.classList.add('is-ready');
     addEventListener('resize', () => { layout(); schedule(); });
+    // The page grows as fonts and images arrive, which moves the entries the stages are measured from.
+    new ResizeObserver(() => { measure(); schedule(); }).observe(document.body);
     addEventListener('scroll', schedule, { passive: true });
     new MutationObserver(() => { colors(); schedule(); }).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
     if (live) addEventListener('pointermove', (e) => { aimX = e.clientX / W - .5; aimY = e.clientY / H - .5; schedule(); }, { passive: true });
