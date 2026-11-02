@@ -11,14 +11,16 @@ const { lang } = Astro.props;
 const t = useTranslations(lang);
 const isKo = lang === 'ko';
 // Sections come from labSections in lib/site.ts: the projects with a capture of the forecast page, the project
-// stories with charts pinned from their parts, the blog with its newest posts, and the portfolio with its figures.
+// stories with charts pinned from their parts, the news and the columns with their newest posts, and the portfolio with its figures.
 const blog = {
-  name: t('site.title'),
+  name: isKo ? '뉴스' : 'News',
   href: blogPath('/', lang),
   description: isKo
-    ? '내가 궁금해서 만든 블로그.'
-    : 'A blog I started because I was curious.',
+    ? '새로 나온 것과 바뀐 것을 찾아서 정리한 글.'
+    : 'What is new and what changed, looked up and written down.',
 };
+const portfolioSection = labSections.find((section) => section.id === 'portfolio')!;
+const columnSection = labSections.find((section) => section.id === 'column')!;
 const stories = (await getStories((entry) => entry.data.lang === lang)).sort((a, b) => a.data.part - b.data.part);
 // Parts grouped by project, in the projects list order; the pinned charts come from the weather project.
 const storyGroups = projects.map((project) => ({ project, parts: stories.filter((s) => s.data.project === project.id) })).filter((g) => g.parts.length);
@@ -99,10 +101,51 @@ const casesHref = casesPath(lang);
         ))}
       </div>
     </article>
-    <!-- 03: the YouTube Shorts channel, off-site, so it is not a lab section; it borrows the projects' face,
+    <article class="lab-entry" id="news" data-face="2">
+      <LabMark id="blog" class="lab-entry-num" />
+      <div class="lab-entry-copy">
+        <h3><a class="pen-under" href={blog.href}>{blog.name}</a></h3>
+        <p>{blog.description}</p>
+        <div class="lab-chips">
+          {(Object.keys(categories) as Category[]).map((key) => (
+            <a href={categoryPath(key, lang)}>{isKo ? categories[key].nameKo : categories[key].name}</a>
+          ))}
+        </div>
+        <!-- The Worker fills in the number of published news posts from D1. -->
+        <p class="lab-stat" data-dynamic-total-wrap hidden><strong data-dynamic-total></strong><span>{isKo ? '편의 글 · 한국어 / English' : 'posts · English / 한국어'}</span></p>
+        <a class="lab-cta" href={blog.href}>{isKo ? '뉴스 열기' : 'Open the news'}<span aria-hidden="true">→</span></a>
+      </div>
+      <!-- Filled by the Worker with the thumbnails of the three newest news posts; hidden when empty. -->
+      <div class="lab-thumbs" data-dynamic-thumbs="3" aria-label={isKo ? '최신 뉴스 썸네일' : 'Latest news thumbnails'}></div>
+      <!-- Filled by the Worker with the newest news posts from D1; hidden only when empty. -->
+      <section class="lab-latest" data-dynamic-latest hidden aria-labelledby="lab-latest-title">
+        <h4 class="lab-latest-title" id="lab-latest-title">{isKo ? '최신 뉴스' : 'Latest news'}</h4>
+        <ol class="latest-list" data-dynamic-latest-list data-limit="5"></ol>
+        <p class="lab-more"><a class="quiet-link" href={blog.href}>{isKo ? '뉴스 전체 보기 →' : 'See all news →'}</a></p>
+      </section>
+    </article>
+    <article class="lab-entry" id="column" data-face="2">
+      <LabMark id="column" class="lab-entry-num" />
+      <div class="lab-entry-copy">
+        <h3><a class="pen-under" href={labSectionPath(columnSection, lang)}>{isKo ? '칼럼' : 'Columns'}</a></h3>
+        <p>{isKo ? '한 가지 주제를 놓고 내 해석을 적은 글.' : 'One subject at a time, and how I read it.'}</p>
+        <!-- The Worker fills in the number of published columns from D1. -->
+        <p class="lab-stat" data-dynamic-total-wrap hidden><strong data-dynamic-total data-kind="column"></strong><span>{isKo ? '편의 칼럼 · 한국어 / English' : 'columns · English / 한국어'}</span></p>
+        <a class="lab-cta" href={labSectionPath(columnSection, lang)}>{isKo ? '칼럼 열기' : 'Open the columns'}<span aria-hidden="true">→</span></a>
+      </div>
+      <!-- Filled by the Worker with the thumbnails of the three newest columns; hidden when empty. -->
+      <div class="lab-thumbs" data-dynamic-thumbs="3" data-kind="column" aria-label={isKo ? '최신 칼럼 썸네일' : 'Latest column thumbnails'}></div>
+      <!-- Filled by the Worker with the newest columns from D1; hidden only when empty. -->
+      <section class="lab-latest" data-dynamic-latest data-kind="column" hidden aria-labelledby="lab-column-title">
+        <h4 class="lab-latest-title" id="lab-column-title">{isKo ? '최신 칼럼' : 'Latest columns'}</h4>
+        <ol class="latest-list" data-dynamic-latest-list data-kind="column" data-limit="5"></ol>
+        <p class="lab-more"><a class="quiet-link" href={labSectionPath(columnSection, lang)}>{isKo ? '칼럼 전체 보기 →' : 'See all columns →'}</a></p>
+      </section>
+    </article>
+    <!-- 05: the YouTube Shorts channel, off-site, so it is not a lab section; it borrows the projects' face,
          since every Short is about one of the projects. -->
     <article class="lab-entry" id="youtube" data-face="0">
-      <span class="lab-mark lab-entry-num">03<LabFace face={0} /></span>
+      <span class="lab-mark lab-entry-num">05<LabFace face={0} /></span>
       <div class="lab-entry-copy">
         <h3><a class="pen-under" href={youtubeChannel} rel="noopener">{isKo ? '유튜브 채널' : 'YouTube Channel'}</a></h3>
         <p>{isKo ? '직접 만든 프로젝트만 30초 쇼츠로 올리는 채널. 결과가 나오면 영상으로 먼저 보여 줌.' : 'A channel of 30-second Shorts, only about projects built here. New results show up there first.'}</p>
@@ -120,41 +163,18 @@ const casesHref = casesPath(lang);
         ))}
       </div>
     </article>
-    <article class="lab-entry" data-face="2">
-      <LabMark id="blog" class="lab-entry-num" />
-      <div class="lab-entry-copy">
-        <h3><a class="pen-under" href={blog.href}>{blog.name}</a></h3>
-        <p>{blog.description}</p>
-        <div class="lab-chips">
-          {(Object.keys(categories) as Category[]).map((key) => (
-            <a href={categoryPath(key, lang)}>{isKo ? categories[key].nameKo : categories[key].name}</a>
-          ))}
-        </div>
-        <!-- The Worker fills in the number of published posts from D1. -->
-        <p class="lab-stat" data-dynamic-total-wrap hidden><strong data-dynamic-total></strong><span>{isKo ? '편의 글 · 한국어 / English' : 'posts · English / 한국어'}</span></p>
-        <a class="lab-cta" href={blog.href}>{isKo ? '블로그 열기' : 'Open the blog'}<span aria-hidden="true">→</span></a>
-      </div>
-      <!-- Filled by the Worker with the thumbnails of the three newest posts; hidden when empty. -->
-      <div class="lab-thumbs" data-dynamic-thumbs="3" aria-label={isKo ? '블로그 최신 글 썸네일' : 'Latest blog post thumbnails'}></div>
-      <!-- Filled by the Worker with the newest blog posts from D1; hidden only when empty. -->
-      <section class="lab-latest" data-dynamic-latest hidden aria-labelledby="lab-latest-title">
-        <h4 class="lab-latest-title" id="lab-latest-title">{isKo ? '블로그 최신 글' : 'Latest from the blog'}</h4>
-        <ol class="latest-list" data-dynamic-latest-list data-limit="5"></ol>
-        <p class="lab-more"><a class="quiet-link" href={blog.href}>{isKo ? '블로그에서 전체 보기 →' : 'See all posts on the blog →'}</a></p>
-      </section>
-    </article>
     <article class="lab-entry" id="portfolio" data-face="3">
       <LabMark id="portfolio" class="lab-entry-num" />
       <div class="lab-entry-copy">
-        <h3><a class="pen-under" href={labSectionPath(labSections[3], lang)}>{isKo ? '포트폴리오' : 'Portfolio'}</a></h3>
+        <h3><a class="pen-under" href={labSectionPath(portfolioSection, lang)}>{isKo ? '포트폴리오' : 'Portfolio'}</a></h3>
         <p>{isKo ? '2020년부터 해 온 데이터·AI 프로젝트, 논문, 수상, 강의.' : 'Data and AI projects, papers, awards and teaching since 2020.'}</p>
         <dl class="lab-figures">
           {cv.stats.filter((s) => s.id !== 'papers').map((s) => <div><dt>{s.n}<small>{s.s}</small></dt><dd>{isKo ? s.ko : s.en}</dd></div>)}
         </dl>
-        <a class="lab-cta" href={labSectionPath(labSections[3], lang)}>{isKo ? '포트폴리오 보기' : 'Open the portfolio'}<span aria-hidden="true">→</span></a>
+        <a class="lab-cta" href={labSectionPath(portfolioSection, lang)}>{isKo ? '포트폴리오 보기' : 'Open the portfolio'}<span aria-hidden="true">→</span></a>
       </div>
       <!-- The top awards and the research count, as an index card. -->
-      <a class="taped lab-card" href={labSectionPath(labSections[3], lang)}>
+      <a class="taped lab-card" href={labSectionPath(portfolioSection, lang)}>
         <span class="lab-card-kicker">{isKo ? '하이라이트' : 'Highlights'}</span>
         <ol>
           {cv.awards.slice(0, 3).map((a) => <li class={a.top ? 'is-top' : undefined}><b>{a.rank}</b><span>{isKo ? a.ko : a.en}<small>{a.note}</small></span></li>)}
@@ -162,10 +182,10 @@ const casesHref = casesPath(lang);
         </ol>
       </a>
     </article>
-    <!-- 06: the portfolio's case studies, numbered after the portfolio. It belongs to the portfolio, so it
+    <!-- 07: the portfolio's case studies, numbered after the portfolio. It belongs to the portfolio, so it
          keeps the portfolio's tetrahedron face. -->
     <article class="lab-entry" id="case-studies" data-face="3">
-      <span class="lab-mark lab-entry-num">06<LabFace face={3} /></span>
+      <span class="lab-mark lab-entry-num">07<LabFace face={3} /></span>
       <div class="lab-entry-copy">
         <h3><a class="pen-under" href={casesHref}>{cv.casesTitle}</a></h3>
         <p>{isKo ? '현장 데이터를 담당자와 농가가 매일 쓰는 서비스로 만든 프로젝트를, 부딪힌 문제와 푼 방법 순서로 정리함.' : 'Projects that turned field data into services people use every day, told through the problems they hit and how they were solved.'}</p>

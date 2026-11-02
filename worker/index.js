@@ -37,7 +37,7 @@ const youtubeEmbeds = (html) => {
   return found ? out + youtubeScript : out;
 };
 const urlFor = (post) => `${origin}${pathFor(post)}`;
-const rowToSummary = (post) => ({ lang: post.lang, slug: post.slug, category: normalizeCategory(post.category), title: post.title, description: post.description, imageUrl: post.image_url, imageAlt: post.image_alt, tags: JSON.parse(post.tags), publishedAt: post.published_at, updatedAt: post.updated_at, url: pathFor(post) });
+const rowToSummary = (post) => ({ lang: post.lang, slug: post.slug, kind: post.kind || 'news', category: normalizeCategory(post.category), title: post.title, description: post.description, imageUrl: post.image_url, imageAlt: post.image_alt, tags: JSON.parse(post.tags), publishedAt: post.published_at, updatedAt: post.updated_at, url: pathFor(post) });
 
 function listingCard(post, lang, variant = '') {
   const category = normalizeCategory(post.category);
@@ -59,16 +59,23 @@ async function listingPage(request, env, lang) {
   if (request.method !== 'GET' || !asset.ok || !env.DB) return asset;
   let results;
   try {
-    ({ results } = await env.DB.prepare('SELECT lang, slug, category, title, description, image_url, image_alt, published_at, COUNT(*) OVER () AS total FROM posts WHERE lang = ? ORDER BY published_at DESC LIMIT 100').bind(lang).all());
+    ({ results } = await env.DB.prepare('SELECT lang, slug, kind, category, title, description, image_url, image_alt, published_at FROM posts WHERE lang = ? ORDER BY published_at DESC LIMIT 200').bind(lang).all());
   } catch (error) {
     console.error('Could not load dynamic listings', error);
     return asset;
   }
   if (!results.length) return asset;
-  const byCategory = new Map([...categories].map((category) => [category, results.filter((post) => normalizeCategory(post.category) === category)]));
-  // Latest means publication order, including posts already featured in the lead.
-  const latest = () => results.slice(0, 10);
+  // News and columns are listed apart; a slot that wants columns says data-kind="column".
+  const columns = results.filter((post) => post.kind === 'column');
+  const news = results.filter((post) => post.kind !== 'column');
+  const pool = (element) => element.getAttribute('data-kind') === 'column' ? columns : news;
+  const byCategory = new Map([...categories].map((category) => [category, news.filter((post) => normalizeCategory(post.category) === category)]));
   const rewritten = new HTMLRewriter()
+    .on('[data-dynamic-column]', {
+      element(element) {
+        element.setInnerContent(columns.map((post) => listingCard(post, lang)).join(''), { html: true });
+      },
+    })
     .on('[data-dynamic-category]', {
       element(element) {
         const posts = byCategory.get(element.getAttribute('data-dynamic-category')) || [];
@@ -88,24 +95,25 @@ async function listingPage(request, env, lang) {
     })
     .on('[data-dynamic-latest]', {
       element(element) {
-        if (latest().length) element.removeAttribute('hidden');
+        if (pool(element).length) element.removeAttribute('hidden');
       },
     })
     .on('[data-dynamic-latest-list]', {
       element(element) {
+        // Latest means publication order, including posts already featured in the lead.
         const limit = Number(element.getAttribute('data-limit')) || 10;
-        element.setInnerContent(latest().slice(0, limit).map((post) => latestRow(post, lang)).join(''), { html: true });
+        element.setInnerContent(pool(element).slice(0, limit).map((post) => latestRow(post, lang)).join(''), { html: true });
       },
     })
     .on('[data-dynamic-thumbs]', {
       element(element) {
-        const posts = results.filter((post) => post.image_url).slice(0, Number(element.getAttribute('data-dynamic-thumbs')) || 3);
+        const posts = pool(element).filter((post) => post.image_url).slice(0, Number(element.getAttribute('data-dynamic-thumbs')) || 3);
         element.setInnerContent(posts.map((post, i) => `<a class="taped" href="${escape(pathFor(post))}" title="${escape(post.title)}"><img src="${escape(post.image_url)}" alt="${escape(post.image_alt || post.title)}" loading="${i ? 'lazy' : 'eager'}" decoding="async" /></a>`).join(''), { html: true });
       },
     })
     .on('[data-dynamic-total]', {
       element(element) {
-        element.setInnerContent(String(results[0].total));
+        element.setInnerContent(String(pool(element).length));
       },
     })
     .on('[data-dynamic-total-wrap]', {
@@ -150,6 +158,7 @@ function ensureSchema(db) {
       tags TEXT NOT NULL DEFAULT '[]',
       published_at TEXT NOT NULL,
       updated_at TEXT NOT NULL,
+      kind TEXT NOT NULL DEFAULT 'news',
       PRIMARY KEY (lang, slug)
     )`).run().then(() => db.prepare('CREATE INDEX IF NOT EXISTS posts_published ON posts(lang, published_at DESC)').run())
       .then(() => db.batch(commentSchema.map((sql) => db.prepare(sql)))).catch((error) => {
@@ -365,6 +374,7 @@ function parsePost(payload) {
   if (payload.imageUrl && (typeof payload.imageUrl !== 'string' || payload.imageUrl.length > 1000 || !(/^\/(?:images|media)\/[a-zA-Z0-9/_-]+\.(?:png|jpe?g|webp|gif|avif)$/.test(payload.imageUrl) || /^https:\/\/[^\s]+$/.test(payload.imageUrl)))) return null;
   if (payload.imageAlt && !validText(payload.imageAlt, 300)) return null;
   if (payload.tags && (!Array.isArray(payload.tags) || payload.tags.length > 15 || payload.tags.some((tag) => !validText(tag, 40)))) return null;
+  if (payload.kind && !['news', 'column'].includes(payload.kind)) return null;
   const publishedAt = payload.publishedAt || new Date().toISOString();
   if (!Number.isFinite(Date.parse(publishedAt)) || new Date(publishedAt).toISOString() !== publishedAt) return null;
   return { ...payload, publishedAt, updatedAt: new Date().toISOString(), tags: payload.tags || [] };
@@ -679,10 +689,11 @@ async function api(request, env, url, ctx) {
     if (current.some(Boolean) && request.headers.get('If-Match') !== 'update') return json({ error: 'Post exists. Set If-Match: update to replace it.' }, 409);
     const updatedAt = new Date().toISOString();
     posts.forEach((post, i) => { if (current[i]) post.publishedAt = current[i].published_at; post.updatedAt = updatedAt; });
-    await env.DB.batch(posts.map((post) => env.DB.prepare(`INSERT INTO posts (lang, slug, category, title, description, body, image_url, image_alt, tags, published_at, updated_at)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-      ON CONFLICT(lang, slug) DO UPDATE SET category=excluded.category, title=excluded.title, description=excluded.description, body=excluded.body, image_url=excluded.image_url, image_alt=excluded.image_alt, tags=excluded.tags, updated_at=excluded.updated_at`)
-      .bind(post.lang, post.slug, post.category, post.title, post.description, post.body, post.imageUrl || null, post.imageAlt || null, JSON.stringify(post.tags), post.publishedAt, post.updatedAt)));
+    // A payload without `kind` keeps the article's current kind, so re-publishing a column never turns it back into news.
+    await env.DB.batch(posts.map((post) => env.DB.prepare(`INSERT INTO posts (lang, slug, category, title, description, body, image_url, image_alt, tags, published_at, updated_at, kind)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, COALESCE(?, 'news'))
+      ON CONFLICT(lang, slug) DO UPDATE SET category=excluded.category, title=excluded.title, description=excluded.description, body=excluded.body, image_url=excluded.image_url, image_alt=excluded.image_alt, tags=excluded.tags, updated_at=excluded.updated_at, kind=COALESCE(?, kind)`)
+      .bind(post.lang, post.slug, post.category, post.title, post.description, post.body, post.imageUrl || null, post.imageAlt || null, JSON.stringify(post.tags), post.publishedAt, post.updatedAt, post.kind || null, post.kind || null)));
     ctx?.waitUntil(submitIndexNow(posts.map(urlFor)));
     ctx?.waitUntil(env.DB.prepare('DELETE FROM previews WHERE slug = ?').bind(posts[0].slug).run());
     const written = posts.map((post) => ({ lang: post.lang, url: pathFor(post), publishedAt: post.publishedAt, updatedAt: post.updatedAt }));
@@ -847,6 +858,11 @@ async function article(post, env, request, token) {
   const labHome = lang === 'ko' ? '/' : '/en/';
   const home = blogHome(lang);
   const about = `${home}about/`;
+  // A column's trail goes through the columns list; news goes through the news home and its topic.
+  const isColumn = post.kind === 'column';
+  const crumbs = isColumn
+    ? [[lang === 'ko' ? '칼럼' : 'Columns', `${labHome}column/`]]
+    : [[lang === 'ko' ? '뉴스' : 'News', home], [categoryName, `${home}${category}/`]];
   const tags = JSON.parse(post.tags);
   // Google prefers several representative images: the thumbnail first, then the body figures with known sizes.
   const figures = [...new Set(bodyImages)].filter((src) => src.startsWith('/') && dimensions[src])
@@ -866,9 +882,8 @@ async function article(post, env, request, token) {
       '@context': 'https://schema.org', '@type': 'BreadcrumbList',
       itemListElement: [
         { '@type': 'ListItem', position: 1, name: 'HSL Lab', item: `${origin}${labHome}` },
-        { '@type': 'ListItem', position: 2, name: lang === 'ko' ? '블로그' : 'Blog', item: `${origin}${home}` },
-        { '@type': 'ListItem', position: 3, name: categoryName, item: `${origin}${home}${category}/` },
-        { '@type': 'ListItem', position: 4, name: post.title, item: canonical },
+        ...crumbs.map(([name, path], i) => ({ '@type': 'ListItem', position: i + 2, name, item: `${origin}${path}` })),
+        { '@type': 'ListItem', position: crumbs.length + 2, name: post.title, item: canonical },
       ],
     },
   ];
@@ -880,7 +895,7 @@ async function article(post, env, request, token) {
     return ad && body.indexOf('<h2') >= 0 && second > 0 ? `${body.slice(0, second)}${ad}${body.slice(second)}` : body;
   };
   const head = `${ads ? adHead(env) : ''}<meta property="article:published_time" content="${escape(post.published_at)}"><meta property="article:modified_time" content="${escape(post.updated_at)}"><script type="application/ld+json">${JSON.stringify(jsonLd).replace(/</g, '\\u003c')}</script>`;
-  const html = `<article><header class="article-header article-shell">${token ? `<p class="preview-banner" role="note"><strong>${lang === 'ko' ? '미리보기' : 'Preview'}</strong> — ${lang === 'ko' ? '아직 발행 전인 글이며 목록·검색에 나오지 않음' : 'not published; hidden from listings and search'}</p>` : ''}<nav class="breadcrumbs" aria-label="Breadcrumb"><a href="${home}">${lang === 'ko' ? '블로그' : 'Blog'}</a><span>/</span><a href="${home}${escape(category)}/">${escape(categoryName)}</a><span>/</span><span aria-current="page">${lang === 'ko' ? '글' : 'Article'}</span></nav><h1>${escape(post.title)}</h1><p class="article-dek">${escape(post.description)}</p><div class="article-meta"><span>${lang === 'ko' ? '작성자' : 'By'}: <strong>HSL</strong></span><span>${lang === 'ko' ? '발행일' : 'Published'}: <time datetime="${escape(post.published_at)}">${escape(date)}</time></span><span>${lang === 'ko' ? '수정일' : 'Updated'}: <time datetime="${escape(post.updated_at)}">${escape(updatedDate)}</time></span></div></header>${post.image_url ? `<div class="article-shell article-figure"><div class="taped"><img class="article-visual" src="${escape(post.image_url)}" alt="${escape(imageAlt)}"${sizeAttributes(dimensions, post.image_url)} loading="eager" fetchpriority="high" decoding="async" /></div></div>` : ''}<div class="article-body article-shell">${withArticleAd(youtubeEmbeds(currentLinks(micromark(post.body, { extensions: [gfm()], htmlExtensions: [gfmHtml()] })).replace(/<img src="([^"]+)"/g, (tag, src) => `<img src="${src}"${sizeAttributes(dimensions, src.replace(/&amp;/g, '&'))} loading="lazy" decoding="async"`)))}</div>${ad ? `<div class="article-shell">${ad}</div>` : ''}<div class="article-end article-shell"><div class="tag-list">${tags.map((tag) => `<span>#${escape(tag)}</span>`).join('')}</div><p class="author-note">${lang === 'ko' ? '글: <strong>HSL</strong> · 사실 주장엔 1차 출처 링크를 닮 · 안 써 본 제품을 써 본 척하지 않음 · <a href="' + about + '">검증 방식 보기</a>' : 'By <strong>HSL</strong> · Factual claims link to their primary sources · Nothing is written up as hands-on testing unless it was · <a href="' + about + '">How posts are checked</a>'}</p></div></article>${token ? '' : `<section class="comments article-shell" id="comments" data-comments data-lang="${lang}" data-page="${escape(pathFor(post))}"></section><script src="/comments.js" defer></script>`}`;
+  const html = `<article><header class="article-header article-shell">${token ? `<p class="preview-banner" role="note"><strong>${lang === 'ko' ? '미리보기' : 'Preview'}</strong> — ${lang === 'ko' ? '아직 발행 전인 글이며 목록·검색에 나오지 않음' : 'not published; hidden from listings and search'}</p>` : ''}<nav class="breadcrumbs" aria-label="Breadcrumb">${crumbs.map(([name, path]) => `<a href="${escape(path)}">${escape(name)}</a><span>/</span>`).join('')}<span aria-current="page">${lang === 'ko' ? '글' : 'Article'}</span></nav><h1>${escape(post.title)}</h1><p class="article-dek">${escape(post.description)}</p><div class="article-meta"><span>${lang === 'ko' ? '작성자' : 'By'}: <strong>HSL</strong></span><span>${lang === 'ko' ? '발행일' : 'Published'}: <time datetime="${escape(post.published_at)}">${escape(date)}</time></span><span>${lang === 'ko' ? '수정일' : 'Updated'}: <time datetime="${escape(post.updated_at)}">${escape(updatedDate)}</time></span></div></header>${post.image_url ? `<div class="article-shell article-figure"><div class="taped"><img class="article-visual" src="${escape(post.image_url)}" alt="${escape(imageAlt)}"${sizeAttributes(dimensions, post.image_url)} loading="eager" fetchpriority="high" decoding="async" /></div></div>` : ''}<div class="article-body article-shell">${withArticleAd(youtubeEmbeds(currentLinks(micromark(post.body, { extensions: [gfm()], htmlExtensions: [gfmHtml()] })).replace(/<img src="([^"]+)"/g, (tag, src) => `<img src="${src}"${sizeAttributes(dimensions, src.replace(/&amp;/g, '&'))} loading="lazy" decoding="async"`)))}</div>${ad ? `<div class="article-shell">${ad}</div>` : ''}<div class="article-end article-shell"><div class="tag-list">${tags.map((tag) => `<span>#${escape(tag)}</span>`).join('')}</div><p class="author-note">${lang === 'ko' ? '글: <strong>HSL</strong> · 사실 주장엔 1차 출처 링크를 닮 · 안 써 본 제품을 써 본 척하지 않음 · <a href="' + about + '">검증 방식 보기</a>' : 'By <strong>HSL</strong> · Factual claims link to their primary sources · Nothing is written up as hands-on testing unless it was · <a href="' + about + '">How posts are checked</a>'}</p></div></article>${token ? '' : `<section class="comments article-shell" id="comments" data-comments data-lang="${lang}" data-page="${escape(pathFor(post))}"></section><script src="/comments.js" defer></script>`}`;
   const shell = await env.ASSETS.fetch(new Request(new URL(about, request.url)));
   if (!shell.ok) return new Response('Template unavailable', { status: 503 });
   const alternateLang = lang === 'ko' ? 'en' : 'ko';
@@ -1104,8 +1119,8 @@ async function handle(request, env, ctx) {
       if (oldStory && oldStory[2] !== 'case-studies') return Response.redirect(`${origin}/${oldStory[1] || ''}stories/${oldStory[2]}/${url.search}`, 301);
       const moved = movedBlogPath(url.pathname);
       if (moved) return Response.redirect(`${origin}${moved}${url.search}`, 301);
-      // The lab home and the blog's home and category pages list the newest D1 posts.
-      const listingRoute = url.pathname.match(/^\/(en\/)?(?:blog\/(?:(ai|mobility|it-devices)\/)?)?$/);
+      // The lab home, the news home and category pages, and the columns page list the newest D1 posts.
+      const listingRoute = url.pathname.match(/^\/(en\/)?(?:blog\/(?:(ai|mobility|it-devices)\/)?|column\/)?$/);
       if (listingRoute) return listingPage(request, env, listingRoute[1] ? 'en' : 'ko');
       const preview = url.pathname.match(/^\/(en\/)?blog\/preview\/([a-f0-9]{32})\/$/);
       if (preview) {

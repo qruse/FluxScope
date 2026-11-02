@@ -1,0 +1,11 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import LabMark from '../../components/LabMark.astro';
+
+const description = '한 가지 주제를 놓고 내 해석을 적은 글. 사실과 내 의견을 나눠서 씀.';
+---
+<BaseLayout lang="ko" title="칼럼" description={description}>
+  <header class="page-top"><div class="shell"><div class="section-kicker"><LabMark id="column" />Columns</div><h1>칼럼<span class="brand-dot" aria-hidden="true"></span></h1><p>{description}</p></div></header>
+  <!-- Filled by the Worker with every column from D1. -->
+  <section class="listing"><div class="shell"><div class="post-grid" data-dynamic-column></div></div></section>
+</BaseLayout>

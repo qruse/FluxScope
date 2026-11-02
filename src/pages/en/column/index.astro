@@ -1,0 +1,11 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import LabMark from '../../../components/LabMark.astro';
+
+const description = 'One subject at a time, and how I read it, with the facts and my opinion kept apart.';
+---
+<BaseLayout lang="en" title="Columns" description={description}>
+  <header class="page-top"><div class="shell"><div class="section-kicker"><LabMark id="column" />Columns</div><h1>Columns<span class="brand-dot" aria-hidden="true"></span></h1><p>{description}</p></div></header>
+  <!-- Filled by the Worker with every column from D1. -->
+  <section class="listing"><div class="shell"><div class="post-grid" data-dynamic-column></div></div></section>
+</BaseLayout>

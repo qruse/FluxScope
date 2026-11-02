@@ -187,7 +187,7 @@ const searchUrl = blogPath('/search/', currentLang);
           <a class="brand" href={labUrl} aria-label={`${t('lab.title')} home`}>
             <span>hsl</span><span class="brand-mark" aria-hidden="true"></span>
           </a>
-          {inBlog && <a class="brand-section" href={blogUrl} aria-label={`${t('site.title')} home`}><LabMark id="blog" />{currentLang === 'en' ? 'blog' : '블로그'}</a>}
+          {inBlog && <a class="brand-section" href={blogUrl} aria-label={`${t('site.title')} home`}><LabMark id="blog" />{currentLang === 'en' ? 'news' : '뉴스'}</a>}
         </div>
         <nav class="main-nav" aria-label="Main navigation">
           {inBlog ? (

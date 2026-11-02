@@ -13,7 +13,8 @@ export const lab = {
 export const labSections = [
   { id: 'projects', name: 'Projects', nameKo: '프로젝트', path: '/projects/' },
   { id: 'stories', name: 'Project Stories', nameKo: '프로젝트 스토리', path: '/stories/' },
-  { id: 'blog', name: 'Blog', nameKo: '블로그', path: '/blog/' },
+  { id: 'blog', name: 'News', nameKo: '뉴스', path: '/blog/' },
+  { id: 'column', name: 'Columns', nameKo: '칼럼', path: '/column/' },
   { id: 'portfolio', name: 'Portfolio', nameKo: '포트폴리오', path: '/portfolio/' },
 ] as const;
 
@@ -80,12 +81,14 @@ export function labSectionPath(section: LabSection, lang: Lang = defaultLang): s
   return withBase(`${root}${section.path}`);
 }
 
-// The lab home lists the YouTube channel as 03, between the stories and the blog (user instruction, 2026-10-29),
-// so the blog and the portfolio number one higher than their place in labSections.
+// The lab home lists the YouTube channel as 05, between the columns and the portfolio (user instruction, 2026-11-02),
+// so the portfolio numbers one higher than its place in labSections.
 export const labSectionNumber = (id: LabSection['id']) => {
   const index = labSections.findIndex((section) => section.id === id);
-  return String(index + (index >= 2 ? 2 : 1)).padStart(2, '0');
+  return String(index + (id === 'portfolio' ? 2 : 1)).padStart(2, '0');
 };
+// The tetrahedron has four faces and there are five sections: news and columns share one.
+export const labSectionFace = (id: LabSection['id']) => ({ projects: 0, stories: 1, blog: 2, column: 2, portfolio: 3 })[id];
 export const youtubeChannel = 'https://www.youtube.com/@hslab-b5b';
 
 export const site = {
