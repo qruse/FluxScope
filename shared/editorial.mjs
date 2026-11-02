@@ -27,20 +27,22 @@ export function validateEditorial(post, { existingPublishedAt, legacyImageFixtur
   }).join('\n');
   add(!fence, 'close the fenced code block');
   const headings = [...prose.matchAll(/^## (.+)$/gm)];
-  const summary = post.lang === 'ko' ? '3줄 요약' : '3-Line TL;DR';
+  // A column (AGENTS §5.1) opens with a one-line take, may drop Q&A and has no community section.
+  const column = post.kind === 'column';
+  const summary = column ? (post.lang === 'ko' ? '한줄 평' : 'One-Line Take') : post.lang === 'ko' ? '3줄 요약' : '3-Line TL;DR';
   const community = post.lang === 'ko' ? '커뮤니티 반응' : 'Community Reactions';
   const qa = post.lang === 'ko' ? 'Q&A 또 궁금한 것은?' : 'Q&A (Field Notes)';
   add(headings[0]?.[1] === summary && prose.trimStart().startsWith(`## ${summary}\n`), `start the body with ## ${summary}`);
   add(headings.filter(h => h[1] === summary).length === 1, 'include exactly one summary heading');
-  // A column (AGENTS §5.1) may drop Q&A and weave community reactions into its argument.
-  const column = post.kind === 'column';
   const hasQa = headings.some(h => h[1] === qa);
   if (!column || hasQa) add(headings.at(-1)?.[1] === qa && headings.filter(h => h[1] === qa).length === 1, `the final H2 must be ## ${qa}`);
   const firstSection = prose.slice((headings[0]?.index ?? 0) + (headings[0]?.[0].length ?? 0), headings[1]?.index ?? prose.length);
-  add((firstSection.match(/^[-*] /gm) || []).length === 3 && !/^[ \t]+[-*] /m.test(firstSection), 'summary must contain exactly three top-level bullets and no nested bullets');
+  if (column) add(firstSection.trim().split(/\r?\n/).length === 1 && firstSection.trim().length > 0, 'a column opens with exactly one line under its take heading');
+  else add((firstSection.match(/^[-*] /gm) || []).length === 3 && !/^[ \t]+[-*] /m.test(firstSection), 'summary must contain exactly three top-level bullets and no nested bullets');
   const ci = headings.findIndex(h => h[1] === community);
-  if (ci >= 0) {
-    add((column || ci === headings.length - 2) && headings.filter(h => h[1] === community).length === 1, 'community must occur once, immediately before Q&A');
+  if (column) add(ci < 0, 'a column has no community section');
+  else if (ci >= 0) {
+    add(ci === headings.length - 2 && headings.filter(h => h[1] === community).length === 1, 'community must occur once, immediately before Q&A');
     const section = prose.slice(headings[ci].index + headings[ci][0].length, headings[ci + 1]?.index ?? prose.length);
     const reactions = section.split(/\r?\n/).filter(line => /^[-*] /.test(line));
     add(reactions.length >= 2 && reactions.length <= 4 && reactions.every(line => /\[[^\]]+\]\(https:\/\/[^\s)]+\)/.test(line)), 'community requires 2–4 reaction bullets, each with an original-source HTTPS link');

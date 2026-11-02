@@ -20,15 +20,17 @@ test('Q&A must remain last and answers cannot be missing', () => {
  assert.ok(changed(p => p.body += '\n## Extra\n').some(e => e.includes('final H2')));
  assert.ok(changed(p => p.body = p.body.replace(/^  - .+$/gm, '')).some(e => e.includes('nested answer')));
 });
-test('only a column may drop Q&A or move its community section', () => {
+test('a column opens with one line, has no community section and may drop Q&A', () => {
  const noQa = (p) => { p.body = `${p.body.slice(0, p.body.indexOf('## Q&A')).trimEnd()}\n`; };
- const earlyCommunity = (p) => { p.body += '\n## 마지막 논점\n\n- 끝\n'; noQa(p); };
+ const noCommunity = (p) => { p.body = p.body.replace(/## 커뮤니티 반응[\s\S]*?(?=## Q&A)/, ''); };
+ const asColumn = (p) => { p.kind = 'column'; p.body = p.body.replace(/## 3줄 요약[\s\S]*?(?=\n## )/, '## 한줄 평\n\n내 한 줄 평\n'); noCommunity(p); };
  assert.ok(changed(noQa).some(e => e.includes('final H2')));
- assert.deepEqual(changed(p => { noQa(p); p.kind = 'column'; }), []);
- assert.deepEqual(changed(p => { p.kind = 'column'; }), []);
- assert.ok(changed(p => { p.kind = 'column'; p.body = p.body.replace(/^  - .+$/gm, ''); }).some(e => e.includes('nested answer')));
- assert.deepEqual(changed(p => { p.kind = 'column'; p.body = p.body.replace('## Q&A', '## 마지막 논점\n\n- 끝\n\n## Q&A'); noQa(p); }), []);
- assert.ok(changed(earlyCommunity).length > 0);
+ assert.deepEqual(changed(asColumn), []);
+ assert.deepEqual(changed(p => { asColumn(p); noQa(p); }), []);
+ assert.ok(changed(p => { asColumn(p); p.body = p.body.replace(/^  - .+$/gm, ''); }).some(e => e.includes('nested answer')));
+ assert.ok(changed(p => { asColumn(p); p.body = p.body.replace('내 한 줄 평', '첫 줄\n둘째 줄'); }).some(e => e.includes('one line')));
+ assert.ok(changed(p => { p.kind = 'column'; }).some(e => e.includes('한줄 평')));
+ assert.ok(changed(p => { asColumn(p); p.body = p.body.replace('## Q&A', '## 커뮤니티 반응\n\n- 반응 ([Hacker News](https://news.ycombinator.com/item?id=1))\n\n## Q&A'); }).some(e => e.includes('community')));
 });
 test('fenced sample headings and bullets are ignored', () => assert.deepEqual(changed(p => p.body = p.body.replace('## 커뮤니티 반응', '```text\n## Fake\n- Example.\n```\n\n## 커뮤니티 반응')), []));
 test('periods fail in prose, decimals do not', () => assert.ok(changed(p => p.body = p.body + '\n- Invalid trailing period.\n').some(e => e.includes('period'))));
