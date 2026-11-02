@@ -142,6 +142,16 @@ Section headings (H2):
    - Skip setup trivia the reader does not need to decide, such as why a particular CLI flag or option value is passed (e.g. "why `--dangerously-skip-permissions` and `--print-timeout 3300s`?"); the same applies to body bullets (user instruction, 2026-10-20)
 5. End after the final answer. No trailing separator, review-date footer, generic disclaimer, or extra conclusion
 
+### 5.1 Columns (`kind: "column"`)
+
+A column argues one claim of the user's; a news article informs. Every other section (evidence, voice, images, titles, publication) applies unchanged, and only this shape differs (user instruction, 2026-11-02). Set `kind: "column"` in both payloads; the validator relaxes only for that value.
+
+1. **Start from the user's claim.** The spine is the user's own one-line claim from a message they actually sent, recorded with its date in the review (section 6). Without one the article stays news; Claude does not supply the opinion. State the claim near the top, then let every section support, test or limit it. Facts that do neither go
+2. **Keep opinion visible and checkable.** Mark the user's opinion `(글쓴이 의견)` / `(author's view)`. Include at least one check a reader can look up later: a dated or observable event that would show the claim holding or failing. Attribute a forecast to the user only if the user made it; otherwise phrase it as a condition (`이 그림이 맞다면` / `if this picture is right`)
+3. **Include at least one real counterargument.** Use the strongest objection found in verified sources and state it fairly under a heading of its own, then say what is left of the claim. Do not invent a weak objection to knock down, and do not rewrite the user's opinion to escape it; show the limit beside it
+4. **A table or decision procedure is optional.** Use one only when it helps the argument
+5. **Q&A and a community section are optional.** Keep `## 3줄 요약` / `## 3-Line TL;DR` as the first section (claim, strongest evidence or objection, what follows). Reactions may be woven into the section they test, each still linked to its opened source with Reddit or Hacker News represented; a `## 커뮤니티 반응` section, when used, may sit anywhere. End on the point of the argument, with no added conclusion section
+
 ## 6. Experience must remain honest
 
 - Reuse an already supplied relevant experience/opinion; do not ask for the same comment again

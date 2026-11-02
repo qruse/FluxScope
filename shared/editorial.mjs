@@ -32,12 +32,15 @@ export function validateEditorial(post, { existingPublishedAt, legacyImageFixtur
   const qa = post.lang === 'ko' ? 'Q&A 또 궁금한 것은?' : 'Q&A (Field Notes)';
   add(headings[0]?.[1] === summary && prose.trimStart().startsWith(`## ${summary}\n`), `start the body with ## ${summary}`);
   add(headings.filter(h => h[1] === summary).length === 1, 'include exactly one summary heading');
-  add(headings.at(-1)?.[1] === qa && headings.filter(h => h[1] === qa).length === 1, `the final H2 must be ## ${qa}`);
+  // A column (AGENTS §5.1) may drop Q&A and weave community reactions into its argument.
+  const column = post.kind === 'column';
+  const hasQa = headings.some(h => h[1] === qa);
+  if (!column || hasQa) add(headings.at(-1)?.[1] === qa && headings.filter(h => h[1] === qa).length === 1, `the final H2 must be ## ${qa}`);
   const firstSection = prose.slice((headings[0]?.index ?? 0) + (headings[0]?.[0].length ?? 0), headings[1]?.index ?? prose.length);
   add((firstSection.match(/^[-*] /gm) || []).length === 3 && !/^[ \t]+[-*] /m.test(firstSection), 'summary must contain exactly three top-level bullets and no nested bullets');
   const ci = headings.findIndex(h => h[1] === community);
   if (ci >= 0) {
-    add(ci === headings.length - 2 && headings.filter(h => h[1] === community).length === 1, 'community must occur once, immediately before Q&A');
+    add((column || ci === headings.length - 2) && headings.filter(h => h[1] === community).length === 1, 'community must occur once, immediately before Q&A');
     const section = prose.slice(headings[ci].index + headings[ci][0].length, headings[ci + 1]?.index ?? prose.length);
     const reactions = section.split(/\r?\n/).filter(line => /^[-*] /.test(line));
     add(reactions.length >= 2 && reactions.length <= 4 && reactions.every(line => /\[[^\]]+\]\(https:\/\/[^\s)]+\)/.test(line)), 'community requires 2–4 reaction bullets, each with an original-source HTTPS link');
@@ -46,7 +49,7 @@ export function validateEditorial(post, { existingPublishedAt, legacyImageFixtur
   const qi = headings.find(h => h[1] === qa);
   const qbody = qi ? prose.slice(qi.index + qi[0].length) : '';
   const questions = qbody.split(/(?=^[-*] \*\*Q[.:])/m).filter(s => /^[-*] \*\*Q[.:]/.test(s));
-  add(questions.length >= 3 && questions.length <= 5 && questions.every(q => /^[ \t]{2,}[-*] \S/m.test(q)), 'Q&A requires 3–5 bold Q. / Q: bullets, each with a nested answer');
+  if (!column || hasQa) add(questions.length >= 3 && questions.length <= 5 && questions.every(q => /^[ \t]{2,}[-*] \S/m.test(q)), 'Q&A requires 3–5 bold Q. / Q: bullets, each with a nested answer');
   add(!/^\s*[-*] .+\.(?:\*\*)?\s*$/m.test(prose), 'bullet lines must not end with a period');
   add(!/(?:^|\n)\s*(?:---|\*\*\*|___)\s*$/.test(prose), 'do not end with a horizontal rule');
   const bodyImages = [...prose.matchAll(/!\[([^\]]*)\]\(([^\s)]+)\)/g)];

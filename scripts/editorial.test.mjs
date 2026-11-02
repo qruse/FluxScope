@@ -20,6 +20,16 @@ test('Q&A must remain last and answers cannot be missing', () => {
  assert.ok(changed(p => p.body += '\n## Extra\n').some(e => e.includes('final H2')));
  assert.ok(changed(p => p.body = p.body.replace(/^  - .+$/gm, '')).some(e => e.includes('nested answer')));
 });
+test('only a column may drop Q&A or move its community section', () => {
+ const noQa = (p) => { p.body = `${p.body.slice(0, p.body.indexOf('## Q&A')).trimEnd()}\n`; };
+ const earlyCommunity = (p) => { p.body += '\n## 마지막 논점\n\n- 끝\n'; noQa(p); };
+ assert.ok(changed(noQa).some(e => e.includes('final H2')));
+ assert.deepEqual(changed(p => { noQa(p); p.kind = 'column'; }), []);
+ assert.deepEqual(changed(p => { p.kind = 'column'; }), []);
+ assert.ok(changed(p => { p.kind = 'column'; p.body = p.body.replace(/^  - .+$/gm, ''); }).some(e => e.includes('nested answer')));
+ assert.deepEqual(changed(p => { p.kind = 'column'; p.body = p.body.replace('## Q&A', '## 마지막 논점\n\n- 끝\n\n## Q&A'); noQa(p); }), []);
+ assert.ok(changed(earlyCommunity).length > 0);
+});
 test('fenced sample headings and bullets are ignored', () => assert.deepEqual(changed(p => p.body = p.body.replace('## 커뮤니티 반응', '```text\n## Fake\n- Example.\n```\n\n## 커뮤니티 반응')), []));
 test('periods fail in prose, decimals do not', () => assert.ok(changed(p => p.body = p.body + '\n- Invalid trailing period.\n').some(e => e.includes('period'))));
 
