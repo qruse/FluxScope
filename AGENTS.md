@@ -151,6 +151,7 @@ A column argues one claim of the user's; a news article informs. Every other sec
 3. **Include at least one real counterargument.** Use the strongest objection found in verified sources and state it fairly inside the section of the point it tests. Do not invent a weak objection to knock down, and do not rewrite the user's opinion to escape it; show the limit beside it
 4. **A table or decision procedure is optional.** Use one only when it helps the argument
 5. **Open with a one-line take; no community section.** The first section is `## 한줄 평` / `## One-Line Take` with exactly one line in the author's voice, replacing the three-line summary. A column has no `## 커뮤니티 반응` section (user instruction, 2026-11-02). Q&A stays optional and, when kept, is the last section
+6. **Include `## 그래서 앞으로는?` / `## So What's Next?`** after the argument, right before Q&A or last when there is none (user instruction, 2026-11-02). It says what happens next and when, from checked sources, using a dated event or observable sign wherever one exists; never invent a date. A forecast is attributed to the user only if the user made it. This section replaces the community section and is where the check from point 2 usually sits
 
 ## 6. Experience must remain honest
 

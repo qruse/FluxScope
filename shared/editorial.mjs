@@ -40,8 +40,12 @@ export function validateEditorial(post, { existingPublishedAt, legacyImageFixtur
   if (column) add(firstSection.trim().split(/\r?\n/).length === 1 && firstSection.trim().length > 0, 'a column opens with exactly one line under its take heading');
   else add((firstSection.match(/^[-*] /gm) || []).length === 3 && !/^[ \t]+[-*] /m.test(firstSection), 'summary must contain exactly three top-level bullets and no nested bullets');
   const ci = headings.findIndex(h => h[1] === community);
-  if (column) add(ci < 0, 'a column has no community section');
-  else if (ci >= 0) {
+  if (column) {
+    add(ci < 0, 'a column has no community section');
+    const next = post.lang === 'ko' ? '그래서 앞으로는?' : "So What's Next?";
+    const ni = headings.findIndex(h => h[1] === next);
+    add(ni >= 0 && ni === headings.length - (hasQa ? 2 : 1), `a column needs ## ${next} last, or right before Q&A`);
+  } else if (ci >= 0) {
     add(ci === headings.length - 2 && headings.filter(h => h[1] === community).length === 1, 'community must occur once, immediately before Q&A');
     const section = prose.slice(headings[ci].index + headings[ci][0].length, headings[ci + 1]?.index ?? prose.length);
     const reactions = section.split(/\r?\n/).filter(line => /^[-*] /.test(line));

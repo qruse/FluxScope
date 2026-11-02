@@ -22,7 +22,7 @@ test('Q&A must remain last and answers cannot be missing', () => {
 });
 test('a column opens with one line, has no community section and may drop Q&A', () => {
  const noQa = (p) => { p.body = `${p.body.slice(0, p.body.indexOf('## Q&A')).trimEnd()}\n`; };
- const noCommunity = (p) => { p.body = p.body.replace(/## 커뮤니티 반응[\s\S]*?(?=## Q&A)/, ''); };
+ const noCommunity = (p) => { p.body = p.body.replace(/## 커뮤니티 반응[\s\S]*?(?=## Q&A)/, '## 그래서 앞으로는?\n\n- 다음 일정\n\n'); };
  const asColumn = (p) => { p.kind = 'column'; p.body = p.body.replace(/## 3줄 요약[\s\S]*?(?=\n## )/, '## 한줄 평\n\n내 한 줄 평\n'); noCommunity(p); };
  assert.ok(changed(noQa).some(e => e.includes('final H2')));
  assert.deepEqual(changed(asColumn), []);
@@ -30,6 +30,7 @@ test('a column opens with one line, has no community section and may drop Q&A', 
  assert.ok(changed(p => { asColumn(p); p.body = p.body.replace(/^  - .+$/gm, ''); }).some(e => e.includes('nested answer')));
  assert.ok(changed(p => { asColumn(p); p.body = p.body.replace('내 한 줄 평', '첫 줄\n둘째 줄'); }).some(e => e.includes('one line')));
  assert.ok(changed(p => { p.kind = 'column'; }).some(e => e.includes('한줄 평')));
+ assert.ok(changed(p => { asColumn(p); p.body = p.body.replace('## 그래서 앞으로는?\n\n- 다음 일정\n\n', ''); }).some(e => e.includes('그래서 앞으로는?')));
  assert.ok(changed(p => { asColumn(p); p.body = p.body.replace('## Q&A', '## 커뮤니티 반응\n\n- 반응 ([Hacker News](https://news.ycombinator.com/item?id=1))\n\n## Q&A'); }).some(e => e.includes('community')));
 });
 test('fenced sample headings and bullets are ignored', () => assert.deepEqual(changed(p => p.body = p.body.replace('## 커뮤니티 반응', '```text\n## Fake\n- Example.\n```\n\n## 커뮤니티 반응')), []));
