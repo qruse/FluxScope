@@ -1025,8 +1025,8 @@ function withAdsenseAccount(response, env) {
   return new HTMLRewriter().on('head', new AppendHead(`<meta name="google-adsense-account" content="ca-${env.ADSENSE_PUBLISHER_ID}">`)).transform(response);
 }
 
-// The my-voice TTS page records from the microphone and plays the generated audio from a blob: URL; every other page keeps both off.
-const micPage = /^\/(?:en\/)?projects\/my-voice-tts\/(?:rec\/)?$/;  // rec/: temporary narration recorder (10/24)
+// The narration recorder records from the microphone and plays the take from a blob: URL; every other page keeps both off.
+const micPage = /^\/(?:en\/)?projects\/my-voice-tts\/rec\/$/;  // rec/: temporary narration recorder (10/24)
 function withSecurityHeaders(response, url) {
   if (response.status === 101) return response;
   const headers = new Headers(response.headers);

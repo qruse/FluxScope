@@ -2,6 +2,7 @@
 title: "How can I make a TTS of my own voice even better?"
 description: "Narrating the KMA Short in my own voice: a blind test of Qwen3-TTS against OmniVoice, endings clipped at 1.5x speed, and a LoRA run that mattered less than a better reference recording."
 publishedAt: 2026-10-27
+updatedAt: 2026-11-04
 lang: en
 project: my-voice-tts
 part: 2
@@ -78,4 +79,4 @@ webdataset reads C:\ paths as URLs -> fixed with relative paths
 - Test the transcriber on the script's speaking style first; one that rewrites endings makes every score wrong
 - Change speed in the mix rather than in the model; the endings survive
 - I plan to retry LoRA with a few dozen sentences; with 10, nothing improved after 50 steps
-- You can try the voice on the [project page](/en/projects/my-voice-tts/); the service still runs the plain, untrained OmniVoice
+- The live service ran the plain, untrained OmniVoice and is now off for lack of spare GPU; the examples are on the [project page](/en/projects/my-voice-tts/)

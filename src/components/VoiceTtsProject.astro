@@ -1,7 +1,6 @@
 ---
-// "TTS in your own voice" project page. The model (OmniVoice, zero-shot voice cloning) runs on the owner's home RTX 3070
-// (my_voice_tts repository: server/app.py + server/tunnel.py) and is reached only through /api/tts/ on the Worker.
-// A visitor reads one fixed consent sentence; Whisper checks it was read, then any text is spoken in that voice.
+// "TTS in your own voice" project page. The live service (OmniVoice on the owner's home RTX 3070, my_voice_tts/server)
+// is switched off for lack of spare GPU (owner decision 2026-11-04), so the page keeps the examples and the write-up.
 // Styles are inline: the shared CSS bundle is at its performance budget. Colors come only from the theme tokens.
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { getStories } from '../lib/stories';
@@ -15,10 +14,16 @@ const L = (ko: string, en: string) => (isKo ? ko : en);
 const project = projects.find((p) => p.id === 'my-voice-tts')!;
 const stories = (await getStories((e) => e.data.lang === lang && e.data.project === project.id))
   .sort((a, b) => a.data.part - b.data.part);
-const consent = L('이 목소리는 제 목소리이고, 오늘 이 문장으로 음성 합성을 만드는 데 동의합니다.', 'This is my own voice, and I agree to let it be used for speech synthesis today.');
-const samples = isKo
-  ? ['오늘 저녁은 내가 쏠게. 진짜로.', '회의는 십 분 뒤에 시작합니다. 커피 챙겨 오세요.', '생일 축하해! 올해는 하고 싶은 거 다 하자.']
-  : ['Dinner is on me tonight. Really.', 'The meeting starts in ten minutes. Bring coffee.', 'Happy birthday! Do everything you want this year.'];
+// Generated 2026-11-04 with the Shorts voice: OmniVoice plus the LoRA trained on ten of the owner's sentences.
+const samples = [
+  ['오늘 저녁은 내가 쏠게. 진짜로.', 'Dinner is on me tonight. Really.'],
+  ['회의는 십 분 뒤에 시작합니다. 커피 챙겨 오세요.', 'The meeting starts in ten minutes. Bring coffee.'],
+  ['생일 축하해! 올해는 하고 싶은 거 다 하자.', 'Happy birthday! Do everything you want this year.'],
+];
+const shorts = [
+  ['wsr1Ebu_D1Y', '2만원으로 기상청 이기기 (1)'],
+  ['Jp1mlS0A5bs', '2만원으로 기상청 이기기 (2)'],
+];
 // Same stand-in reference voice and the same Korean target sentence for every model (my_voice_tts/bench, 2026-10-24).
 const bench = [
   ['OmniVoice', '0%', '0.812', L('2.2초', '2.2 s'), '2.2 GB'],
@@ -37,49 +42,41 @@ const bench = [
     </div>
   </header>
 
-  <div class="shell vt-body" data-vt data-lang={lang}>
-    <p class="vt-status" data-vt-status><i></i><span>{L('확인 중…', 'Checking…')}</span></p>
-
-    <section class="vt-step is-now" data-vt-step1>
-      <h2><b>1</b>{L('이 문장을 소리 내어 읽기', 'Read this sentence out loud')}</h2>
-      <blockquote class="vt-line">{consent}</blockquote>
-      <div class="vt-rec">
-        <button type="button" class="vt-mic" data-vt-rec disabled aria-label={L('녹음', 'Record')}>
-          <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="3" width="6" height="12" rx="3" /><path d="M5 11a7 7 0 0 0 14 0M12 18v3" /></svg>
-        </button>
-        <div class="vt-meter">
-          <span data-vt-label>{L('눌러서 녹음 시작', 'Tap to start recording')}</span>
-          <div class="vt-bar"><i data-vt-level></i></div>
-          <small data-vt-time>0:00 / 0:20</small>
-        </div>
-      </div>
-      <audio controls hidden data-vt-mine></audio>
-      <p class="vt-msg" data-vt-msg1>{L('조용한 곳에서 평소 말투로 읽으면 가장 비슷하게 나옴', 'A quiet room and your normal speaking voice give the closest match')}</p>
-    </section>
-
-    <section class="vt-step is-off" data-vt-step2>
-      <h2><b>2</b>{L('읽힐 문장 쓰기', 'Type what it should say')}</h2>
-      <div class="vt-chips">{samples.map((s) => <button type="button" data-vt-chip>{s}</button>)}</div>
-      <textarea maxlength="200" rows="3" data-vt-text placeholder={L('여기에 쓰거나 위 예시를 눌러 보세요', 'Type here or tap an example above')}></textarea>
-      <div class="vt-row">
-        <button type="button" class="vt-btn" data-vt-speak disabled>{L('내 목소리로 만들기', 'Say it in my voice')}</button>
-        <small data-vt-count>0 / 200</small>
-      </div>
-      <p class="vt-msg" data-vt-msg2></p>
-      <div class="vt-out" hidden data-vt-out>
-        <audio controls data-vt-audio></audio>
-        <a class="vt-dl" download="my-voice.wav" data-vt-dl>{L('WAV 내려받기', 'Download WAV')}</a>
-      </div>
+  <div class="shell vt-body">
+    <section class="vt-off">
+      <h2>{L('지금은 서비스를 꺼 뒀음 ㅜㅜ', 'The live service is switched off for now :(')}</h2>
+      <p>{L('원래는 라이브 서비스였음. 마이크로 한 문장만 읽으면 아무 문장이나 그 목소리로 읽어 줬음. 근데 가용 GPU가 부족해서 계속 켜 둘 수가 없음. 그래서 아래 예시만 남겨 둠', 'This used to be a live service: read one sentence into your mic, then type anything and hear it in your voice. There is not enough spare GPU to keep it running, so only the examples below stay up')}</p>
     </section>
 
     <section class="vt-sec">
-      <h2>{L('지켜 주세요', 'Ground rules')}</h2>
-      <ul>
-        <li>{L('본인 목소리만 쓰기. 그래서 녹음 파일 업로드는 없고, 마이크로 동의 문장을 직접 읽어야 다음 단계가 열림', 'Use only your own voice. There is no file upload: the next step opens only after you read the consent sentence into the mic')}</li>
-        <li>{L('만든 음성은 AI 합성임. 남을 속이거나 다른 사람인 척하는 데 쓰지 않기', 'The result is synthetic speech. Do not use it to deceive anyone or to pass as someone else')}</li>
-        <li>{L('녹음은 서버 임시 폴더에 30분만 두고 지움. 학습에 쓰지 않고, 입력한 문장도 저장하지 않음', 'Your recording sits in a temporary folder on the server for 30 minutes and is then deleted. It is never used for training, and the text you type is not stored')}</li>
-        <li>{L('요청 횟수는 IP를 해시로 바꾼 값으로만 셈. 한 시간에 녹음 10번, 생성 40번까지', 'Rate limits count a hash of your IP, never the IP itself: 10 recordings and 40 generations an hour')}</li>
+      <h2>{L('내 목소리 예시', 'Examples in my voice')}</h2>
+      {!isKo && <p>Korean audio, with the English meaning under each line.</p>}
+      <ul class="vt-samples">
+        {samples.map(([ko, en], i) => (
+          <li>
+            <strong>{ko}</strong>
+            {!isKo && <span>{en}</span>}
+            <audio controls preload="none" src={`/audio/my-voice-tts/sample-${i + 1}.mp3`}></audio>
+          </li>
+        ))}
       </ul>
+      <p class="vt-note">{L('전부 AI로 합성한 음성임. 직접 읽은 녹음이 아님', 'All of this is AI-generated speech, not a recording of me reading')}</p>
+    </section>
+
+    <section class="vt-sec">
+      <h2>{L('이 목소리로 만든 쇼츠', 'Shorts narrated in this voice')}</h2>
+      {!isKo && <p>Both are in Korean.</p>}
+      <div class="vt-shorts">
+        {shorts.map(([id, title]) => (
+          <figure>
+            <a href={`https://www.youtube.com/shorts/${id}`} data-vt-yt={id} data-title={title} target="_blank" rel="noopener">
+              <img src={`https://i.ytimg.com/vi/${id}/hqdefault.jpg`} alt={title} width="480" height="360" loading="lazy" decoding="async" />
+              <span aria-hidden="true"></span>
+            </a>
+            <figcaption>{title}</figcaption>
+          </figure>
+        ))}
+      </div>
     </section>
 
     <section class="vt-sec">
@@ -103,65 +100,31 @@ const bench = [
     <div data-ad></div>
 
     <section class="comments" id="comments" data-comments data-lang={lang} data-page={projectPath('my-voice-tts', lang)}
-      data-intro={L('써 보고 훈수 환영', 'Tried it? Backseat feedback welcome')}></section>
+      data-intro={L('들어 보고 훈수 환영', 'Heard it? Backseat feedback welcome')}></section>
   </div>
   <script is:inline src="/comments.js" defer></script>
 
 <style is:inline>
-.vt-body { --vt-ok: #1f7a45; --vt-err: #b3321f; padding: 2rem 0 4rem; }
+.vt-body { padding: 2rem 0 4rem; }
 .vt-body > * { max-width: 50rem; }
-html[data-theme="dark"] .vt-body { --vt-ok: #6fd39a; --vt-err: #ff8f7d; }
-.vt-status { display: inline-flex; gap: .5rem; align-items: center; margin: 0 0 1.2rem; padding: .35rem .85rem; border: 1px solid var(--line); border-radius: 999px; background: var(--surface); font-size: .85rem; font-weight: 750; }
-.vt-status i { width: .55rem; height: .55rem; border-radius: 50%; background: var(--line); }
-.vt-status.is-on i { background: var(--vt-ok); box-shadow: 0 0 0 3px color-mix(in srgb, var(--vt-ok) 25%, transparent); }
-.vt-status.is-off { color: var(--muted); }
-.vt-status.is-off i { background: var(--muted); }
-.vt-step { margin: 0 0 1.2rem; padding: 1.3rem 1.4rem; border: 1.5px solid var(--line); border-radius: 14px; background: var(--surface); transition: opacity .25s, border-color .25s; }
-.vt-step.is-now { border-color: color-mix(in srgb, var(--accent) 60%, var(--line)); }
-.vt-step.is-off { opacity: .45; pointer-events: none; }
-.vt-step h2 { display: flex; gap: .65rem; align-items: center; margin: 0 0 1rem; font-size: 1.15rem; font-weight: 800; }
-.vt-step h2 b { display: grid; place-items: center; flex: none; width: 1.75rem; height: 1.75rem; border-radius: 50%; background: var(--ink); color: var(--bg); font-size: .85rem; }
-.vt-step.is-done h2 b { background: var(--vt-ok); color: var(--surface); }
-.vt-line { margin: 0 0 1.1rem; padding: .95rem 1.15rem; border-left: 4px solid var(--accent); border-radius: 0 10px 10px 0; background: var(--soft); font-size: 1.15rem; font-weight: 650; line-height: 1.65; }
-.vt-rec { display: flex; gap: 1rem; align-items: center; }
-.vt-mic { position: relative; display: grid; place-items: center; flex: none; width: 4rem; height: 4rem; border: 0; border-radius: 50%; background: var(--accent); color: #fff; cursor: pointer; transition: transform .15s; }
-.vt-mic:hover:not(:disabled) { transform: scale(1.05); }
-.vt-mic:disabled { opacity: .4; cursor: default; }
-.vt-mic svg { width: 1.6rem; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; }
-.vt-mic.is-rec svg { display: none; }
-.vt-mic.is-rec::after { content: ''; width: 1.1rem; height: 1.1rem; border-radius: 3px; background: currentColor; }
-.vt-mic.is-rec { animation: vt-pulse 1.4s ease-out infinite; }
-@keyframes vt-pulse { from { box-shadow: 0 0 0 0 color-mix(in srgb, var(--accent) 55%, transparent); } to { box-shadow: 0 0 0 14px transparent; } }
-.vt-meter { display: grid; flex: 1; gap: .35rem; min-width: 0; }
-.vt-meter span { font-weight: 750; }
-.vt-meter small { color: var(--muted); font-variant-numeric: tabular-nums; }
-.vt-bar { height: 6px; border-radius: 99px; background: var(--soft); overflow: hidden; }
-.vt-bar i { display: block; width: 0; height: 100%; border-radius: inherit; background: var(--accent); transition: width .08s linear; }
-.vt-step > audio, .vt-out audio { display: block; width: 100%; margin-top: 1rem; }
-.vt-msg { min-height: 1.4em; margin: .8rem 0 0; color: var(--muted); font-size: .9rem; }
-.vt-msg.is-err { color: var(--vt-err); }
-.vt-msg.is-ok { color: var(--vt-ok); }
-.vt-chips { display: flex; flex-wrap: wrap; gap: .45rem; margin: 0 0 .7rem; }
-.vt-chips button { padding: .32rem .75rem; border: 1px solid var(--line); border-radius: 999px; background: transparent; color: var(--muted); font-size: .84rem; cursor: pointer; }
-.vt-chips button:hover { border-color: var(--accent); color: var(--accent); }
-.vt-step textarea { display: block; width: 100%; margin: 0 0 .8rem; padding: .75rem .85rem; border: 1.5px solid var(--line); border-radius: 10px; background: var(--bg); color: var(--ink); font: inherit; resize: vertical; }
-.vt-step textarea:focus { border-color: var(--accent); outline: none; }
-.vt-row { display: flex; flex-wrap: wrap; gap: .8rem; align-items: center; justify-content: space-between; }
-.vt-row small { color: var(--muted); font-variant-numeric: tabular-nums; }
-.vt-btn { display: inline-flex; gap: .55rem; align-items: center; padding: .72rem 1.35rem; border: 0; border-radius: 999px; background: var(--ink); color: var(--bg); font: inherit; font-weight: 800; cursor: pointer; transition: background .15s; }
-.vt-btn:hover:not(:disabled) { background: var(--accent); color: #fff; }
-.vt-btn:disabled { opacity: .45; cursor: default; }
-.vt-btn.is-busy::before { content: ''; width: .9rem; height: .9rem; border: 2px solid currentColor; border-right-color: transparent; border-radius: 50%; animation: vt-spin .7s linear infinite; }
-@keyframes vt-spin { to { transform: rotate(1turn); } }
-.vt-out { margin-top: .4rem; }
-.vt-dl { display: inline-block; margin-top: .8rem; padding: .5rem 1rem; border: 1.5px solid var(--line); border-radius: 999px; font-size: .88rem; font-weight: 750; }
-.vt-dl:hover { border-color: var(--accent); color: var(--accent); }
+.vt-off { margin: 0 0 1.2rem; padding: 1.3rem 1.4rem; border: 1.5px solid color-mix(in srgb, var(--accent) 60%, var(--line)); border-radius: 14px; background: var(--surface); }
+.vt-off h2 { margin: 0 0 .6rem; font-size: 1.15rem; font-weight: 800; }
+.vt-off p { margin: 0; line-height: 1.7; }
 .vt-sec { margin: 2.6rem 0; }
 .vt-sec h2 { margin: 0 0 .8rem; font-size: 1.35rem; font-weight: 800; letter-spacing: -.02em; }
 .vt-sec p { line-height: 1.7; }
-.vt-sec ul { margin: 0; padding-left: 1.2rem; list-style: disc; line-height: 1.65; }
-.vt-sec li { margin: .35rem 0; }
-.vt-sec li::marker { color: var(--accent); }
+.vt-samples { display: grid; gap: .8rem; margin: 1rem 0 0; padding: 0; list-style: none; }
+.vt-samples li { display: grid; gap: .35rem; padding: 1rem 1.1rem; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); }
+.vt-samples strong { font-weight: 750; word-break: keep-all; }
+.vt-samples span { color: var(--muted); font-size: .88rem; }
+.vt-samples audio { display: block; width: 100%; margin-top: .4rem; }
+.vt-shorts { display: grid; grid-template-columns: repeat(2, minmax(0, 15rem)); gap: 1rem; margin-top: 1rem; }
+.vt-shorts figure { margin: 0; }
+.vt-shorts a, .vt-shorts iframe { position: relative; display: block; width: 100%; aspect-ratio: 9 / 16; border: 0; border-radius: 10px; overflow: hidden; background: #000; }
+.vt-shorts img { width: 100%; height: 100%; object-fit: cover; opacity: .85; }
+.vt-shorts a span { position: absolute; inset: 50% auto auto 50%; width: 68px; height: 48px; margin: -24px 0 0 -34px; border-radius: 12px; background: #e00; }
+.vt-shorts a span::after { content: ''; position: absolute; left: 27px; top: 14px; border: 10px solid transparent; border-left: 17px solid #fff; }
+.vt-shorts figcaption { margin-top: .5rem; color: var(--muted); font-size: .85rem; word-break: keep-all; }
 .vt-table { overflow-x: auto; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); }
 .vt-table table { width: 100%; border-collapse: collapse; font-size: .9rem; }
 .vt-table th, .vt-table td { padding: .55rem .75rem; border-bottom: 1px solid var(--line); text-align: left; white-space: nowrap; }
@@ -176,142 +139,20 @@ html[data-theme="dark"] .vt-body { --vt-ok: #6fd39a; --vt-err: #ff8f7d; }
 .vt-stories span { color: var(--accent); font-size: .74rem; font-weight: 850; }
 .vt-stories strong { font-size: 1rem; letter-spacing: -.02em; word-break: keep-all; }
 .vt-stories em { color: var(--muted); font-size: .84rem; font-style: normal; line-height: 1.55; word-break: keep-all; }
-@media (max-width: 560px) {
-  .vt-step { padding: 1.1rem 1rem; }
-  .vt-line { font-size: 1.05rem; }
-  .vt-btn { justify-content: center; width: 100%; }
-  .vt-row small { margin-left: auto; }
-}
-@media (prefers-reduced-motion: reduce) { .vt-mic.is-rec, .vt-btn.is-busy::before { animation: none; } }
 </style>
 
 <script is:inline>
-(() => {
-  const root = document.querySelector('[data-vt]');
-  if (!root) return;
-  const ko = root.dataset.lang === 'ko';
-  const $ = (s) => root.querySelector(s);
-  const T = ko
-    ? { on: '사용 가능', off: '지금은 잠시 쉬는 중. 나중에 다시 와 주세요', idle: '눌러서 녹음 시작', recording: '녹음 중 · 다 읽으면 한 번 더 누르기', again: '다시 녹음하려면 누르기', checking: '문장을 맞게 읽었는지 확인 중…', ok: (h) => `확인됨: "${h}" · 이제 2단계에서 문장을 써 주세요`, making: '만드는 중… 몇 초 걸림', done: '완성. AI로 만든 음성임', noMic: '마이크를 쓸 수 없음. 브라우저에서 마이크 권한을 허용해 주세요',
-        err: { mismatch: (h) => `문장이 다르게 들렸음${h ? `: "${h}"` : ''}. 위 문장 그대로 다시 읽어 주세요`, too_quiet: '소리가 너무 작음. 마이크에 조금 더 가까이', bad_length: '2초에서 20초 사이로 녹음해 주세요', too_many: '이번 한 시간 사용량을 다 썼음. 조금 뒤에 다시', offline: '지금은 잠시 쉬는 중이라 만들 수 없음', expired: '녹음한 지 30분이 지났음. 1단계부터 다시', bad_text: '문장을 1~200자로 써 주세요', other: '처리하지 못했음. 잠시 뒤 다시 시도해 주세요' } }
-    : { on: 'Available', off: 'Taking a break right now. Please come back later', idle: 'Tap to start recording', recording: 'Recording · tap again when you are done', again: 'Tap to record again', checking: 'Checking that you read the sentence…', ok: (h) => `Got it: "${h}" · now type something in step 2`, making: 'Generating… a few seconds', done: 'Done. This audio is AI-generated', noMic: 'The microphone is unavailable. Please allow microphone access in your browser',
-        err: { mismatch: (h) => `That sounded different${h ? `: "${h}"` : ''}. Please read the sentence exactly as written`, too_quiet: 'Too quiet. Move a little closer to the mic', bad_length: 'Please record between 2 and 20 seconds', too_many: 'You have used this hour’s limit. Please try again later', offline: 'Taking a break right now, so nothing can be made', expired: 'Your recording is over 30 minutes old. Please start again from step 1', bad_text: 'Please write 1–200 characters', other: 'Something went wrong. Please try again' } };
-  const MAX_S = 20;
-  const status = $('[data-vt-status]'), recBtn = $('[data-vt-rec]'), label = $('[data-vt-label]'), level = $('[data-vt-level]'), time = $('[data-vt-time]');
-  const step1 = $('[data-vt-step1]'), mine = $('[data-vt-mine]'), msg1 = $('[data-vt-msg1]');
-  const step2 = $('[data-vt-step2]'), text = $('[data-vt-text]'), speakBtn = $('[data-vt-speak]'), msg2 = $('[data-vt-msg2]');
-  const out = $('[data-vt-out]'), audio = $('[data-vt-audio]'), dl = $('[data-vt-dl]'), count = $('[data-vt-count]');
-  let token = null, rec = null, online = false;
-  const say = (el, s, kind) => { el.textContent = s; el.classList.toggle('is-err', kind === 'err'); el.classList.toggle('is-ok', kind === 'ok'); };
-  const clock = (s) => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, '0')} / 0:${MAX_S}`;
-
-  fetch('/api/tts/status', { cache: 'no-store' }).then((r) => r.json()).then((d) => { online = !!d.online; }).catch(() => {}).finally(() => {
-    status.lastChild.textContent = online ? T.on : T.off;
-    status.classList.add(online ? 'is-on' : 'is-off');
-    recBtn.disabled = !online;
-  });
-
-  // Browser recording (webm/ogg/mp4) -> decode -> 24 kHz mono 16-bit WAV, so the PC never needs ffmpeg.
-  async function toWav(blob) {
-    const ctx = new AudioContext();
-    const decoded = await ctx.decodeAudioData(await blob.arrayBuffer());
-    ctx.close();
-    const sr = 24000;
-    const off = new OfflineAudioContext(1, Math.ceil(decoded.duration * sr), sr);
-    const src = off.createBufferSource();
-    src.buffer = decoded; src.connect(off.destination); src.start();
-    const pcm = (await off.startRendering()).getChannelData(0);
-    const v = new DataView(new ArrayBuffer(44 + pcm.length * 2));
-    const w = (o, s) => [...s].forEach((c, i) => v.setUint8(o + i, c.charCodeAt(0)));
-    w(0, 'RIFF'); v.setUint32(4, 36 + pcm.length * 2, true); w(8, 'WAVEfmt '); v.setUint32(16, 16, true); v.setUint16(20, 1, true);
-    v.setUint16(22, 1, true); v.setUint32(24, sr, true); v.setUint32(28, sr * 2, true); v.setUint16(32, 2, true); v.setUint16(34, 16, true);
-    w(36, 'data'); v.setUint32(40, pcm.length * 2, true);
-    pcm.forEach((x, i) => v.setInt16(44 + i * 2, Math.max(-1, Math.min(1, x)) * 0x7fff, true));
-    return new Blob([v], { type: 'audio/wav' });
-  }
-  const failure = async (r) => {
-    let detail = '';
-    try { const j = await r.json(); detail = String(j.detail || j.error || ''); } catch { /* not json */ }
-    if (r.status === 503) return T.err.offline;
-    if (detail.startsWith('mismatch')) return T.err.mismatch(detail.slice(9));
-    return T.err[detail] || T.err.other;
-  };
-
-  // Live input level and elapsed time while recording; stops by itself at the server's 20-second limit.
-  function watch(stream) {
-    const ctx = new AudioContext();
-    const an = ctx.createAnalyser();
-    an.fftSize = 512;
-    ctx.createMediaStreamSource(stream).connect(an);
-    const buf = new Float32Array(an.fftSize), t0 = performance.now();
-    let raf = 0;
-    const tick = () => {
-      an.getFloatTimeDomainData(buf);
-      const rms = Math.sqrt(buf.reduce((a, x) => a + x * x, 0) / buf.length);
-      level.style.width = `${Math.min(100, rms * 400)}%`;
-      const s = (performance.now() - t0) / 1000;
-      time.textContent = clock(s);
-      if (s >= MAX_S && rec && rec.state === 'recording') rec.stop();
-      raf = requestAnimationFrame(tick);
-    };
-    tick();
-    return () => { cancelAnimationFrame(raf); ctx.close(); level.style.width = '0'; };
-  }
-
-  recBtn.addEventListener('click', async () => {
-    if (rec && rec.state === 'recording') { rec.stop(); return; }
-    let stream;
-    try { stream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: false, noiseSuppression: true, autoGainControl: true } }); }
-    catch { say(msg1, T.noMic, 'err'); return; }
-    const chunks = [];
-    const unwatch = watch(stream);
-    rec = new MediaRecorder(stream);
-    rec.ondataavailable = (e) => chunks.push(e.data);
-    rec.onstop = async () => {
-      unwatch();
-      stream.getTracks().forEach((t) => t.stop());
-      recBtn.classList.remove('is-rec'); recBtn.disabled = true;
-      label.textContent = T.again;
-      say(msg1, T.checking);
-      try {
-        const wav = await toWav(new Blob(chunks, { type: rec.mimeType }));
-        mine.src = URL.createObjectURL(wav); mine.hidden = false;
-        const r = await fetch(`/api/tts/verify?lang=${ko ? 'ko' : 'en'}`, { method: 'POST', headers: { 'Content-Type': 'audio/wav' }, body: wav });
-        if (!r.ok) { say(msg1, await failure(r), 'err'); return; }
-        const d = await r.json();
-        token = d.token;
-        say(msg1, T.ok(d.heard), 'ok');
-        step1.classList.replace('is-now', 'is-done');
-        step1.querySelector('b').textContent = '✓';
-        step2.classList.replace('is-off', 'is-now');
-        speakBtn.disabled = !text.value.trim();
-        text.focus();
-      } catch { say(msg1, T.err.other, 'err'); }
-      finally { recBtn.disabled = false; }
-    };
-    rec.start();
-    recBtn.classList.add('is-rec');
-    label.textContent = T.recording;
-    say(msg1, '');
-  });
-
-  const typed = () => { count.textContent = `${text.value.length} / 200`; speakBtn.disabled = !token || !text.value.trim(); };
-  text.addEventListener('input', typed);
-  root.querySelectorAll('[data-vt-chip]').forEach((b) => b.addEventListener('click', () => { text.value = b.textContent; typed(); text.focus(); }));
-  text.addEventListener('keydown', (e) => { if (e.key === 'Enter' && (e.ctrlKey || e.metaKey) && !speakBtn.disabled) speakBtn.click(); });
-  speakBtn.addEventListener('click', async () => {
-    speakBtn.disabled = true; speakBtn.classList.add('is-busy');
-    say(msg2, T.making);
-    try {
-      const r = await fetch('/api/tts/speak', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ token, text: text.value }) });
-      if (!r.ok) { say(msg2, await failure(r), 'err'); return; }
-      const url = URL.createObjectURL(await r.blob());
-      audio.src = url; dl.href = url; out.hidden = false;
-      audio.play().catch(() => {});
-      say(msg2, T.done, 'ok');
-    } catch { say(msg2, T.err.other, 'err'); }
-    finally { speakBtn.classList.remove('is-busy'); speakBtn.disabled = !text.value.trim(); }
-  });
-})();
+// Only the thumbnail loads with the page; the youtube-nocookie player replaces it on click.
+document.addEventListener('click', (e) => {
+  const a = e.target.closest && e.target.closest('a[data-vt-yt]');
+  if (!a) return;
+  e.preventDefault();
+  const f = document.createElement('iframe');
+  f.src = `https://www.youtube-nocookie.com/embed/${a.dataset.vtYt}?autoplay=1`;
+  f.title = a.dataset.title;
+  f.allow = 'autoplay; encrypted-media; picture-in-picture; fullscreen';
+  f.allowFullscreen = true;
+  a.replaceWith(f);
+});
 </script>
 </BaseLayout>

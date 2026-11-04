@@ -52,10 +52,10 @@ export const projects = [
     id: 'my-voice-tts',
     name: 'TTS in your own voice',
     nameKo: '내 목소리로 만드는 TTS',
-    summary: 'Read one fixed sentence into your microphone and type anything: it comes back spoken in your voice. Open-source zero-shot voice cloning (OmniVoice) running on a single RTX 3070.',
-    summaryKo: '정해진 한 문장을 마이크로 읽고 아무 문장이나 쓰면, 그 문장을 내 목소리로 읽어 줌. 오픈소스 음성 복제 모델(OmniVoice)이 RTX 3070 한 장에서 돌아감.',
-    cta: 'Make my voice',
-    ctaKo: '내 목소리 만들기',
+    summary: 'A live service that spoke anything you typed in your own voice, using open-source voice cloning (OmniVoice) on a single RTX 3070. There is not enough spare GPU to keep it running, so only the examples stay up.',
+    summaryKo: '한 문장만 읽으면 아무 문장이나 내 목소리로 읽어 주던 라이브 서비스. 오픈소스 음성 복제 모델(OmniVoice)을 RTX 3070 한 장에서 돌렸는데, 가용 GPU가 부족해서 지금은 꺼 두고 예시만 남겨 둠.',
+    cta: 'Hear the examples',
+    ctaKo: '예시 듣기',
   },
 ] as const;
 

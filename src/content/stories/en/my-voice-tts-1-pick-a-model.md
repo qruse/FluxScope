@@ -2,6 +2,7 @@
 title: "Doesn't every TTS sound the same these days? Let's make one with my own voice!"
 description: "Five open-source voice-cloning models run on the same sentence on a home RTX 3070, why OmniVoice won, and how a visitor's voice travels through a tunnel to the home PC and back."
 publishedAt: 2026-10-27
+updatedAt: 2026-11-04
 lang: en
 project: my-voice-tts
 part: 1
@@ -83,4 +84,4 @@ if score > 0.35:
 - Measure against a real person's recording from day one; in part 2, against my own recordings, similarity came out at 0.72–0.82
 - After a reboot the voice server and tunnel have to be started by hand; they should start at login
 - A named tunnel with a fixed address would probably remove the need to re-send the address every minute
-- Part 2 covers narrating YouTube Shorts in this voice and trying LoRA training. To try it yourself, see the [project page](/en/projects/my-voice-tts/)
+- Part 2 covers narrating YouTube Shorts in this voice and trying LoRA training. The service is now off for lack of spare GPU; the examples are on the [project page](/en/projects/my-voice-tts/)
