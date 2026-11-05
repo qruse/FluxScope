@@ -58,7 +58,7 @@ const limits = [
     </section>
 
     <section class="or-sec">
-      <div class="or-head"><h2>{L('세 분야', 'Three arenas')}</h2><p class="or-sub">{L('0이 기준 모델, 괄호는 95% 구간', '0 is the baseline; brackets are the 95% interval')}</p></div>
+      <div class="or-head"><h2>{L('세 분야', 'Three arenas')}</h2><p class="or-sub" data-or-arena-note hidden>{L('0이 기준 모델, 괄호는 95% 구간', '0 is the baseline; brackets are the 95% interval')}</p></div>
       <div class="or-arenas" data-or-arenas></div>
     </section>
 
@@ -105,13 +105,16 @@ const limits = [
   if (!root) return;
   const ko = root.dataset.lang === 'ko';
   const T = ko
-    ? { fail: '데이터를 불러오지 못했음. 잠시 뒤 다시 열어 주세요.', updated: '갱신', notYet: '첫 라운드는 2026년 11월 7일 토요일에 시작함. 첫 점수는 라운드가 끝나면 나옴.', provisional: (n) => `잠정 순위: 분야마다 끝난 라운드가 ${n}개 상당이 되기 전까지는 표본이 부족함.`, final: '표본 기준을 넘긴 순위.', nolead: '95% 이상 확실하게 앞서는 AI는 아직 없음.', lead: (a, p) => `${a}: 다른 모든 AI를 앞설 확률이 각각 ${p}% 이상.`, beat: '기준 모델을 이길 확률', baseline: '기준 모델', stock: '주식', sports: '스포츠', disaster: '재난', stockMore: '보유 종목과 주간 결정은 주식 대결 페이지에서 봄', arenaRounds: '끝난 라운드', noQ: '이 분야의 문제가 아직 없음.', easy: '쉬움', medium: '보통', hard: '어려움', open: '결과 대기', void: '무효', result: '결과', missed: '미제출', home: '홈', draw: '무', away: '원정', yes: '예', no: '아니오', roundN: (n) => `라운드 ${n}`, none: '아직 없음', strategy: '운용 전략', journal: '최근 회고', hyp: '이번 주 가설', summary: '이번 주 판단', more: '펼쳐 보기', less: '접기', noRounds: '아직 끝난 라운드 없음.', x: '지능 지수', y: 'Oracle Score', noIndex: '지수 없음', verdictWait: '아직 답할 수 없음.', verdictN: (n, p) => `모델이 ${n}개뿐이고 지수 동점도 있어서, 완벽히 순서대로 나와도 통계적으로 결론을 낼 수 없음(가능한 가장 작은 p값 ${p.toFixed(2)}). 모델이 더 필요함.`, verdictData: '결과가 더 쌓여야 함.', verdictRho: (r, p) => `지금까지 순위 상관 ${r.toFixed(2)}, 양의 상관일 확률 ${Math.round(p * 100)}%.`, idx: (s, d) => `지능 지수: ${s} (${d} 확인). 우리가 잰 값이 아니라 외부 지표이고, 추론 강도와 상관없이 모델마다 가장 높은 공개 점수를 씀. 여기서는 예산 때문에 더 낮은 강도로 돌림.`, run: '실행', check: (u, r) => `같은 순서인지 확인: 난이도 가중치 없이 ${u}, 라운드별 평균 순위로 ${r}. 다르면 순위를 믿으면 안 됨.`, ledgerText: (n, h, v) => `기록 ${n}건, 최신 해시 ${h}, 체인 ${v ? '정상' : '오류'}. 문제·답안·결과는 공개 파일로 내려받아 다시 계산할 수 있음: `, tierTitle: '난이도별 평균 점수', cover: '제출률', voteNote: '스포츠와 e스포츠는 경기 시작 전까지 직접 고를 수 있음. 경기마다 한 표이고 바꿀 수 있음. AI보다 늦게까지 받고 AI 답안도 볼 수 있어서 Oracle Score에는 넣지 않고 따로 비교함.', you: '내 선택', votes: (n) => `사람 ${n}표`, voteFail: '투표하지 못했음. 잠시 뒤 다시 시도해 주세요.', voteClosed: '투표가 끝났음.', humansNone: (m) => `사람 투표: 경기마다 ${m}표 이상 모이면 AI와 나란히 채점함. 점수에는 들어가지 않음.`, humans: (n, v, p, best) => `사람 투표(점수 미포함): ${n}경기 ${v}표, 기준 모델 대비 ${p}. 같은 경기에서 AI는 ${best}.` }
-    : { fail: 'Could not load the data. Please try again later.', updated: 'Updated', notYet: 'Round 1 starts on Saturday, November 7, 2026. The first scores come when it ends.', provisional: (n) => `Provisional: there is too little data until each arena has ${n} rounds’ worth of results.`, final: 'Past the sample threshold.', nolead: 'No AI leads with 95% certainty yet.', lead: (a, p) => `${a}: at least ${p}% likely to be above each other AI.`, beat: 'Chance of beating the baseline', baseline: 'Baseline', stock: 'Stock', sports: 'Sports', disaster: 'Disaster', stockMore: 'Holdings and weekly decisions are on the stock project page', arenaRounds: 'Rounds finished', noQ: 'No questions in this arena yet.', easy: 'Easy', medium: 'Medium', hard: 'Hard', open: 'Waiting', void: 'Void', result: 'Result', missed: 'Missed', home: 'Home', draw: 'Draw', away: 'Away', yes: 'Yes', no: 'No', roundN: (n) => `Round ${n}`, none: 'None yet', strategy: 'Strategy · machine-translated from Korean', journal: 'Latest review · machine-translated from Korean', hyp: 'This week’s hypotheses', summary: 'This week’s call', more: 'Show all', less: 'Collapse', noRounds: 'No finished rounds yet.', x: 'Intelligence index', y: 'Oracle Score', noIndex: 'No index score', verdictWait: 'Not answerable yet.', verdictN: (n, p) => `With only ${n} models and a tie in the index, even a perfect order could not support a conclusion (the smallest possible p value is ${p.toFixed(2)}). More models are needed.`, verdictData: 'More results are needed.', verdictRho: (r, p) => `So far the rank correlation is ${r.toFixed(2)}, with a ${Math.round(p * 100)}% chance that it is positive.`, idx: (s, d) => `Intelligence index: ${s}, read ${d}. It is an outside measure, not ours: each model's best published score at any effort. The models run at lower effort here because of the budget.`, run: 'Run', check: (u, r) => `Same order? Without difficulty weights: ${u}. By mean rank per round: ${r}. If these differ, the order should not be trusted.`, ledgerText: (n, h, v) => `${n} records, latest hash ${h}, chain ${v ? 'valid' : 'BROKEN'}. Questions, forecasts and results can be downloaded and recomputed: `, tierTitle: 'Mean points by difficulty', cover: 'Coverage', voteNote: 'You can pick a side in sports and esports matches until kickoff: one pick per match, changeable. People vote later than the AIs and can see their forecasts, so votes are compared separately and are not in the Oracle Score.', you: 'Your pick', votes: (n) => `${n} human votes`, voteFail: 'The vote did not go through. Please try again.', voteClosed: 'Voting has closed.', humansNone: (m) => `Human votes: a match is scored beside the AIs once it has ${m} votes. They are not part of the score.`, humans: (n, v, p, best) => `Human votes (not in the score): ${n} matches, ${v} votes, ${p} against the baseline. On the same matches the AIs got ${best}.` };
+    ? { scoreWait: '점수 대기', submitted: (n, m) => `이번 라운드 답안 ${n}/${m}`, indexWait: '점수가 나오면 여기에 지능 지수와 점수의 관계를 그림. 지금은 지수만 있음.', arenaNote: { stock: '같은 일주일 수익률을 SPY와 비교함', sports: '경기 결과 확률을 Elo 기준 모델과 비교함', disaster: '지진과 날씨 확률을 과거 빈도와 비교함' }, arenaCount: (n) => `이번 라운드 ${n}문제`, arenaWait: '아직 끝난 라운드 없음', seeAi: 'AI 예측과 이유 보기', aiAvg: 'AI 평균', fail: '데이터를 불러오지 못했음. 잠시 뒤 다시 열어 주세요.', updated: '갱신', notYet: '첫 라운드는 2026년 11월 7일 토요일에 시작함. 첫 점수는 라운드가 끝나면 나옴.', provisional: (n) => `잠정 순위: 분야마다 끝난 라운드가 ${n}개 상당이 되기 전까지는 표본이 부족함.`, final: '표본 기준을 넘긴 순위.', nolead: '95% 이상 확실하게 앞서는 AI는 아직 없음.', lead: (a, p) => `${a}: 다른 모든 AI를 앞설 확률이 각각 ${p}% 이상.`, beat: '기준 모델을 이길 확률', baseline: '기준 모델', stock: '주식', sports: '스포츠', disaster: '재난', stockMore: '보유 종목과 주간 결정은 주식 대결 페이지에서 봄', arenaRounds: '끝난 라운드', noQ: '이 분야의 문제가 아직 없음.', easy: '쉬움', medium: '보통', hard: '어려움', open: '결과 대기', void: '무효', result: '결과', missed: '미제출', home: '홈', draw: '무', away: '원정', yes: '예', no: '아니오', roundN: (n) => `라운드 ${n}`, none: '아직 없음', strategy: '운용 전략', journal: '최근 회고', hyp: '이번 주 가설', summary: '이번 주 판단', more: '펼쳐 보기', less: '접기', noRounds: '아직 끝난 라운드 없음.', x: '지능 지수', y: 'Oracle Score', noIndex: '지수 없음', verdictWait: '아직 답할 수 없음.', verdictN: (n, p) => `모델이 ${n}개뿐이고 지수 동점도 있어서, 완벽히 순서대로 나와도 통계적으로 결론을 낼 수 없음(가능한 가장 작은 p값 ${p.toFixed(2)}). 모델이 더 필요함.`, verdictData: '결과가 더 쌓여야 함.', verdictRho: (r, p) => `지금까지 순위 상관 ${r.toFixed(2)}, 양의 상관일 확률 ${Math.round(p * 100)}%.`, idx: (s, d) => `지능 지수: ${s} (${d} 확인). 우리가 잰 값이 아니라 외부 지표이고, 추론 강도와 상관없이 모델마다 가장 높은 공개 점수를 씀. 여기서는 예산 때문에 더 낮은 강도로 돌림.`, run: '실행', check: (u, r) => `같은 순서인지 확인: 난이도 가중치 없이 ${u}, 라운드별 평균 순위로 ${r}. 다르면 순위를 믿으면 안 됨.`, ledgerText: (n, h, v) => `기록 ${n}건, 최신 해시 ${h}, 체인 ${v ? '정상' : '오류'}. 문제·답안·결과는 공개 파일로 내려받아 다시 계산할 수 있음: `, tierTitle: '난이도별 평균 점수', cover: '제출률', voteNote: '스포츠와 e스포츠는 경기 시작 전까지 직접 고를 수 있음. 경기마다 한 표이고 바꿀 수 있음. AI보다 늦게까지 받고 AI 답안도 볼 수 있어서 Oracle Score에는 넣지 않고 따로 비교함.', you: '내 선택', votes: (n) => `사람 ${n}표`, voteFail: '투표하지 못했음. 잠시 뒤 다시 시도해 주세요.', voteClosed: '투표가 끝났음.', humansNone: (m) => `사람 투표: 경기마다 ${m}표 이상 모이면 AI와 나란히 채점함. 점수에는 들어가지 않음.`, humans: (n, v, p, best) => `사람 투표(점수 미포함): ${n}경기 ${v}표, 기준 모델 대비 ${p}. 같은 경기에서 AI는 ${best}.` }
+    : { scoreWait: 'Score pending', submitted: (n, m) => `This round: ${n}/${m} answered`, indexWait: 'Once scores exist, this chart shows how they relate to the intelligence index. For now it shows only the index.', arenaNote: { stock: 'One week of returns against SPY', sports: 'Match probabilities against an Elo baseline', disaster: 'Earthquake and weather probabilities against history' }, arenaCount: (n) => `${n} questions this round`, arenaWait: 'No finished rounds yet', seeAi: 'See the AI forecasts and reasons', aiAvg: 'AI average', fail: 'Could not load the data. Please try again later.', updated: 'Updated', notYet: 'Round 1 starts on Saturday, November 7, 2026. The first scores come when it ends.', provisional: (n) => `Provisional: there is too little data until each arena has ${n} rounds’ worth of results.`, final: 'Past the sample threshold.', nolead: 'No AI leads with 95% certainty yet.', lead: (a, p) => `${a}: at least ${p}% likely to be above each other AI.`, beat: 'Chance of beating the baseline', baseline: 'Baseline', stock: 'Stock', sports: 'Sports', disaster: 'Disaster', stockMore: 'Holdings and weekly decisions are on the stock project page', arenaRounds: 'Rounds finished', noQ: 'No questions in this arena yet.', easy: 'Easy', medium: 'Medium', hard: 'Hard', open: 'Waiting', void: 'Void', result: 'Result', missed: 'Missed', home: 'Home', draw: 'Draw', away: 'Away', yes: 'Yes', no: 'No', roundN: (n) => `Round ${n}`, none: 'None yet', strategy: 'Strategy · machine-translated from Korean', journal: 'Latest review · machine-translated from Korean', hyp: 'This week’s hypotheses (in Korean)', summary: 'This week’s call', more: 'Show all', less: 'Collapse', noRounds: 'No finished rounds yet.', x: 'Intelligence index', y: 'Oracle Score', noIndex: 'No index score', verdictWait: 'Not answerable yet.', verdictN: (n, p) => `With only ${n} models and a tie in the index, even a perfect order could not support a conclusion (the smallest possible p value is ${p.toFixed(2)}). More models are needed.`, verdictData: 'More results are needed.', verdictRho: (r, p) => `So far the rank correlation is ${r.toFixed(2)}, with a ${Math.round(p * 100)}% chance that it is positive.`, idx: (s, d) => `Intelligence index: ${s}, read ${d}. It is an outside measure, not ours: each model's best published score at any effort. The models run at lower effort here because of the budget.`, run: 'Run', check: (u, r) => `Same order? Without difficulty weights: ${u}. By mean rank per round: ${r}. If these differ, the order should not be trusted.`, ledgerText: (n, h, v) => `${n} records, latest hash ${h}, chain ${v ? 'valid' : 'BROKEN'}. Questions, forecasts and results can be downloaded and recomputed: `, tierTitle: 'Mean points by difficulty', cover: 'Coverage', voteNote: 'You can pick a side in sports and esports matches until kickoff: one pick per match, changeable. People vote later than the AIs and can see their forecasts, so votes are compared separately and are not in the Oracle Score.', you: 'Your pick', votes: (n) => `${n} human votes`, voteFail: 'The vote did not go through. Please try again.', voteClosed: 'Voting has closed.', humansNone: (m) => `Human votes: a match is scored beside the AIs once it has ${m} votes. They are not part of the score.`, humans: (n, v, p, best) => `Human votes (not in the score): ${n} matches, ${v} votes, ${p} against the baseline. On the same matches the AIs got ${best}.` };
   const COL = { fable: '#0f8b8d', opus: 'var(--pen)', sol: 'var(--accent)', argon: '#7b4fc9', baseline: '#8d989e' };
   const $ = (q) => root.querySelector(q);
   const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   const num = (v, d = 1) => (v == null ? '–' : `${v > 0 ? '+' : ''}${Number(v).toFixed(d)}`);
   const tx = (o) => (o ? esc((ko ? o.ko : o.en) || o.ko || o.en || '') : '');
+  // AI-written reasons: their Markdown links and bold become real ones, after escaping. Only http(s) links.
+  const rich = (o) => tx(o).replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g, '<a href="$2" rel="nofollow ugc noopener" target="_blank">$1</a>').replace(/\*\*(.+?)\*\*/g, '<b>$1</b>');
+  const kst = (iso) => { const t = new Date(Date.parse(iso) + 9 * 3600e3), z = (n) => String(n).padStart(2, '0'); return `${t.getUTCMonth() + 1}/${t.getUTCDate()} ${z(t.getUTCHours())}:${z(t.getUTCMinutes())} KST`; };
   const SHORT = { fable: 'Fable', opus: 'Opus', sol: 'Sol', argon: 'Argon' };
   const nameOf = (d, id) => (id === 'baseline' ? T.baseline : d.table.find((r) => r.id === id)?.name || id);
 
@@ -120,7 +123,7 @@ const limits = [
   function draw(d) {
     const started = Object.values(d.arena_rounds).some((n) => n > 0);
     verdict(d, started);
-    scatter(d);
+    if (started) scatter(d); else indexStrip(d);
     board(d, started);
     arenas(d);
     questions(d);
@@ -147,7 +150,7 @@ const limits = [
     if (!open && !total) return '';
     const mine = store.get(pickKey(round, q.id));
     const label = (o) => (o === 'home' ? q.home || T.home : o === 'away' ? q.away || T.away : T[o] || o);
-    return `<div class="or-vote" data-q="${esc(q.id)}">${q.options.map((o) => {
+    return `<div class="or-vote" data-q="${esc(q.id)}">${open ? `<span class="or-vote-l">${T.you}</span>` : ''}${q.options.map((o) => {
       const share = total ? Math.round(((counts[o] || 0) / total) * 100) : null;
       return `<button type="button" data-choice="${esc(o)}" ${open ? '' : 'disabled'} aria-pressed="${mine === o}"><span>${esc(label(o))}</span>${share == null ? '' : `<b>${share}%</b>`}</button>`;
     }).join('')}<small>${total ? T.votes(total) : ''}</small></div>`;
@@ -177,6 +180,22 @@ const limits = [
     if (started && q.rho != null && q.p_positive != null) text += ' ' + T.verdictRho(q.rho, q.p_positive);
     $('[data-or-verdict]').textContent = text;
     $('[data-or-index]').innerHTML = T.idx('<a hr' + `ef="${esc(q.source.url)}" rel="noopener" target="_blank">${esc(q.source.name)}</a>`, esc(q.source.read));
+  }
+
+  // Before any score: only the index is known, so draw just that instead of empty intervals around zero.
+  function indexStrip(d) {
+    const rows = d.table.filter((r) => r.intelligence != null);
+    const W = Math.max(320, Math.min(760, $('[data-or-scatter]').clientWidth || 760)), H = 96, L = 44, R = 44;
+    const xs = rows.map((r) => r.intelligence), x0 = Math.min(...xs) - 2, x1 = Math.max(...xs) + 2;
+    const x = (v) => L + ((v - x0) / (x1 - x0)) * (W - L - R);
+    const dots = rows.map((r) => {
+      const same = rows.filter((o) => o.intelligence === r.intelligence), off = (same.indexOf(r) - (same.length - 1) / 2) * 16, cx = x(r.intelligence) + off;
+      const anchor = same.length > 1 ? (off < 0 ? 'end' : 'start') : 'middle';
+      const tx0 = same.length > 1 ? cx + (off < 0 ? 4 : -4) : cx;
+      return `<g><title>${esc(r.name)}: ${T.x} ${r.intelligence} (${esc(r.intelligence_effort)})</title><text x="${tx0}" y="26" text-anchor="${anchor}" class="lbl">${SHORT[r.id]}</text><circle cx="${cx}" cy="44" r="7" fill="${COL[r.id]}" stroke="var(--surface)" stroke-width="2"/></g>`;
+    }).join('');
+    const ticks = [...new Set(xs)].map((v) => `<text x="${x(v)}" y="70" text-anchor="middle">${v}</text>`).join('');
+    $('[data-or-scatter]').innerHTML = `<div class="or-chart"><svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${T.x}"><line x1="${L - 20}" x2="${W - R + 20}" y1="44" y2="44" class="base"/>${dots}${ticks}<text x="${W / 2}" y="92" text-anchor="middle" class="ax">${T.x} →</text></svg></div><p class="or-small">${T.indexWait}</p>`;
   }
 
   // Oracle Score with its 95% interval against the outside intelligence index. A model without an index score sits apart.
@@ -220,9 +239,17 @@ const limits = [
     $('[data-or-meta]').textContent = `${T.updated} ${String(d.updated).replace('T', ' ').slice(0, 16)} · v${d.method_version}`;
     const lead = rows.find((r) => rows.every((o) => o === r || (d.beats[r.id]?.[o.id] ?? 0) >= 0.95));
     $('[data-or-status]').textContent = !started ? T.notYet : `${d.provisional ? T.provisional(d.provisional_below) : T.final} ${lead ? T.lead(lead.name, 95) : T.nolead}`;
+    if (!started) {
+      const qs = d.current?.questions || [];
+      $('[data-or-board]').innerHTML = `<ol class="or-board is-wait">${d.table.map((r) => `<li style="--c:${COL[r.id]}">
+        <div class="or-who"><strong>${esc(r.name)}</strong><small>${esc(r.cli)} · ${esc(r.effort)}</small></div>
+        <div class="or-pending"><b>${T.scoreWait}</b>${qs.length ? `<small>${T.submitted(qs.filter((q) => q.forecasts?.[r.id]).length, qs.length)}</small>` : ''}</div>
+      </li>`).join('')}</ol>`;
+      return;
+    }
     $('[data-or-board]').innerHTML = `<ol class="or-board">${rows.map((r) => `<li style="--c:${COL[r.id]}">
       <div class="or-who"><strong>${esc(r.name)}</strong><small>${esc(r.cli)} · ${esc(r.effort)}</small></div>
-      <div class="or-big">${started ? num(r.score) : '–'}</div>
+      <div class="or-big">${num(r.score)}</div>
       <div class="or-bar" title="95%: ${num(r.ci[0])} ~ ${num(r.ci[1])}"><i class="zero" style="left:${at(0)}%"></i><i class="ci" style="left:${at(r.ci[0])}%;width:${at(r.ci[1]) - at(r.ci[0])}%"></i><i class="dot" style="left:${at(r.score)}%"></i></div>
       <div class="or-ci">[${num(r.ci[0], 0)}, ${num(r.ci[1], 0)}]<small>${T.beat} ${Math.round(r.p_beats_baseline * 100)}%${r.coverage != null && r.coverage < 1 ? ` · ${T.cover} ${Math.round(r.coverage * 100)}%` : ''}</small></div>
     </li>`).join('')}</ol>`;
@@ -230,8 +257,13 @@ const limits = [
 
   function arenas(d) {
     const copy = { stock: '<a hr' + `ef="${esc(root.dataset.duel)}">${T.stockMore} →</a>` };
+    $('[data-or-arena-note]').hidden = !Object.values(d.arena_rounds).some((n) => n > 0);
     $('[data-or-arenas]').innerHTML = ['stock', 'sports', 'disaster'].map((a) => {
       const rows = [...d.table].sort((p, q) => q.arenas[a].score - p.arenas[a].score);
+      if (!d.arena_rounds[a]) {
+        const n = (d.current?.questions || []).filter((q) => q.arena === a).length;
+        return `<article class="is-wait"><h3>${T[a]}</h3><p>${T.arenaNote[a]}</p><p class="or-sub">${n ? `${T.arenaCount(n)} · ` : ''}${T.arenaWait}</p>${copy[a] ? `<p class="or-link">${copy[a]}</p>` : ''}</article>`;
+      }
       return `<article><h3>${T[a]}</h3><p class="or-sub">${T.arenaRounds} ${d.arena_rounds[a] || 0}</p><ul>${rows.map((r) => `<li style="--c:${COL[r.id]}"><i></i><span>${SHORT[r.id]}</span><b>${d.arena_rounds[a] ? num(r.arenas[a].score) : '–'}</b><small>[${num(r.arenas[a].ci[0], 0)}, ${num(r.arenas[a].ci[1], 0)}]</small></li>`).join('')}</ul>${copy[a] ? `<p class="or-link">${copy[a]}</p>` : ''}</article>`;
     }).join('');
   }
@@ -257,19 +289,24 @@ const limits = [
       active = arena;
       const qs = c.questions.filter((q) => q.arena === arena);
       const ids = d.table.map((r) => r.id);
-      $('[data-or-questions]').innerHTML = !qs.length ? `<p class="or-sub">${T.noQ}</p>` : `<div class="or-qlist">${qs.map((q) => {
-        const key = q.options[0];
-        const label = (o) => T[o] || o;
+      const label = (o) => T[o] || o;
+      const card = (q) => {
         const vote = arena === 'sports' ? voteBox(q, c.round) : '';
         const state = q.status === 'resolved' ? `<em class="is-done">${T.result}: ${esc(label(q.outcome))}${q.detail ? ` · ${esc(q.detail)}` : ''}</em>` : q.status === 'void' ? `<em>${T.void}</em>` : `<em class="is-open">${T.open}</em>`;
         const row = (id, name, p) => {
           const got = p ? q.options.map((o) => `${label(o)} ${Math.round(p[o] * 100)}%`).join(' · ') : T.missed;
           const pts = q.points?.[id];
-          return `<tr><th style="--c:${COL[id]}"><i></i>${esc(name)}</th><td><span class="or-mini"><span style="width:${p ? p[key] * 100 : 0}%;background:${COL[id]}"></span></span></td><td>${got}</td><td class="or-pts ${pts > 0 ? 'is-up' : pts < 0 ? 'is-down' : ''}">${pts == null || id === 'baseline' ? '' : num(pts, 3)}</td></tr>`;
+          const bar = p ? q.options.map((o, i) => `<span style="width:${p[o] * 100}%;background:${COL[id]};opacity:${[1, 0.55, 0.25][i]}"></span>`).join('') : '';
+          return `<tr><th style="--c:${COL[id]}"><i></i>${esc(name)}</th><td><span class="or-mini">${bar}</span></td><td class="or-got">${got}</td><td class="or-pts ${pts > 0 ? 'is-up' : pts < 0 ? 'is-down' : ''}">${pts == null || id === 'baseline' ? '' : num(pts, 3)}</td></tr>`;
         };
-        const why = ids.map((id) => { const f = c.forecasts?.[id]?.[arena]?.forecasts?.[q.id]; return f?.why && tx(f.why) ? `<li><b>${SHORT[id]}</b> ${tx(f.why)}${tx(f.uncertainty) ? ` <small>${tx(f.uncertainty)}</small>` : ''}</li>` : ''; }).join('');
-        return `<div class="or-q-item">${vote}<details class="or-card"><summary><span class="or-diff is-${q.difficulty}">${T[q.difficulty]}</span><strong>${tx(q.title)}</strong>${state}</summary><div class="or-table"><table>${ids.map((id) => row(id, nameOf(d, id), q.forecasts?.[id])).join('')}${row('baseline', T.baseline, q.baseline)}</table></div><p class="or-small">${tx(q.rule)}</p>${why ? `<ul class="or-why">${why}</ul>` : ''}</details></div>`;
-      }).join('')}</div>`;
+        const why = ids.map((id) => { const f = c.forecasts?.[id]?.[arena]?.forecasts?.[q.id]; return f?.why && tx(f.why) ? `<li><b>${SHORT[id]}</b> ${rich(f.why)}${tx(f.uncertainty) ? ` <small>${rich(f.uncertainty)}</small>` : ''}</li>` : ''; }).join('');
+        const got = ids.map((id) => q.forecasts?.[id]).filter(Boolean);
+        const avg = got.length ? `${T.aiAvg} ${q.options.map((o) => `${label(o)} ${Math.round((got.reduce((t, p) => t + p[o], 0) / got.length) * 100)}%`).join(' · ')}` : '';
+        const title = arena === 'sports' ? tx(q.title).replace(/^[^:]+:\s*/, '') : tx(q.title);
+        return `<div class="or-card"><div class="or-card-head"><span class="or-diff is-${q.difficulty}">${T[q.difficulty]}</span><strong>${title}</strong>${arena === 'sports' ? `<small class="or-when">${kst(q.start)}</small>` : ''}${state}</div>${vote}<details><summary><span>${T.seeAi}</span><small>${avg}</small></summary><div class="or-table"><table>${ids.map((id) => row(id, SHORT[id] || nameOf(d, id), q.forecasts?.[id])).join('')}${row('baseline', T.baseline, q.baseline)}</table></div><p class="or-small">${tx(q.rule)}</p>${why ? `<ul class="or-why">${why}</ul>` : ''}</details></div>`;
+      };
+      const groups = [...new Set(qs.map((q) => q.category))];
+      $('[data-or-questions]').innerHTML = !qs.length ? `<p class="or-sub">${T.noQ}</p>` : groups.map((cat) => `<h3 class="or-cat">${tx(d.categories?.[cat]) || esc(cat)}</h3><div class="or-qlist">${qs.filter((q) => q.category === cat).map(card).join('')}</div>`).join('');
       bindVotes(c, () => show(active));
     };
     tabs($('[data-or-tabs]'), [['sports', T.sports], ['disaster', T.disaster]], show);
@@ -284,7 +321,7 @@ const limits = [
   }
 
   function md(src) {
-    const inline = (s) => esc(s).replace(/\*\*(.+?)\*\*/g, '<b>$1</b>').replace(/`([^`]+)`/g, '<code>$1</code>');
+    const inline = (s) => esc(s).replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g, '<a href="$2" rel="nofollow ugc noopener" target="_blank">$1</a>').replace(/\*\*(.+?)\*\*/g, '<b>$1</b>').replace(/`([^`]+)`/g, '<code>$1</code>');
     const out = []; let list = null;
     const end = () => { if (list) { out.push(`</${list}>`); list = null; } };
     for (const raw of String(src || '').split('\n')) {
@@ -341,7 +378,9 @@ const limits = [
 .or-chart text { fill: var(--muted); }
 .or-chart .lbl { fill: var(--ink); font-weight: 750; }
 .or-chart .ax { font-weight: 700; }
+.or-chart .lbl { paint-order: stroke; stroke: var(--surface); stroke-width: 4px; stroke-linejoin: round; }
 .or-chart .z { stroke: var(--muted); stroke-dasharray: 4 4; }
+.or-chart .base { stroke: var(--line); stroke-width: 2; }
 .or-sec { padding-top: 3.4rem; }
 .or-head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: .4rem 1.4rem; margin-bottom: 1.1rem; padding-bottom: .8rem; border-bottom: 2px solid var(--ink); }
 .or-head h2 { margin: 0; font-size: 1.45rem; font-weight: 820; letter-spacing: -.03em; }
@@ -351,6 +390,10 @@ const limits = [
 .or-board li { display: grid; grid-template-columns: minmax(9rem, 1.2fr) 5rem minmax(6rem, 2fr) minmax(8rem, 1.1fr); gap: 1rem; align-items: center; padding: .95rem 0; border-bottom: 1px solid var(--line); }
 .or-who strong { display: block; font-weight: 800; border-left: 4px solid var(--c); padding-left: .6rem; }
 .or-who small { display: block; padding-left: .85rem; color: var(--muted); font-size: .72rem; }
+.or-board.is-wait li { grid-template-columns: 1fr auto; padding: .75rem 0; }
+.or-pending { text-align: right; }
+.or-pending b { display: block; color: var(--muted); font-size: .86rem; font-weight: 750; }
+.or-pending small { color: var(--muted); font-size: .74rem; font-variant-numeric: tabular-nums; }
 .or-big { font-size: 1.7rem; font-weight: 850; letter-spacing: -.04em; font-variant-numeric: tabular-nums; }
 .or-bar { position: relative; height: 1.1rem; }
 .or-bar i { position: absolute; display: block; }
@@ -361,6 +404,8 @@ const limits = [
 .or-ci small { display: block; color: var(--muted); font-size: .72rem; font-weight: 600; word-break: keep-all; }
 .or-arenas { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr)); gap: 1.6rem; }
 .or-arenas h3 { margin: 0; font-size: 1.1rem; font-weight: 820; }
+.or-arenas .is-wait { padding-top: .8rem; border-top: 1px solid var(--line); }
+.or-arenas .is-wait p:not(.or-sub, .or-link) { margin: .4rem 0; font-size: .9rem; line-height: 1.6; word-break: keep-all; }
 .or-arenas ul { margin: .7rem 0 0; padding: 0; list-style: none; }
 .or-arenas li { display: grid; grid-template-columns: .7rem 1fr auto 4.6rem; gap: .5rem; align-items: baseline; padding: .4rem 0; border-bottom: 1px solid var(--line); font-size: .9rem; font-variant-numeric: tabular-nums; }
 .or-arenas li i { width: .55rem; height: .55rem; border-radius: 50%; background: var(--c); }
@@ -370,35 +415,42 @@ const limits = [
 .or-tabs { display: flex; gap: .4rem; margin-bottom: 1rem; }
 .or-tabs button { padding: .4rem .9rem; border: 1px solid var(--line); border-radius: 999px; background: none; color: var(--muted); font: inherit; font-size: .84rem; font-weight: 750; cursor: pointer; }
 .or-tabs button[aria-selected="true"] { border-color: var(--ink); background: var(--ink); color: var(--surface); }
-.or-qlist { display: grid; gap: .5rem; }
-.or-card { border-bottom: 1px solid var(--line); padding: .55rem 0; }
+.or-cat { margin: 1.6rem 0 .3rem; font-size: 1rem; font-weight: 820; }
+.or-tabs + div .or-cat:first-child { margin-top: .4rem; }
+.or-card { border-bottom: 1px solid var(--line); padding: .8rem 0 .7rem; }
+.or-card-head { display: flex; flex-wrap: wrap; align-items: center; gap: .3rem .7rem; }
+.or-when { color: var(--muted); font-size: .76rem; font-weight: 650; font-variant-numeric: tabular-nums; }
 .or-top { padding-top: 1.6rem; }
 .or-q { margin-top: 3rem; }
 .or-humans { margin: .9rem 0 0; color: var(--muted); font-size: .82rem; line-height: 1.6; word-break: keep-all; }
-.or-vote { display: flex; flex-wrap: wrap; align-items: center; gap: .4rem; padding-top: .7rem; }
+.or-vote { display: flex; flex-wrap: wrap; align-items: center; gap: .4rem; padding-top: .55rem; }
+.or-vote-l { margin-right: .2rem; color: var(--muted); font-size: .76rem; font-weight: 700; }
 .or-vote button { display: inline-flex; gap: .45rem; padding: .35rem .7rem; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); color: var(--ink); font: inherit; font-size: .8rem; font-weight: 700; cursor: pointer; }
 .or-vote button:disabled { cursor: default; color: var(--muted); }
 .or-vote button[aria-pressed="true"] { border-color: var(--ink); box-shadow: inset 0 0 0 1px var(--ink); }
 .or-vote b { font-variant-numeric: tabular-nums; }
 .or-vote small { color: var(--muted); font-size: .74rem; }
-.or-card summary { display: flex; flex-wrap: wrap; align-items: center; gap: .3rem .7rem; cursor: pointer; }
+.or-card summary { display: flex; flex-wrap: wrap; align-items: baseline; gap: .15rem .7rem; margin-top: .45rem; color: var(--accent); font-size: .8rem; font-weight: 750; cursor: pointer; }
+.or-card summary small { color: var(--muted); font-size: .76rem; font-weight: 600; font-variant-numeric: tabular-nums; }
 .or-card strong { flex: 1 1 14rem; font-size: .92rem; font-weight: 700; word-break: keep-all; }
 .or-card em { color: var(--muted); font-size: .76rem; font-style: normal; font-weight: 700; }
 .or-card em.is-done { color: var(--ink); }
-.or-diff { padding: .1rem .5rem; border: 1px solid var(--line); border-radius: 999px; color: var(--muted); font-size: .68rem; font-weight: 800; }
+.or-diff { min-width: 3.4rem; text-align: center; padding: .1rem .5rem; border: 1px solid var(--line); border-radius: 999px; color: var(--muted); font-size: .68rem; font-weight: 800; }
 .or-diff.is-hard { border-color: var(--ink); color: var(--ink); }
 .or-table table { width: 100%; margin-top: .6rem; border-collapse: collapse; font-size: .82rem; font-variant-numeric: tabular-nums; }
 .or-table th, .or-table td { padding: .3rem .6rem .3rem 0; border-bottom: 1px solid var(--line); text-align: left; font-weight: 600; }
 .or-table tbody th i, .or-table th i { display: inline-block; width: .5rem; height: .5rem; margin-right: .4rem; border-radius: 50%; background: var(--c); }
-.or-mini { display: block; width: 4.5rem; height: .4rem; border-radius: 2px; background: var(--soft); overflow: hidden; }
+.or-mini { display: flex; width: 7rem; height: .45rem; border-radius: 2px; background: var(--soft); overflow: hidden; }
 .or-mini span { display: block; height: 100%; }
+.or-got { white-space: nowrap; }
 .or-pts { text-align: right !important; font-weight: 800 !important; }
 .or-scroll { overflow-x: auto; }
 .is-up { color: #1f7a4d; }
 .is-down { color: #c0392b; }
 .or-why { margin: .6rem 0 .3rem; padding: 0; list-style: none; font-size: .82rem; line-height: 1.55; word-break: keep-all; }
 .or-why li { padding: .2rem 0; }
-.or-why small { display: block; color: var(--muted); }
+.or-why small { display: block; color: var(--muted); overflow-wrap: anywhere; }
+.or-why a { text-decoration: underline; }
 .or-docs { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); gap: 2rem; }
 .or-docs h3 { display: flex; align-items: center; gap: .5rem; margin: 0 0 .5rem; font-size: 1rem; font-weight: 820; }
 .or-docs h3 i { width: .6rem; height: .6rem; border-radius: 50%; background: var(--c); }
@@ -424,6 +476,8 @@ const limits = [
   .or-board li { grid-template-columns: 1fr auto; gap: .35rem .8rem; }
   .or-bar { grid-column: 1 / -1; }
   .or-ci { grid-column: 1 / -1; }
+  .or-board.is-wait li { grid-template-columns: 1fr auto; }
+  .or-card .or-table td:nth-child(2) { display: none; }
   .or-q { padding: 1.2rem 1rem 1rem; }
   .or-steps li, .or-rules div { grid-template-columns: 1fr; gap: .15rem; }
 }
