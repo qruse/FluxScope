@@ -4,6 +4,7 @@ import { blogPath, categories, categoryPath, labSectionPath, labSections, projec
 import { useTranslations, type Lang } from '../i18n/ui';
 import LabMark from './LabMark.astro';
 import LabFace from './LabFace.astro';
+import HomeSearch from './HomeSearch.astro';
 import { casesPath, portfolio } from '../lib/portfolio';
 
 interface Props { lang: Lang; }
@@ -60,6 +61,7 @@ const casesHref = casesPath(lang);
 
 <section class="lab-index" aria-labelledby="lab-index-title">
   <div class="shell">
+    <HomeSearch lang={lang} />
     <h2 class="home-section-title" id="lab-index-title">{isKo ? '프로젝트' : 'Projects'}</h2>
     <article class="lab-entry is-active" id="projects" data-face="0">
       <LabMark id="projects" class="lab-entry-num" />

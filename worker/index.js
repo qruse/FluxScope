@@ -647,8 +647,10 @@ async function api(request, env, url, ctx) {
     const q = (url.searchParams.get('q') || '').trim();
     if (!['ko', 'en'].includes(lang) || q.length > 100) return json({ error: 'Invalid query' }, 400);
     if (!q) return json({ posts: [] });
-    const pattern = `%${q.replace(/[\\%_]/g, '\\$&')}%`;
-    const { results } = await env.DB.prepare("SELECT * FROM posts WHERE lang = ? AND (title LIKE ? ESCAPE '\\' OR description LIKE ? ESCAPE '\\' OR body LIKE ? ESCAPE '\\') ORDER BY published_at DESC LIMIT 30").bind(lang, pattern, pattern, pattern).all();
+    // Every word must appear somewhere in the post, in any order.
+    const patterns = [...new Set(q.split(/\s+/))].slice(0, 5).map((word) => `%${word.replace(/[\\%_]/g, '\\$&')}%`);
+    const where = patterns.map(() => "(title LIKE ? ESCAPE '\\' OR description LIKE ? ESCAPE '\\' OR body LIKE ? ESCAPE '\\')").join(' AND ');
+    const { results } = await env.DB.prepare(`SELECT * FROM posts WHERE lang = ? AND ${where} ORDER BY published_at DESC LIMIT 30`).bind(lang, ...patterns.flatMap((pattern) => [pattern, pattern, pattern])).all();
     return json({ posts: results.map(rowToSummary) });
   }
   if (url.pathname === '/api/posts' && request.method === 'POST') {

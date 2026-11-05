@@ -1,0 +1,135 @@
+---
+import { blogPath, withBase } from '../lib/site';
+import type { Lang } from '../i18n/ui';
+
+interface Props { lang: Lang; }
+const { lang } = Astro.props;
+const isKo = lang === 'ko';
+---
+<!-- Site-wide search at the top of the lab home: the D1 articles from /api/search plus the static pages from
+     /search-index/<lang>.json. Without JS the form falls back to the blog search page. -->
+<form class="home-search" role="search" action={blogPath('/search/', lang)} data-home-search data-lang={lang} data-index={withBase(`/search-index/${lang}.json`)}>
+  <label class="sr-only" for="home-search-input">{isKo ? '사이트 검색' : 'Search the site'}</label>
+  <input id="home-search-input" class="search-input" type="search" name="q" maxlength="100" autocomplete="off" placeholder={isKo ? '프로젝트, 스토리, 뉴스, 칼럼 검색' : 'Search projects, stories, news and columns'} />
+  <div class="home-search-panel" data-home-search-panel hidden>
+    <p class="search-status" role="status" data-home-search-status></p>
+    <ul class="search-results" data-home-search-results></ul>
+  </div>
+</form>
+<script>
+  type Item = { label: string; title: string; description: string; url: string; text?: string };
+
+  const form = document.querySelector<HTMLFormElement>('[data-home-search]');
+  const input = form?.querySelector<HTMLInputElement>('input');
+  const panel = form?.querySelector<HTMLElement>('[data-home-search-panel]');
+  const status = form?.querySelector<HTMLElement>('[data-home-search-status]');
+  const list = form?.querySelector<HTMLUListElement>('[data-home-search-results]');
+
+  if (form && input && panel && status && list) {
+    const lang = form.dataset.lang === 'en' ? 'en' : 'ko';
+    const isKo = lang === 'ko';
+    let staticItems: Promise<Item[]> | undefined;
+    let timer: ReturnType<typeof setTimeout>;
+    let requestId = 0;
+
+    const loadStatic = () => {
+      staticItems ??= fetch(form.dataset.index!).then((response) => {
+        if (!response.ok) throw new Error(String(response.status));
+        return response.json() as Promise<Item[]>;
+      }).catch((error) => { staticItems = undefined; throw error; });
+      return staticItems;
+    };
+    const fromApi = async (query: string): Promise<Item[]> => {
+      const response = await fetch(`/api/search?lang=${lang}&q=${encodeURIComponent(query)}`);
+      if (!response.ok) throw new Error(String(response.status));
+      const { posts } = await response.json() as { posts: { kind: string; title: string; description: string; url: string }[] };
+      return posts.map((post) => ({
+        label: post.kind === 'column' ? (isKo ? '칼럼' : 'Columns') : (isKo ? '뉴스' : 'News'),
+        title: post.title,
+        description: post.description,
+        url: post.url,
+      }));
+    };
+    const has = (text: string, tokens: string[]) => tokens.every((token) => text.toLowerCase().includes(token));
+    // Every word must appear somewhere; a match in the title comes first, then one in the description.
+    const rank = (item: Item, tokens: string[]) => (has(item.title, tokens) ? 0 : has(item.description, tokens) ? 1 : 2);
+
+    const render = (items: Item[], partial: boolean) => {
+      list.replaceChildren(...items.map((item) => {
+        const li = document.createElement('li');
+        const label = document.createElement('small');
+        label.textContent = item.label;
+        const link = document.createElement('a');
+        link.href = item.url;
+        link.textContent = item.title;
+        li.append(label, link);
+        if (item.description) {
+          const excerpt = document.createElement('p');
+          excerpt.textContent = item.description;
+          li.append(excerpt);
+        }
+        return li;
+      }));
+      const count = items.length
+        ? (isKo ? `검색 결과 ${items.length}개` : `${items.length} result${items.length === 1 ? '' : 's'}`)
+        : (isKo ? '검색 결과 없음' : 'No results');
+      status.textContent = partial ? `${count} ${isKo ? '(일부를 불러오지 못함)' : '(some results could not be loaded)'}` : count;
+    };
+
+    const search = async () => {
+      const query = input.value.trim();
+      const current = ++requestId;
+      if (!query) {
+        panel.hidden = true;
+        list.replaceChildren();
+        return;
+      }
+      panel.hidden = false;
+      status.textContent = isKo ? '검색 중…' : 'Searching…';
+      const tokens = query.toLowerCase().split(/\s+/);
+      const [local, remote] = await Promise.allSettled([loadStatic(), fromApi(query)]);
+      if (current !== requestId) return;
+      if (local.status === 'rejected' && remote.status === 'rejected') {
+        list.replaceChildren();
+        status.textContent = isKo ? '검색 중 오류가 남. 잠시 후 다시 해 보세요' : 'Search failed. Please try again shortly';
+        return;
+      }
+      const pages = local.status === 'fulfilled' ? local.value.filter((item) => has(`${item.label} ${item.title} ${item.description} ${item.text ?? ''}`, tokens)) : [];
+      const posts = remote.status === 'fulfilled' ? remote.value : [];
+      const items = [...pages, ...posts].map((item, order) => ({ item, order, score: rank(item, tokens) })).sort((a, b) => a.score - b.score || a.order - b.order).map(({ item }) => item);
+      render(items, local.status === 'rejected' || remote.status === 'rejected');
+    };
+
+    input.addEventListener('input', () => {
+      clearTimeout(timer);
+      timer = setTimeout(search, 180);
+    });
+    form.addEventListener('submit', (event) => {
+      event.preventDefault();
+      clearTimeout(timer);
+      void search();
+    });
+    input.addEventListener('focus', () => {
+      loadStatic().catch(() => {});
+      if (input.value.trim()) panel.hidden = false;
+    });
+    form.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape') { panel.hidden = true; input.focus(); }
+    });
+    document.addEventListener('click', (event) => {
+      if (!form.contains(event.target as Node)) panel.hidden = true;
+    });
+  }
+</script>
+<style is:inline>
+  .home-search { position: relative; z-index: 20; width: min(100%, 720px); margin: 0 0 2.2rem; }
+  .home-search .search-input { display: block; }
+  .home-search-panel { position: absolute; inset: calc(100% + .35rem) 0 auto; max-height: min(62vh, 560px); overflow-y: auto; padding: .7rem 1.1rem .4rem; background: var(--surface); border: 1px solid var(--line); box-shadow: 0 10px 28px rgba(27, 38, 43, .16); }
+  .home-search-panel[hidden] { display: none; }
+  .home-search .search-status { margin: 0 0 .5rem; min-height: 0; }
+  .home-search .search-results { max-width: none; margin: 0; }
+  .home-search .search-results li { padding: .8rem 0; }
+  .home-search .search-results small { display: block; margin-bottom: .2rem; color: var(--muted); font-size: .74rem; }
+  .home-search .search-results a { font-size: 1rem; line-height: 1.35; }
+  .home-search .search-results p { display: -webkit-box; overflow: hidden; -webkit-box-orient: vertical; -webkit-line-clamp: 2; font-size: .84rem; line-height: 1.5; }
+</style>
