@@ -95,4 +95,4 @@ RuntimeError: Connection was lost.
 - Test the code that handles the opponent's data as hard as our own model; one correction worked against the KMA for 11 days
 - Do not read rain scores one day at a time; only periods with hundreds of rainy hours mean much
 - Building in retries from the start was the best call; the connection dropped on 5 of 11 mornings and no forecast was missed
-- The next part is the US version against the US National Weather Service; today's forecast is on the [project page](/en/projects/beat-kma/)
+- The next part is the US version against the US National Weather Service; past forecasts are on the [project page](/en/projects/beat-kma/)

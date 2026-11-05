@@ -1,7 +1,8 @@
 ---
-// "Can AI beat the KMA?" project page. The forecast pipeline (weather_forecasting repository, scripts/service.py)
-// uploads latest.json and verify/<base>.json to /api/weather/ once a day. The page draws them with a small
-// built-in tile map (OpenStreetMap standard tiles) and plain SVG; no map or chart library.
+// "Can AI beat the KMA?" project page. The live service stopped after the 2026-11-05 issuance (owner decision 2026-11-06:
+// the GPU goes elsewhere), so the page is a record: archive.json (scores for every live issuance, scripts/service.py archive)
+// and verify/<base>.json (one issuance against observations) under /api/weather/. It draws them with a small built-in
+// tile map (OpenStreetMap standard tiles) and plain SVG; no map or chart library.
 import { getStories } from '../lib/stories';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { storyPath, projects, projectPath } from '../lib/site';
@@ -20,6 +21,20 @@ const test = [
   { label: isKo ? '풍속 MAE' : 'Wind MAE', ours: '0.58m/s', kma: '0.96m/s' },
   { label: isKo ? '비 F1' : 'Rain F1', ours: '0.41', kma: '0.26' },
 ];
+// Every live issuance, 2026-10-13 to 11-05. The page script replaces these with archive.json, which gets the last observations.
+const live = { n: 24, ta: [0.92, 1.267], hm: [5.631, 9.041], ws: [0.631, 1.18], f1: [0.666, 0.413], f1_01: [0.79, 0.639], wins: { ta: 24, hm: 24, ws: 24, f1: '14/23', f1_01: '16/24' }, hours: 105472 };
+const fewer = (k: 'ta' | 'hm' | 'ws') => `${Math.round(100 * (1 - live[k][0] / live[k][1]))}%`;
+const gains = [
+  { k: 'ta', label: isKo ? '기온 오차' : 'Temperature error' },
+  { k: 'hm', label: isKo ? '습도 오차' : 'Humidity error' },
+  { k: 'ws', label: isKo ? '풍속 오차' : 'Wind error' },
+] as const;
+const liveRows = [
+  { k: 'ta', label: isKo ? '기온 MAE' : 'Temp MAE', d: 2, u: isKo ? '℃' : ' °C' },
+  { k: 'hm', label: isKo ? '습도 MAE' : 'Humidity MAE', d: 1, u: '%' },
+  { k: 'ws', label: isKo ? '풍속 MAE' : 'Wind MAE', d: 2, u: 'm/s' },
+  { k: 'f1', label: isKo ? '비 F1' : 'Rain F1', d: 2, u: '' },
+] as const;
 const vars = isKo
   ? [['ta', '기온'], ['pop', '강수확률'], ['ws', '바람'], ['hm', '습도']]
   : [['ta', 'Temp'], ['pop', 'Rain chance'], ['ws', 'Wind'], ['hm', 'Humidity']];
@@ -30,9 +45,27 @@ const vars = isKo
       <div class="section-kicker">{isKo ? '프로젝트' : 'Project'}</div>
       <h1>{isKo ? project.nameKo : project.name}</h1>
       <p>{isKo ? project.summaryKo : project.summary}</p>
+      <section class="wx-off">
+        <h2>{isKo ? '지금은 서비스를 꺼 뒀음 ㅜㅜ' : 'The live service is switched off for now :('}</h2>
+        <p>{isKo
+          ? '원래는 매일 아침 전국 97개 관측소 예보를 내는 라이브 서비스였음. 근데 GPU를 다른 데 써야 해서 11월 5일 발표를 끝으로 멈췄음. 그래서 새 예보는 없지만, 아래에서 지난 예보와 실제 관측, 기상청과의 성적을 전부 볼 수 있음'
+          : 'This used to be a live service with a new forecast for 97 stations every morning. The GPU is needed elsewhere, so it stopped after the November 5 issuance. There are no new forecasts, but every past forecast, what was actually observed and the score against the KMA stay up below'}</p>
+      </section>
       <div class="wx-badge">
-        <p class="wx-badge-title">{isKo ? '테스트 기간엔 기상청보다 정확했음' : 'More accurate than the KMA in the test period'}</p>
+        <p class="wx-badge-title">{isKo ? <>실제 운영 <span data-live-n>{live.n}</span>일 내내 기상청보다 정확했음</> : <>More accurate than the KMA on all <span data-live-n>{live.n}</span> days of live service</>}</p>
+        <div class="wx-gains">
+          {gains.map((g) => <p><b data-live-gain={g.k}>{fewer(g.k)}</b><span>{isKo ? `${g.label} 더 작음` : `less ${g.label.toLowerCase()}`}</span><small>{isKo ? <>발표 <span data-live-n>{live.n}</span>번 중 <span data-live-win={g.k}>{live.wins[g.k]}</span>번 승</> : <>won <span data-live-win={g.k}>{live.wins[g.k]}</span> of <span data-live-n>{live.n}</span> issuances</>}</small></p>)}
+        </div>
         <table>
+          <caption>{isKo ? '실제 운영 (2026년 10월 13일~11월 5일 발표)' : 'Live service (issued October 13 to November 5, 2026)'}</caption>
+          <thead><tr><th></th>{liveRows.map((r) => <th>{r.label}</th>)}</tr></thead>
+          <tbody>
+            <tr class="is-ours"><th>{isKo ? '우리 AI' : 'Our AI'}</th>{liveRows.map((r) => <td data-live-v={`${r.k}:0:${r.d}:${r.u}`}>{live[r.k][0].toFixed(r.d)}{r.u}</td>)}</tr>
+            <tr><th>{isKo ? '기상청' : 'KMA'}</th>{liveRows.map((r) => <td data-live-v={`${r.k}:1:${r.d}:${r.u}`}>{live[r.k][1].toFixed(r.d)}{r.u}</td>)}</tr>
+          </tbody>
+        </table>
+        <table>
+          <caption>{isKo ? '테스트 기간 (2026년 7월~10월 12일 발표 33번)' : 'Test period (33 issuances, July to October 12, 2026)'}</caption>
           <thead><tr><th></th>{test.map((t) => <th>{t.label}</th>)}</tr></thead>
           <tbody>
             <tr class="is-ours"><th>{isKo ? '우리 AI' : 'Our AI'}</th>{test.map((t) => <td>{t.ours}</td>)}</tr>
@@ -41,8 +74,8 @@ const vars = isKo
         </table>
         <p class="wx-cost"><b>{isKo ? '총 개발 비용 약 2만 원' : 'Total development cost: about 20,000 KRW'}</b>{isKo ? ' · Colab 구독비와 Claude 토큰 사용량이 전부임' : ' (roughly 15 USD) · just a Colab subscription and Claude tokens'}</p>
         <p class="wx-note">{isKo
-          ? '2026년 7월~10월 12일 발표 33번 · ASOS 97곳 · 발표 후 48시간 기준. 한정된 기간의 결과이고 다른 계절·큰 사건까지 이긴다는 뜻은 아님. 기상청 값은 5km 격자 예보라, 관측소별 평균 오차를 보정해 줘도(기온 1.02℃) 우리가 앞섰음. 이슬비까지 비로 치는 0.1mm 기준(약한 비)에서도 F1 0.51로 기상청 0.37보다 높았음.'
-          : '33 issuances from July to October 12, 2026 · 97 ASOS stations · 48 hours after issuance. A limited period; it does not show wins in every season or major event. KMA values are 5 km grid forecasts; even with its per-station bias removed (1.02 °C) ours stayed ahead. Counting drizzle as rain (0.1 mm, light rain), our F1 was 0.51 against the KMA’s 0.37.'}</p>
+          ? <>ASOS 97곳 · 발표 후 48시간 기준. 여름부터 가을까지의 결과이고 겨울이나 큰 사건까지 이긴다는 뜻은 아님. 비는 기온만큼 압도적이지 않았음: 운영 기간 비 F1은 발표 <span data-live-win="f1">{live.wins.f1}</span>번 앞섰고, 비가 몇 시간뿐인 날엔 진 적도 있음. 이슬비까지 비로 치는 0.1mm 기준 F1은 운영 기간 <span data-live-v="f1_01:0:2:">{live.f1_01[0].toFixed(2)}</span> 대 <span data-live-v="f1_01:1:2:">{live.f1_01[1].toFixed(2)}</span>, 테스트 기간 0.51 대 0.37. 테스트 기간의 기상청 값은 5km 격자 예보라, 관측소별 평균 오차를 보정해 줘도(기온 1.02℃) 우리가 앞섰음.</>
+          : <>97 ASOS stations · 48 hours after issuance. These results run from summer to autumn; they do not show wins in winter or in major events. Rain was less one-sided than temperature: our live rain F1 led in <span data-live-win="f1">{live.wins.f1}</span> issuances, and we lost some days with only a few hours of rain. Counting drizzle as rain (0.1 mm), F1 was <span data-live-v="f1_01:0:2:">{live.f1_01[0].toFixed(2)}</span> against <span data-live-v="f1_01:1:2:">{live.f1_01[1].toFixed(2)}</span> live and 0.51 against 0.37 in the test. Test-period KMA values are 5 km grid forecasts; even with their per-station bias removed (1.02 °C) ours stayed ahead.</>}</p>
       </div>
     </div>
   </header>
@@ -61,8 +94,10 @@ const vars = isKo
   <div class="wx-layout shell" data-wx data-lang={lang} data-src="/api/weather/">
     <div class="wx-main">
       <section aria-labelledby="wx-fc-title">
-        <h2 id="wx-fc-title" class="wx-h2"><span class="pen-under">{isKo ? '우리 AI vs 기상청 예보' : 'Our AI vs the KMA forecast'}</span></h2>
-        <p class="wx-meta" data-wx-meta>{isKo ? '예보를 불러오는 중…' : 'Loading the forecast…'}</p>
+        <h2 id="wx-fc-title" class="wx-h2"><span class="pen-under">{isKo ? '지난 예보 다시 보기' : 'Past forecasts'}</span></h2>
+        <p class="wx-meta">{isKo ? '발표를 고르면 그날 우리 AI와 기상청이 낸 48시간 예보와 실제 관측을 볼 수 있음.' : 'Pick an issuance to see the 48-hour forecasts from our AI and the KMA, and what was actually observed.'}</p>
+        <label class="wx-pick" hidden data-wx-pick>{isKo ? '발표' : 'Issued'} <select data-wx-run></select></label>
+        <p class="wx-meta" data-wx-meta>{isKo ? '기록을 불러오는 중…' : 'Loading the record…'}</p>
 
         <div class="wx-now" hidden data-wx-now>
           <div class="wx-now-head">
@@ -93,20 +128,19 @@ const vars = isKo
 
         <div class="wx-daily" hidden data-wx-daily></div>
         <div class="wx-hours-wrap" hidden data-wx-hours-wrap><table class="wx-hours" data-wx-hours></table></div>
+        <div class="wx-replay" hidden data-wx-replay>
+          <p class="wx-meta" data-wx-replay-meta></p>
+          <svg class="wx-chart" viewBox="0 0 640 250" data-wx-replay-chart role="img" aria-label={isKo ? '지난 예보와 관측' : 'Past forecast and observations'}></svg>
+          <p class="wx-key"><span class="k-ours">{isKo ? '우리 AI' : 'Our AI'}</span><span class="k-kma">{isKo ? '기상청' : 'KMA'}</span><span class="k-obs">{isKo ? '관측' : 'Observed'}</span></p>
+        </div>
       </section>
 
       <div data-ad></div>
 
       <section aria-labelledby="wx-week-title">
-        <h2 id="wx-week-title" class="wx-h2"><span class="pen-under">{isKo ? '지난 7일 성적표' : 'Last 7 days'}</span></h2>
-        <p class="wx-meta">{isKo ? '지난 발표들을 실제 ASOS 관측과 맞춰 본 결과. 굵은 쪽이 이긴 쪽, MAE는 낮을수록 · F1은 높을수록 좋음. 비 F1은 1mm 이상, 약한 비 F1은 이슬비까지 넣은 0.1mm 이상 기준.' : 'Past issuances checked against ASOS observations. Bold marks the winner; lower MAE and higher F1 are better. Rain F1 counts 1 mm or more; light-rain F1 counts 0.1 mm or more, drizzle included.'}</p>
+        <h2 id="wx-week-title" class="wx-h2"><span class="pen-under">{isKo ? '전체 성적표' : 'Full scorecard'}</span></h2>
+        <p class="wx-meta">{isKo ? '운영 기간 발표 전부를 실제 ASOS 관측과 맞춰 본 결과. 굵은 쪽이 이긴 쪽, MAE는 낮을수록 · F1은 높을수록 좋음. 비 F1은 1mm 이상, 약한 비 F1은 이슬비까지 넣은 0.1mm 이상 기준.' : 'Every live issuance checked against ASOS observations. Bold marks the winner; lower MAE and higher F1 are better. Rain F1 counts 1 mm or more; light-rain F1 counts 0.1 mm or more, drizzle included.'}</p>
         <div class="wx-table-wrap"><table class="wx-week" data-wx-week></table></div>
-        <div class="wx-replay" hidden data-wx-replay>
-          <label>{isKo ? '다시 보기' : 'Replay'} <select data-wx-run></select></label>
-          <p class="wx-meta" data-wx-replay-meta></p>
-          <svg class="wx-chart" viewBox="0 0 640 250" data-wx-replay-chart role="img" aria-label={isKo ? '지난 예보와 관측' : 'Past forecast and observations'}></svg>
-          <p class="wx-key"><span class="k-ours">{isKo ? '우리 AI' : 'Our AI'}</span><span class="k-kma">{isKo ? '기상청' : 'KMA'}</span><span class="k-obs">{isKo ? '관측' : 'Observed'}</span></p>
-        </div>
       </section>
     </div>
 
@@ -116,8 +150,8 @@ const vars = isKo
         {stories.map((s) => <li><a href={storyPath(s.id.split('/').pop()!, lang)}><span>{isKo ? `${s.data.part}편` : `Part ${s.data.part}`}</span>{s.data.title}</a></li>)}
       </ol>
       <p class="wx-side-note">{isKo
-        ? '매일 05시 발표 기준으로 48시간 예보를 냄. 우리 모델: Aurora 1.5(고정) + 관측소 보정 헤드(head) 앙상블.'
-        : 'A 48-hour forecast from the 05:00 KST issuance every day. Model: frozen Aurora 1.5 plus an ensemble of station heads.'}</p>
+        ? '10월 13일부터 11월 5일까지 매일 05시 발표 기준으로 48시간 예보를 냈음. 우리 모델: Aurora 1.5(고정) + 관측소 보정 헤드(head) 앙상블.'
+        : 'A 48-hour forecast from the 05:00 KST issuance every day from October 13 to November 5. Model: frozen Aurora 1.5 plus an ensemble of station heads.'}</p>
     </aside>
   </div>
   <div class="shell">
@@ -133,9 +167,9 @@ const vars = isKo
   type Run = { base: string; times: string[]; stations: Record<string, Stn> };
   type Score = Record<string, number | null>;
   type Site = {
-    updated: string; cut: number; cut01?: number | null; forecast: Run;
+    updated: string; cut: number; cut01?: number | null;
     stations: { stn: number; name: string; nameEn: string; lat: number; lon: number }[];
-    week: null | { runs: ({ base: string; ours: Score; kma: Score })[]; total: { ours: Score; kma: Score }; stations: Record<string, { ours: Score; kma: Score }> };
+    live: { runs: ({ base: string; partial?: boolean; ours: Score; kma: Score })[]; total: { ours: Score; kma: Score }; wins: Record<string, [number, number]>; stations: Record<string, { ours: Score; kma: Score }> };
   };
 
   const root = document.querySelector<HTMLElement>('[data-wx]');
@@ -145,11 +179,34 @@ const vars = isKo
     const ko = root.dataset.lang === 'ko';
     const $ = <T extends Element>(s: string) => root.querySelector<T>(s)!;
     const T = ko
-      ? { fail: '예보를 불러오지 못했음. 잠시 뒤 다시 열어 주셈.', issued: '발표', updated: '갱신', ours: '우리 AI', kma: '기상청', obs: '관측', sky: '하늘', temp: '기온', pop: '강수확률', rn: '강수량', ws: '풍속', hm: '습도', am: '오전', pm: '오후', none: '아직 채점할 지난 예보가 없음', total: '7일 합계', run: '발표', f1: '비 F1', f101: '약한 비 F1', d1: '약한 비', st: '이 관측소', wd: ['일', '월', '화', '수', '목', '금', '토'], h: '시' }
-      : { fail: 'Could not load the forecast. Please try again later.', issued: 'Issued', updated: 'updated', ours: 'Our AI', kma: 'KMA', obs: 'Observed', sky: 'Sky', temp: 'Temp', pop: 'Rain chance', rn: 'Rain', ws: 'Wind', hm: 'Humidity', am: 'AM', pm: 'PM', none: 'No past forecasts to score yet', total: '7-day total', run: 'Issued', f1: 'Rain F1', f101: 'Light-rain F1', d1: 'Light rain', st: 'This station', wd: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'], h: ':00' };
+      ? { fail: '기록을 불러오지 못했음. 잠시 뒤 다시 열어 주셈.', partial: '일부 채점', issued: '발표', ours: '우리 AI', kma: '기상청', obs: '관측', sky: '하늘', temp: '기온', pop: '강수확률', rn: '강수량', ws: '풍속', hm: '습도', am: '오전', pm: '오후', total: '전체 합계', run: '발표', f1: '비 F1', f101: '약한 비 F1', d1: '약한 비', st: '이 관측소', wd: ['일', '월', '화', '수', '목', '금', '토'], h: '시' }
+      : { fail: 'Could not load the record. Please try again later.', partial: 'partly scored', issued: 'Issued', ours: 'Our AI', kma: 'KMA', obs: 'Observed', sky: 'Sky', temp: 'Temp', pop: 'Rain chance', rn: 'Rain', ws: 'Wind', hm: 'Humidity', am: 'AM', pm: 'PM', total: 'Total', run: 'Issued', f1: 'Rain F1', f101: 'Light-rain F1', d1: 'Light rain', st: 'This station', wd: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'], h: ':00' };
     const src = root.dataset.src!;
-    let site: Site;
-    try { site = await (await fetch(`${src}latest.json`)).json(); } catch { $('[data-wx-meta]').textContent = T.fail; return; }
+    const runKey = (base: string) => base.replace(/[-T:]/g, '').slice(0, 10);
+    const cache: Record<string, Run> = {};
+    const loadRun = async (base: string) => (cache[runKey(base)] ??= await (await fetch(`${src}verify/${runKey(base)}.json`)).json());
+    let site: Site, fc: Run;
+    try {
+      site = await (await fetch(`${src}archive.json`)).json();
+      fc = await loadRun(site.live.runs[site.live.runs.length - 1].base);
+    } catch { $('[data-wx-meta]').textContent = T.fail; return; }
+
+    // The headline numbers come from the archive, which gets the last observations after the service stopped.
+    const wk = site.live;
+    document.querySelectorAll<HTMLElement>('[data-live-n]').forEach((e) => { e.textContent = String(wk.runs.length); });
+    document.querySelectorAll<HTMLElement>('[data-live-gain]').forEach((e) => {
+      const k = e.dataset.liveGain!, a = wk.total.ours[k], b = wk.total.kma[k];
+      if (a != null && b != null) e.textContent = `${Math.round(100 * (1 - a / b))}%`;
+    });
+    document.querySelectorAll<HTMLElement>('[data-live-win]').forEach((e) => {
+      const [w, n] = wk.wins[e.dataset.liveWin!];
+      e.textContent = w === n ? String(w) : `${w}/${n}`;
+    });
+    document.querySelectorAll<HTMLElement>('[data-live-v]').forEach((e) => {
+      const [k, who, d, u] = e.dataset.liveV!.split(':');
+      const v = (who === '0' ? wk.total.ours : wk.total.kma)[k];
+      if (v != null) e.textContent = v.toFixed(Number(d)) + u;
+    });
 
     const NS = 'http://www.w3.org/2000/svg';
     const el = (tag: string, attrs: Record<string, string | number>, parent?: Element, text?: string) => {
@@ -166,7 +223,8 @@ const vars = isKo
     const dow = (iso: string) => T.wd[new Date(`${day(iso)}T12:00:00Z`).getUTCDay()];
     const when = (iso: string) => `${md(iso)}(${dow(iso)}) ${hour(iso)}${T.h}`;
     const name = (stn: number | string) => { const s = site.stations.find((x) => String(x.stn) === String(stn)); return s ? (ko ? s.name : s.nameEn) : String(stn); };
-    const fc = site.forecast, cut = site.cut * 100, N = fc.times.length;
+    const cut = site.cut * 100;
+    let N = fc.times.length;
     // Light rain (0.1 mm or more): our separate classifier, shown only when the 1 mm rain call is off.
     const cut01 = site.cut01 == null ? null : site.cut01 * 100;
     const units: Record<string, string> = { ta: '°', pop: '%', ws: '', hm: '%' };
@@ -192,11 +250,8 @@ const vars = isKo
     const value = (s: Stn | undefined, who: 'ours' | 'kma', v: string, i: number) => s?.[who]?.[v]?.[i] ?? null;
 
     let ti = 0, vKey = 'ta', curStn = fc.stations['108'] ? '108' : Object.keys(fc.stations)[0];
-    // Start at the forecast hour closest to now (Korean time).
-    const nowKst = new Date(Date.now() + 9 * 3600e3).toISOString().slice(0, 13);
-    const near = fc.times.findIndex((t) => t.slice(0, 13) >= nowKst);
-    ti = near < 0 ? N - 1 : near;
-    $('[data-wx-meta]').textContent = `${T.issued} ${fc.base.replace('T', ' ')} KST · ${T.updated} ${site.updated.replace('T', ' ')}`;
+    const setMeta = () => { $('[data-wx-meta]').textContent = `${T.issued} ${fc.base.replace('T', ' ')} KST`; };
+    setMeta();
 
     // ---- Station card for the selected hour
     function nowCard() {
@@ -329,8 +384,11 @@ const vars = isKo
 
     // ---- Time slider with day marks
     const slider = $<HTMLInputElement>('[data-wx-slider]');
-    slider.max = String(N - 1); slider.value = String(ti);
-    $('[data-wx-slider-days]').innerHTML = fc.times.map((t, i) => (i === 0 || hour(t) === 0 ? `<span style="left:${(100 * i / (N - 1)).toFixed(2)}%">${md(t)}(${dow(t)})</span>` : '')).join('');
+    const sliderDays = () => {
+      slider.max = String(N - 1); slider.value = String(ti);
+      $('[data-wx-slider-days]').innerHTML = fc.times.map((t, i) => (i === 0 || hour(t) === 0 ? `<span style="left:${(100 * i / (N - 1)).toFixed(2)}%">${md(t)}(${dow(t)})</span>` : '')).join('');
+    };
+    sliderDays();
     slider.addEventListener('input', () => setTime(Number(slider.value)));
     const varBox = $('[data-wx-vars]');
     varBox.addEventListener('click', (e) => {
@@ -421,11 +479,9 @@ const vars = isKo
     [...site.stations].sort((a, b) => name(a.stn).localeCompare(name(b.stn), ko ? 'ko' : 'en')).forEach((s) => stnSelect.add(new Option(name(s.stn), String(s.stn))));
     stnSelect.addEventListener('change', () => select(stnSelect.value));
 
-    // ---- Last 7 days: one row per issuance plus the total and the selected station; the better side is bold.
+    // ---- Scorecard: the total, the selected station, then one row per issuance, newest first; the better side is bold.
     function weekTable() {
       const tbl = $('[data-wx-week]');
-      const wk = site.week;
-      if (!wk) { tbl.innerHTML = `<caption>${T.none}</caption>`; return; }
       const has01 = wk.total.ours.f1_01 !== undefined;
       const cols: [string, number, number][] = [['ta', 2, 1], ['hm', 1, 1], ['ws', 2, 1], ['f1', 2, -1], ...(has01 ? [['f1_01', 2, -1] as [string, number, number]] : [])];
       const cells = (o: Score, k: Score) => cols.map(([key, d, dir]) => {
@@ -437,8 +493,8 @@ const vars = isKo
       const row = (th: string, s: { ours: Score; kma: Score }, cls = '') => `<tr class="${cls}"><th>${th}</th>${cells(s.ours, s.kma)}</tr>`;
       const st = wk.stations[curStn];
       tbl.innerHTML = `<thead><tr><th>${T.run}</th><th>${T.temp} MAE</th><th>${T.hm} MAE</th><th>${T.ws} MAE</th><th>${T.f1}</th>${has01 ? `<th>${T.f101}</th>` : ''}</tr><tr class="wx-sub"><th></th>${`<th><span>${T.ours}</span><span class="k">${T.kma}</span></th>`.repeat(cols.length)}</tr></thead><tbody>`
-        + wk.runs.map((r) => row(when(r.base), r)).join('')
-        + row(T.total, wk.total, 'is-total') + (st ? row(`${T.st}: ${name(curStn)}`, st, 'is-station') : '') + '</tbody>';
+        + row(T.total, wk.total, 'is-total') + (st ? row(`${T.st}: ${name(curStn)}`, st, 'is-station') : '')
+        + wk.runs.slice().reverse().map((r) => row(`${when(r.base)}${r.partial ? ` <small>${T.partial}</small>` : ''}`, r)).join('') + '</tbody>';
     }
 
     // ---- Replay: a past issuance against what was observed
@@ -476,20 +532,18 @@ const vars = isKo
       s.obs.rn.forEach((r, i) => { if (r != null && r >= 1) el('rect', { x: x(i) - bw, y: rt + rh + 2, width: bw * 2, height: 4, class: 'wx-bar-obs' }, svg); });
     }
     const runSelect = $<HTMLSelectElement>('[data-wx-run]');
-    const cache: Record<string, Run> = {};
-    async function replay() {
-      if (!site.week?.runs.length) return;
-      const base = runSelect.value || site.week.runs[site.week.runs.length - 1].base;
-      const key = base.replace(/[-T:]/g, '').slice(0, 10);
-      try { cache[key] ??= await (await fetch(`${src}verify/${key}.json`)).json(); } catch { return; }
-      $<HTMLElement>('[data-wx-replay]').hidden = false;
-      $('[data-wx-replay-meta]').textContent = `${name(curStn)} · ${T.issued} ${base.replace('T', ' ')}`;
-      chart($('[data-wx-replay-chart]'), cache[key], curStn);
+    function replay() {
+      $('[data-wx-replay-meta]').textContent = `${name(curStn)} · ${T.issued} ${fc.base.replace('T', ' ')}`;
+      chart($('[data-wx-replay-chart]'), fc, curStn);
     }
-    site.week?.runs.slice().reverse().forEach((r) => runSelect.add(new Option(when(r.base), r.base)));
-    runSelect.addEventListener('change', replay);
+    wk.runs.slice().reverse().forEach((r) => runSelect.add(new Option(when(r.base), r.base)));
+    runSelect.addEventListener('change', async () => {
+      try { fc = await loadRun(runSelect.value); } catch { $('[data-wx-meta]').textContent = T.fail; return; }
+      N = fc.times.length; ti = 0;
+      setMeta(); sliderDays(); select(curStn); setTime(0);
+    });
 
-    for (const s of ['[data-wx-now]', '[data-wx-mapbox]', '[data-wx-daily]', '[data-wx-hours-wrap]']) $<HTMLElement>(s).hidden = false;
+    for (const s of ['[data-wx-pick]', '[data-wx-now]', '[data-wx-mapbox]', '[data-wx-daily]', '[data-wx-hours-wrap]', '[data-wx-replay]']) $<HTMLElement>(s).hidden = false;
     pinText(); select(curStn); setTime(ti);
   }
 </script>
@@ -505,7 +559,20 @@ const vars = isKo
   .i-dot { fill: none; stroke: #3b82d6; stroke-width: 3.2; stroke-linecap: round; }
   .wx-i { display: inline-block; width: 28px; height: 28px; vertical-align: middle; }
   .wx-i-big { width: 56px; height: 56px; }
-  .wx-badge { max-width: 640px; margin-top: 1.6rem; padding: 1rem 1.2rem; background: var(--surface); box-shadow: 0 1px 2px rgba(0, 0, 0, .08), 0 12px 20px -16px rgba(0, 0, 0, .45); }
+  .wx-off { max-width: 640px; margin-top: 1.6rem; padding: 1.1rem 1.2rem; border: 1.5px solid color-mix(in srgb, var(--accent) 60%, var(--line)); border-radius: 14px; background: var(--surface); }
+  .wx-off h2 { margin: 0 0 .5rem; font-size: 1.15rem; font-weight: 800; }
+  .wx-off p { margin: 0; line-height: 1.7; }
+  .wx-gains { display: grid; grid-template-columns: repeat(3, 1fr); gap: .8rem; margin: .4rem 0 1rem; }
+  .wx-gains p { display: grid; gap: .1rem; margin: 0; }
+  .wx-gains b { color: var(--accent); font-size: 2.1rem; font-weight: 850; letter-spacing: -.03em; line-height: 1.1; font-variant-numeric: tabular-nums; }
+  .wx-gains span { color: var(--ink); font-size: .84rem; font-weight: 700; }
+  .wx-gains small { color: var(--muted); font-size: .74rem; }
+  .wx-gains small span { color: inherit; font-size: inherit; font-weight: inherit; }
+  .wx-badge caption { padding: .9rem 0 .3rem; color: var(--ink); font-size: .82rem; font-weight: 750; text-align: left; }
+  .wx-pick { font-weight: 800; font-size: .9rem; }
+  .wx-pick select { margin-left: .3rem; padding: .4rem .6rem; border: 1px solid var(--line); border-radius: 8px; background: var(--bg); color: var(--ink); font: inherit; }
+  .wx-week th small { display: block; color: var(--muted); font-size: .68rem; font-weight: 600; }
+  .wx-badge { max-width: 640px; margin-top: 1rem; padding: 1rem 1.2rem; background: var(--surface); box-shadow: 0 1px 2px rgba(0, 0, 0, .08), 0 12px 20px -16px rgba(0, 0, 0, .45); }
   .wx-badge-title { margin: 0 0 .6rem !important; color: var(--ink) !important; font-weight: 800; }
   .wx-badge-title::before { content: '✓ '; color: var(--accent); }
   .wx-badge table, .wx-week { width: 100%; border-collapse: collapse; font-size: .86rem; font-variant-numeric: tabular-nums; }

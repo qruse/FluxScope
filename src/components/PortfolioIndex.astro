@@ -68,7 +68,7 @@ const num = (id: string) => String(sections.findIndex(([s]) => s === id) + 1).pa
             <p class="pf-copy">{isKo ? weather.summaryKo : weather.summary}</p>
             <p class="pf-stack">Aurora 1.5 <i>·</i> PyTorch <i>·</i> LightGBM <i>·</i> Cloudflare Workers</p>
             <div class="pf-actions">
-              <a class="lab-cta" href={projectPath(weather.id, lang)}>{L('오늘 예보 보기', "See today's forecast")}<span aria-hidden="true">→</span></a>
+              <a class="lab-cta" href={projectPath(weather.id, lang)}>{L('지난 예보 보기', 'See past forecasts')}<span aria-hidden="true">→</span></a>
               <a class="pf-link" href={labSectionPath(stories, lang)}>{L('만든 과정 1~4편', 'How it was built')} →</a>
             </div>
           </div>
