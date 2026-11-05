@@ -1,6 +1,6 @@
 ---
 import { getStories } from '../lib/stories';
-import { blogPath, categories, categoryPath, labSectionPath, labSections, projectPath, projects, storyPath, youtubeChannel, type Category } from '../lib/site';
+import { blogPath, categories, categoryPath, labSectionPath, labSections, projectPath, projects, projectThumb, storyPath, storyThumb, youtubeChannel, type Category } from '../lib/site';
 import { useTranslations, type Lang } from '../i18n/ui';
 import LabMark from './LabMark.astro';
 import LabFace from './LabFace.astro';
@@ -28,13 +28,6 @@ const homeLimit = 5;
 const latestProjects = [...projects].sort((a, b) => b.addedAt.localeCompare(a.addedAt)).slice(0, homeLimit);
 const latestStories = [...stories].sort((a, b) => b.data.publishedAt.getTime() - a.data.publishedAt.getTime() || b.data.part - a.data.part).slice(0, homeLimit);
 const projectName = (id: string) => { const p = projects.find((x) => x.id === id); return isKo ? p?.nameKo : p?.name; };
-// The pinned charts come from the weather project.
-const weatherStories = stories.filter((s) => s.data.project === 'beat-kma');
-const storyPins = [
-  { part: 2, img: 'part2-pipeline', h: 523, ko: '2편 데이터 흐름도', en: 'Part 2 data flow chart' },
-  { part: 3, img: 'part3-zeroshot', h: 509, ko: '3편 제로샷 검증 점수 차트', en: 'Part 3 zero-shot validation chart' },
-  { part: 4, img: 'part4-test', h: 537, ko: '4편 테스트 기간 점수 차트', en: 'Part 4 test-period score chart' },
-];
 // The channel's five newest uploads, newest first, updated by hand from its feed. The first three are pinned up with a frame.
 const islandShort = (part: number) => ({ tag: isKo ? '무인도' : 'Island', title: isKo ? `AI가 무인도에서 살아남을 수 있을까? (${part})` : `Can an AI survive on a desert island? (${part})` });
 const pinnedVideos = [
@@ -70,18 +63,21 @@ const casesHref = casesPath(lang);
       <LabMark id="projects" class="lab-entry-num" />
       <div class="lab-entry-copy">
         <h3><a class="pen-under" href={labSectionPath(labSections[0], lang)}>{isKo ? '프로젝트' : 'Projects'}</a></h3>
-        {latestProjects.map((project) => (
-          <>
-            <p><a class="lab-project-link" href={projectPath(project.id, lang)}>{isKo ? project.nameKo : project.name}</a></p>
-            <p>{isKo ? project.summaryKo : project.summary}</p>
-          </>
-        ))}
+        <ol class="lab-parts lab-rows">
+          {latestProjects.map((project) => (
+            <li><a class="lab-project-link" href={projectPath(project.id, lang)}><img src={projectThumb(project.id)} width="720" height="480" loading="lazy" decoding="async" alt="" /><span class="lab-parts-copy">{isKo ? project.nameKo : project.name}<small>{isKo ? project.taglineKo : project.tagline}</small></span></a></li>
+          ))}
+        </ol>
         <a class="lab-cta" href={labSectionPath(labSections[0], lang)}>{isKo ? `프로젝트 전체 보기 · ${projects.length}개` : `All ${projects.length} projects`}<span aria-hidden="true">→</span></a>
       </div>
-      <!-- A capture of the forecast page itself: our AI vs the KMA for Seoul and the station map. -->
-      <a class="lab-shot taped" href={projectPath('beat-kma', lang)} aria-label={isKo ? '오늘 예보 화면으로 이동' : "Open today's forecast"}>
-        <img src="/images/projects/beat-kma-forecast.webp" width="1100" height="1051" loading="lazy" decoding="async" alt={isKo ? '서울 기온을 우리 AI와 기상청 예보로 나란히 보여주고 전국 관측소 지도를 띄운 예보 화면' : 'Forecast page showing our AI and the KMA side by side for Seoul above a map of station forecasts'} />
-      </a>
+      <!-- The newest projects' pages, pinned up like the stories' charts; each one opens its project. -->
+      <div class="lab-pins">
+        {latestProjects.slice(0, 3).map((project) => (
+          <a class="taped lab-pin" href={projectPath(project.id, lang)}>
+            <img src={projectThumb(project.id)} width="720" height="480" loading="lazy" decoding="async" alt={isKo ? `${project.nameKo} 화면` : `${project.name} page`} />
+          </a>
+        ))}
+      </div>
     </article>
     <article class="lab-entry" id="stories" data-face="1">
       <LabMark id="stories" class="lab-entry-num" />
@@ -89,18 +85,18 @@ const casesHref = casesPath(lang);
         <h3><a class="pen-under" href={labSectionPath(labSections[1], lang)}>{isKo ? '프로젝트 스토리' : 'Project Stories'}</a></h3>
         <p>{isKo ? '프로젝트를 만들면서 생긴 일을 편마다 정리한 개발 스토리.' : 'Development stories from the projects, one part at a time.'}</p>
         <!-- The newest parts across all projects; the full list is on the stories page. -->
-        <ol class="lab-parts lab-parts-latest">
+        <ol class="lab-parts lab-rows">
           {latestStories.map((part) => (
-            <li><a href={storyPath(part.id.split('/')[1], lang)}><span>{isKo ? `${part.data.part}편` : `Part ${part.data.part}`}</span><span class="lab-parts-copy"><small>{projectName(part.data.project)}</small>{part.data.title}</span></a></li>
+            <li><a href={storyPath(part.id.split('/')[1], lang)}><img src={storyThumb(part.id.split('/')[1])} width="720" height="480" loading="lazy" decoding="async" alt="" /><span class="lab-parts-copy"><small>{projectName(part.data.project)} · {isKo ? `${part.data.part}편` : `Part ${part.data.part}`}</small>{part.data.title}</span></a></li>
           ))}
         </ol>
         <a class="lab-cta" href={labSectionPath(labSections[1], lang)}>{isKo ? `스토리 전체 보기 · ${stories.length}편` : `All ${stories.length} parts`}<span aria-hidden="true">→</span></a>
       </div>
-      <!-- Charts from the parts, pinned up like prints; each one opens its part. -->
+      <!-- The newest parts' first images, pinned up like prints; each one opens its part. -->
       <div class="lab-pins">
-        {storyPins.map((pin) => (
-          <a class="taped lab-pin" href={storyPath(weatherStories[pin.part - 1].id.split('/')[1], lang)}>
-            <img src={`/images/stories/beat-kma/thumb-${pin.img}.webp`} width="560" height={pin.h} loading="lazy" decoding="async" alt={isKo ? pin.ko : pin.en} />
+        {latestStories.slice(0, 3).map((part) => (
+          <a class="taped lab-pin" href={storyPath(part.id.split('/')[1], lang)}>
+            <img src={storyThumb(part.id.split('/')[1])} width="720" height="480" loading="lazy" decoding="async" alt={part.data.title} />
           </a>
         ))}
       </div>
@@ -496,6 +492,9 @@ const casesHref = casesPath(lang);
 <style is:inline>
 .lab-parts-copy { display: grid; gap: .2rem; color: inherit !important; font-size: inherit !important; font-weight: inherit !important; }
 .lab-parts-copy small { color: var(--pen); font-size: .76rem; font-weight: 850; letter-spacing: .02em; }
+.lab-rows a { grid-template-columns: 5.4rem minmax(0, 1fr); align-items: center; padding: .6rem 0; }
+.lab-rows img { display: block; width: 100%; height: auto; border-radius: 3px; box-shadow: 0 0 0 1px var(--line); }
+.lab-rows .lab-project-link small { order: 1; color: var(--muted); font-weight: 600; letter-spacing: -.01em; }
 .lab-parts { margin: 1.3rem 0 0; padding: 0; list-style: none; border-top: 1px solid var(--ink); }
 .lab-parts a { display: grid; grid-template-columns: 3.2rem minmax(0, 1fr); gap: .8rem; align-items: baseline; padding: .78rem 0; border-bottom: 1px solid var(--line); font-size: .98rem; font-weight: 700; line-height: 1.45; letter-spacing: -.02em; word-break: keep-all; text-shadow: 0 0 .4rem var(--bg), 0 0 .15rem var(--bg); transition: color .2s, padding .3s cubic-bezier(.2, .7, .2, 1); }
 .lab-parts span { color: var(--accent); font-size: .76rem; font-weight: 850; font-variant-numeric: tabular-nums; }

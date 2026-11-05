@@ -1,46 +1,34 @@
 ---
 import { getStories } from '../lib/stories';
 import BaseLayout from '../layouts/BaseLayout.astro';
-import LabPageStyles from './LabPageStyles.astro';
-import { projectPath, projects, storyPath } from '../lib/site';
+import { projectPath, projects, projectThumb } from '../lib/site';
 import type { Lang } from '../i18n/ui';
 
 interface Props { lang: Lang; }
 const { lang } = Astro.props;
 const isKo = lang === 'ko';
-// Each project lists how it runs and its development story parts, so the index says more than the names.
-const stories = (await getStories((entry) => entry.data.lang === lang)).sort((a, b) => a.data.part - b.data.part);
-const runs: Record<string, { ko: string; en: string }> = {
-  'beat-kma': { ko: '매일 아침 새 예보를 올리고, 지난 예보를 실제 관측값으로 채점함.', en: 'A new forecast goes up every morning, and past forecasts are scored against what was actually observed.' },
-  'ai-duel': { ko: '매주 네 AI가 각자 주문을 내고, 매일 미국장 종가로 수익률과 위험 지표를 갱신함.', en: 'Each AI places its orders every week, and returns and risk figures update at every US close.' },
-  'ai-oracle-benchmark': { ko: '매주 월요일에 예측을 잠그고, 매일 아침 5시에 실제 결과로 채점함. 문제와 답안, 결과는 전부 공개함.', en: 'Forecasts lock every Monday and are scored against what happened every morning at 05:00 KST. Questions, forecasts and results are all public.' },
-  'ai-mafia': { ko: '하루에 한 번 밤과 낮이 지나가고, 게임이 끝나면 정체와 속마음을 전부 공개함. 지난 게임도 다시 볼 수 있음.', en: 'One night and one day pass per real day; when a game ends, every identity and private thought is revealed, and past games stay replayable.' },
-  'my-voice-tts': { ko: '가용 GPU가 부족해서 서비스는 꺼 뒀음. 예시만 들어 볼 수 있음.', en: 'Switched off for lack of spare GPU. The examples are still here to listen to.' },
-};
+// Newest first, as cards like the columns' list; how each was built is on the stories page.
+const stories = await getStories((entry) => entry.data.lang === lang);
+const ordered = [...projects].sort((a, b) => b.addedAt.localeCompare(a.addedAt));
 ---
 <BaseLayout lang={lang} title={isKo ? '프로젝트' : 'Projects'} description={isKo ? 'HSL Lab에서 직접 만들어 돌리는 프로젝트. AI 기상 예보로 기상청과 겨루기, 네 AI의 미국 주식 모의투자 대결, 현실로 채점하는 AI 예측 벤치마크, 여덟 AI의 마피아 게임을 돌아가는 채로 공개하고, 내 목소리 TTS는 예시를 들어 볼 수 있음.' : 'Projects built and run at HSL Lab: an AI weather forecast racing the KMA, four AIs running US stock paper portfolios, an AI forecasting benchmark marked by reality and eight AIs playing Mafia, published while they run, plus examples from a TTS in my own voice.'}>
   <header class="page-top"><div class="shell"><div class="section-kicker">{isKo ? '프로젝트' : 'Projects'}</div><h1>{isKo ? '만들어서 돌려 보는 것들' : 'Things built and running'}</h1><p>{isKo ? '궁금한 걸 직접 만들어 보고, 돌아가는 채로 공개함. 결과는 매일 갱신되고, 만든 과정은 프로젝트 스토리에 편마다 정리함.' : 'Built out of curiosity and published while they run. Results update daily, and how each one was built is written up part by part in the project stories.'}</p></div></header>
-  <div class="shell portfolio-list">
-    {projects.map((project) => {
-      const parts = stories.filter((s) => s.data.project === project.id);
-      const run = runs[project.id];
+  <section class="listing"><div class="shell"><div class="post-grid">
+    {ordered.map((project) => {
+      const parts = stories.filter((s) => s.data.project === project.id).length;
+      const name = isKo ? project.nameKo : project.name;
       return (
-        <section class="portfolio-project">
-          <h2><a class="pen-under" href={projectPath(project.id, lang)}>{isKo ? project.nameKo : project.name}</a></h2>
-          <p>{isKo ? project.summaryKo : project.summary}</p>
-          {run && <p>{isKo ? run.ko : run.en}</p>}
-          {parts.length > 0 && (
-            <>
-              <p><strong>{isKo ? '만든 과정' : 'How it was built'}</strong></p>
-              <ol>
-                {parts.map((s) => <li><a href={storyPath(s.id.split('/')[1], lang)}>{isKo ? `${s.data.part}편` : `Part ${s.data.part}`}: {s.data.title}</a></li>)}
-              </ol>
-            </>
-          )}
-          <a class="lab-cta" href={projectPath(project.id, lang)}>{isKo ? project.ctaKo : project.cta}<span aria-hidden="true">→</span></a>
-        </section>
+        <article class="post-card">
+          <a class="card-link" href={projectPath(project.id, lang)}>
+            <div class="card-media taped"><img class="card-visual" src={projectThumb(project.id)} width="720" height="480" loading="lazy" decoding="async" alt={isKo ? `${name} 화면` : `${name} page`} /></div>
+            <div class="card-copy">
+              <div class="eyebrow"><span class="category-pip"></span>{isKo ? project.ctaKo : project.cta}{parts > 0 && <><span class="eyebrow-sep">/</span>{isKo ? `스토리 ${parts}편` : `${parts} story parts`}</>}</div>
+              <h2 class="pen-under">{name}</h2>
+              <p>{isKo ? project.taglineKo : project.tagline}</p>
+            </div>
+          </a>
+        </article>
       );
     })}
-  </div>
-  <LabPageStyles />
+  </div></div></section>
 </BaseLayout>

@@ -47,11 +47,12 @@ function listingCard(post, lang, variant = '') {
   return `<article class="post-card${variant ? ` ${variant}` : ''}"><a class="card-link" href="${escape(pathFor(post))}" aria-label="${escape(`${read}: ${post.title}`)}"><div class="card-media taped">${image}</div><div class="card-copy"><div class="eyebrow"><span class="category-pip"></span>${escape(categoryNames[lang][category])}<span class="eyebrow-sep">/</span><time datetime="${escape(post.published_at)}">${escape(date)}</time></div><h3 class="pen-under">${escape(post.title)}</h3><p>${escape(post.description)}</p></div></a></article>`;
 }
 
-// One row of the home page's latest list: date, topic and title.
-function latestRow(post, lang) {
+// One row of a latest list: date, topic and title, with the post's thumbnail where the list asks for it (data-thumbs).
+function latestRow(post, lang, thumbs = false) {
   const category = normalizeCategory(post.category);
   const parts = Object.fromEntries(new Intl.DateTimeFormat('en-CA', { year: 'numeric', month: '2-digit', day: '2-digit', timeZone: 'Asia/Seoul' }).formatToParts(new Date(post.published_at)).map((part) => [part.type, part.value]));
-  return `<li><a class="latest-row" href="${escape(pathFor(post))}"><time datetime="${escape(post.published_at)}">${parts.year}.${parts.month}.${parts.day}</time><span class="latest-cat">${escape(categoryNames[lang][category])}</span><span class="latest-title">${escape(post.title)}</span></a></li>`;
+  const thumb = thumbs && post.image_url ? `<img class="latest-thumb" src="${escape(post.image_url)}" alt="" loading="lazy" decoding="async" />` : thumbs ? '<span class="latest-thumb"></span>' : '';
+  return `<li><a class="latest-row" href="${escape(pathFor(post))}">${thumb}<time datetime="${escape(post.published_at)}">${parts.year}.${parts.month}.${parts.day}</time><span class="latest-cat">${escape(categoryNames[lang][category])}</span><span class="latest-title">${escape(post.title)}</span></a></li>`;
 }
 
 async function listingPage(request, env, lang) {
@@ -102,7 +103,8 @@ async function listingPage(request, env, lang) {
       element(element) {
         // Latest means publication order, including posts already featured in the lead.
         const limit = Number(element.getAttribute('data-limit')) || 10;
-        element.setInnerContent(pool(element).slice(0, limit).map((post) => latestRow(post, lang)).join(''), { html: true });
+        const thumbs = element.hasAttribute('data-thumbs');
+        element.setInnerContent(pool(element).slice(0, limit).map((post) => latestRow(post, lang, thumbs)).join(''), { html: true });
       },
     })
     .on('[data-dynamic-thumbs]', {

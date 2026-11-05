@@ -36,9 +36,18 @@ const headPost = latestIn('ai');
 <section class="home-section latest" data-dynamic-latest hidden>
   <div class="shell">
     <h2 class="home-section-title">{isKo ? '최신 글' : 'Latest'}</h2>
-    <ol class="latest-list" data-dynamic-latest-list></ol>
+    <ol class="latest-list" data-dynamic-latest-list data-thumbs></ol>
   </div>
 </section>
+<style is:inline>
+.latest-list[data-thumbs] .latest-row { grid-template-columns: 6rem 6.5rem 6.5rem minmax(0, 1fr); align-items: center; padding: .7rem 0; }
+.latest-thumb { display: block; width: 100%; aspect-ratio: 3 / 2; object-fit: cover; border-radius: 3px; background: var(--surface); box-shadow: 0 0 0 1px var(--line); }
+@media (max-width: 640px) {
+  .latest-list[data-thumbs] .latest-row { grid-template-columns: 5.4rem auto minmax(0, 1fr); gap: .2rem .7rem; }
+  .latest-list[data-thumbs] .latest-thumb { grid-row: 1 / span 2; }
+  .latest-list[data-thumbs] .latest-title { grid-column: 2 / -1; font-size: .95rem; }
+}
+</style>
 
 <section class="home-section home-topics">
   <div class="shell">

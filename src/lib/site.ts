@@ -25,6 +25,8 @@ export const projects = [
   {
     id: 'beat-kma',
     addedAt: '2026-10-16',
+    tagline: 'Two-day forecasts for 97 stations, side by side with the KMA',
+    taglineKo: '전국 97개 관측소 2일 예보를 기상청과 나란히 비교',
     name: 'Can AI beat the KMA?',
     nameKo: 'AI로 한국 기상청 이기기 가능?',
     summary: 'Two-day forecasts for 97 Korean weather stations from a global weather-forecasting backbone model fine-tuned with an added head, side by side with the Korea Meteorological Administration.',
@@ -35,6 +37,8 @@ export const projects = [
   {
     id: 'ai-duel',
     addedAt: '2026-10-18',
+    tagline: 'Four AIs paper-trade US stocks against the indexes and each other',
+    taglineKo: '네 AI의 미국 주식 모의투자, 지수와 서로를 상대로',
     name: 'Can AI beat the Nasdaq and the S&P 500?',
     nameKo: 'AI가 나스닥, S&P 미국 시장 지수를 이길 수 있을까?',
     summary: 'GPT-6.1 Sol, Claude Opus 5.5, Gemini 4 Argon and Claude Fable 5.1 each run a $20,000 paper portfolio of US stocks from the same starting prompt, rewrite their own strategy every week, and race the S&P 500, the Nasdaq-100 and each other.',
@@ -45,6 +49,8 @@ export const projects = [
   {
     id: 'ai-oracle-benchmark',
     addedAt: '2026-11-05',
+    tagline: 'Does a smarter AI predict the future better? Reality marks it',
+    taglineKo: '더 지능적인 AI가 미래도 더 잘 맞힐까? 현실이 채점함',
     name: 'HSLab AI Oracle Benchmark',
     nameKo: 'HSLab AI Oracle Benchmark',
     summary: 'Does a more intelligent AI also predict the real future more accurately? Claude Fable, Claude Opus, GPT Sol and Gemini Argon forecast real stocks, matches and natural events every week, and reality marks them on one score that accounts for question difficulty and statistical uncertainty.',
@@ -55,6 +61,8 @@ export const projects = [
   {
     id: 'ai-mafia',
     addedAt: '2026-10-21',
+    tagline: 'Eight AIs hide who they are in a Mafia game, one turn a day',
+    taglineKo: '여덟 AI가 정체를 숨기고 하루 한 턴씩 두는 마피아 게임',
     name: 'AI Mafia',
     nameKo: 'AI 마피아 게임',
     summary: 'Eight models from Claude, GPT and Gemini play Mafia under code names A to H, without knowing who the others are. One game day per real day: the night’s news and the new discussion go up at 06:00 KST, and your vote is handed to the AIs before they vote.',
@@ -65,6 +73,8 @@ export const projects = [
   {
     id: 'my-voice-tts',
     addedAt: '2026-10-24',
+    tagline: 'A TTS in your own voice; only the examples are up for now',
+    taglineKo: '내 목소리로 읽어 주는 TTS, 지금은 예시만 공개',
     name: 'TTS in your own voice',
     nameKo: '내 목소리로 만드는 TTS',
     summary: 'A live service that spoke anything you typed in your own voice, using open-source voice cloning (OmniVoice) on a single RTX 3070. There is not enough spare GPU to keep it running, so only the examples stay up.',
@@ -75,6 +85,8 @@ export const projects = [
   {
     id: 'hslab-island',
     addedAt: '2026-11-05',
+    tagline: 'An AI learns to last 30 days by dying and retrying. Try it yourself',
+    taglineKo: '죽고 다시 하며 30일 생존을 배우는 AI, 직접 플레이 가능',
     name: 'Can AI survive on a desert island?',
     nameKo: 'AI가 무인도에서 살아남을 수 있을까?',
     summary: 'An AI castaway learns to survive on a 3D desert island from nothing but dying and trying again. The first attempt drowns on day one; thousands of attempts later it makes it to day 30. Watch the video, replay those lives in 3D, or try the same island yourself.',
@@ -97,6 +109,9 @@ export const authorProfileJsonLd = (lang: Lang) => {
   };
 };
 
+// Thumbnails come from scripts/visuals/make_list_thumbs.py.
+export const projectThumb = (id: string) => `/images/thumbs/projects/${id}.webp`;
+export const storyThumb = (slug: string) => `/images/thumbs/stories/${slug}.webp`;
 export const projectPath = (id: string, lang: Lang = defaultLang) => withBase(`${lang === 'en' ? '/en' : ''}/projects/${id}/`);
 export const storyPath = (slug: string, lang: Lang = defaultLang) => withBase(`${lang === 'en' ? '/en' : ''}/stories/${slug}/`);
 export type LabSection = (typeof labSections)[number];
