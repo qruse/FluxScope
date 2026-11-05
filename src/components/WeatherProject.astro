@@ -538,8 +538,11 @@ const vars = isKo
     }
     wk.runs.slice().reverse().forEach((r) => runSelect.add(new Option(when(r.base), r.base)));
     runSelect.addEventListener('change', async () => {
-      try { fc = await loadRun(runSelect.value); } catch { $('[data-wx-meta]').textContent = T.fail; return; }
-      N = fc.times.length; ti = 0;
+      const picked = runSelect.value;
+      let run: Run;
+      try { run = await loadRun(picked); } catch { $('[data-wx-meta]').textContent = T.fail; return; }
+      if (runSelect.value !== picked) return;     // another issuance was picked while this one loaded
+      fc = run; N = fc.times.length; ti = 0;
       setMeta(); sliderDays(); select(curStn); setTime(0);
     });
 
