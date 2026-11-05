@@ -13,8 +13,8 @@ export const lab = {
 export const labSections = [
   { id: 'projects', name: 'Projects', nameKo: '프로젝트', path: '/projects/' },
   { id: 'stories', name: 'Project Stories', nameKo: '프로젝트 스토리', path: '/stories/' },
-  { id: 'blog', name: 'News', nameKo: '뉴스', path: '/blog/' },
   { id: 'column', name: 'Columns', nameKo: '칼럼', path: '/column/' },
+  { id: 'blog', name: 'News', nameKo: '뉴스', path: '/blog/' },
   { id: 'portfolio', name: 'Portfolio', nameKo: '포트폴리오', path: '/portfolio/' },
 ] as const;
 
@@ -90,7 +90,7 @@ export function labSectionPath(section: LabSection, lang: Lang = defaultLang): s
   return withBase(`${root}${section.path}`);
 }
 
-// The lab home lists the YouTube channel as 05, between the columns and the portfolio (user instruction, 2026-11-02),
+// The lab home lists the YouTube channel as 05, between the news and the portfolio (user instruction, 2026-11-02),
 // so the portfolio numbers one higher than its place in labSections.
 export const labSectionNumber = (id: LabSection['id']) => {
   const index = labSections.findIndex((section) => section.id === id);
