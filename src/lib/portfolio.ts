@@ -3,7 +3,7 @@
 import type { Lang } from '../i18n/ui';
 import { labSectionPath, labSections } from './site';
 
-export const portfolioEmail = 'coolwin200@gmail.com';
+export const portfolioEmail = 'hslab728@gmail.com';
 
 export function portfolio(lang: Lang) {
   const isKo = lang === 'ko';
