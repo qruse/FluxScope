@@ -24,6 +24,7 @@ const rules = [
   [L('무효', 'Void'), L('예정일부터 7일 안에 열리지 않은 경기는 모두에게 무효', 'A match not played within 7 days of its date is void for everyone')],
   [L('경쟁', 'Competition'), L('AI마다 분야별 전략 문서를 매주 스스로 고침. 상대 점수만 보이고 전략과 열린 예측은 안 보임', 'Each AI rewrites its own strategy per arena every week. It sees rivals’ scores, not their strategies or open forecasts')],
   [L('기준 모델', 'Baselines'), L('주식 SPY, 스포츠 Elo, 지진 20년 빈도, 날씨 15년 같은 계절 빈도', 'Stock SPY, sports Elo, earthquakes 20-year frequency, weather 15-year same-season frequency')],
+  [L('사람 투표', 'Human votes'), L('경기 시작 전까지 경기마다 한 표이고 바꿀 수 있음. AI보다 늦게까지 받고 AI 답안도 볼 수 있어서 Oracle Score에는 넣지 않고 따로 비교함', 'One pick per match until kickoff, changeable. People vote later than the AIs and can see their forecasts, so votes are compared separately and are not in the Oracle Score')],
 ];
 const limits = [
   L('한 주 앞을 내다보는 예측이라 경기 직전 소식은 어떤 AI도 볼 수 없음', 'Forecasts look up to a week ahead, so no AI sees late team news'),
@@ -37,16 +38,16 @@ const limits = [
     <div class="shell">
       <div class="section-kicker">{L('프로젝트', 'Project')}</div>
       <h1>{project.name}</h1>
-      <p class="or-lede">{isKo ? project.summaryKo : project.summary}</p>
+      <p class="or-lede">{L('네 AI가 매주 주식·경기·자연현상을 예측하고, 현실이 채점함.', 'Four AIs forecast stocks, matches and nature every week. Reality keeps score.')}</p>
     </div>
   </header>
 
   <div class="shell or-body" data-or data-lang={lang} data-duel={projectPath('ai-duel', lang)}>
-    <section class="or-sec or-top">
-      <div class="or-head"><h2>Oracle Score</h2><p class="or-sub" data-or-meta></p></div>
-      <p class="or-note" data-or-status></p>
+    <section class="or-status" data-or-status></section>
+
+    <section class="or-sec" data-or-score-sec hidden>
+      <div class="or-head"><h2>Oracle Score</h2><p class="or-sub" data-or-score-note></p></div>
       <div data-or-board></div>
-      <p class="or-humans" data-or-humans></p>
     </section>
 
     <section class="or-q" aria-label={L('핵심 질문', 'The core question')}>
@@ -54,44 +55,50 @@ const limits = [
       <h2>{L('더 지능적인 AI가 실제 미래도 더 정확하게 예측하는가?', 'Does a more intelligent AI also predict the real future more accurately?')}</h2>
       <p class="or-verdict" data-or-verdict>{L('불러오는 중…', 'Loading…')}</p>
       <div data-or-scatter></div>
-      <p class="or-small" data-or-index></p>
     </section>
 
-    <section class="or-sec">
-      <div class="or-head"><h2>{L('세 분야', 'Three arenas')}</h2><p class="or-sub" data-or-arena-note hidden>{L('0이 기준 모델, 괄호는 95% 구간', '0 is the baseline; brackets are the 95% interval')}</p></div>
+    <section class="or-sec" data-or-arena-sec hidden>
+      <div class="or-head"><h2>{L('세 분야', 'Three arenas')}</h2><p class="or-sub">{L('0이 기준 모델, 괄호는 95% 구간', '0 is the baseline; brackets are the 95% interval')}</p></div>
       <div class="or-arenas" data-or-arenas></div>
+    </section>
+
+    <section class="or-sec" data-or-split-sec hidden>
+      <div class="or-head"><h2>{L('네 AI가 가장 갈린 문제', 'Where the four AIs disagree most')}</h2></div>
+      <div data-or-split></div>
     </section>
 
     <div data-ad></div>
 
     <section class="or-sec">
       <div class="or-head"><h2 data-or-round-title>{L('이번 라운드', 'This round')}</h2><p class="or-sub" data-or-round-meta></p></div>
-      <p class="or-note" data-or-vote-note></p>
-      <div class="or-tabs" role="tablist" data-or-tabs></div>
+      <div class="or-tabbar"><div class="or-tabs" role="tablist" data-or-tabs></div><p class="or-link" data-or-stock></p></div>
+      <p class="or-hint" data-or-hint></p>
       <div data-or-questions></div>
     </section>
 
-    <section class="or-sec">
+    <section class="or-sec" data-or-rounds-sec hidden>
       <div class="or-head"><h2>{L('라운드 기록', 'Round history')}</h2><p class="or-sub">{L('기준 모델 대비 점수, 주식은 SPY 대비 수익률', 'Points against the baseline; stock is return against SPY')}</p></div>
       <div data-or-rounds></div>
     </section>
 
     <section class="or-sec">
-      <div class="or-head"><h2>{L('AI가 직접 쓰는 전략과 회고', 'Strategy and reviews, written by the AIs')}</h2><p class="or-sub">{L('분야별로 따로, 매주 스스로 고침', 'Separate per arena, rewritten by each AI every week')}</p></div>
+      <div class="or-head"><h2>{L('AI가 직접 쓰는 전략과 회고', 'Strategy and reviews, written by the AIs')}</h2></div>
       <div class="or-tabs" role="tablist" data-or-doc-tabs></div>
-      <div class="or-docs" data-or-docs></div>
+      <div data-or-docs></div>
     </section>
 
-    <section class="or-sec or-method">
-      <div class="or-head"><h2>{L('점수 계산', 'How the score works')}</h2></div>
+    <details class="or-sec or-method">
+      <summary class="or-head"><h2>{L('점수 계산과 규칙', 'How scoring works')}</h2><i class="or-chev"></i></summary>
       <ol class="or-steps">{steps.map(([k, v]) => <li><b>{k}</b><span>{v}</span></li>)}</ol>
       <p class="or-small" data-or-check></p>
       <dl class="or-rules">{rules.map(([k, v]) => <div><dt>{k}</dt><dd>{v}</dd></div>)}</dl>
+      <p class="or-small" data-or-humans></p>
+      <p class="or-small" data-or-index></p>
       <h3>{L('한계', 'Limits')}</h3>
       <ul class="or-limits">{limits.map((x) => <li>{x}</li>)}</ul>
       <h3>{L('직접 검증', 'Check it yourself')}</h3>
       <p class="or-small" data-or-ledger></p>
-    </section>
+    </details>
 
     <p class="or-disclaimer">{L('본 서비스는 AI 모델의 예측 성능을 비교하는 연구 및 교육 목적의 플랫폼입니다. 제공되는 AI 예측은 공식 재난 예보나 경보가 아니며, 안전·대피 판단에는 기상청과 관계 당국의 공식 정보를 확인해야 합니다. 스포츠 예측은 베팅 권유가 아니고, 주식 분야는 모의투자이며 투자 권유가 아닙니다.', 'This service is a research and education platform comparing the forecasting performance of AI models. AI forecasts here are not official disaster forecasts or warnings; for safety and evacuation decisions, check the official information from your weather agency and authorities. Sports forecasts are not betting advice, and the stock arena is paper trading, not investment advice.')}</p>
     <section class="comments" id="comments" data-comments data-lang={lang} data-page={projectPath('ai-oracle-benchmark', lang)}
@@ -105,8 +112,8 @@ const limits = [
   if (!root) return;
   const ko = root.dataset.lang === 'ko';
   const T = ko
-    ? { scoreWait: '점수 대기', submitted: (n, m) => `이번 라운드 답안 ${n}/${m}`, indexWait: '점수가 나오면 여기에 지능 지수와 점수의 관계를 그림. 지금은 지수만 있음.', arenaNote: { stock: '같은 일주일 수익률을 SPY와 비교함', sports: '경기 결과 확률을 Elo 기준 모델과 비교함', disaster: '지진과 날씨 확률을 과거 빈도와 비교함' }, arenaCount: (n) => `이번 라운드 ${n}문제`, arenaWait: '아직 끝난 라운드 없음', seeAi: 'AI 예측과 이유 보기', aiAvg: 'AI 평균', fail: '데이터를 불러오지 못했음. 잠시 뒤 다시 열어 주세요.', updated: '갱신', notYet: '첫 라운드는 2026년 11월 7일 토요일에 시작함. 첫 점수는 라운드가 끝나면 나옴.', provisional: (n) => `잠정 순위: 분야마다 끝난 라운드가 ${n}개 상당이 되기 전까지는 표본이 부족함.`, final: '표본 기준을 넘긴 순위.', nolead: '95% 이상 확실하게 앞서는 AI는 아직 없음.', lead: (a, p) => `${a}: 다른 모든 AI를 앞설 확률이 각각 ${p}% 이상.`, beat: '기준 모델을 이길 확률', baseline: '기준 모델', stock: '주식', sports: '스포츠', disaster: '재난', stockMore: '보유 종목과 주간 결정은 주식 대결 페이지에서 봄', arenaRounds: '끝난 라운드', noQ: '이 분야의 문제가 아직 없음.', easy: '쉬움', medium: '보통', hard: '어려움', open: '결과 대기', void: '무효', result: '결과', missed: '미제출', home: '홈', draw: '무', away: '원정', yes: '예', no: '아니오', roundN: (n) => `라운드 ${n}`, none: '아직 없음', strategy: '운용 전략', journal: '최근 회고', hyp: '이번 주 가설', summary: '이번 주 판단', more: '펼쳐 보기', less: '접기', noRounds: '아직 끝난 라운드 없음.', x: '지능 지수', y: 'Oracle Score', noIndex: '지수 없음', verdictWait: '아직 답할 수 없음.', verdictN: (n, p) => `모델이 ${n}개뿐이고 지수 동점도 있어서, 완벽히 순서대로 나와도 통계적으로 결론을 낼 수 없음(가능한 가장 작은 p값 ${p.toFixed(2)}). 모델이 더 필요함.`, verdictData: '결과가 더 쌓여야 함.', verdictRho: (r, p) => `지금까지 순위 상관 ${r.toFixed(2)}, 양의 상관일 확률 ${Math.round(p * 100)}%.`, idx: (s, d) => `지능 지수: ${s} (${d} 확인). 우리가 잰 값이 아니라 외부 지표이고, 추론 강도와 상관없이 모델마다 가장 높은 공개 점수를 씀. 여기서는 예산 때문에 더 낮은 강도로 돌림.`, run: '실행', check: (u, r) => `같은 순서인지 확인: 난이도 가중치 없이 ${u}, 라운드별 평균 순위로 ${r}. 다르면 순위를 믿으면 안 됨.`, ledgerText: (n, h, v) => `기록 ${n}건, 최신 해시 ${h}, 체인 ${v ? '정상' : '오류'}. 문제·답안·결과는 공개 파일로 내려받아 다시 계산할 수 있음: `, tierTitle: '난이도별 평균 점수', cover: '제출률', voteNote: '스포츠와 e스포츠는 경기 시작 전까지 직접 고를 수 있음. 경기마다 한 표이고 바꿀 수 있음. AI보다 늦게까지 받고 AI 답안도 볼 수 있어서 Oracle Score에는 넣지 않고 따로 비교함.', you: '내 선택', votes: (n) => `사람 ${n}표`, voteFail: '투표하지 못했음. 잠시 뒤 다시 시도해 주세요.', voteClosed: '투표가 끝났음.', humansNone: (m) => `사람 투표: 경기마다 ${m}표 이상 모이면 AI와 나란히 채점함. 점수에는 들어가지 않음.`, humans: (n, v, p, best) => `사람 투표(점수 미포함): ${n}경기 ${v}표, 기준 모델 대비 ${p}. 같은 경기에서 AI는 ${best}.` }
-    : { scoreWait: 'Score pending', submitted: (n, m) => `This round: ${n}/${m} answered`, indexWait: 'Once scores exist, this chart shows how they relate to the intelligence index. For now it shows only the index.', arenaNote: { stock: 'One week of returns against SPY', sports: 'Match probabilities against an Elo baseline', disaster: 'Earthquake and weather probabilities against history' }, arenaCount: (n) => `${n} questions this round`, arenaWait: 'No finished rounds yet', seeAi: 'See the AI forecasts and reasons', aiAvg: 'AI average', fail: 'Could not load the data. Please try again later.', updated: 'Updated', notYet: 'Round 1 starts on Saturday, November 7, 2026. The first scores come when it ends.', provisional: (n) => `Provisional: there is too little data until each arena has ${n} rounds’ worth of results.`, final: 'Past the sample threshold.', nolead: 'No AI leads with 95% certainty yet.', lead: (a, p) => `${a}: at least ${p}% likely to be above each other AI.`, beat: 'Chance of beating the baseline', baseline: 'Baseline', stock: 'Stock', sports: 'Sports', disaster: 'Disaster', stockMore: 'Holdings and weekly decisions are on the stock project page', arenaRounds: 'Rounds finished', noQ: 'No questions in this arena yet.', easy: 'Easy', medium: 'Medium', hard: 'Hard', open: 'Waiting', void: 'Void', result: 'Result', missed: 'Missed', home: 'Home', draw: 'Draw', away: 'Away', yes: 'Yes', no: 'No', roundN: (n) => `Round ${n}`, none: 'None yet', strategy: 'Strategy · machine-translated from Korean', journal: 'Latest review · machine-translated from Korean', hyp: 'This week’s hypotheses (in Korean)', summary: 'This week’s call', more: 'Show all', less: 'Collapse', noRounds: 'No finished rounds yet.', x: 'Intelligence index', y: 'Oracle Score', noIndex: 'No index score', verdictWait: 'Not answerable yet.', verdictN: (n, p) => `With only ${n} models and a tie in the index, even a perfect order could not support a conclusion (the smallest possible p value is ${p.toFixed(2)}). More models are needed.`, verdictData: 'More results are needed.', verdictRho: (r, p) => `So far the rank correlation is ${r.toFixed(2)}, with a ${Math.round(p * 100)}% chance that it is positive.`, idx: (s, d) => `Intelligence index: ${s}, read ${d}. It is an outside measure, not ours: each model's best published score at any effort. The models run at lower effort here because of the budget.`, run: 'Run', check: (u, r) => `Same order? Without difficulty weights: ${u}. By mean rank per round: ${r}. If these differ, the order should not be trusted.`, ledgerText: (n, h, v) => `${n} records, latest hash ${h}, chain ${v ? 'valid' : 'BROKEN'}. Questions, forecasts and results can be downloaded and recomputed: `, tierTitle: 'Mean points by difficulty', cover: 'Coverage', voteNote: 'You can pick a side in sports and esports matches until kickoff: one pick per match, changeable. People vote later than the AIs and can see their forecasts, so votes are compared separately and are not in the Oracle Score.', you: 'Your pick', votes: (n) => `${n} human votes`, voteFail: 'The vote did not go through. Please try again.', voteClosed: 'Voting has closed.', humansNone: (m) => `Human votes: a match is scored beside the AIs once it has ${m} votes. They are not part of the score.`, humans: (n, v, p, best) => `Human votes (not in the score): ${n} matches, ${v} votes, ${p} against the baseline. On the same matches the AIs got ${best}.` };
+    ? { fail: '데이터를 불러오지 못했음. 잠시 뒤 다시 열어 주세요.', updated: '갱신', noRound: '아직 열린 라운드 없음', roundStart: (n) => `라운드 ${n} 시작까지`, roundEnd: (n) => `라운드 ${n} 끝까지`, scoring: '채점 중', done: '결과 나온 문제', firstScore: '첫 점수 예정', nextForecast: '다음 예측', provisional: '잠정 순위 · 표본 부족', final: '표본 기준 넘김', nolead: '확실한 1위 없음', lead: (a) => `${a} 1위 확실`, beat: '기준 모델을 이길 확률', baseline: '기준 모델', stock: '주식', sports: '스포츠', disaster: '재난', stockMore: '주식은 주식 대결 페이지', arenaRounds: '끝난 라운드', noQ: '이 분야의 문제가 아직 없음.', easy: '쉬움', medium: '보통', hard: '어려움', void: '무효', missed: '미제출', home: '홈', draw: '무', away: '원정', yes: '예', no: '아니오', roundN: (n) => `라운드 ${n}`, none: '아직 없음', strategy: '운용 전략', journal: '최근 회고', hyp: '이번 주 가설', seeAi: 'AI별 예측과 이유', x: '지능 지수', y: 'Oracle Score', noIndex: '지수 없음', verdictWait: '아직 모름.', verdictN: (n, p) => `모델 ${n}개로는 순서가 완벽히 맞아도 통계 결론을 못 냄(최소 p값 ${p.toFixed(2)}). 모델을 더 늘려야 함.`, verdictData: '결과가 더 쌓여야 함.', verdictRho: (r, p) => `지금까지 순위 상관 ${r.toFixed(2)}, 양의 상관일 확률 ${Math.round(p * 100)}%.`, idx: (s, d) => `지능 지수: ${s} (${d} 확인). 우리가 잰 값이 아니라 외부 지표이고, 추론 강도와 상관없이 모델마다 가장 높은 공개 점수를 씀. 여기서는 예산 때문에 더 낮은 강도로 돌림.`, check: (u, r) => `같은 순서인지 확인: 난이도 가중치 없이 ${u}, 라운드별 평균 순위로 ${r}. 다르면 순위를 믿으면 안 됨.`, ledgerText: (n, h, v) => `기록 ${n}건, 최신 해시 ${h}, 체인 ${v ? '정상' : '오류'}. 문제·답안·결과는 공개 파일로 내려받아 다시 계산할 수 있음: `, cover: '제출률', sportsHint: '칸 너비는 네 AI의 평균 확률. 칸을 누르면 내 예측 투표. 시간은 KST.', disasterHint: '확률 0~100%. 눈금은 기준 모델, 숫자는 AI 평균.', votes: (n) => `사람 ${n}표`, voteFail: '투표하지 못했음. 잠시 뒤 다시 시도해 주세요.', voteClosed: '투표가 끝났음.', humansNone: (m) => `사람 투표: 경기마다 ${m}표 이상 모이면 AI와 나란히 채점함. 점수에는 들어가지 않음.`, humans: (n, v, p, best) => `사람 투표(점수 미포함): ${n}경기 ${v}표, 기준 모델 대비 ${p}. 같은 경기에서 AI는 ${best}.` }
+    : { fail: 'Could not load the data. Please try again later.', updated: 'Updated', noRound: 'No open round yet', roundStart: (n) => `until round ${n} starts`, roundEnd: (n) => `until round ${n} ends`, scoring: 'Scoring', done: 'questions settled', firstScore: 'first scores expected', nextForecast: 'next forecast', provisional: 'Provisional · small sample', final: 'Past the sample threshold', nolead: 'No clear leader', lead: (a) => `${a} clearly first`, beat: 'Chance of beating the baseline', baseline: 'Baseline', stock: 'Stock', sports: 'Sports', disaster: 'Disaster', stockMore: 'Stock has its own page', arenaRounds: 'Rounds finished', noQ: 'No questions in this arena yet.', easy: 'Easy', medium: 'Medium', hard: 'Hard', void: 'Void', missed: 'Missed', home: 'Home', draw: 'Draw', away: 'Away', yes: 'Yes', no: 'No', roundN: (n) => `Round ${n}`, none: 'None yet', strategy: 'Strategy · machine-translated from Korean', journal: 'Latest review · machine-translated from Korean', hyp: 'This week’s hypotheses (in Korean)', seeAi: 'Each AI’s forecast and reasons', x: 'Intelligence index', y: 'Oracle Score', noIndex: 'No index score', verdictWait: 'Not known yet.', verdictN: (n, p) => `With ${n} models, even a perfect order cannot support a conclusion (smallest possible p value ${p.toFixed(2)}). More models are needed.`, verdictData: 'More results are needed.', verdictRho: (r, p) => `So far the rank correlation is ${r.toFixed(2)}, with a ${Math.round(p * 100)}% chance that it is positive.`, idx: (s, d) => `Intelligence index: ${s}, read ${d}. It is an outside measure, not ours: each model's best published score at any effort. The models run at lower effort here because of the budget.`, check: (u, r) => `Same order? Without difficulty weights: ${u}. By mean rank per round: ${r}. If these differ, the order should not be trusted.`, ledgerText: (n, h, v) => `${n} records, latest hash ${h}, chain ${v ? 'valid' : 'BROKEN'}. Questions, forecasts and results can be downloaded and recomputed: `, cover: 'Coverage', sportsHint: 'Cell width is the four AIs’ average chance. Tap a cell to cast your pick. Times are KST.', disasterHint: 'Chance from 0 to 100%. The tick is the baseline, the number is the AI average.', votes: (n) => `${n} human votes`, voteFail: 'The vote did not go through. Please try again.', voteClosed: 'Voting has closed.', humansNone: (m) => `Human votes: a match is scored beside the AIs once it has ${m} votes. They are not part of the score.`, humans: (n, v, p, best) => `Human votes (not in the score): ${n} matches, ${v} votes, ${p} against the baseline. On the same matches the AIs got ${best}.` };
   const COL = { fable: '#0f8b8d', opus: 'var(--pen)', sol: 'var(--accent)', argon: '#7b4fc9', baseline: '#8d989e' };
   const $ = (q) => root.querySelector(q);
   const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -115,7 +122,9 @@ const limits = [
   // AI-written Markdown links become real ones, after escaping, http(s) only. The attribute name is split because the site's link checker reads the page's text.
   const links = (h) => h.replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g, (_, t, u) => `<a ${'hr' + 'ef'}="${u}" rel="nofollow ugc noopener" target="_blank">${t}</a>`);
   const rich = (o) => links(tx(o)).replace(/\*\*(.+?)\*\*/g, '<b>$1</b>');
-  const kst = (iso) => { const t = new Date(Date.parse(iso) + 9 * 3600e3), z = (n) => String(n).padStart(2, '0'); return `${t.getUTCMonth() + 1}/${t.getUTCDate()} ${z(t.getUTCHours())}:${z(t.getUTCMinutes())} KST`; };
+  const kst = (iso) => { const t = new Date(Date.parse(iso) + 9 * 3600e3), z = (n) => String(n).padStart(2, '0'); return `${t.getUTCMonth() + 1}/${t.getUTCDate()} ${z(t.getUTCHours())}:${z(t.getUTCMinutes())}`; };
+  const mdOf = (ms) => { const t = new Date(ms + 9 * 3600e3); return `${t.getUTCMonth() + 1}/${t.getUTCDate()}`; };
+  const dayOf = (ms) => Math.floor((ms + 9 * 3600e3) / 864e5);
   const SHORT = { fable: 'Fable', opus: 'Opus', sol: 'Sol', argon: 'Argon' };
   const nameOf = (d, id) => (id === 'baseline' ? T.baseline : d.table.find((r) => r.id === id)?.name || id);
 
@@ -123,15 +132,34 @@ const limits = [
 
   function draw(d) {
     const started = Object.values(d.arena_rounds).some((n) => n > 0);
+    status(d, started);
     verdict(d, started);
     if (started) scatter(d); else indexStrip(d);
-    board(d, started);
-    arenas(d);
+    $('[data-or-score-sec]').hidden = !started;
+    $('[data-or-arena-sec]').hidden = !started;
+    if (started) { board(d); arenas(d); }
+    split(d);
     questions(d);
     rounds(d);
     docs(d);
     method(d, started);
     humans(d);
+  }
+
+  // Where the round stands: time left, questions settled, when the next number appears, and one cell per day of the round.
+  function status(d, started) {
+    const c = d.current, meta = `${T.updated} ${String(d.updated).replace('T', ' ').slice(0, 16)} · v${d.method_version}`;
+    if (!c) { $('[data-or-status]').innerHTML = `<p class="or-sub">${T.noRound} · ${esc(meta)}</p>`; return; }
+    const now = Date.now(), s = Date.parse(c.start), e = Date.parse(c.end);
+    const dd = (t) => { const n = dayOf(t) - dayOf(now); return n > 0 ? `D-${n}` : 'D-day'; };
+    const main = now < s ? [dd(s), T.roundStart(c.round)] : now < e ? [dd(e), T.roundEnd(c.round)] : [T.scoring, T.roundN(c.round)];
+    const settled = c.questions.filter((q) => q.status !== 'open').length;
+    const next = started ? [mdOf(e), T.nextForecast] : [mdOf(e + 20 * 3600e3), T.firstScore];
+    const tile = ([n, l]) => `<div><b>${esc(n)}</b><span>${esc(l)}</span></div>`;
+    const days = Math.max(1, Math.round((e - s) / 864e5));
+    const cells = Array.from({ length: days }, (_, i) => { const a = s + i * 864e5; return `<i class="${now >= a + 864e5 ? 'is-past' : now >= a ? 'is-now' : ''}"></i>`; }).join('');
+    $('[data-or-status]').innerHTML = `<div class="or-tiles">${tile(main)}${tile([`${settled}/${c.questions.length}`, T.done])}${tile(next)}</div>
+      <div class="or-days" aria-hidden="true">${cells}</div><div class="or-days-l"><span>${mdOf(s)}</span><span>${esc(meta)}</span><span>${mdOf(e)}</span></div>`;
   }
 
   function humans(d) {
@@ -144,17 +172,21 @@ const limits = [
   const store = { get(k) { try { return localStorage.getItem(k); } catch { return null; } }, set(k, v) { try { localStorage.setItem(k, v); } catch {} } };
   let tally = {};
   const pickKey = (round, id) => `oracle-pick-${round}-${id}`;
-  function voteBox(q, round) {
+  const optName = (q, o) => (o === 'home' ? q.home || T.home : o === 'away' ? q.away || T.away : T[o] || o);
+  const aiMean = (q, ids, o) => { const got = ids.map((id) => q.forecasts?.[id]).filter(Boolean); return got.length ? got.reduce((t, p) => t + p[o], 0) / got.length : null; };
+  // One cell per outcome, as wide as the AIs' average chance. A cell is also the vote button while the match is open.
+  function voteBox(q, round, ids) {
     const open = q.status === 'open' && Date.now() < Date.parse(q.start);
     const counts = tally[q.id] || q.crowd?.counts || {};
     const total = q.options.reduce((t, o) => t + (counts[o] || 0), 0);
-    if (!open && !total) return '';
     const mine = store.get(pickKey(round, q.id));
-    const label = (o) => (o === 'home' ? q.home || T.home : o === 'away' ? q.away || T.away : T[o] || o);
-    return `<div class="or-vote" data-q="${esc(q.id)}">${open ? `<span class="or-vote-l">${T.you}</span>` : ''}${q.options.map((o) => {
-      const share = total ? Math.round(((counts[o] || 0) / total) * 100) : null;
-      return `<button type="button" data-choice="${esc(o)}" ${open ? '' : 'disabled'} aria-pressed="${mine === o}"><span>${esc(label(o))}</span>${share == null ? '' : `<b>${share}%</b>`}</button>`;
-    }).join('')}<small>${total ? T.votes(total) : ''}</small></div>`;
+    const cells = q.options.map((o) => {
+      const p = aiMean(q, ids, o) ?? 1 / q.options.length;
+      const hit = q.status === 'resolved' && q.outcome === o;
+      return `<button type="button" data-choice="${esc(o)}" ${open ? '' : 'disabled'} aria-pressed="${mine === o}" class="${hit ? 'is-hit' : ''}" style="flex-grow:${p};--p:${p}"><span>${hit ? '✓ ' : ''}${esc(optName(q, o))}</span><b>${Math.round(p * 100)}%</b></button>`;
+    }).join('');
+    const crowd = total ? `${T.votes(total)}: ${q.options.map((o) => `${esc(optName(q, o))} ${Math.round(((counts[o] || 0) / total) * 100)}%`).join(' · ')}` : '';
+    return `<div class="or-vote" data-q="${esc(q.id)}"><div class="or-cells">${cells}</div><small>${crowd}</small></div>`;
   }
   function bindVotes(c, redraw) {
     root.querySelectorAll('.or-vote button:not([disabled])').forEach((b) => b.addEventListener('click', async () => {
@@ -196,7 +228,7 @@ const limits = [
       return `<g><title>${esc(r.name)}: ${T.x} ${r.intelligence} (${esc(r.intelligence_effort)})</title><text x="${tx0}" y="26" text-anchor="${anchor}" class="lbl">${SHORT[r.id]}</text><circle cx="${cx}" cy="44" r="7" fill="${COL[r.id]}" stroke="var(--surface)" stroke-width="2"/></g>`;
     }).join('');
     const ticks = [...new Set(xs)].map((v) => `<text x="${x(v)}" y="70" text-anchor="middle">${v}</text>`).join('');
-    $('[data-or-scatter]').innerHTML = `<div class="or-chart"><svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${T.x}"><line x1="${L - 20}" x2="${W - R + 20}" y1="44" y2="44" class="base"/>${dots}${ticks}<text x="${W / 2}" y="92" text-anchor="middle" class="ax">${T.x} →</text></svg></div><p class="or-small">${T.indexWait}</p>`;
+    $('[data-or-scatter]').innerHTML = `<div class="or-chart"><svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${T.x}"><line x1="${L - 20}" x2="${W - R + 20}" y1="44" y2="44" class="base"/>${dots}${ticks}<text x="${W / 2}" y="92" text-anchor="middle" class="ax">${T.x} →</text></svg></div>`;
   }
 
   // Oracle Score with its 95% interval against the outside intelligence index. A model without an index score sits apart.
@@ -233,40 +265,47 @@ const limits = [
     </svg></div>`;
   }
 
-  function board(d, started) {
+  function board(d) {
     const rows = [...d.table].sort((a, b) => b.score - a.score);
     const lo = Math.min(-10, ...rows.flatMap((r) => r.ci)), hi = Math.max(10, ...rows.flatMap((r) => r.ci));
     const at = (v) => ((v - lo) / (hi - lo)) * 100;
-    $('[data-or-meta]').textContent = `${T.updated} ${String(d.updated).replace('T', ' ').slice(0, 16)} · v${d.method_version}`;
     const lead = rows.find((r) => rows.every((o) => o === r || (d.beats[r.id]?.[o.id] ?? 0) >= 0.95));
-    $('[data-or-status]').textContent = !started ? T.notYet : `${d.provisional ? T.provisional(d.provisional_below) : T.final} ${lead ? T.lead(lead.name, 95) : T.nolead}`;
-    if (!started) {
-      const qs = d.current?.questions || [];
-      $('[data-or-board]').innerHTML = `<ol class="or-board is-wait">${d.table.map((r) => `<li style="--c:${COL[r.id]}">
-        <div class="or-who"><strong>${esc(r.name)}</strong><small>${esc(r.cli)} · ${esc(r.effort)}</small></div>
-        <div class="or-pending"><b>${T.scoreWait}</b>${qs.length ? `<small>${T.submitted(qs.filter((q) => q.forecasts?.[r.id]).length, qs.length)}</small>` : ''}</div>
-      </li>`).join('')}</ol>`;
-      return;
-    }
+    $('[data-or-score-note]').textContent = `${d.provisional ? T.provisional : T.final} · ${lead ? T.lead(lead.name) : T.nolead}`;
     $('[data-or-board]').innerHTML = `<ol class="or-board">${rows.map((r) => `<li style="--c:${COL[r.id]}">
       <div class="or-who"><strong>${esc(r.name)}</strong><small>${esc(r.cli)} · ${esc(r.effort)}</small></div>
       <div class="or-big">${num(r.score)}</div>
       <div class="or-bar" title="95%: ${num(r.ci[0])} ~ ${num(r.ci[1])}"><i class="zero" style="left:${at(0)}%"></i><i class="ci" style="left:${at(r.ci[0])}%;width:${at(r.ci[1]) - at(r.ci[0])}%"></i><i class="dot" style="left:${at(r.score)}%"></i></div>
-      <div class="or-ci">[${num(r.ci[0], 0)}, ${num(r.ci[1], 0)}]<small>${T.beat} ${Math.round(r.p_beats_baseline * 100)}%${r.coverage != null && r.coverage < 1 ? ` · ${T.cover} ${Math.round(r.coverage * 100)}%` : ''}</small></div>
+      <div class="or-ci">[${num(r.ci[0], 0)}, ${num(r.ci[1], 0)}] · ${T.beat} ${Math.round(r.p_beats_baseline * 100)}%${r.coverage != null && r.coverage < 1 ? ` · ${T.cover} ${Math.round(r.coverage * 100)}%` : ''}</div>
     </li>`).join('')}</ol>`;
   }
 
   function arenas(d) {
     const copy = { stock: '<a hr' + `ef="${esc(root.dataset.duel)}">${T.stockMore} →</a>` };
-    $('[data-or-arena-note]').hidden = !Object.values(d.arena_rounds).some((n) => n > 0);
     $('[data-or-arenas]').innerHTML = ['stock', 'sports', 'disaster'].map((a) => {
       const rows = [...d.table].sort((p, q) => q.arenas[a].score - p.arenas[a].score);
-      if (!d.arena_rounds[a]) {
-        const n = (d.current?.questions || []).filter((q) => q.arena === a).length;
-        return `<article class="is-wait"><h3>${T[a]}</h3><p>${T.arenaNote[a]}</p><p class="or-sub">${n ? `${T.arenaCount(n)} · ` : ''}${T.arenaWait}</p>${copy[a] ? `<p class="or-link">${copy[a]}</p>` : ''}</article>`;
-      }
-      return `<article><h3>${T[a]}</h3><p class="or-sub">${T.arenaRounds} ${d.arena_rounds[a] || 0}</p><ul>${rows.map((r) => `<li style="--c:${COL[r.id]}"><i></i><span>${SHORT[r.id]}</span><b>${d.arena_rounds[a] ? num(r.arenas[a].score) : '–'}</b><small>[${num(r.arenas[a].ci[0], 0)}, ${num(r.arenas[a].ci[1], 0)}]</small></li>`).join('')}</ul>${copy[a] ? `<p class="or-link">${copy[a]}</p>` : ''}</article>`;
+      return `<article><h3>${T[a]}</h3><p class="or-sub">${T.arenaRounds} ${d.arena_rounds[a] || 0}</p><ul>${rows.map((r) => `<li style="--c:${COL[r.id]}"><i></i><span>${SHORT[r.id]}</span><b>${d.arena_rounds[a] ? num(r.arenas[a].score) : '–'}</b><small>${d.arena_rounds[a] ? `[${num(r.arenas[a].ci[0], 0)}, ${num(r.arenas[a].ci[1], 0)}]` : ''}</small></li>`).join('')}</ul>${copy[a] ? `<p class="or-link">${copy[a]}</p>` : ''}</article>`;
     }).join('');
+  }
+
+  // A question's title without what the page already says around it: the league on a match, the round's dates on a weather question.
+  const qTitle = (q) => {
+    const t = tx(q.title);
+    return q.arena === 'sports' ? t.replace(/^[^:]+:\s*/, '') : t.replace(/:\s*\d{2}\/\d{2}~\d{2}\/\d{2}\s*/, ': ').replace(/,\s*[A-Z][a-z]{2} \d{1,2} to [A-Z][a-z]{2} \d{1,2}$/, '');
+  };
+  // Each AI's chance as a dot on a 0-100% line, with the baseline as a tick.
+  const plot = (q, o, ids) => `<span class="or-plot">${q.baseline?.[o] != null ? `<i class="or-plot-b" style="left:${q.baseline[o] * 100}%" title="${T.baseline} ${Math.round(q.baseline[o] * 100)}%"></i>` : ''}${ids.map((id) => (q.forecasts?.[id] ? `<i class="or-plot-d" style="left:${q.forecasts[id][o] * 100}%;--c:${COL[id]}" title="${SHORT[id]} ${Math.round(q.forecasts[id][o] * 100)}%"></i>` : '')).join('')}</span>`;
+  const legend = (d) => `<p class="or-legend">${d.table.map((r) => `<span style="--c:${COL[r.id]}"><i></i>${SHORT[r.id]}</span>`).join('')}<span class="is-base"><i></i>${T.baseline}</span></p>`;
+
+  // The three open questions with the widest gap between two AIs, on the outcome where the gap is widest.
+  function split(d) {
+    const ids = d.table.map((r) => r.id);
+    const rows = (d.current?.questions || []).filter((q) => q.status === 'open').map((q) => {
+      const best = q.options.map((o) => { const v = ids.filter((id) => q.forecasts?.[id]).map((id) => [q.forecasts[id][o], id]).sort((a, b) => a[0] - b[0]); return v.length > 1 ? { o, lo: v[0], hi: v[v.length - 1], gap: v[v.length - 1][0] - v[0][0] } : null; }).filter(Boolean).sort((a, b) => b.gap - a.gap)[0];
+      return best && { q, ...best };
+    }).filter((r) => r && r.gap >= 0.05).sort((a, b) => b.gap - a.gap).slice(0, 3);
+    $('[data-or-split-sec]').hidden = !rows.length;
+    if (!rows.length) return;
+    $('[data-or-split]').innerHTML = legend(d) + rows.map((r) => `<div class="or-split"><div class="or-split-t"><strong>${qTitle(r.q)}</strong>${r.q.options.includes('yes') ? '' : `<small>${r.o === 'draw' ? T.draw : `${esc(optName(r.q, r.o))} ${ko ? '승' : 'win'}`}</small>`}</div>${plot(r.q, r.o, ids)}<div class="or-split-n"><span>${SHORT[r.lo[1]]} <b>${Math.round(r.lo[0] * 100)}%</b></span><span>${SHORT[r.hi[1]]} <b>${Math.round(r.hi[0] * 100)}%</b></span></div></div>`).join('');
   }
 
   function tabs(el, items, onPick) {
@@ -280,41 +319,55 @@ const limits = [
 
   function questions(d) {
     const c = d.current;
-    if (!c) { $('[data-or-questions]').innerHTML = `<p class="or-sub">${T.notYet}</p>`; return; }
+    if (!c) { $('[data-or-questions]').innerHTML = `<p class="or-sub">${T.noRound}</p>`; return; }
+    const ids = d.table.map((r) => r.id);
+    const opened = new Set();
     $('[data-or-round-title]').textContent = T.roundN(c.round);
-    $('[data-or-round-meta]').textContent = `${c.start.slice(0, 10)} ~ ${c.end.slice(0, 10)} UTC`;
-    $('[data-or-vote-note]').textContent = T.voteNote;
+    $('[data-or-round-meta]').textContent = `${kst(c.start)} ~ ${kst(c.end)} KST`;
+    $('[data-or-stock]').innerHTML = '<a hr' + `ef="${esc(root.dataset.duel)}">${T.stockMore} →</a>`;
     fetch(`/api/oracle/votes?round=${c.round}`, { cache: 'no-store' }).then((r) => (r.ok ? r.json() : null)).then((v) => { if (v?.tally) { tally = v.tally; show(active); } }).catch(() => {});
     let active = 'sports';
+    const panel = (q, arena) => {
+      const row = (id, name, p) => {
+        const shown = q.options.includes('yes') ? ['yes'] : q.options;
+        const got = p ? shown.map((o) => (shown.length > 1 ? `${esc(optName(q, o))} ${Math.round(p[o] * 100)}%` : `${Math.round(p[o] * 100)}%`)).join(' · ') : T.missed;
+        const pts = q.points?.[id];
+        return `<tr><th style="--c:${COL[id]}"><i></i>${esc(name)}</th><td class="or-got">${got}</td><td class="or-pts ${pts > 0 ? 'is-up' : pts < 0 ? 'is-down' : ''}">${pts == null || id === 'baseline' ? '' : num(pts, 3)}</td></tr>`;
+      };
+      const why = ids.map((id) => { const f = c.forecasts?.[id]?.[arena]?.forecasts?.[q.id]; return f?.why && tx(f.why) ? `<li style="--c:${COL[id]}"><b>${SHORT[id]}</b> ${rich(f.why)}${tx(f.uncertainty) ? ` <small>${rich(f.uncertainty)}</small>` : ''}</li>` : ''; }).join('');
+      return `<div class="or-panel" ${opened.has(q.id) ? '' : 'hidden'}><div class="or-table"><table>${ids.map((id) => row(id, SHORT[id], q.forecasts?.[id])).join('')}${row('baseline', T.baseline, q.baseline)}</table></div>${why ? `<ul class="or-why">${why}</ul>` : ''}<p class="or-small">${T[q.difficulty]} · ${tx(q.rule)}</p></div>`;
+    };
+    const chev = (q) => `aria-expanded="${opened.has(q.id)}" data-tog="${esc(q.id)}"`;
+    const sportsItem = (q) => `<div class="or-item or-match"><div class="or-match-top"><small class="or-when">${kst(q.start)}</small>${q.status === 'void' ? `<em>${T.void}</em>` : ''}</div><div class="or-match-row">${voteBox(q, c.round, ids)}<button type="button" class="or-tog" ${chev(q)} aria-label="${esc(T.seeAi)}" title="${esc(T.seeAi)}"><i class="or-chev"></i></button></div>${panel(q, 'sports')}</div>`;
+    const chanceItem = (q) => {
+      const m = aiMean(q, ids, 'yes');
+      const done = q.status === 'resolved' ? `<em class="is-done">✓ ${esc(optName(q, q.outcome))}</em>` : q.status === 'void' ? `<em>${T.void}</em>` : '';
+      return `<div class="or-item"><button type="button" class="or-row" ${chev(q)}><span class="or-row-t">${qTitle(q)}${done}</span>${plot(q, 'yes', ids)}<b class="or-pct">${m == null ? '–' : `${Math.round(m * 100)}%`}</b><i class="or-chev"></i></button>${panel(q, 'disaster')}</div>`;
+    };
     const show = (arena) => {
       active = arena;
       const qs = c.questions.filter((q) => q.arena === arena);
-      const ids = d.table.map((r) => r.id);
-      const label = (o) => T[o] || o;
-      const card = (q) => {
-        const vote = arena === 'sports' ? voteBox(q, c.round) : '';
-        const state = q.status === 'resolved' ? `<em class="is-done">${T.result}: ${esc(label(q.outcome))}${q.detail ? ` · ${esc(q.detail)}` : ''}</em>` : q.status === 'void' ? `<em>${T.void}</em>` : `<em class="is-open">${T.open}</em>`;
-        const row = (id, name, p) => {
-          const got = p ? q.options.map((o) => `${label(o)} ${Math.round(p[o] * 100)}%`).join(' · ') : T.missed;
-          const pts = q.points?.[id];
-          const bar = p ? q.options.map((o, i) => `<span style="width:${p[o] * 100}%;background:${COL[id]};opacity:${[1, 0.55, 0.25][i]}"></span>`).join('') : '';
-          return `<tr><th style="--c:${COL[id]}"><i></i>${esc(name)}</th><td><span class="or-mini">${bar}</span></td><td class="or-got">${got}</td><td class="or-pts ${pts > 0 ? 'is-up' : pts < 0 ? 'is-down' : ''}">${pts == null || id === 'baseline' ? '' : num(pts, 3)}</td></tr>`;
-        };
-        const why = ids.map((id) => { const f = c.forecasts?.[id]?.[arena]?.forecasts?.[q.id]; return f?.why && tx(f.why) ? `<li><b>${SHORT[id]}</b> ${rich(f.why)}${tx(f.uncertainty) ? ` <small>${rich(f.uncertainty)}</small>` : ''}</li>` : ''; }).join('');
-        const got = ids.map((id) => q.forecasts?.[id]).filter(Boolean);
-        const avg = got.length ? `${T.aiAvg} ${q.options.map((o) => `${label(o)} ${Math.round((got.reduce((t, p) => t + p[o], 0) / got.length) * 100)}%`).join(' · ')}` : '';
-        const title = arena === 'sports' ? tx(q.title).replace(/^[^:]+:\s*/, '') : tx(q.title);
-        return `<div class="or-card"><div class="or-card-head"><span class="or-diff is-${q.difficulty}">${T[q.difficulty]}</span><strong>${title}</strong>${arena === 'sports' ? `<small class="or-when">${kst(q.start)}</small>` : ''}${state}</div>${vote}<details><summary><span>${T.seeAi}</span><small>${avg}</small></summary><div class="or-table"><table>${ids.map((id) => row(id, SHORT[id] || nameOf(d, id), q.forecasts?.[id])).join('')}${row('baseline', T.baseline, q.baseline)}</table></div><p class="or-small">${tx(q.rule)}</p>${why ? `<ul class="or-why">${why}</ul>` : ''}</details></div>`;
-      };
       const groups = [...new Set(qs.map((q) => q.category))];
-      $('[data-or-questions]').innerHTML = !qs.length ? `<p class="or-sub">${T.noQ}</p>` : groups.map((cat) => `<h3 class="or-cat">${tx(d.categories?.[cat]) || esc(cat)}</h3><div class="or-qlist">${qs.filter((q) => q.category === cat).map(card).join('')}</div>`).join('');
+      $('[data-or-hint]').innerHTML = arena === 'sports' ? esc(T.sportsHint) : esc(T.disasterHint) + legend(d);
+      $('[data-or-questions]').innerHTML = !qs.length ? `<p class="or-sub">${T.noQ}</p>` : groups.map((cat) => `<h3 class="or-cat">${tx(d.categories?.[cat]) || esc(cat)}</h3><div class="or-qlist">${qs.filter((q) => q.category === cat).map(arena === 'sports' ? sportsItem : chanceItem).join('')}</div>`).join('');
       bindVotes(c, () => show(active));
     };
-    tabs($('[data-or-tabs]'), [['sports', T.sports], ['disaster', T.disaster]], show);
+    $('[data-or-questions]').addEventListener('click', (e) => {
+      const b = e.target.closest('[data-tog]');
+      if (!b) return;
+      const on = !opened.has(b.dataset.tog);
+      if (on) opened.add(b.dataset.tog); else opened.delete(b.dataset.tog);
+      b.setAttribute('aria-expanded', on);
+      b.closest('.or-item').querySelector('.or-panel').hidden = !on;
+    });
+    const count = (a) => c.questions.filter((q) => q.arena === a).length;
+    tabs($('[data-or-tabs]'), [['sports', `${T.sports} ${count('sports')}`], ['disaster', `${T.disaster} ${count('disaster')}`]], show);
   }
 
   function rounds(d) {
-    if (!d.rounds.some((r) => Object.values(r.arenas).some((a) => a.value))) { $('[data-or-rounds]').innerHTML = `<p class="or-sub">${T.noRounds}</p>`; return; }
+    const any = d.rounds.some((r) => Object.values(r.arenas).some((a) => a.value));
+    $('[data-or-rounds-sec]').hidden = !any;
+    if (!any) return;
     const ids = d.table.map((r) => r.id);
     const cell = (a, id) => (a.value?.[id] == null ? '–' : (a.from ? `${num(a.value[id] * 100, 1)}%` : num(a.value[id], 3)));
     const body = [...d.rounds].reverse().slice(0, 6).flatMap((r) => ['stock', 'sports', 'disaster'].filter((k) => r.arenas[k]?.value).map((k) => `<tr><td>${r.round}</td><td>${T[k]}${r.arenas[k].final ? '' : ' *'}</td>${ids.map((id) => `<td class="${r.arenas[k].value[id] > 0 ? 'is-up' : r.arenas[k].value[id] < 0 ? 'is-down' : ''}">${cell(r.arenas[k], id)}</td>`).join('')}</tr>`)).join('');
@@ -340,15 +393,11 @@ const limits = [
     tabs($('[data-or-doc-tabs]'), [['sports', T.sports], ['disaster', T.disaster]], (arena) => {
       $('[data-or-docs]').innerHTML = d.table.map((r) => {
         const x = d.docs[r.id]?.[arena] || {};
-        const box = (title, text) => `<div class="or-doc"><h4>${title}</h4><div class="or-md">${text ? md(text) : `<p>${T.none}</p>`}</div><button type="button" class="or-more">${T.more}</button></div>`;
+        const box = (title, text) => `<h4>${title}</h4><div class="or-md">${text ? md(text) : `<p>${T.none}</p>`}</div>`;
         const hyp = x.hypotheses?.length ? `<h4>${T.hyp}</h4><ol class="or-hyp">${x.hypotheses.map((h) => `<li>${esc(h.text)}<small>${esc(h.check)}</small></li>`).join('')}</ol>` : '';
-        return `<article style="--c:${COL[r.id]}"><h3><i></i>${esc(r.name)}</h3>${x.summary && tx(x.summary) ? `<p class="or-sum">${tx(x.summary)}</p>` : ''}${hyp}${box(T.journal, (!ko && x.journal_en) || x.journal)}${box(T.strategy, (!ko && x.strategy_en) || x.strategy)}</article>`;
+        const sum = x.summary && tx(x.summary);
+        return `<details class="or-doc" style="--c:${COL[r.id]}"><summary><i></i><strong>${esc(r.name)}</strong><span class="or-teaser">${sum || ''}</span><i class="or-chev"></i></summary>${sum ? `<p class="or-sum">${sum}</p>` : ''}${hyp}${box(T.journal, (!ko && x.journal_en) || x.journal)}${box(T.strategy, (!ko && x.strategy_en) || x.strategy)}</details>`;
       }).join('');
-      root.querySelectorAll('.or-md').forEach((m) => {
-        const b = m.nextElementSibling;
-        if (m.scrollHeight <= m.clientHeight + 4) { m.classList.add('is-open'); b.hidden = true; return; }
-        b.addEventListener('click', () => { const open = m.classList.toggle('is-open'); b.textContent = open ? T.less : T.more; });
-      });
     });
   }
 
@@ -365,105 +414,136 @@ const limits = [
 </script>
 
 <style is:inline>
-.or-hero { padding: 4.2rem 0 1.2rem; }
-.or-hero h1 { max-width: 18ch; margin: .7rem 0 1rem; font-size: clamp(2.1rem, 4.6vw, 3.7rem); font-weight: 820; line-height: 1.1; letter-spacing: -.05em; word-break: keep-all; }
-.or-lede { max-width: 700px; margin: 0; color: var(--muted); font-size: 1.02rem; line-height: 1.75; word-break: keep-all; }
+.or-hero { padding: 3.6rem 0 1rem; }
+.or-hero h1 { margin: .7rem 0 .7rem; font-size: clamp(2.1rem, 4.6vw, 3.7rem); font-weight: 820; line-height: 1.1; letter-spacing: -.05em; word-break: keep-all; }
+.or-lede { margin: 0; color: var(--muted); font-size: 1.05rem; line-height: 1.6; word-break: keep-all; }
 .or-body { padding-bottom: 5rem; min-width: 0; }
-.or-q { padding: 1.6rem 1.6rem 1.2rem; background: var(--surface); box-shadow: 0 1px 2px rgba(0, 0, 0, .08), 0 18px 30px -26px rgba(0, 0, 0, .55); border-top: 4px solid var(--ink); }
+.or-status { padding: 1.4rem 0 0; }
+.or-tiles { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; border-top: 2px solid var(--ink); padding-top: 1rem; }
+.or-tiles b { display: block; font-size: clamp(1.7rem, 5.4vw, 3rem); font-weight: 850; line-height: 1.05; letter-spacing: -.04em; font-variant-numeric: tabular-nums; }
+.or-tiles span { display: block; margin-top: .3rem; color: var(--muted); font-size: .82rem; font-weight: 650; word-break: keep-all; }
+.or-days { display: flex; gap: 3px; margin-top: 1.1rem; }
+.or-days i { flex: 1; height: .5rem; border-radius: 2px; background: var(--line); }
+.or-days i.is-past { background: var(--ink); }
+.or-days i.is-now { background: var(--accent); }
+.or-days-l { display: flex; justify-content: space-between; gap: 1rem; margin-top: .35rem; color: var(--muted); font-size: .72rem; font-variant-numeric: tabular-nums; }
+.or-q { margin-top: 2.4rem; padding: 1.5rem 1.6rem 1.1rem; background: var(--surface); box-shadow: 0 1px 2px rgba(0, 0, 0, .08), 0 18px 30px -26px rgba(0, 0, 0, .55); border-top: 4px solid var(--ink); }
 .or-q-label { margin: 0; color: var(--muted); font-size: .72rem; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; }
-.or-q h2 { margin: .5rem 0 .7rem; font-size: clamp(1.35rem, 3vw, 2rem); font-weight: 820; line-height: 1.25; letter-spacing: -.035em; word-break: keep-all; }
-.or-verdict { margin: 0 0 1rem; line-height: 1.7; word-break: keep-all; }
+.or-q h2 { margin: .5rem 0 .5rem; font-size: clamp(1.35rem, 3vw, 2rem); font-weight: 820; line-height: 1.25; letter-spacing: -.035em; word-break: keep-all; }
+.or-verdict { margin: 0 0 .6rem; color: var(--muted); font-size: .9rem; line-height: 1.6; word-break: keep-all; }
 .or-small { margin: .7rem 0 0; color: var(--muted); font-size: .8rem; line-height: 1.65; word-break: keep-all; }
 .or-small a { color: inherit; text-decoration: underline; }
+.or-small:empty { display: none; }
 .or-chart svg { display: block; width: 100%; height: auto; font-size: 13px; }
 .or-chart text { fill: var(--muted); }
-.or-chart .lbl { fill: var(--ink); font-weight: 750; }
+.or-chart .lbl { fill: var(--ink); font-weight: 750; paint-order: stroke; stroke: var(--surface); stroke-width: 4px; stroke-linejoin: round; }
 .or-chart .ax { font-weight: 700; }
-.or-chart .lbl { paint-order: stroke; stroke: var(--surface); stroke-width: 4px; stroke-linejoin: round; }
 .or-chart .z { stroke: var(--muted); stroke-dasharray: 4 4; }
 .or-chart .base { stroke: var(--line); stroke-width: 2; }
-.or-sec { padding-top: 3.4rem; }
-.or-head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: .4rem 1.4rem; margin-bottom: 1.1rem; padding-bottom: .8rem; border-bottom: 2px solid var(--ink); }
-.or-head h2 { margin: 0; font-size: 1.45rem; font-weight: 820; letter-spacing: -.03em; }
-.or-sub { margin: 0; color: var(--muted); font-size: .84rem; word-break: keep-all; }
-.or-note { margin: 0 0 1rem; font-size: .9rem; font-weight: 650; line-height: 1.6; word-break: keep-all; }
+.or-sec { padding-top: 3rem; }
+.or-head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: .4rem 1.4rem; margin-bottom: 1rem; padding-bottom: .7rem; border-bottom: 2px solid var(--ink); }
+.or-head h2 { margin: 0; font-size: 1.4rem; font-weight: 820; letter-spacing: -.03em; word-break: keep-all; }
+.or-sub { margin: 0; color: var(--muted); font-size: .84rem; word-break: keep-all; font-variant-numeric: tabular-nums; }
+.or-chev { display: inline-block; flex: none; width: .5rem; height: .5rem; border-right: 2px solid var(--muted); border-bottom: 2px solid var(--muted); transform: translateY(-2px) rotate(45deg); transition: transform .15s; }
+[aria-expanded="true"] > .or-chev, details[open] > summary > .or-chev { transform: translateY(2px) rotate(-135deg); }
 .or-board { margin: 0; padding: 0; list-style: none; }
-.or-board li { display: grid; grid-template-columns: minmax(9rem, 1.2fr) 5rem minmax(6rem, 2fr) minmax(8rem, 1.1fr); gap: 1rem; align-items: center; padding: .95rem 0; border-bottom: 1px solid var(--line); }
+.or-board li { display: grid; grid-template-columns: minmax(9rem, 1fr) minmax(6rem, 2fr) 5rem; grid-template-areas: "who bar big" "who ci big"; gap: .1rem 1rem; align-items: center; padding: .8rem 0; border-bottom: 1px solid var(--line); }
+.or-who { grid-area: who; }
 .or-who strong { display: block; font-weight: 800; border-left: 4px solid var(--c); padding-left: .6rem; }
 .or-who small { display: block; padding-left: .85rem; color: var(--muted); font-size: .72rem; }
-.or-board.is-wait li { grid-template-columns: 1fr auto; padding: .75rem 0; }
-.or-pending { text-align: right; }
-.or-pending b { display: block; color: var(--muted); font-size: .86rem; font-weight: 750; }
-.or-pending small { color: var(--muted); font-size: .74rem; font-variant-numeric: tabular-nums; }
-.or-big { font-size: 1.7rem; font-weight: 850; letter-spacing: -.04em; font-variant-numeric: tabular-nums; }
-.or-bar { position: relative; height: 1.1rem; }
+.or-big { grid-area: big; text-align: right; font-size: 1.7rem; font-weight: 850; letter-spacing: -.04em; font-variant-numeric: tabular-nums; }
+.or-bar { grid-area: bar; position: relative; height: 1.1rem; }
 .or-bar i { position: absolute; display: block; }
 .or-bar .zero { top: 0; bottom: 0; width: 1px; background: var(--muted); }
 .or-bar .ci { top: 50%; height: 3px; margin-top: -1.5px; border-radius: 2px; background: var(--c); }
 .or-bar .dot { top: 50%; width: 12px; height: 12px; margin: -6px 0 0 -6px; border-radius: 50%; background: var(--c); box-shadow: 0 0 0 2px var(--surface); }
-.or-ci { font-size: .84rem; font-weight: 700; font-variant-numeric: tabular-nums; }
-.or-ci small { display: block; color: var(--muted); font-size: .72rem; font-weight: 600; word-break: keep-all; }
+.or-ci { grid-area: ci; color: var(--muted); font-size: .72rem; font-weight: 600; font-variant-numeric: tabular-nums; word-break: keep-all; }
 .or-arenas { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr)); gap: 1.6rem; }
 .or-arenas h3 { margin: 0; font-size: 1.1rem; font-weight: 820; }
-.or-arenas .is-wait { padding-top: .8rem; border-top: 1px solid var(--line); }
-.or-arenas .is-wait p:not(.or-sub, .or-link) { margin: .4rem 0; font-size: .9rem; line-height: 1.6; word-break: keep-all; }
 .or-arenas ul { margin: .7rem 0 0; padding: 0; list-style: none; }
 .or-arenas li { display: grid; grid-template-columns: .7rem 1fr auto 4.6rem; gap: .5rem; align-items: baseline; padding: .4rem 0; border-bottom: 1px solid var(--line); font-size: .9rem; font-variant-numeric: tabular-nums; }
 .or-arenas li i { width: .55rem; height: .55rem; border-radius: 50%; background: var(--c); }
 .or-arenas small { color: var(--muted); font-size: .72rem; text-align: right; }
 .or-link { margin: .7rem 0 0; font-size: .84rem; font-weight: 700; word-break: keep-all; }
 .or-link a { color: var(--accent); }
+.or-tabbar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: .4rem 1rem; }
+.or-tabbar .or-tabs { margin: 0; }
+.or-tabbar .or-link { margin: 0; }
 .or-tabs { display: flex; gap: .4rem; margin-bottom: 1rem; }
-.or-tabs button { padding: .4rem .9rem; border: 1px solid var(--line); border-radius: 999px; background: none; color: var(--muted); font: inherit; font-size: .84rem; font-weight: 750; cursor: pointer; }
+.or-tabs button { padding: .4rem .9rem; border: 1px solid var(--line); border-radius: 999px; background: none; color: var(--muted); font: inherit; font-size: .84rem; font-weight: 750; font-variant-numeric: tabular-nums; cursor: pointer; }
 .or-tabs button[aria-selected="true"] { border-color: var(--ink); background: var(--ink); color: var(--surface); }
-.or-cat { margin: 1.6rem 0 .3rem; font-size: 1rem; font-weight: 820; }
-.or-tabs + div .or-cat:first-child { margin-top: .4rem; }
-.or-card { border-bottom: 1px solid var(--line); padding: .8rem 0 .7rem; }
-.or-card-head { display: flex; flex-wrap: wrap; align-items: center; gap: .3rem .7rem; }
-.or-when { color: var(--muted); font-size: .76rem; font-weight: 650; font-variant-numeric: tabular-nums; }
-.or-top { padding-top: 1.6rem; }
-.or-q { margin-top: 3rem; }
-.or-humans { margin: .9rem 0 0; color: var(--muted); font-size: .82rem; line-height: 1.6; word-break: keep-all; }
-.or-vote { display: flex; flex-wrap: wrap; align-items: center; gap: .4rem; padding-top: .55rem; }
-.or-vote-l { margin-right: .2rem; color: var(--muted); font-size: .76rem; font-weight: 700; }
-.or-vote button { display: inline-flex; gap: .45rem; padding: .35rem .7rem; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); color: var(--ink); font: inherit; font-size: .8rem; font-weight: 700; cursor: pointer; }
-.or-vote button:disabled { cursor: default; color: var(--muted); }
-.or-vote button[aria-pressed="true"] { border-color: var(--ink); box-shadow: inset 0 0 0 1px var(--ink); }
-.or-vote b { font-variant-numeric: tabular-nums; }
-.or-vote small { color: var(--muted); font-size: .74rem; }
-.or-card summary { display: flex; flex-wrap: wrap; align-items: baseline; gap: .15rem .7rem; margin-top: .45rem; color: var(--accent); font-size: .8rem; font-weight: 750; cursor: pointer; }
-.or-card summary small { color: var(--muted); font-size: .76rem; font-weight: 600; font-variant-numeric: tabular-nums; }
-.or-card strong { flex: 1 1 14rem; font-size: .92rem; font-weight: 700; word-break: keep-all; }
-.or-card em { color: var(--muted); font-size: .76rem; font-style: normal; font-weight: 700; }
-.or-card em.is-done { color: var(--ink); }
-.or-diff { min-width: 3.4rem; text-align: center; padding: .1rem .5rem; border: 1px solid var(--line); border-radius: 999px; color: var(--muted); font-size: .68rem; font-weight: 800; }
-.or-diff.is-hard { border-color: var(--ink); color: var(--ink); }
-.or-table table { width: 100%; margin-top: .6rem; border-collapse: collapse; font-size: .82rem; font-variant-numeric: tabular-nums; }
+.or-hint { margin: .8rem 0 0; color: var(--muted); font-size: .8rem; line-height: 1.6; word-break: keep-all; }
+.or-legend { display: flex; flex-wrap: wrap; gap: .25rem .9rem; margin: .4rem 0 0; color: var(--ink); font-size: .78rem; font-weight: 700; }
+.or-legend span { display: inline-flex; align-items: center; gap: .35rem; }
+.or-legend i { width: .6rem; height: .6rem; border-radius: 50%; background: var(--c); }
+.or-legend .is-base { color: var(--muted); }
+.or-legend .is-base i { width: 2px; height: .8rem; border-radius: 0; background: var(--muted); }
+.or-cat { margin: 1.5rem 0 .2rem; padding-bottom: .35rem; border-bottom: 1px solid var(--ink); font-size: .95rem; font-weight: 820; }
+.or-plot { position: relative; display: block; min-width: 0; height: 1.3rem; }
+.or-plot::before { content: ""; position: absolute; left: 0; right: 0; top: 50%; height: 2px; margin-top: -1px; background: var(--line); }
+.or-plot i { position: absolute; top: 50%; display: block; }
+.or-plot-d { width: .8rem; height: .8rem; margin: -.4rem 0 0 -.4rem; border-radius: 50%; background: var(--c); box-shadow: 0 0 0 2px var(--surface); }
+.or-plot-b { width: 2px; height: 1.1rem; margin: -.55rem 0 0 -1px; background: var(--muted); }
+.or-split { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1.3fr) auto; gap: .3rem 1.2rem; align-items: center; padding: .8rem 0; border-bottom: 1px solid var(--line); }
+.or-split:first-of-type { margin-top: .5rem; border-top: 1px solid var(--line); }
+.or-split-t strong { display: block; font-size: .95rem; font-weight: 750; line-height: 1.35; word-break: keep-all; }
+.or-split-t small { color: var(--muted); font-size: .76rem; font-weight: 650; }
+.or-split-n { display: flex; gap: .9rem; color: var(--muted); font-size: .78rem; font-weight: 650; white-space: nowrap; }
+.or-split-n b { color: var(--ink); font-size: 1.05rem; font-weight: 820; font-variant-numeric: tabular-nums; }
+.or-item { border-bottom: 1px solid var(--line); }
+.or-match { padding: .55rem 0; }
+.or-match-top { display: flex; gap: .6rem; margin-bottom: .25rem; }
+.or-when { color: var(--muted); font-size: .74rem; font-weight: 650; font-variant-numeric: tabular-nums; }
+.or-item em { color: var(--muted); font-size: .76rem; font-style: normal; font-weight: 750; }
+.or-item em.is-done { margin-left: .5rem; color: var(--ink); white-space: nowrap; }
+.or-match-row { display: flex; align-items: flex-start; gap: .4rem; }
+.or-vote { flex: 1; min-width: 0; }
+.or-vote small { display: block; color: var(--muted); font-size: .74rem; }
+.or-vote small:not(:empty) { margin-top: .25rem; }
+.or-cells { display: flex; gap: 2px; }
+.or-cells button { display: flex; flex: 1 1 0; min-width: 4.6rem; align-items: center; justify-content: space-between; gap: .4rem; padding: .45rem .6rem; border: 0; border-radius: 4px; background: color-mix(in srgb, var(--ink) calc(var(--p) * 34%), var(--surface)); color: var(--ink); font: inherit; font-size: .84rem; font-weight: 700; text-align: left; word-break: keep-all; cursor: pointer; }
+.or-cells button b { font-size: .92rem; font-weight: 820; font-variant-numeric: tabular-nums; }
+.or-cells button:hover:not(:disabled) { outline: 2px solid var(--ink); outline-offset: -2px; }
+.or-cells button:disabled { cursor: default; }
+.or-cells button[aria-pressed="true"] { box-shadow: inset 0 0 0 2px var(--accent); }
+.or-cells button.is-hit { box-shadow: inset 0 0 0 2px var(--ink); }
+.or-tog { display: flex; flex: none; align-items: center; justify-content: center; width: 2.2rem; height: 2.4rem; padding: 0; border: 0; background: none; cursor: pointer; }
+.or-row { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr) 3rem .6rem; gap: .9rem; align-items: center; width: 100%; padding: .6rem 0; border: 0; background: none; color: var(--ink); font: inherit; text-align: left; cursor: pointer; }
+.or-row:hover .or-row-t { text-decoration: underline; }
+.or-row-t { font-size: .88rem; font-weight: 650; line-height: 1.4; word-break: keep-all; }
+.or-pct { text-align: right; font-size: 1.05rem; font-weight: 820; font-variant-numeric: tabular-nums; }
+.or-panel { padding: .1rem 0 .9rem; }
+.or-table table { width: 100%; margin-top: .4rem; border-collapse: collapse; font-size: .84rem; font-variant-numeric: tabular-nums; }
 .or-table th, .or-table td { padding: .3rem .6rem .3rem 0; border-bottom: 1px solid var(--line); text-align: left; font-weight: 600; }
-.or-table tbody th i, .or-table th i { display: inline-block; width: .5rem; height: .5rem; margin-right: .4rem; border-radius: 50%; background: var(--c); }
-.or-mini { display: flex; width: 7rem; height: .45rem; border-radius: 2px; background: var(--soft); overflow: hidden; }
-.or-mini span { display: block; height: 100%; }
+.or-table th i { display: inline-block; width: .55rem; height: .55rem; margin-right: .4rem; border-radius: 50%; background: var(--c); }
 .or-got { white-space: nowrap; }
 .or-pts { text-align: right !important; font-weight: 800 !important; }
 .or-scroll { overflow-x: auto; }
 .is-up { color: #1f7a4d; }
 .is-down { color: #c0392b; }
-.or-why { margin: .6rem 0 .3rem; padding: 0; list-style: none; font-size: .82rem; line-height: 1.55; word-break: keep-all; }
-.or-why li { padding: .2rem 0; }
+.or-why { margin: .7rem 0 0; padding: 0; list-style: none; font-size: .84rem; line-height: 1.6; word-break: keep-all; }
+.or-why li { margin-top: .5rem; padding-left: .6rem; border-left: 3px solid var(--c); }
 .or-why small { display: block; color: var(--muted); overflow-wrap: anywhere; }
 .or-why a { text-decoration: underline; }
-.or-docs { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); gap: 2rem; }
-.or-docs h3 { display: flex; align-items: center; gap: .5rem; margin: 0 0 .5rem; font-size: 1rem; font-weight: 820; }
-.or-docs h3 i { width: .6rem; height: .6rem; border-radius: 50%; background: var(--c); }
-.or-docs h4 { margin: .9rem 0 .3rem; color: var(--muted); font-size: .78rem; font-weight: 800; }
-.or-sum { margin: 0; font-size: .88rem; line-height: 1.6; word-break: keep-all; }
-.or-md { max-height: 11rem; overflow: hidden; font-size: .84rem; line-height: 1.6; word-break: keep-all; }
-.or-md.is-open { max-height: none; }
-.or-md h5 { margin: .6rem 0 .2rem; font-size: .84rem; }
+.or-doc { border-bottom: 1px solid var(--line); }
+.or-doc summary { display: flex; align-items: center; gap: .6rem; padding: .75rem 0; cursor: pointer; list-style: none; }
+.or-doc summary::-webkit-details-marker, .or-method > summary::-webkit-details-marker { display: none; }
+.or-doc summary > i:first-child { flex: none; width: .65rem; height: .65rem; border-radius: 50%; background: var(--c); }
+.or-doc summary strong { flex: none; font-size: .95rem; font-weight: 800; }
+.or-teaser { flex: 1; min-width: 0; overflow: hidden; color: var(--muted); font-size: .82rem; text-overflow: ellipsis; white-space: nowrap; }
+.or-doc[open] .or-teaser { visibility: hidden; }
+.or-doc > :not(summary) { max-width: 760px; }
+.or-doc[open] { padding-bottom: 1rem; }
+.or-doc h4 { margin: 1rem 0 .3rem; color: var(--muted); font-size: .78rem; font-weight: 800; }
+.or-sum { margin: 0; font-size: .92rem; line-height: 1.65; word-break: keep-all; }
+.or-md { font-size: .86rem; line-height: 1.65; word-break: keep-all; overflow-wrap: anywhere; }
+.or-md a { text-decoration: underline; }
+.or-md h5 { margin: .6rem 0 .2rem; font-size: .86rem; }
 .or-md p { margin: .3rem 0; }
-.or-md ul, .or-md ol, .or-hyp { margin: .3rem 0; padding-left: 1.2rem; font-size: .84rem; line-height: 1.55; }
+.or-md ul, .or-md ol, .or-hyp { margin: .3rem 0; padding-left: 1.2rem; font-size: .86rem; line-height: 1.6; word-break: keep-all; }
 .or-hyp small { display: block; color: var(--muted); }
-.or-more { margin-top: .3rem; padding: 0; border: 0; background: none; color: var(--accent); font: inherit; font-size: .78rem; font-weight: 750; cursor: pointer; }
+.or-method > summary { align-items: center; margin-bottom: 0; cursor: pointer; list-style: none; flex-wrap: nowrap; }
+.or-method[open] > summary { margin-bottom: 1rem; }
 .or-steps { margin: 0; padding: 0; list-style: none; display: grid; gap: .9rem; }
 .or-steps li { display: grid; grid-template-columns: 6.5rem 1fr; gap: 1rem; font-size: .92rem; line-height: 1.65; word-break: keep-all; }
 .or-rules { margin: 1.6rem 0 0; }
@@ -472,14 +552,19 @@ const limits = [
 .or-rules dd { margin: 0; color: var(--muted); }
 .or-method h3 { margin: 1.6rem 0 .5rem; font-size: 1rem; font-weight: 820; }
 .or-limits { margin: 0; padding-left: 1.2rem; list-style: disc; color: var(--muted); font-size: .88rem; line-height: 1.7; word-break: keep-all; }
-.or-disclaimer { margin: 2.6rem 0 0; padding: 1rem 1.2rem; border-left: 3px solid var(--ink); color: var(--muted); font-size: .84rem; line-height: 1.7; word-break: keep-all; }
+.or-disclaimer { margin: 2.6rem 0 0; color: var(--muted); font-size: .74rem; line-height: 1.6; word-break: keep-all; }
 @media (max-width: 720px) {
-  .or-board li { grid-template-columns: 1fr auto; gap: .35rem .8rem; }
-  .or-bar { grid-column: 1 / -1; }
-  .or-ci { grid-column: 1 / -1; }
-  .or-board.is-wait li { grid-template-columns: 1fr auto; }
-  .or-card .or-table td:nth-child(2) { display: none; }
+  .or-board li { grid-template-columns: 1fr auto; grid-template-areas: "who big" "bar bar" "ci ci"; gap: .35rem .8rem; }
   .or-q { padding: 1.2rem 1rem 1rem; }
+  .or-split { grid-template-columns: 1fr auto; }
+  .or-split-t { grid-column: 1 / -1; }
+  .or-split .or-plot { grid-column: 1 / -1; }
+  .or-split-n { grid-column: 1 / -1; justify-content: space-between; }
+  .or-row { grid-template-columns: minmax(0, 1fr) 3rem .6rem; gap: .2rem .6rem; }
+  .or-row-t { grid-column: 1 / -1; }
+  .or-cells button { flex-direction: column; align-items: flex-start; gap: 0; min-width: 4.2rem; font-size: .78rem; }
+  .or-teaser { display: none; }
+  .or-doc summary strong { flex: 1; }
   .or-steps li, .or-rules div { grid-template-columns: 1fr; gap: .15rem; }
 }
 </style>
