@@ -23,23 +23,26 @@ const blog = {
 const portfolioSection = labSections.find((section) => section.id === 'portfolio')!;
 const columnSection = labSections.find((section) => section.id === 'column')!;
 const stories = (await getStories((entry) => entry.data.lang === lang)).sort((a, b) => a.data.part - b.data.part);
-// Parts grouped by project, in the projects list order; the pinned charts come from the weather project.
-const storyGroups = projects.map((project) => ({ project, parts: stories.filter((s) => s.data.project === project.id) })).filter((g) => g.parts.length);
+// Sections 01 to 05 each list their five newest entries (user instruction, 2026-11-05); the full lists are on their own pages.
+const homeLimit = 5;
+const latestProjects = [...projects].sort((a, b) => b.addedAt.localeCompare(a.addedAt)).slice(0, homeLimit);
+const latestStories = [...stories].sort((a, b) => b.data.publishedAt.getTime() - a.data.publishedAt.getTime() || b.data.part - a.data.part).slice(0, homeLimit);
+const projectName = (id: string) => { const p = projects.find((x) => x.id === id); return isKo ? p?.nameKo : p?.name; };
+// The pinned charts come from the weather project.
 const weatherStories = stories.filter((s) => s.data.project === 'beat-kma');
 const storyPins = [
   { part: 2, img: 'part2-pipeline', h: 523, ko: '2편 데이터 흐름도', en: 'Part 2 data flow chart' },
   { part: 3, img: 'part3-zeroshot', h: 509, ko: '3편 제로샷 검증 점수 차트', en: 'Part 3 zero-shot validation chart' },
   { part: 4, img: 'part4-test', h: 537, ko: '4편 테스트 기간 점수 차트', en: 'Part 4 test-period score chart' },
 ];
-// The long video, then the newest Short of each project; the English home shows the English cut of the stock duel.
-const longVideo = { id: 'RBsO2v9PNL4', tag: isKo ? '무인도' : 'Island', title: 'Can an AI survive on a desert island?' };
-const shorts = [
-  { id: 'uz3bmJ9PewU', img: 'short-island-1', tag: isKo ? '무인도' : 'Island', title: isKo ? 'AI가 무인도에서 살아남을 수 있을까? (1)' : 'Can an AI survive on a desert island? (1)', alt: isKo ? '무인도 쇼츠 1편: 밀짚모자를 쓴 Peppo가 해변에 서 있는 장면' : 'Desert island Short part 1: Peppo in a straw hat on the beach' },
-  isKo
-    ? { id: 'rukDHpnCJdc', img: 'short-ai-duel-2', tag: '주식', title: 'AI야 돈 좀 벌어다줘 (2)', alt: 'AI 주식 대결 쇼츠 2편: Sol 3/3, Opus 3/3, Argon 2/3' }
-    : { id: '1A8RBuVvzbo', img: 'short-ai-duel-2-en', tag: 'Stocks', title: 'Hey AI, go make me some money (2)', alt: 'AI stock duel Short part 2: Sol 3/3, Opus 3/3, Argon 2/3' },
-  { id: 'Jp1mlS0A5bs', img: 'short-beat-kma-2', tag: isKo ? '날씨' : 'Weather', title: isKo ? '2만원으로 기상청 이기기 (2)' : 'Beating the KMA for $15 (2, Korean)', alt: isKo ? '기상청 이기기 2편 쇼츠: 어떻게 만들었냐면요' : 'Beat-the-KMA Short part 2: how it was built' },
+// The channel's five newest uploads, newest first, updated by hand from its feed. The first three are pinned up with a frame.
+const islandShort = (part: number) => ({ tag: isKo ? '무인도' : 'Island', title: isKo ? `AI가 무인도에서 살아남을 수 있을까? (${part})` : `Can an AI survive on a desert island? (${part})` });
+const pinnedVideos = [
+  { id: '-DTTuJlD9ac', img: 'short-island-6', ...islandShort(6), alt: isKo ? '무인도 쇼츠 6편: 1만 1천 번째 시도의 Peppo가 물고기를 들고 선 장면' : 'Desert island Short part 6: Peppo on attempt 11,000, holding a fish' },
+  { id: 'wNZVHPg94TU', img: 'short-island-5', ...islandShort(5), alt: isKo ? '무인도 쇼츠 5편: 30일째 밤 물가에 선 Peppo, 체온 23과 체력 13' : 'Desert island Short part 5: Peppo at the water on the night of day 30, warmth 23 and health 13' },
+  { id: '53Bj32dxA-w', img: 'short-island-4', ...islandShort(4), alt: isKo ? '무인도 쇼츠 4편: 6천 번째 시도에서 첫 물고기를 잡은 Peppo' : 'Desert island Short part 4: Peppo catching the first fish on attempt 6,000' },
 ];
+const videos = [...pinnedVideos, { id: '9j9zuGz_33c', ...islandShort(3) }, { id: 'FaZubwpWLdQ', ...islandShort(2) }];
 const cv = portfolio(lang);
 const casesHref = casesPath(lang);
 ---
@@ -67,13 +70,13 @@ const casesHref = casesPath(lang);
       <LabMark id="projects" class="lab-entry-num" />
       <div class="lab-entry-copy">
         <h3><a class="pen-under" href={labSectionPath(labSections[0], lang)}>{isKo ? '프로젝트' : 'Projects'}</a></h3>
-        {projects.map((project) => (
+        {latestProjects.map((project) => (
           <>
             <p><a class="lab-project-link" href={projectPath(project.id, lang)}>{isKo ? project.nameKo : project.name}</a></p>
             <p>{isKo ? project.summaryKo : project.summary}</p>
           </>
         ))}
-        <a class="lab-cta" href={labSectionPath(labSections[0], lang)}>{isKo ? '프로젝트 열기' : 'Open the projects'}<span aria-hidden="true">→</span></a>
+        <a class="lab-cta" href={labSectionPath(labSections[0], lang)}>{isKo ? `프로젝트 전체 보기 · ${projects.length}개` : `All ${projects.length} projects`}<span aria-hidden="true">→</span></a>
       </div>
       <!-- A capture of the forecast page itself: our AI vs the KMA for Seoul and the station map. -->
       <a class="lab-shot taped" href={projectPath('beat-kma', lang)} aria-label={isKo ? '오늘 예보 화면으로 이동' : "Open today's forecast"}>
@@ -85,13 +88,11 @@ const casesHref = casesPath(lang);
       <div class="lab-entry-copy">
         <h3><a class="pen-under" href={labSectionPath(labSections[1], lang)}>{isKo ? '프로젝트 스토리' : 'Project Stories'}</a></h3>
         <p>{isKo ? '프로젝트를 만들면서 생긴 일을 편마다 정리한 개발 스토리.' : 'Development stories from the projects, one part at a time.'}</p>
-        <!-- Only the newest part of each project, so the list stays one row per project as parts pile up;
-             the full list is on the stories page. -->
+        <!-- The newest parts across all projects; the full list is on the stories page. -->
         <ol class="lab-parts lab-parts-latest">
-          {storyGroups.map((g) => {
-            const latest = g.parts[g.parts.length - 1];
-            return <li><a href={storyPath(latest.id.split('/')[1], lang)}><span>{isKo ? `${latest.data.part}편` : `Part ${latest.data.part}`}</span><span class="lab-parts-copy"><small>{isKo ? g.project.nameKo : g.project.name}</small>{latest.data.title}</span></a></li>;
-          })}
+          {latestStories.map((part) => (
+            <li><a href={storyPath(part.id.split('/')[1], lang)}><span>{isKo ? `${part.data.part}편` : `Part ${part.data.part}`}</span><span class="lab-parts-copy"><small>{projectName(part.data.project)}</small>{part.data.title}</span></a></li>
+          ))}
         </ol>
         <a class="lab-cta" href={labSectionPath(labSections[1], lang)}>{isKo ? `스토리 전체 보기 · ${stories.length}편` : `All ${stories.length} parts`}<span aria-hidden="true">→</span></a>
       </div>
@@ -153,14 +154,13 @@ const casesHref = casesPath(lang);
         <h3><a class="pen-under" href={youtubeChannel} rel="noopener">{isKo ? '유튜브 채널' : 'YouTube Channel'}</a></h3>
         <p>{isKo ? '직접 만든 프로젝트만 롱폼과 쇼츠로 올리는 채널.' : 'A channel of long videos and Shorts, only about projects built here.'}</p>
         <ol class="lab-parts">
-          <li><a href={`https://www.youtube.com/watch?v=${longVideo.id}`} rel="noopener"><span>{longVideo.tag}</span>{longVideo.title}</a></li>
-          {shorts.map((s) => <li><a href={`https://www.youtube.com/shorts/${s.id}`} rel="noopener"><span>{s.tag}</span>{s.title}</a></li>)}
+          {videos.map((s) => <li><a href={`https://www.youtube.com/shorts/${s.id}`} rel="noopener"><span>{s.tag}</span>{s.title}</a></li>)}
         </ol>
         <a class="lab-cta" href={youtubeChannel} rel="noopener">{isKo ? '채널 보기' : 'Open the channel'}<span aria-hidden="true">→</span></a>
       </div>
       <!-- A frame from each Short, pinned up like the story charts; each one opens its Short. -->
       <div class="lab-pins lab-shorts">
-        {shorts.map((s) => (
+        {pinnedVideos.map((s) => (
           <a class="taped lab-pin" href={`https://www.youtube.com/shorts/${s.id}`} rel="noopener">
             <img src={`/images/youtube/${s.img}.webp`} width="360" height="640" loading="lazy" decoding="async" alt={s.alt} />
           </a>
