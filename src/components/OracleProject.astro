@@ -23,7 +23,7 @@ const rules = [
   [L('미제출', 'Missed'), L('모든 선택지 같은 확률로 채점하고 제출률을 공개함', 'Scored as an equal chance for every option, with coverage shown')],
   [L('무효', 'Void'), L('예정일부터 7일 안에 열리지 않은 경기는 모두에게 무효', 'A match not played within 7 days of its date is void for everyone')],
   [L('경쟁', 'Competition'), L('AI마다 분야별 전략 문서를 매주 스스로 고침. 상대 점수만 보이고 전략과 열린 예측은 안 보임', 'Each AI rewrites its own strategy per arena every week. It sees rivals’ scores, not their strategies or open forecasts')],
-  [L('기준 모델', 'Baselines'), L('주식 SPY, 스포츠 Elo, 지진 20년 빈도, 날씨 15년 같은 계절 빈도', 'Stock SPY, sports Elo, earthquakes 20-year frequency, weather 15-year same-season frequency')],
+  [L('기준 모델', 'Baselines'), L('주식 SPY, 스포츠 Elo, 지진 20년 빈도, 태풍·토네이도 20년 같은 계절 빈도. 1라운드 날씨는 15년 같은 계절 빈도', 'Stock SPY, sports Elo, earthquakes 20-year frequency, typhoons and tornadoes 20-year same-season frequency. Round 1 weather uses 15-year same-season frequency')],
   [L('사람 투표', 'Human votes'), L('경기 시작 전까지 경기마다 한 표이고 바꿀 수 있음. AI보다 늦게까지 받고 AI 답안도 볼 수 있어서 Oracle Score에는 넣지 않고 따로 비교함', 'One pick per match until kickoff, changeable. People vote later than the AIs and can see their forecasts, so votes are compared separately and are not in the Oracle Score')],
 ];
 const limits = [
@@ -361,7 +361,8 @@ const limits = [
       b.closest('.or-item').querySelector('.or-panel').hidden = !on;
     });
     const count = (a) => c.questions.filter((q) => q.arena === a).length;
-    tabs($('[data-or-tabs]'), [['sports', `${T.sports} ${count('sports')}`], ['disaster', `${T.disaster} ${count('disaster')}`]], show);
+    const items = [['sports', `${T.sports} ${count('sports')}`], ['disaster', `${T.disaster} ${count('disaster')}`]].filter(([a]) => count(a));
+    if (items.length) tabs($('[data-or-tabs]'), items, show); else $('[data-or-questions]').innerHTML = `<p class="or-sub">${T.noQ}</p>`;
   }
 
   function rounds(d) {
