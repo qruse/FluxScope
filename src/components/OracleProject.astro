@@ -192,11 +192,15 @@ const limits = [
     const x = (v) => P.l + ((v - x0) / (x1 - x0)) * (W - P.l - P.r - (W < 500 ? 34 : 70));
     const y = (v) => P.t + (1 - (v - lo) / (hi - lo)) * (H - P.t - P.b);
     const noX = W - P.r - 16;
-    const offset = {};   // models tied on the index sit side by side
-    withIdx.forEach((r) => { const k = r.intelligence; offset[r.id] = (offset[k] = (offset[k] ?? -1) + 1) * 64; });
+    // Models tied on the index straddle their tick, so neither reads as a higher score; the left one's label goes left.
+    const offset = {};
+    withIdx.forEach((r) => {
+      const same = withIdx.filter((o) => o.intelligence === r.intelligence);
+      offset[r.id] = (same.indexOf(r) - (same.length - 1) / 2) * 14;
+    });
     const point = (r, cx) => `<g><title>${esc(r.name)}: ${num(r.score)} [${num(r.ci[0])}, ${num(r.ci[1])}]${r.intelligence != null ? `, ${T.x} ${r.intelligence} (${esc(r.intelligence_effort)})` : ''}</title>`
       + `<line x1="${cx}" x2="${cx}" y1="${y(r.ci[0])}" y2="${y(r.ci[1])}" stroke="${COL[r.id]}" stroke-width="2"/><circle cx="${cx}" cy="${y(r.score)}" r="6" fill="${COL[r.id]}" stroke="var(--surface)" stroke-width="2"/>`
-      + `<text x="${cx + 11}" y="${y(r.score) + 4}" class="lbl">${SHORT[r.id]}</text></g>`;
+      + `<text x="${offset[r.id] < 0 ? cx - 11 : cx + 11}" y="${y(r.score) + 4}"${offset[r.id] < 0 ? ' text-anchor="end"' : ''} class="lbl">${SHORT[r.id]}</text></g>`;
     const step = [5, 10, 20, 25, 50, 100, 200].find((s) => (hi - lo) / s <= 5) || 500;
     const ticks = [];
     for (let v = Math.ceil(lo / step) * step; v <= hi; v += step) if (v !== 0) ticks.push(`<text x="${P.l - 8}" y="${y(v) + 4}" text-anchor="end">${v}</text>`);
