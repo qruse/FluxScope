@@ -38,7 +38,8 @@ function getAllFiles(dir, filterExt) {
 const htmlFiles = getAllFiles(distDir, '.html');
 const cssFiles = getAllFiles(path.join(distDir, '_astro'), '.css');
 const jsFiles = getAllFiles(distDir, '.js').filter(
-  (f) => !f.replace(/\\/g, '/').includes('/pagefind/')
+  // The island viewer (public/island) is a separate 3D app that no page loads as a script, only linked to.
+  (f) => !/\/(pagefind|island)\//.test(f.replace(/\\/g, '/'))
 );
 const imageFiles = [
   ...getAllFiles(distDir, '.png'),

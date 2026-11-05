@@ -57,6 +57,15 @@ export const projects = [
     cta: 'Hear the examples',
     ctaKo: '예시 듣기',
   },
+  {
+    id: 'hslab-island',
+    name: 'Can AI survive on a desert island?',
+    nameKo: 'AI가 무인도에서 살아남을 수 있을까?',
+    summary: 'An AI castaway learns to survive on a 3D desert island from nothing but dying and trying again. The first attempt drowns on day one; thousands of attempts later it makes it to day 30. Watch the video, replay those lives in 3D, or try the same island yourself.',
+    summaryKo: '무인도에 떨어진 AI가 죽고 다시 하면서 살아남는 법을 스스로 배움. 첫 시도에선 첫날 바다에 빠져 죽던 애가 수천 번 뒤엔 30일을 버팀. 영상과 3D 리플레이로 보고, 같은 섬에서 직접 살아남아 볼 수도 있음.',
+    cta: 'Watch and play',
+    ctaKo: '보고 직접 해 보기',
+  },
 ] as const;
 
 // The blog's about page is the author page every BlogPosting points to (author.url); it declares that author.

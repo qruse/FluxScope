@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Island viewer | HSL Lab</title>
+<meta name="robots" content="noindex, follow">
+<link rel="icon" href="/favicon.svg">
+<style>
+  :root { --ink: #1f2328; --paper: #fbf8f1; --line: rgba(31, 35, 40, .18); }
+  html, body { margin: 0; height: 100%; overflow: hidden; background: #9fd3e6; font-family: "Pretendard", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; color: var(--ink); }
+  canvas { display: block; }
+  .panel { position: fixed; background: color-mix(in srgb, var(--paper) 92%, transparent); border: 1px solid var(--line); border-radius: 10px; box-shadow: 0 4px 16px rgba(0,0,0,.12); }
+  #status { top: 14px; left: 14px; width: 230px; padding: 12px 14px; }
+  #status h1 { margin: 0 0 8px; font-size: 13px; letter-spacing: .02em; display: flex; justify-content: space-between; }
+  .bar { display: grid; grid-template-columns: 56px 1fr 30px; align-items: center; gap: 8px; font-size: 12px; margin: 5px 0; }
+  .bar i { display: block; height: 8px; border-radius: 4px; background: rgba(31,35,40,.1); overflow: hidden; }
+  .bar b { display: block; height: 100%; border-radius: 4px; transition: width .2s; }
+  .bar span:last-child { text-align: right; font-variant-numeric: tabular-nums; }
+  #inv { margin-top: 10px; padding-top: 8px; border-top: 1px dashed var(--line); font-size: 12px; min-height: 18px; display: flex; flex-wrap: wrap; gap: 4px 10px; }
+  #prompt { left: 50%; bottom: 22px; transform: translateX(-50%); padding: 8px 14px; font-size: 14px; font-weight: 600; display: none; }
+  #stage { left: 50%; top: 14px; transform: translateX(-50%); padding: 8px 18px; font-size: 22px; font-weight: 800; letter-spacing: .01em; display: none; }
+  #caption { left: 50%; bottom: 44px; transform: translateX(-50%); padding: 8px 16px; font-size: 17px; font-weight: 700; display: none; white-space: nowrap; }
+  #timeline { position: fixed; left: 14px; right: 270px; bottom: 18px; height: 10px; border-radius: 5px; background: rgba(31,35,40,.25); cursor: pointer; display: none; }
+  #timeline s { position: absolute; top: 0; bottom: 0; background: rgba(255,255,255,.55); border-radius: 5px; }
+  #timeline u { position: absolute; top: -3px; width: 4px; height: 16px; margin-left: -2px; border-radius: 2px; background: #e0a030; }
+  #timeline i { position: absolute; top: -5px; width: 3px; height: 20px; margin-left: -1px; background: #1f2328; }
+  #log { right: 14px; bottom: 14px; width: 240px; padding: 8px 12px; font-size: 12px; line-height: 1.6; }
+  #help { right: 14px; top: 14px; padding: 10px 12px; font-size: 11.5px; line-height: 1.7; }
+  #help kbd { display: inline-block; min-width: 16px; padding: 0 4px; border: 1px solid var(--line); border-radius: 4px; text-align: center; font: 11px ui-monospace, monospace; background: #fff; }
+  #dead { inset: 0; position: fixed; display: none; place-items: center; background: rgba(20, 22, 26, .55); color: #fff; font-size: 22px; text-align: center; }
+  #dead small { display: block; margin-top: 8px; font-size: 14px; opacity: .85; }
+  #back { position: fixed; left: 14px; bottom: 40px; padding: 6px 10px; font-size: 12px; font-weight: 700; color: inherit; text-decoration: none; }
+  #speed { position: fixed; right: 14px; bottom: 96px; padding: 6px 10px; font: inherit; font-size: 12px; font-weight: 700; cursor: pointer; }
+  @media (max-width: 640px) {
+    #help, #log { display: none; }
+    #status { top: 8px; left: 8px; width: 150px; padding: 8px 10px; }
+    #status h1 { flex-direction: column; font-size: 11px; }
+    .bar { grid-template-columns: 44px 1fr 22px; gap: 4px; font-size: 10px; margin: 2px 0; }
+    #inv { font-size: 10px; margin-top: 4px; padding-top: 4px; }
+    #stage { top: auto; bottom: 74px; font-size: 14px; padding: 4px 10px; }
+    #caption { bottom: 110px; font-size: 13px; white-space: normal; width: 80%; text-align: center; }
+    #timeline { left: 8px; right: 8px; }
+    #speed { right: 8px; bottom: 40px; }
+    #back { left: 8px; }
+  }
+</style>
+<script type="importmap">
+{ "imports": { "three": "/island/vendor/three.module.min.js",
+               "three/addons/": "/island/vendor/" } }
+</script>
+</head>
+<body>
+<div id="status" class="panel">
+  <h1><span id="who">HSL Island · Tutorial</span><span id="clock">Day 1 · 08:00</span></h1>
+  <div id="bars"></div>
+  <div id="inv"></div>
+</div>
+<div id="help" class="panel">
+  <kbd>W</kbd><kbd>S</kbd> move · <kbd>A</kbd><kbd>D</kbd> turn<br>
+  <kbd>E</kbd> gather/drink/fish · <kbd>F</kbd> eat · <kbd>Z</kbd> sleep<br>
+  <kbd>Q</kbd> make a spear · <kbd>H</kbd> show hidden fish spots<br>
+  <kbd>C</kbd> camera · <kbd>T</kbd> time speed · drag to look<br>
+  <kbd>1</kbd><kbd>2</kbd><kbd>3</kbd> Peppo · Pickle · Galoot
+</div>
+<div id="prompt" class="panel"></div>
+<div id="stage" class="panel"></div>
+<div id="caption" class="panel"></div>
+<div id="timeline"><i></i></div>
+<div id="log" class="panel"></div>
+<a id="back" class="panel" href="/projects/hslab-island/">&larr; Project page</a>
+<button id="speed" class="panel" type="button">Speed</button>
+<div id="dead"><div>You died<small id="deadwhy"></small><small><kbd>R</kbd> restart</small></div></div>
+<script>
+document.getElementById('speed').addEventListener('click', () => {
+  dispatchEvent(new KeyboardEvent('keydown', { key: 't' }));
+  dispatchEvent(new KeyboardEvent('keyup', { key: 't' }));
+});
+if (new URLSearchParams(location.search).get('lang') === 'en') document.getElementById('back').href = '/en/projects/hslab-island/';
+</script>
+<script type="module" src="main.js"></script>
+</body>
+</html>

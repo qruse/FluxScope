@@ -34,7 +34,7 @@ const posts = defineCollection({
 const stories = defineCollection({
   loader: glob({ pattern: '**/*.md', base: './src/content/stories' }),
   schema: z.object({
-    title: z.string().min(8),
+    title: z.string().min(1),   // the user's wording, however short ("세 얼간이"); only an empty title is rejected
     description: z.string().min(30).max(200),
     publishedAt: z.coerce.date(),
     updatedAt: z.coerce.date().optional(),
