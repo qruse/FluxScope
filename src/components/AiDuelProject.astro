@@ -22,7 +22,8 @@ const rules = [
   [L('체결', 'Fills'), L('다음 미국 거래일 종가', 'Next US close')],
   [L('수수료', 'Fees'), L('매매마다 0.1%', '0.1% per trade')],
   [L('리듬', 'Rhythm'), L('토요일 회의, 매일 아침 평가', 'Saturday meeting, marked daily')],
-  [L('추론 강도', 'Reasoning effort'), L('GPT·Opus high, Argon medium', 'GPT and Opus high, Argon medium')],
+  [L('추론 강도', 'Reasoning effort'), L('GPT·Opus·Fable high, Argon medium', 'GPT, Opus and Fable high, Argon medium')],
+  [L('합류', 'Joined later'), L('Fable은 11월 첫 체결부터 참가. 순위는 각자 시작일 이후 S&P 500 대비 수익률로 매김', 'Fable joined with its first fill in November. Ranks use each AI’s return against the S&P 500 since its own start')],
 ];
 ---
 <BaseLayout lang={lang} title={isKo ? project.nameKo : project.name} description={isKo ? project.summaryKo : project.summary}>
@@ -72,7 +73,7 @@ const rules = [
         <h2>{L('규칙', 'Rules')}</h2>
         <dl class="du-rules">{rules.map(([k, v]) => <div><dt>{k}</dt><dd>{v}</dd></div>)}</dl>
         <p class="du-goal"><b>{L('목표', 'Goal')}</b>{L('S&P 500(SPY)·나스닥100(QQQ)을 이기는 것과 상대 AI들을 이기는 것, 둘 다 주목표. 서로의 수익률과 최대 낙폭은 매주 공개되고 보유 종목은 비공개.', 'Beat the S&P 500 (SPY) and the Nasdaq-100 (QQQ), and beat the other AIs; both are primary. Each sees the others’ returns and max drawdowns every week, not their holdings.')}</p>
-        <p class="du-goal is-note"><b>{L('왜 Argon만 medium?', 'Why is Argon on medium?')}</b>{L('GPT-6.1 Sol과 Opus 5.5는 high 위에 xhigh·max가 더 있어 high가 중간 단계임. Gemini 4 Argon은 low·medium·high 세 단계뿐이라 high가 최고 단계. 그래서 같은 자리(최고 단계 바로 아래)인 medium으로 맞췄고, medium은 구글이 정한 기본값이기도 함.', 'GPT-6.1 Sol and Opus 5.5 have xhigh and max above high, so high is a middle step for them. Gemini 4 Argon only has low, medium and high, so high is its top step. Argon runs on medium, the same position one below the top, which is also Google’s default.')}</p>
+        <p class="du-goal is-note"><b>{L('왜 Argon만 medium?', 'Why is Argon on medium?')}</b>{L('GPT-6.1 Sol, Opus 5.5, Fable 5.1은 high 위에 xhigh·max가 더 있어 high가 중간 단계임. Gemini 4 Argon은 low·medium·high 세 단계뿐이라 high가 최고 단계. 그래서 같은 자리(최고 단계 바로 아래)인 medium으로 맞췄고, medium은 구글이 정한 기본값이기도 함.', 'GPT-6.1 Sol, Opus 5.5 and Fable 5.1 have xhigh and max above high, so high is a middle step for them. Gemini 4 Argon only has low, medium and high, so high is its top step. Argon runs on medium, the same position one below the top, which is also Google’s default.')}</p>
       </div>
       {stories.length > 0 && (
         <div>
@@ -81,6 +82,7 @@ const rules = [
         </div>
       )}
     </section>
+    <p class="du-note"><a href={projectPath('ai-oracle-benchmark', lang)}>{L('이 대결은 HSLab AI Oracle Benchmark의 주식 분야로 함께 채점됨 →', 'This duel is also scored as the stock arena of the HSLab AI Oracle Benchmark →')}</a></p>
     <p class="du-note">{L('모의투자이며 실제 주문은 나가지 않음. 시세는 토스증권 Open API(정규장 일봉 종가). SPY·QQQ는 지수를 따라가는 ETF로 비교 기준이며, AI도 살 수 있음. 투자 권유가 아님.', 'Paper trading only; no real orders. Prices are regular-session daily closes from the Toss Securities Open API. SPY and QQQ are index-tracking ETFs used as benchmarks; the AIs may buy them too. Not investment advice.')}</p>
     <section class="comments" id="comments" data-comments data-lang={lang} data-page={projectPath('ai-duel', lang)}
       data-intro={L('훈수 환영', 'Backseat trading welcome')}></section>
@@ -95,8 +97,8 @@ const rules = [
   const T = ko
     ? { fail: '데이터를 불러오지 못했음. 잠시 뒤 다시 열어 주세요.', wait: '첫 체결 대기', waitLong: '첫 포트폴리오는 다음 미국 거래일 종가에 체결됨', start: '시작', updated: '갱신', lead: '앞서는 중', tie: '동률', vs: '대비', pending: '체결 대기 · 목표 비중', holdings: '보유 비중', cash: '현금', filled: '체결', waiting: '체결 대기', strategy: '운용 전략', journal: '최근 회고', none: '아직 없음', more: '펼쳐 보기', less: '접기', nodata: '첫 체결 뒤부터 그래프가 그려짐', beatBoth: '지수 둘 다 이기는 중', mdd: '최대 낙폭', vol: '변동성', beta: '베타', riskWait: '위험 지표는 체결 3일 뒤부터', hypNow: '이번 주 가설', hypPast: '지난 가설 판정', check: '기준', right: '맞음', wrong: '틀림', open: '보류', hit: '적중률', noVerdict: '첫 판정은 2주차 회의에서' }
     : { fail: 'Could not load the data. Please try again later.', wait: 'Waiting for first fill', waitLong: 'The first portfolio fills at the next US close', start: 'Started', updated: 'Updated', lead: 'Leading', tie: 'Tied', vs: 'vs', pending: 'Waiting to fill · target weights', holdings: 'Holdings', cash: 'Cash', filled: 'Filled', waiting: 'Waiting', strategy: 'Strategy · machine-translated from Korean', journal: 'Latest review · machine-translated from Korean', none: 'None yet', more: 'Show all', less: 'Collapse', nodata: 'The chart starts after the first fill', beatBoth: 'Beating both indexes', mdd: 'Max drawdown', vol: 'Volatility', beta: 'Beta', riskWait: 'Risk figures start three days after the first fill', hypNow: 'This week’s hypotheses', hypPast: 'Last verdicts', check: 'Test', right: 'Right', wrong: 'Wrong', open: 'Open', hit: 'Hit rate', noVerdict: 'First verdicts at the week-two meeting' };
-  const CLI = { gpt: 'Codex CLI · high', opus: 'Claude CLI · high', argon: 'Antigravity CLI · medium' };
-  const COL = { gpt: 'var(--accent)', opus: 'var(--pen)', argon: '#7b4fc9', SPY: '#8d989e', QQQ: '#c99326' };
+  const CLI = { gpt: 'Codex CLI · high', opus: 'Claude CLI · high', fable: 'Claude CLI · high', argon: 'Antigravity CLI · medium' };
+  const COL = { gpt: 'var(--accent)', opus: 'var(--pen)', fable: '#0f8b8d', argon: '#7b4fc9', SPY: '#8d989e', QQQ: '#c99326' };
   const ETF_COL = '#4f5f68'; // 라이트·다크 모드 모두에서 보이는 고정 회색
   const PAL = ['#e0603f', '#3446a3', '#3b7d3a', '#b7791f', '#7a4ea3', '#2b8a9e', '#c2477a', '#6b7f2a', '#a05a2c', '#476f95'];
   const $ = (q) => root.querySelector(q);
@@ -117,23 +119,27 @@ const rules = [
     const ret = (a) => (a.history?.length ? a.history[a.history.length - 1].nav / a.capital_usd - 1 : null);
     const started = d.agents.some((a) => a.history?.length);
     // 순위는 수익률이 나온 AI끼리만. 동률이면 같은 순위.
-    const scored = d.agents.filter((a) => ok(ret(a))).sort((p, q) => ret(q) - ret(p));
-    const rank = (a) => (ok(ret(a)) ? 1 + scored.filter((x) => ret(x) > ret(a)).length : null);
-    const leader = scored.length > 1 && ret(scored[0]) > ret(scored[1]) ? scored[0] : null;
+    // AIs that joined later have a shorter record, so ranks use each one's return against SPY since its own start.
+    const spyOn = (day) => bh.find((x) => x.date >= day)?.SPY;
+    const edge = (a) => { const s = a.start && spyOn(a.start); return ok(ret(a)) && s && bLast ? ret(a) - (bLast.SPY / s - 1) : null; };
+    const scored = d.agents.filter((a) => ok(edge(a))).sort((p, q) => edge(q) - edge(p));
+    const rank = (a) => (ok(edge(a)) ? 1 + scored.filter((x) => edge(x) > edge(a)).length : null);
+    const leader = scored.length > 1 && edge(scored[0]) > edge(scored[1]) ? scored[0] : null;
 
     const order = started ? [...scored, ...d.agents.filter((a) => !scored.includes(a))] : d.agents;
     $('[data-du-players]').style.setProperty('--n', d.agents.length);
     $('[data-du-players]').innerHTML = order.map((a) => {
       const r = ret(a);
       const nav = a.history?.length ? a.history[a.history.length - 1].nav : a.capital_usd;
-      const beat = ok(r) && ok(bRet('SPY')) && r > bRet('SPY') && r > bRet('QQQ');
+      const since = (s) => { const base = a.start && bh.find((x) => x.date >= a.start)?.[s]; return base && bLast ? bLast[s] / base - 1 : null; };
+      const beat = ok(r) && ok(since('SPY')) && r > since('SPY') && r > since('QQQ');
       const rk = rank(a);
       return `<article class="du-player" style="--c:${COL[a.id]}">
         <p class="du-model">${esc(CLI[a.id] || a.model)}${rk && scored.length > 1 ? `<span class="du-rank">${ko ? `${rk}위` : `#${rk}`}</span>` : ''}</p>
         <h2>${esc(a.name)}</h2>
         <p class="du-big ${r == null ? 'is-wait' : sign(r)}">${r == null ? T.wait : pct(r)}</p>
         <p class="du-nav">${usd(nav)}<span>/ ${usd(a.capital_usd)}</span>${a.start ? `<span>· ${T.start} ${esc(a.start)}</span>` : ''}</p>
-        <ul class="du-diff">${['SPY', 'QQQ'].map((s) => { const v = ok(r) && ok(bRet(s)) ? r - bRet(s) : null; return `<li><span>${s} ${T.vs}</span><b class="${sign(v)}">${pp(v)}</b></li>`; }).join('')}</ul>
+        <ul class="du-diff">${['SPY', 'QQQ'].map((s) => { const base = a.start && bh.find((x) => x.date >= a.start)?.[s]; const v = ok(r) && base && bLast ? r - (bLast[s] / base - 1) : null; return `<li><span>${s} ${T.vs}</span><b class="${sign(v)}">${pp(v)}</b></li>`; }).join('')}</ul>
         ${a.risk ? `<p class="du-risk"><span>${T.mdd} <b>${pct(a.risk.mdd, 1)}</b></span><span>${T.vol} <b>${(a.risk.vol * 100).toFixed(0)}%</b></span>${ok(a.risk.beta) ? `<span>${T.beta} <b>${a.risk.beta.toFixed(2)}</b></span>` : ''}</p>` : a.start ? `<p class="du-risk is-wait">${T.riskWait}</p>` : ''}
         <div class="du-badges">${leader === a ? `<em class="du-badge">${T.lead}</em>` : ''}${beat ? `<em class="du-badge is-beat">${T.beatBoth}</em>` : ''}</div>
       </article>`;

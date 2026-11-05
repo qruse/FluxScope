@@ -219,6 +219,15 @@ const commentSchema = [
     created_at TEXT NOT NULL,
     PRIMARY KEY (game, day, voter)
   )`,
+  // Visitor picks on /projects/ai-oracle-benchmark/: one per visitor (hashed IP) per match, changeable until kickoff.
+  `CREATE TABLE IF NOT EXISTS oracle_votes (
+    round INTEGER NOT NULL,
+    question TEXT NOT NULL,
+    voter TEXT NOT NULL,
+    choice TEXT NOT NULL,
+    created_at TEXT NOT NULL,
+    PRIMARY KEY (round, question, voter)
+  )`,
   // Working files per slug (both payloads and the internal review record), so article handoffs never go through Git.
   `CREATE TABLE IF NOT EXISTS drafts (
     slug TEXT PRIMARY KEY,
@@ -488,9 +497,10 @@ async function submitRecentlyChanged(env) {
 // Data for the project pages, uploaded once a day with PUBLISH_TOKEN and kept in R2 under the project's prefix:
 // weather/ for /projects/beat-kma/ (weather_forecasting repository), duel/ for /projects/ai-duel/ (ai_portfolio_duel)
 // and mafia/ for /projects/ai-mafia/ (ai_mafia: latest.json plus one game-NNN.json per finished game),
+// oracle/ for /projects/ai-oracle-benchmark/ (hslab_oracle: latest.json, ledger.json, one round-NNNN.json per round),
 // usage/ for the unlisted /usage/ page (usage_dashboard: Claude, Codex and Antigravity limits and tokens).
 async function projectData(request, env, url) {
-  const match = url.pathname.match(/^\/api\/(weather|duel|mafia|usage)\/((?:verify\/)?[a-z0-9_-]+\.json)$/);
+  const match = url.pathname.match(/^\/api\/(weather|duel|mafia|oracle|usage)\/((?:verify\/)?[a-z0-9_-]+\.json)$/);
   if (!match) return json({ error: 'Not found' }, 404);
   if (!env.IMAGES) return json({ error: 'Storage is unavailable' }, 503);
   const key = `${match[1]}/${match[2]}`;
@@ -542,6 +552,40 @@ async function mafiaVotes(request, env, url) {
   await env.DB.prepare('INSERT INTO mafia_votes (game, day, voter, seat, created_at) VALUES (?, ?, ?, ?, ?) ON CONFLICT(game, day, voter) DO UPDATE SET seat = excluded.seat, created_at = excluded.created_at')
     .bind(vote.game, vote.day, voter, seat, new Date().toISOString()).run();
   return json({ ...(await tally(vote.game, vote.day)), mine: seat });
+}
+
+// Visitor picks for the Oracle Benchmark's matches. What can be voted on comes from the uploaded oracle/latest.json: a sports
+// question of the current round that has not started. The tally is read back by hslab_oracle and compared with the AIs.
+async function oracleVotes(request, env, url) {
+  if (!env.IMAGES) return json({ error: 'Storage is unavailable' }, 503);
+  const tally = async (round) => {
+    const { results } = await env.DB.prepare('SELECT question, choice, COUNT(*) AS n FROM oracle_votes WHERE round = ? GROUP BY question, choice').bind(round).all();
+    const counts = {};
+    for (const r of results) (counts[r.question] ||= {})[r.choice] = r.n;
+    return { round, tally: counts };
+  };
+  if (request.method === 'GET') {
+    const round = Number(url.searchParams.get('round'));
+    if (!Number.isInteger(round) || round < 1) return json({ error: 'invalid_round' }, 400);
+    return json(await tally(round));
+  }
+  if (request.method !== 'POST') return json({ error: 'method_not_allowed' }, 405);
+  if (botAgent.test(request.headers.get('User-Agent') || '')) return json({ error: 'invalid_request' }, 400);
+  const payload = await readJson(request, 500);
+  const state = await env.IMAGES.get('oracle/latest.json').then((o) => (o ? o.json() : null)).catch(() => null);
+  const current = state?.current;
+  const round = Number(payload?.round);
+  if (!current || round !== current.round) return json({ error: 'closed' }, 409);
+  const question = (current.questions || []).find((q) => q.id === String(payload?.question || ''));
+  if (!question || question.arena !== 'sports') return json({ error: 'invalid_question' }, 400);
+  if (question.status !== 'open' || Date.now() >= Date.parse(question.start)) return json({ error: 'closed' }, 409);
+  const choice = String(payload?.choice || '');
+  if (!question.options.includes(choice)) return json({ error: 'invalid_choice' }, 400);
+  const ip = request.headers.get('CF-Connecting-IP') || 'unknown';
+  const voter = toBase64(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(`fluxscope-oracle:${round}:${question.id}:${ip}`))).slice(0, 24);
+  await env.DB.prepare('INSERT INTO oracle_votes (round, question, voter, choice, created_at) VALUES (?, ?, ?, ?, ?) ON CONFLICT(round, question, voter) DO UPDATE SET choice = excluded.choice, created_at = excluded.created_at')
+    .bind(round, question.id, voter, choice, new Date().toISOString()).run();
+  return json({ ...(await tally(round)), mine: choice });
 }
 
 // My-voice TTS (/projects/my-voice-tts/): the model runs on the owner's home GPU behind a Cloudflare quick tunnel.
@@ -616,7 +660,11 @@ async function api(request, env, url, ctx) {
     if (!env.DB) return json({ error: 'Database binding is unavailable' }, 503);
     return mafiaVotes(request, env, url);
   }
-  if (/^\/api\/(weather|duel|mafia|usage)\//.test(url.pathname)) return projectData(request, env, url);
+  if (url.pathname === '/api/oracle/vote' || url.pathname === '/api/oracle/votes') {
+    if (!env.DB) return json({ error: 'Database binding is unavailable' }, 503);
+    return oracleVotes(request, env, url);
+  }
+  if (/^\/api\/(weather|duel|mafia|oracle|usage)\//.test(url.pathname)) return projectData(request, env, url);
   if (!env.DB) return json({ error: 'Database binding is unavailable' }, 503);
   if (url.pathname === '/api/comments') return comments(request, env, url);
   if (url.pathname === '/api/views') return views(request, env, url);

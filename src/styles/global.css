@@ -4,6 +4,7 @@
 @source not "../components/PortfolioCases.astro";
 @source not "../lib/portfolio.ts";
 @source not "../components/AiDuelProject.astro";
+@source not "../components/OracleProject.astro";
 @source not "../components/IslandProject.astro";
 @source not "../../public/island";
 @import "pretendard/dist/web/variable/pretendardvariable-dynamic-subset.css";
