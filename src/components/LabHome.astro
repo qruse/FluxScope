@@ -30,13 +30,14 @@ const storyPins = [
   { part: 3, img: 'part3-zeroshot', h: 509, ko: '3편 제로샷 검증 점수 차트', en: 'Part 3 zero-shot validation chart' },
   { part: 4, img: 'part4-test', h: 537, ko: '4편 테스트 기간 점수 차트', en: 'Part 4 test-period score chart' },
 ];
-// Shorts on the channel, newest first; the English home shows the English cut of the stock duel.
+// The long video, then the newest Short of each project; the English home shows the English cut of the stock duel.
+const longVideo = { id: 'RBsO2v9PNL4', tag: isKo ? '무인도' : 'Island', title: 'Can an AI survive on a desert island?' };
 const shorts = [
+  { id: 'uz3bmJ9PewU', img: 'short-island-1', tag: isKo ? '무인도' : 'Island', title: isKo ? 'AI가 무인도에서 살아남을 수 있을까? (1)' : 'Can an AI survive on a desert island? (1)', alt: isKo ? '무인도 쇼츠 1편 썸네일' : 'Desert island Short part 1 thumbnail' },
   isKo
-    ? { id: '58nJsVl7V7s', img: 'short-ai-duel-1', tag: '주식', title: 'AI야 돈 좀 벌어다줘', alt: 'AI 주식 대결 쇼츠 첫 장면: 돈을 벌 수 있을까?' }
-    : { id: 'zDNKuBPg7L0', img: 'short-ai-duel-1-en', tag: 'Stocks', title: 'Hey AI, go make me some money', alt: 'AI stock duel Short: three AIs with $20,000 each' },
+    ? { id: 'rukDHpnCJdc', img: 'short-ai-duel-2', tag: '주식', title: 'AI야 돈 좀 벌어다줘 (2)', alt: 'AI 주식 대결 쇼츠 2편 썸네일' }
+    : { id: '1A8RBuVvzbo', img: 'short-ai-duel-2-en', tag: 'Stocks', title: 'Hey AI, go make me some money (2)', alt: 'AI stock duel Short part 2 thumbnail' },
   { id: 'Jp1mlS0A5bs', img: 'short-beat-kma-2', tag: isKo ? '날씨' : 'Weather', title: isKo ? '2만원으로 기상청 이기기 (2)' : 'Beating the KMA for $15 (2, Korean)', alt: isKo ? '기상청 이기기 2편 쇼츠: 어떻게 만들었냐면요' : 'Beat-the-KMA Short part 2: how it was built' },
-  { id: 'wsr1Ebu_D1Y', img: 'short-beat-kma-1', tag: isKo ? '날씨' : 'Weather', title: isKo ? '2만원으로 기상청 이기기 (1)' : 'Beating the KMA for $15 (1, Korean)', alt: isKo ? '기상청 이기기 1편 쇼츠: 기온 오차 -22% 막대 그래프' : 'Beat-the-KMA Short part 1: temperature error down 22%' },
 ];
 const cv = portfolio(lang);
 const casesHref = casesPath(lang);
@@ -142,14 +143,15 @@ const casesHref = casesPath(lang);
         <p class="lab-more"><a class="quiet-link" href={labSectionPath(columnSection, lang)}>{isKo ? '칼럼 전체 보기 →' : 'See all columns →'}</a></p>
       </section>
     </article>
-    <!-- 05: the YouTube Shorts channel, off-site, so it is not a lab section; it borrows the projects' face,
-         since every Short is about one of the projects. -->
+    <!-- 05: the YouTube channel, off-site, so it is not a lab section; it borrows the projects' face,
+         since every video is about one of the projects. -->
     <article class="lab-entry" id="youtube" data-face="0">
       <span class="lab-mark lab-entry-num">05<LabFace face={0} /></span>
       <div class="lab-entry-copy">
         <h3><a class="pen-under" href={youtubeChannel} rel="noopener">{isKo ? '유튜브 채널' : 'YouTube Channel'}</a></h3>
-        <p>{isKo ? '직접 만든 프로젝트만 30초 쇼츠로 올리는 채널. 결과가 나오면 영상으로 먼저 보여 줌.' : 'A channel of 30-second Shorts, only about projects built here. New results show up there first.'}</p>
+        <p>{isKo ? '직접 만든 프로젝트만 롱폼과 쇼츠로 올리는 채널.' : 'A channel of long videos and Shorts, only about projects built here.'}</p>
         <ol class="lab-parts">
+          <li><a href={`https://www.youtube.com/watch?v=${longVideo.id}`} rel="noopener"><span>{longVideo.tag}</span>{longVideo.title}</a></li>
           {shorts.map((s) => <li><a href={`https://www.youtube.com/shorts/${s.id}`} rel="noopener"><span>{s.tag}</span>{s.title}</a></li>)}
         </ol>
         <a class="lab-cta" href={youtubeChannel} rel="noopener">{isKo ? '채널 보기' : 'Open the channel'}<span aria-hidden="true">→</span></a>
