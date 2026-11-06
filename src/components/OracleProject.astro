@@ -23,7 +23,7 @@ const rules = [
   [L('미제출', 'Missed'), L('모든 선택지 같은 확률로 채점하고 제출률을 공개함', 'Scored as an equal chance for every option, with coverage shown')],
   [L('무효', 'Void'), L('예정일부터 7일 안에 열리지 않은 경기는 모두에게 무효', 'A match not played within 7 days of its date is void for everyone')],
   [L('경쟁', 'Competition'), L('AI마다 분야별 전략 문서를 매주 스스로 고침. 상대 점수만 보이고 전략과 열린 예측은 안 보임', 'Each AI rewrites its own strategy per arena every week. It sees rivals’ scores, not their strategies or open forecasts')],
-  [L('기준 모델', 'Baselines'), L('주식 SPY, 스포츠 Elo, 지진 20년 빈도, 태풍·토네이도 20년 같은 계절 빈도. 1라운드 날씨는 15년 같은 계절 빈도', 'Stock SPY, sports Elo, earthquakes 20-year frequency, typhoons and tornadoes 20-year same-season frequency. Round 1 weather uses 15-year same-season frequency')],
+  [L('기준 모델', 'Baselines'), L('주식 SPY, 스포츠 Elo, 지진 20년 빈도, 태풍·토네이도 20년 같은 계절 빈도', 'Stock SPY, sports Elo, earthquakes 20-year frequency, typhoons and tornadoes 20-year same-season frequency')],
   [L('사람 투표', 'Human votes'), L('경기 시작 전까지 경기마다 한 표이고 바꿀 수 있음. AI보다 늦게까지 받고 AI 답안도 볼 수 있어서 Oracle Score에는 넣지 않고 따로 비교함', 'One pick per match until kickoff, changeable. People vote later than the AIs and can see their forecasts, so votes are compared separately and are not in the Oracle Score')],
   [L('데이터', 'Data'), L('USGS, IBTrACS, NOAA SPC, Fantasy Premier League, football-data.co.uk, TheSportsDB, MLB Stats API, gol.gg(LoL). LoL은 날짜만 있어서 그날 0시(UTC)에 투표 마감', 'USGS, IBTrACS, NOAA SPC, Fantasy Premier League, football-data.co.uk, TheSportsDB, MLB Stats API, gol.gg (LoL). LoL pages give dates only, so votes close at 00:00 UTC that day')],
 ];
@@ -71,12 +71,13 @@ const limits = [
     <div data-ad></div>
 
     <section class="or-sec or-next" data-or-next>
-      <div class="or-head"><h2>{L('2라운드부터 바뀌는 문제', 'Questions from round 2')}</h2><p class="or-sub">{L('11/14 05:00 KST 예측부터, 1라운드는 잠긴 그대로', 'From the 11/14 forecast; round 1 stays as locked')}</p></div>
+      <div class="or-head"><h2>{L('문제 구성', 'What gets asked')}</h2><p class="or-sub">{L('11/6 변경, 1라운드에도 시작 전에 반영', 'Changed 11/6, applied to round 1 before it started')}</p></div>
       <div class="or-next-rows">
-        <div><b>{L('스포츠', 'Sports')}</b><span>{L('프리미어리그', 'Premier League')}</span><span class="on">KBO</span><span class="on">MLB</span><span class="on">LoL</span><s>KBL</s></div>
-        <div><b>{L('재난', 'Disaster')}</b><span>{L('지진', 'Earthquake')}</span><span class="on">{L('태풍', 'Typhoon')}</span><span class="on">{L('토네이도', 'Tornado')}</span><s>{L('강수', 'Rain')}</s><s>{L('기온', 'Temperature')}</s></div>
+        <div><b>{L('스포츠', 'Sports')}</b><span>{L('프리미어리그', 'Premier League')}</span><span>{L('메이저리그', 'MLB')}</span><span>{L('한국프로야구', 'KBO')}</span><span>{L('e스포츠 (LoL)', 'Esports (LoL)')}</span></div>
+        <div><b>{L('재난', 'Disaster')}</b><span>{L('지진', 'Earthquake')}</span><span>{L('태풍', 'Typhoon')}</span><span>{L('토네이도', 'Tornado')}</span></div>
+        <div><b>{L('주식', 'Stock')}</b><span>{L('AI 주식 대결 수익률', 'AI stock duel returns')}</span></div>
       </div>
-      <p class="or-hint">{L('KBO·MLB는 시즌 중에만 문제가 나옴. LoL은 LCK·Worlds·MSI 경기, 이번엔 11/15 Worlds 결승 예정', 'KBO and MLB appear only in season. LoL covers LCK, Worlds and MSI; the Worlds final on 11/15 KST is next')}</p>
+      <p class="or-hint">{L('메이저리그·한국프로야구는 시즌 중에만 문제가 나옴(봄부터). e스포츠는 LCK·Worlds·MSI 경기', 'MLB and KBO appear only in season, from spring. Esports covers LCK, Worlds and MSI')}</p>
     </section>
 
     <section class="or-sec">
@@ -122,8 +123,8 @@ const limits = [
   if (!root) return;
   const ko = root.dataset.lang === 'ko';
   const T = ko
-    ? { fail: '데이터를 불러오지 못했음. 잠시 뒤 다시 열어 주세요.', updated: '갱신', noRound: '아직 열린 라운드 없음', roundStart: (n) => `라운드 ${n} 시작까지`, roundEnd: (n) => `라운드 ${n} 끝까지`, scoring: '채점 중', done: '결과 나온 문제', firstScore: '첫 점수 예정', nextForecast: '다음 예측', provisional: '잠정 순위 · 표본 부족', final: '표본 기준 넘김', nolead: '확실한 1위 없음', lead: (a) => `${a} 1위 확실`, beat: '기준 모델을 이길 확률', baseline: '기준 모델', stock: '주식', sports: '스포츠', disaster: '재난', stockMore: '주식은 주식 대결 페이지', arenaRounds: '끝난 라운드', noQ: '이 분야의 문제가 아직 없음.', easy: '쉬움', medium: '보통', hard: '어려움', void: '무효', missed: '미제출', home: '홈', draw: '무', away: '원정', yes: '예', no: '아니오', roundN: (n) => `라운드 ${n}`, none: '아직 없음', strategy: '운용 전략', journal: '최근 회고', hyp: '이번 주 가설', seeAi: 'AI별 예측과 이유', x: '지능 지수', y: 'Oracle Score', noIndex: '지수 없음', verdictWait: '아직 모름.', verdictN: (n, p) => `모델 ${n}개로는 순서가 완벽히 맞아도 통계 결론을 못 냄(최소 p값 ${p.toFixed(2)}). 모델을 더 늘려야 함.`, verdictData: '결과가 더 쌓여야 함.', verdictRho: (r, p) => `지금까지 순위 상관 ${r.toFixed(2)}, 양의 상관일 확률 ${Math.round(p * 100)}%.`, idx: (s, d) => `지능 지수: ${s} (${d} 확인). 우리가 잰 값이 아니라 외부 지표이고, 추론 강도와 상관없이 모델마다 가장 높은 공개 점수를 씀. 여기서는 예산 때문에 더 낮은 강도로 돌림.`, check: (u, r) => `같은 순서인지 확인: 난이도 가중치 없이 ${u}, 라운드별 평균 순위로 ${r}. 다르면 순위를 믿으면 안 됨.`, ledgerText: (n, h, v) => `기록 ${n}건, 최신 해시 ${h}, 체인 ${v ? '정상' : '오류'}. 문제·답안·결과는 공개 파일로 내려받아 다시 계산할 수 있음: `, cover: '제출률', sportsHint: '칸 너비는 네 AI의 평균 확률. 칸을 누르면 내 예측 투표. 시간은 KST.', disasterHint: '확률 0~100%. 눈금은 기준 모델, 숫자는 AI 평균.', votes: (n) => `사람 ${n}표`, voteFail: '투표하지 못했음. 잠시 뒤 다시 시도해 주세요.', voteClosed: '투표가 끝났음.', humansNone: (m) => `사람 투표: 경기마다 ${m}표 이상 모이면 AI와 나란히 채점함. 점수에는 들어가지 않음.`, humans: (n, v, p, best) => `사람 투표(점수 미포함): ${n}경기 ${v}표, 기준 모델 대비 ${p}. 같은 경기에서 AI는 ${best}.` }
-    : { fail: 'Could not load the data. Please try again later.', updated: 'Updated', noRound: 'No open round yet', roundStart: (n) => `until round ${n} starts`, roundEnd: (n) => `until round ${n} ends`, scoring: 'Scoring', done: 'questions settled', firstScore: 'first scores expected', nextForecast: 'next forecast', provisional: 'Provisional · small sample', final: 'Past the sample threshold', nolead: 'No clear leader', lead: (a) => `${a} clearly first`, beat: 'Chance of beating the baseline', baseline: 'Baseline', stock: 'Stock', sports: 'Sports', disaster: 'Disaster', stockMore: 'Stock has its own page', arenaRounds: 'Rounds finished', noQ: 'No questions in this arena yet.', easy: 'Easy', medium: 'Medium', hard: 'Hard', void: 'Void', missed: 'Missed', home: 'Home', draw: 'Draw', away: 'Away', yes: 'Yes', no: 'No', roundN: (n) => `Round ${n}`, none: 'None yet', strategy: 'Strategy · machine-translated from Korean', journal: 'Latest review · machine-translated from Korean', hyp: 'This week’s hypotheses (in Korean)', seeAi: 'Each AI’s forecast and reasons', x: 'Intelligence index', y: 'Oracle Score', noIndex: 'No index score', verdictWait: 'Not known yet.', verdictN: (n, p) => `With ${n} models, even a perfect order cannot support a conclusion (smallest possible p value ${p.toFixed(2)}). More models are needed.`, verdictData: 'More results are needed.', verdictRho: (r, p) => `So far the rank correlation is ${r.toFixed(2)}, with a ${Math.round(p * 100)}% chance that it is positive.`, idx: (s, d) => `Intelligence index: ${s}, read ${d}. It is an outside measure, not ours: each model's best published score at any effort. The models run at lower effort here because of the budget.`, check: (u, r) => `Same order? Without difficulty weights: ${u}. By mean rank per round: ${r}. If these differ, the order should not be trusted.`, ledgerText: (n, h, v) => `${n} records, latest hash ${h}, chain ${v ? 'valid' : 'BROKEN'}. Questions, forecasts and results can be downloaded and recomputed: `, cover: 'Coverage', sportsHint: 'Cell width is the four AIs’ average chance. Tap a cell to cast your pick. Times are KST.', disasterHint: 'Chance from 0 to 100%. The tick is the baseline, the number is the AI average.', votes: (n) => `${n} human votes`, voteFail: 'The vote did not go through. Please try again.', voteClosed: 'Voting has closed.', humansNone: (m) => `Human votes: a match is scored beside the AIs once it has ${m} votes. They are not part of the score.`, humans: (n, v, p, best) => `Human votes (not in the score): ${n} matches, ${v} votes, ${p} against the baseline. On the same matches the AIs got ${best}.` };
+    ? { fail: '데이터를 불러오지 못했음. 잠시 뒤 다시 열어 주세요.', updated: '갱신', noRound: '아직 열린 라운드 없음', roundStart: (n) => `라운드 ${n} 시작까지`, roundEnd: (n) => `라운드 ${n} 끝까지`, scoring: '채점 중', done: '결과 나온 문제', firstScore: '첫 점수 예정', nextForecast: '다음 예측', provisional: '잠정 순위 · 표본 부족', final: '표본 기준 넘김', nolead: '확실한 1위 없음', lead: (a) => `${a} 1위 확실`, beat: '기준 모델을 이길 확률', baseline: '기준 모델', stock: '주식', sports: '스포츠', disaster: '재난', stockMore: '주식은 주식 대결 페이지', stockHint: '네 AI가 각자 2만 달러로 하는 미국 주식 모의투자. 큰 숫자는 시작 이후 수익률, 아래는 각자 시작일부터 SPY 대비.', vsSpy: 'SPY 대비', waitTrade: '첫 거래 대기', arenaRounds: '끝난 라운드', noQ: '이 분야의 문제가 아직 없음.', easy: '쉬움', medium: '보통', hard: '어려움', void: '무효', missed: '미제출', home: '홈', draw: '무', away: '원정', yes: '예', no: '아니오', roundN: (n) => `라운드 ${n}`, none: '아직 없음', strategy: '운용 전략', journal: '최근 회고', hyp: '이번 주 가설', seeAi: 'AI별 예측과 이유', x: '지능 지수', y: 'Oracle Score', noIndex: '지수 없음', verdictWait: '아직 모름.', verdictN: (n, p) => `모델 ${n}개로는 순서가 완벽히 맞아도 통계 결론을 못 냄(최소 p값 ${p.toFixed(2)}). 모델을 더 늘려야 함.`, verdictData: '결과가 더 쌓여야 함.', verdictRho: (r, p) => `지금까지 순위 상관 ${r.toFixed(2)}, 양의 상관일 확률 ${Math.round(p * 100)}%.`, idx: (s, d) => `지능 지수: ${s} (${d} 확인). 우리가 잰 값이 아니라 외부 지표이고, 추론 강도와 상관없이 모델마다 가장 높은 공개 점수를 씀. 여기서는 예산 때문에 더 낮은 강도로 돌림.`, check: (u, r) => `같은 순서인지 확인: 난이도 가중치 없이 ${u}, 라운드별 평균 순위로 ${r}. 다르면 순위를 믿으면 안 됨.`, ledgerText: (n, h, v) => `기록 ${n}건, 최신 해시 ${h}, 체인 ${v ? '정상' : '오류'}. 문제·답안·결과는 공개 파일로 내려받아 다시 계산할 수 있음: `, cover: '제출률', sportsHint: '칸 너비는 네 AI의 평균 확률. 칸을 누르면 내 예측 투표. 시간은 KST.', disasterHint: '확률 0~100%. 눈금은 기준 모델, 숫자는 AI 평균.', votes: (n) => `사람 ${n}표`, voteFail: '투표하지 못했음. 잠시 뒤 다시 시도해 주세요.', voteClosed: '투표가 끝났음.', humansNone: (m) => `사람 투표: 경기마다 ${m}표 이상 모이면 AI와 나란히 채점함. 점수에는 들어가지 않음.`, humans: (n, v, p, best) => `사람 투표(점수 미포함): ${n}경기 ${v}표, 기준 모델 대비 ${p}. 같은 경기에서 AI는 ${best}.` }
+    : { fail: 'Could not load the data. Please try again later.', updated: 'Updated', noRound: 'No open round yet', roundStart: (n) => `until round ${n} starts`, roundEnd: (n) => `until round ${n} ends`, scoring: 'Scoring', done: 'questions settled', firstScore: 'first scores expected', nextForecast: 'next forecast', provisional: 'Provisional · small sample', final: 'Past the sample threshold', nolead: 'No clear leader', lead: (a) => `${a} clearly first`, beat: 'Chance of beating the baseline', baseline: 'Baseline', stock: 'Stock', sports: 'Sports', disaster: 'Disaster', stockMore: 'Stock has its own page', stockHint: 'Each AI paper-trades US stocks with $20,000. The big number is the return since its start; below, against SPY from its own start.', vsSpy: 'vs SPY', waitTrade: 'Awaiting first trade', arenaRounds: 'Rounds finished', noQ: 'No questions in this arena yet.', easy: 'Easy', medium: 'Medium', hard: 'Hard', void: 'Void', missed: 'Missed', home: 'Home', draw: 'Draw', away: 'Away', yes: 'Yes', no: 'No', roundN: (n) => `Round ${n}`, none: 'None yet', strategy: 'Strategy · machine-translated from Korean', journal: 'Latest review · machine-translated from Korean', hyp: 'This week’s hypotheses (in Korean)', seeAi: 'Each AI’s forecast and reasons', x: 'Intelligence index', y: 'Oracle Score', noIndex: 'No index score', verdictWait: 'Not known yet.', verdictN: (n, p) => `With ${n} models, even a perfect order cannot support a conclusion (smallest possible p value ${p.toFixed(2)}). More models are needed.`, verdictData: 'More results are needed.', verdictRho: (r, p) => `So far the rank correlation is ${r.toFixed(2)}, with a ${Math.round(p * 100)}% chance that it is positive.`, idx: (s, d) => `Intelligence index: ${s}, read ${d}. It is an outside measure, not ours: each model's best published score at any effort. The models run at lower effort here because of the budget.`, check: (u, r) => `Same order? Without difficulty weights: ${u}. By mean rank per round: ${r}. If these differ, the order should not be trusted.`, ledgerText: (n, h, v) => `${n} records, latest hash ${h}, chain ${v ? 'valid' : 'BROKEN'}. Questions, forecasts and results can be downloaded and recomputed: `, cover: 'Coverage', sportsHint: 'Cell width is the four AIs’ average chance. Tap a cell to cast your pick. Times are KST.', disasterHint: 'Chance from 0 to 100%. The tick is the baseline, the number is the AI average.', votes: (n) => `${n} human votes`, voteFail: 'The vote did not go through. Please try again.', voteClosed: 'Voting has closed.', humansNone: (m) => `Human votes: a match is scored beside the AIs once it has ${m} votes. They are not part of the score.`, humans: (n, v, p, best) => `Human votes (not in the score): ${n} matches, ${v} votes, ${p} against the baseline. On the same matches the AIs got ${best}.` };
   const COL = { fable: '#0f8b8d', opus: 'var(--pen)', sol: 'var(--accent)', argon: '#7b4fc9', baseline: '#8d989e' };
   const $ = (q) => root.querySelector(q);
   const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -334,7 +335,6 @@ const limits = [
     const opened = new Set();
     $('[data-or-round-title]').textContent = T.roundN(c.round);
     $('[data-or-round-meta]').textContent = `${kst(c.start)} ~ ${kst(c.end)} KST`;
-    $('[data-or-next]').hidden = c.round >= 2;
     $('[data-or-stock]').innerHTML = '<a hr' + `ef="${esc(root.dataset.duel)}">${T.stockMore} →</a>`;
     fetch(`/api/oracle/votes?round=${c.round}`, { cache: 'no-store' }).then((r) => (r.ok ? r.json() : null)).then((v) => { if (v?.tally) { tally = v.tally; show(active); } }).catch(() => {});
     let active = 'sports';
@@ -357,6 +357,7 @@ const limits = [
     };
     const show = (arena) => {
       active = arena;
+      if (arena === 'stock') { $('[data-or-hint]').innerHTML = esc(T.stockHint); stockCards(); return; }
       const qs = c.questions.filter((q) => q.arena === arena);
       const groups = [...new Set(qs.map((q) => q.category))];
       $('[data-or-hint]').innerHTML = arena === 'sports' ? esc(T.sportsHint) : esc(T.disasterHint) + legend(d);
@@ -372,8 +373,33 @@ const limits = [
       b.closest('.or-item').querySelector('.or-panel').hidden = !on;
     });
     const count = (a) => c.questions.filter((q) => q.arena === a).length;
-    const items = [['sports', `${T.sports} ${count('sports')}`], ['disaster', `${T.disaster} ${count('disaster')}`]].filter(([a]) => count(a));
-    if (items.length) tabs($('[data-or-tabs]'), items, show); else $('[data-or-questions]').innerHTML = `<p class="or-sub">${T.noQ}</p>`;
+    const items = [['sports', `${T.sports} ${count('sports')}`], ['disaster', `${T.disaster} ${count('disaster')}`]].filter(([a]) => count(a)).concat([['stock', T.stock]]);
+    tabs($('[data-or-tabs]'), items, show);
+  }
+
+  // The stock arena is the AI portfolio duel: its cards are drawn from the duel's own public data.
+  let duel = null;
+  function stockCards() {
+    const box = $('[data-or-questions]');
+    const go = (s) => {
+      if (!s?.agents) { box.innerHTML = `<p class="or-sub">${T.fail}</p>`; return; }
+      const bh = s.bench?.history || [], last = bh[bh.length - 1];
+      const pct = (v) => (v == null ? '–' : `${v > 0 ? '+' : ''}${(v * 100).toFixed(1)}%`);
+      const cls = (v) => (v > 0 ? 'is-up' : v < 0 ? 'is-down' : '');
+      const since = (sym, day) => { const b = bh.find((x) => x.date >= day)?.[sym]; return b && last ? last[sym] / b - 1 : null; };
+      const DUEL_COL = { gpt: COL.sol, opus: COL.opus, fable: COL.fable, argon: COL.argon };
+      const cards = s.agents.map((a) => {
+        const h = a.history || [], nav = h.length ? h[h.length - 1].nav : a.capital_usd;
+        const r = h.length ? nav / a.capital_usd - 1 : null, spy = a.start ? since('SPY', a.start) : null;
+        const edge = r != null && spy != null ? r - spy : null;
+        return { a, r, edge, nav };
+      }).sort((x, y) => (y.edge ?? -9) - (x.edge ?? -9));
+      const bench = ['SPY', 'QQQ'].map((sym) => { const v = bh.length ? last[sym] / bh[0][sym] - 1 : null; return `<span>${sym} <b class="${cls(v)}">${pct(v)}</b></span>`; }).join('');
+      box.innerHTML = `<div class="or-stock">${cards.map(({ a, r, edge, nav }) => `<div class="or-scard" style="--c:${DUEL_COL[a.id] || COL.baseline}"><p class="or-scard-n"><i></i>${esc(a.name)}</p><p class="or-scard-r ${cls(r)}">${r == null ? `<small>${T.waitTrade}</small>` : pct(r)}</p><p class="or-scard-s">${T.vsSpy} <b class="${cls(edge)}">${edge == null ? '–' : `${edge > 0 ? '+' : ''}${(edge * 100).toFixed(1)}%p`}</b></p><p class="or-scard-s">$${Math.round(nav).toLocaleString('en-US')}</p></div>`).join('')}</div><p class="or-stock-b">${bench}${s.updated ? `<small>${T.updated} ${esc(String(s.updated).slice(0, 16).replace('T', ' '))}</small>` : ''}</p>`;
+    };
+    if (duel) return go(duel);
+    box.innerHTML = '<p class="or-sub">…</p>';
+    fetch('/api/duel/latest.json', { cache: 'no-store' }).then((r) => (r.ok ? r.json() : null)).then((s) => { duel = s; go(s); }).catch(() => go(null));
   }
 
   function rounds(d) {
@@ -487,9 +513,18 @@ const limits = [
 .or-next-rows { display: grid; gap: .55rem; }
 .or-next-rows div { display: flex; flex-wrap: wrap; align-items: center; gap: .4rem; }
 .or-next-rows b { width: 4.2rem; font-size: .85rem; }
-.or-next-rows span, .or-next-rows s { padding: .22rem .65rem; border: 1px solid var(--line); border-radius: 999px; font-size: .82rem; }
-.or-next-rows .on { border-color: var(--accent); color: var(--accent); font-weight: 600; }
-.or-next-rows s { color: var(--muted); opacity: .7; }
+.or-next-rows span { padding: .22rem .65rem; border: 1px solid var(--line); border-radius: 999px; font-size: .82rem; }
+.or-stock { display: grid; grid-template-columns: repeat(auto-fit, minmax(10.5rem, 1fr)); gap: .7rem; margin-top: 1rem; }
+.or-scard { padding: .9rem 1rem; border: 1px solid var(--line); border-top: 3px solid var(--c); border-radius: .6rem; }
+.or-scard p { margin: 0; }
+.or-scard-n { display: flex; align-items: center; gap: .45rem; font-size: .85rem; font-weight: 700; }
+.or-scard-n i { width: .6rem; height: .6rem; border-radius: 50%; background: var(--c); }
+.or-scard-r { margin: .35rem 0 .2rem !important; font-size: 1.6rem; font-weight: 820; font-variant-numeric: tabular-nums; }
+.or-scard-r small { font-size: .9rem; font-weight: 700; color: var(--muted); }
+.or-scard-s { color: var(--muted); font-size: .8rem; font-variant-numeric: tabular-nums; }
+.or-stock-b { display: flex; flex-wrap: wrap; gap: .4rem 1.4rem; margin: .8rem 0 0; color: var(--muted); font-size: .82rem; }
+.or-stock-b b { font-variant-numeric: tabular-nums; }
+.or-stock-b small { margin-left: auto; }
 .or-hint { margin: .8rem 0 0; color: var(--muted); font-size: .8rem; line-height: 1.6; word-break: keep-all; }
 .or-legend { display: flex; flex-wrap: wrap; gap: .25rem .9rem; margin: .4rem 0 0; color: var(--ink); font-size: .78rem; font-weight: 700; }
 .or-legend span { display: inline-flex; align-items: center; gap: .35rem; }
