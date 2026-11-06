@@ -15,7 +15,7 @@ const steps = [
   [L('문제 점수', 'Question score'), L('확률과 실제 결과의 차이(Brier)를 기준 모델과 비교함. 믿는 확률을 그대로 쓸 때 기대 점수가 가장 높은 채점 방식임.', 'The gap between stated chance and what happened (Brier), compared with the baseline. Stating your true belief has the best expected score.')],
   [L('난이도', 'Difficulty'), L('기준 모델이 결과를 알기 어려워하는 문제일수록 가중치가 큼(0.5~1.5배). 답안을 받기 전에 정해지므로 예측이나 결과에 따라 달라지지 않음.', 'The more open a question looks to the baseline, the more it counts (0.5 to 1.5 times). This is fixed before any forecast, so it cannot depend on a forecast or a result.')],
   [L('표본', 'Sample size'), L('문제가 적은 라운드는 적게 반영함. 처음엔 모두 기준 모델 점수(0)에서 시작하고, 기록이 쌓일수록 자기 값에 가까워짐. 운 좋은 한 주로는 크게 오르지 않음.', 'Rounds with few questions count less. Everyone starts at the baseline (0) and moves toward their own value as the record grows, so one lucky week moves little.')],
-  [L('통합', 'One score'), L('분야마다 단위가 달라서, 각 분야의 라운드별 변동 폭을 단위로 환산한 뒤 두 분야를 같은 비중으로 평균 냄. +25는 평균적으로 변동 폭의 4분의 1만큼 기준 모델을 앞선다는 뜻임.', 'Arenas have different units, so each is expressed in its own round-to-round noise, then the two are averaged with equal weight. +25 means a quarter of that noise above the baseline on average.')],
+  [L('통합', 'One score'), L('분야마다 단위가 달라서, 각 분야의 라운드별 변동 폭을 단위로 환산한 뒤 세 분야를 같은 비중으로 평균 냄. +25는 평균적으로 변동 폭의 4분의 1만큼 기준 모델을 앞선다는 뜻임.', 'Arenas have different units, so each is expressed in its own round-to-round noise, then the three are averaged with equal weight. +25 means a quarter of that noise above the baseline on average.')],
 ];
 const rules = [
   [L('주기', 'Rhythm'), L('매주 토요일 05:00 KST에 예측, 09:00에 잠금. 매일 05:00에 결과 확인과 재채점', 'Forecasts on Saturdays at 05:00 KST, locked at 09:00. Results checked and rescored daily at 05:00')],
@@ -23,13 +23,14 @@ const rules = [
   [L('미제출', 'Missed'), L('모든 선택지 같은 확률로 채점하고 제출률을 공개함', 'Scored as an equal chance for every option, with coverage shown')],
   [L('무효', 'Void'), L('예정일부터 7일 안에 열리지 않은 경기는 모두에게 무효', 'A match not played within 7 days of its date is void for everyone')],
   [L('경쟁', 'Competition'), L('AI마다 분야별 전략 문서를 매주 스스로 고침. 상대 점수만 보이고 전략과 열린 예측은 안 보임', 'Each AI rewrites its own strategy per arena every week. It sees rivals’ scores, not their strategies or open forecasts')],
-  [L('기준 모델', 'Baselines'), L('주식 SPY, 프리미어리그 시장 배당(2라운드부터, 배당이 없으면 Elo), 다른 리그 Elo', 'Stock SPY, Premier League market price (from round 2, Elo where none is out), other leagues Elo')],
+  [L('기준 모델', 'Baselines'), L('주식 SPY, 프리미어리그 시장 배당(2라운드부터, 배당이 없으면 Elo), 다른 리그 Elo, 여론조사 과거 주간 등락 비율', 'Stock SPY, Premier League market price (from round 2, Elo where none is out), other leagues Elo, polls the share of past weekly ups and downs')],
   [L('사람 투표', 'Human votes'), L('경기 시작 전까지 경기마다 한 표이고 바꿀 수 있음. AI보다 늦게까지 받고 AI 답안도 볼 수 있어서 Oracle Score에는 넣지 않고 따로 비교함', 'One pick per match until kickoff, changeable. People vote later than the AIs and can see their forecasts, so votes are compared separately and are not in the Oracle Score')],
-  [L('데이터', 'Data'), L('Fantasy Premier League, football-data.co.uk(결과·배당), TheSportsDB, MLB Stats API, gol.gg(LoL). LoL은 날짜만 있어서 그날 0시(UTC)에 투표 마감', 'Fantasy Premier League, football-data.co.uk (results and prices), TheSportsDB, MLB Stats API, gol.gg (LoL). LoL pages give dates only, so votes close at 00:00 UTC that day')],
+  [L('데이터', 'Data'), L('한국갤럽 데일리 오피니언, 위키백과 미국 전국 여론조사 목록, Fantasy Premier League, football-data.co.uk(결과·배당), TheSportsDB, MLB Stats API, gol.gg(LoL). LoL은 날짜만 있어서 그날 0시(UTC)에 투표 마감', 'Gallup Korea Daily Opinion, Wikipedia’s list of US national polls, Fantasy Premier League, football-data.co.uk (results and prices), TheSportsDB, MLB Stats API, gol.gg (LoL). LoL pages give dates only, so votes close at 00:00 UTC that day')],
 ];
 const limits = [
   L('한 주 앞을 내다보는 예측이라 경기 직전 소식은 어떤 AI도 볼 수 없음', 'Forecasts look up to a week ahead, so no AI sees late team news'),
   L('네 AI의 웹 검색 도구가 달라서, 점수는 모델 혼자가 아니라 도구를 포함한 모델의 점수임', 'The four AIs have different web search tools, so a score belongs to the model with its tools'),
+  L('여론조사는 표본 오차 때문에 실제 여론이 그대로여도 1~2%p씩 흔들림. 정치 분야는 그 흔들림과 진짜 변화를 구분하는 능력을 재는 것이고, 정당이나 인물에 대한 평가가 아님', 'Polls move a point or two from sampling error even when opinion holds still. The politics arena tests telling that noise from real change; it is not a judgement of any party or person'),
   L('재난(지진·태풍·토네이도)은 1라운드 시작 전에 뺐음. 공개 자료만으로는 AI가 과거 빈도나 공식 예보를 거의 그대로 따라 해서, 별도 예측 모델이나 시뮬레이션이 있어야 공정한 시험이 됨', 'Disaster (earthquakes, typhoons, tornadoes) was taken out before round 1 started. With public data alone the AIs mostly repeat history or official outlooks, so a fair test needs its own forecasting model or simulation'),
   L('소비자용 CLI로 돌려서 숨은 시스템 설정이 모델마다 다를 수 있음', 'Models run through consumer CLIs, so hidden system settings can differ'),
 ];
@@ -39,7 +40,7 @@ const limits = [
     <div class="shell">
       <div class="section-kicker">{L('프로젝트', 'Project')}</div>
       <h1>{project.name}</h1>
-      <p class="or-lede">{L('네 AI가 매주 주식과 경기 결과를 예측하고, 현실이 채점함.', 'Four AIs forecast stocks and matches every week. Reality keeps score.')}</p>
+      <p class="or-lede">{L('네 AI가 매주 주식, 경기 결과, 여론조사를 예측하고, 현실이 채점함.', 'Four AIs forecast stocks, matches and polls every week. Reality keeps score.')}</p>
     </div>
   </header>
 
@@ -52,13 +53,13 @@ const limits = [
     </section>
 
     <section class="or-sec" data-or-arena-sec hidden>
-      <div class="or-head"><h2>{L('두 분야', 'Two arenas')}</h2><p class="or-sub">{L('0이 기준 모델, 괄호는 95% 구간', '0 is the baseline; brackets are the 95% interval')}</p></div>
+      <div class="or-head"><h2>{L('세 분야', 'Three arenas')}</h2><p class="or-sub">{L('0이 기준 모델, 괄호는 95% 구간', '0 is the baseline; brackets are the 95% interval')}</p></div>
       <div class="or-arenas" data-or-arenas></div>
     </section>
 
     <section class="or-sec or-round">
       <div class="or-head"><h2 data-or-round-title>{L('이번 라운드', 'This round')}</h2><p class="or-sub" data-or-round-meta></p></div>
-      <p class="or-base"><b>{L('기준 모델 = 0점', 'Baseline = 0 points')}</b>{L('AI 없이 낸 확률. 프리미어리그는 2라운드부터 베팅 시장 평균 배당, 나머지 리그는 과거 전적 Elo, 주식은 SPY. AI는 이걸 이겨야 점수가 오름', 'Chances made without AI: from round 2 the betting market’s average price for the Premier League, Elo from past results for other leagues, SPY for stock. An AI scores only by beating it')}</p>
+      <p class="or-base"><b>{L('기준 모델 = 0점', 'Baseline = 0 points')}</b>{L('AI 없이 낸 확률. 프리미어리그는 2라운드부터 베팅 시장 평균 배당, 나머지 리그는 과거 전적 Elo, 여론조사는 과거 주간 등락 비율, 주식은 SPY. AI는 이걸 이겨야 점수가 오름', 'Chances made without AI: from round 2 the betting market’s average price for the Premier League, Elo from past results for other leagues, the share of past weekly ups and downs for polls, SPY for stock. An AI scores only by beating it')}</p>
       <div class="or-tabs" role="tablist" data-or-tabs></div>
       <p class="or-hint" data-or-hint></p>
       <div data-or-questions></div>
@@ -93,9 +94,10 @@ const limits = [
       <summary class="or-head"><h2>{L('문제 구성·점수 계산·규칙', 'Questions, scoring and rules')}</h2><i class="or-chev"></i></summary>
       <div class="or-next-rows">
         <div><b>{L('스포츠', 'Sports')}</b><span>{L('프리미어리그', 'Premier League')}</span><span>{L('메이저리그', 'MLB')}</span><span>{L('한국프로야구', 'KBO')}</span><span>{L('e스포츠 (LoL)', 'Esports (LoL)')}</span></div>
+        <div><b>{L('정치', 'Politics')}</b><span>{L('대통령 직무 긍정률', 'Korean presidential approval')}</span><span>{L('민주당·국민의힘 지지도', 'Korean party support')}</span><span>{L('트럼프 지지율', 'Trump approval')}</span><span>{L('미국 정당 지지', 'US generic ballot')}</span></div>
         <div><b>{L('주식', 'Stock')}</b><span>{L('AI 주식 대결 수익률', 'AI stock duel returns')}</span></div>
       </div>
-      <p class="or-small">{L('메이저리그·한국프로야구는 시즌 중에만 문제가 나옴(봄부터). e스포츠는 LCK·Worlds·MSI 경기. 재난 분야는 11/7 1라운드 시작 전에 뺐음', 'MLB and KBO appear only in season, from spring. Esports covers LCK, Worlds and MSI. The disaster arena was taken out on 11/7, before round 1 started')}</p>
+      <p class="or-small">{L('메이저리그·한국프로야구는 시즌 중에만 문제가 나옴(봄부터). e스포츠는 LCK·Worlds·MSI 경기. 정치는 2라운드부터: 한국은 매주 금요일 한국갤럽 발표, 미국은 그 주에 끝난 전국 조사 평균이 직전 2주보다 오를지·그대로일지·내릴지. 미국 정당 지지는 다음 하원 선거 조사가 나오기 시작하면 추가됨. 재난 분야는 11/7 1라운드 시작 전에 뺐음', 'MLB and KBO appear only in season, from spring. Esports covers LCK, Worlds and MSI. Politics from round 2: will Gallup Korea’s Friday numbers, and the mean of US national polls ending that week against the two weeks before, go up, stay or go down. US generic-ballot questions join once polls for the next House election start. The disaster arena was taken out on 11/7, before round 1 started')}</p>
       <h3>{L('점수 계산', 'Scoring')}</h3>
       <ol class="or-steps">{steps.map(([k, v]) => <li><b>{k}</b><span>{v}</span></li>)}</ol>
       <p class="or-small" data-or-check></p>
@@ -108,7 +110,7 @@ const limits = [
       <p class="or-small" data-or-ledger></p>
     </details>
 
-    <p class="or-disclaimer">{L('본 서비스는 AI 모델의 예측 성능을 비교하는 연구 및 교육 목적의 플랫폼입니다. 스포츠 예측은 베팅 권유가 아니고, 주식 분야는 모의투자이며 투자 권유가 아닙니다.', 'This service is a research and education platform comparing the forecasting performance of AI models. Sports forecasts are not betting advice, and the stock arena is paper trading, not investment advice.')}</p>
+    <p class="or-disclaimer">{L('본 서비스는 AI 모델의 예측 성능을 비교하는 연구 및 교육 목적의 플랫폼입니다. 정치 분야는 여론조사 수치 예측이며 특정 정당이나 인물에 대한 평가나 지지가 아닙니다. 스포츠 예측은 베팅 권유가 아니고, 주식 분야는 모의투자이며 투자 권유가 아닙니다.', 'This service is a research and education platform comparing the forecasting performance of AI models. The politics arena forecasts poll numbers; it is not a judgement of, or support for, any party or person. Sports forecasts are not betting advice, and the stock arena is paper trading, not investment advice.')}</p>
     <section class="comments" id="comments" data-comments data-lang={lang} data-page={projectPath('ai-oracle-benchmark', lang)}
       data-intro={L('방법론 비판 환영', 'Criticism of the method is welcome')}></section>
   </div>
@@ -120,8 +122,8 @@ const limits = [
   if (!root) return;
   const ko = root.dataset.lang === 'ko';
   const T = ko
-    ? { fail: '데이터를 불러오지 못했음. 잠시 뒤 다시 열어 주세요.', updated: '갱신', noRound: '아직 열린 라운드 없음', roundStart: (n) => `라운드 ${n} 시작까지`, roundEnd: (n) => `라운드 ${n} 끝까지`, scoring: '채점 중', done: '결과 나온 문제', firstScore: '첫 점수 예정', nextForecast: '다음 예측', provisional: '잠정 순위 · 표본 부족', final: '표본 기준 넘김', nolead: '확실한 1위 없음', lead: (a) => `${a} 1위 확실`, beat: '기준 모델을 이길 확률', baseline: '기준 모델', stock: '주식', sports: '스포츠', disaster: '재난', stockMore: '주식은 주식 대결 페이지', stockHint: '네 AI가 각자 2만 달러로 하는 미국 주식 모의투자. 큰 숫자는 시작 이후 수익률, 아래는 각자 시작일부터 SPY 대비.', vsSpy: 'SPY 대비', waitTrade: '첫 거래 대기', idle: (s) => `이번 라운드에 경기 없음: ${s}. 시즌이 끝났거나 대진이 아직 안 나옴`, arenaRounds: '끝난 라운드', noQ: '이 분야의 문제가 아직 없음.', easy: '쉬움', medium: '보통', hard: '어려움', void: '무효', missed: '미제출', home: '홈', draw: '무', away: '원정', yes: '예', no: '아니오', roundN: (n) => `라운드 ${n}`, none: '아직 없음', strategy: '운용 전략', journal: '최근 회고', hyp: '이번 주 가설', seeAi: 'AI별 예측과 이유', x: '지능 지수', y: 'Oracle Score', noIndex: '지수 없음', verdictWait: '아직 모름.', verdictN: (n, p) => `모델 ${n}개로는 순서가 완벽히 맞아도 통계 결론을 못 냄(최소 p값 ${p.toFixed(2)}). 모델을 더 늘려야 함.`, verdictData: '결과가 더 쌓여야 함.', verdictRho: (r, p) => `지금까지 순위 상관 ${r.toFixed(2)}, 양의 상관일 확률 ${Math.round(p * 100)}%.`, idx: (s, d) => `지능 지수: ${s} (${d} 확인). 우리가 잰 값이 아니라 외부 지표이고, 추론 강도와 상관없이 모델마다 가장 높은 공개 점수를 씀. 여기서는 예산 때문에 더 낮은 강도로 돌림.`, check: (u, r) => `같은 순서인지 확인: 난이도 가중치 없이 ${u}, 라운드별 평균 순위로 ${r}. 다르면 순위를 믿으면 안 됨.`, ledgerText: (n, h, v) => `기록 ${n}건, 최신 해시 ${h}, 체인 ${v ? '정상' : '오류'}. 문제·답안·결과는 공개 파일로 내려받아 다시 계산할 수 있음: `, cover: '제출률', sportsHint: '숫자와 막대는 네 AI의 평균 확률. 팀을 누르면 내 예측 투표. 시간은 KST.', byAi: 'AI별', chance: '확률', pts: '점수', disasterHint: '확률 0~100%. 눈금은 기준 모델, 숫자는 AI 평균.', votes: (n) => `사람 ${n}표`, voteFail: '투표하지 못했음. 잠시 뒤 다시 시도해 주세요.', voteClosed: '투표가 끝났음.', humansNone: (m) => `사람 투표: 경기마다 ${m}표 이상 모이면 AI와 나란히 채점함. 점수에는 들어가지 않음.`, humans: (n, v, p, best) => `사람 투표(점수 미포함): ${n}경기 ${v}표, 기준 모델 대비 ${p}. 같은 경기에서 AI는 ${best}.` }
-    : { fail: 'Could not load the data. Please try again later.', updated: 'Updated', noRound: 'No open round yet', roundStart: (n) => `until round ${n} starts`, roundEnd: (n) => `until round ${n} ends`, scoring: 'Scoring', done: 'questions settled', firstScore: 'first scores expected', nextForecast: 'next forecast', provisional: 'Provisional · small sample', final: 'Past the sample threshold', nolead: 'No clear leader', lead: (a) => `${a} clearly first`, beat: 'Chance of beating the baseline', baseline: 'Baseline', stock: 'Stock', sports: 'Sports', disaster: 'Disaster', stockMore: 'Stock has its own page', stockHint: 'Each AI paper-trades US stocks with $20,000. The big number is the return since its start; below, against SPY from its own start.', vsSpy: 'vs SPY', waitTrade: 'Awaiting first trade', idle: (s) => `No games this round: ${s}. Out of season, or the matchups are not out yet`, arenaRounds: 'Rounds finished', noQ: 'No questions in this arena yet.', easy: 'Easy', medium: 'Medium', hard: 'Hard', void: 'Void', missed: 'Missed', home: 'Home', draw: 'Draw', away: 'Away', yes: 'Yes', no: 'No', roundN: (n) => `Round ${n}`, none: 'None yet', strategy: 'Strategy · machine-translated from Korean', journal: 'Latest review · machine-translated from Korean', hyp: 'This week’s hypotheses (in Korean)', seeAi: 'Each AI’s forecast and reasons', x: 'Intelligence index', y: 'Oracle Score', noIndex: 'No index score', verdictWait: 'Not known yet.', verdictN: (n, p) => `With ${n} models, even a perfect order cannot support a conclusion (smallest possible p value ${p.toFixed(2)}). More models are needed.`, verdictData: 'More results are needed.', verdictRho: (r, p) => `So far the rank correlation is ${r.toFixed(2)}, with a ${Math.round(p * 100)}% chance that it is positive.`, idx: (s, d) => `Intelligence index: ${s}, read ${d}. It is an outside measure, not ours: each model's best published score at any effort. The models run at lower effort here because of the budget.`, check: (u, r) => `Same order? Without difficulty weights: ${u}. By mean rank per round: ${r}. If these differ, the order should not be trusted.`, ledgerText: (n, h, v) => `${n} records, latest hash ${h}, chain ${v ? 'valid' : 'BROKEN'}. Questions, forecasts and results can be downloaded and recomputed: `, cover: 'Coverage', sportsHint: 'Numbers and bar are the four AIs’ average chance. Tap a side to cast your pick. Times are KST.', byAi: 'By AI', chance: 'Chance', pts: 'Points', disasterHint: 'Chance from 0 to 100%. The tick is the baseline, the number is the AI average.', votes: (n) => `${n} human votes`, voteFail: 'The vote did not go through. Please try again.', voteClosed: 'Voting has closed.', humansNone: (m) => `Human votes: a match is scored beside the AIs once it has ${m} votes. They are not part of the score.`, humans: (n, v, p, best) => `Human votes (not in the score): ${n} matches, ${v} votes, ${p} against the baseline. On the same matches the AIs got ${best}.` };
+    ? { fail: '데이터를 불러오지 못했음. 잠시 뒤 다시 열어 주세요.', updated: '갱신', noRound: '아직 열린 라운드 없음', roundStart: (n) => `라운드 ${n} 시작까지`, roundEnd: (n) => `라운드 ${n} 끝까지`, scoring: '채점 중', done: '결과 나온 문제', firstScore: '첫 점수 예정', nextForecast: '다음 예측', provisional: '잠정 순위 · 표본 부족', final: '표본 기준 넘김', nolead: '확실한 1위 없음', lead: (a) => `${a} 1위 확실`, beat: '기준 모델을 이길 확률', baseline: '기준 모델', stock: '주식', sports: '스포츠', disaster: '재난', stockMore: '주식은 주식 대결 페이지', stockHint: '네 AI가 각자 2만 달러로 하는 미국 주식 모의투자. 큰 숫자는 시작 이후 수익률, 아래는 각자 시작일부터 SPY 대비.', vsSpy: 'SPY 대비', waitTrade: '첫 거래 대기', idle: (s) => `이번 라운드에 경기 없음: ${s}. 시즌이 끝났거나 대진이 아직 안 나옴`, arenaRounds: '끝난 라운드', noQ: '이 분야의 문제가 아직 없음.', easy: '쉬움', medium: '보통', hard: '어려움', void: '무효', missed: '미제출', home: '홈', draw: '무', away: '원정', yes: '예', no: '아니오', roundN: (n) => `라운드 ${n}`, none: '아직 없음', strategy: '운용 전략', journal: '최근 회고', hyp: '이번 주 가설', seeAi: 'AI별 예측과 이유', x: '지능 지수', y: 'Oracle Score', noIndex: '지수 없음', verdictWait: '아직 모름.', verdictN: (n, p) => `모델 ${n}개로는 순서가 완벽히 맞아도 통계 결론을 못 냄(최소 p값 ${p.toFixed(2)}). 모델을 더 늘려야 함.`, verdictData: '결과가 더 쌓여야 함.', verdictRho: (r, p) => `지금까지 순위 상관 ${r.toFixed(2)}, 양의 상관일 확률 ${Math.round(p * 100)}%.`, idx: (s, d) => `지능 지수: ${s} (${d} 확인). 우리가 잰 값이 아니라 외부 지표이고, 추론 강도와 상관없이 모델마다 가장 높은 공개 점수를 씀. 여기서는 예산 때문에 더 낮은 강도로 돌림.`, check: (u, r) => `같은 순서인지 확인: 난이도 가중치 없이 ${u}, 라운드별 평균 순위로 ${r}. 다르면 순위를 믿으면 안 됨.`, ledgerText: (n, h, v) => `기록 ${n}건, 최신 해시 ${h}, 체인 ${v ? '정상' : '오류'}. 문제·답안·결과는 공개 파일로 내려받아 다시 계산할 수 있음: `, cover: '제출률', sportsHint: '숫자와 막대는 네 AI의 평균 확률. 팀을 누르면 내 예측 투표. 시간은 KST.', byAi: 'AI별', chance: '확률', pts: '점수', politics: '정치', up: '오름', same: '그대로', down: '내림', politicsHint: '숫자와 막대는 네 AI의 평균 확률. 한국은 금요일 한국갤럽 발표, 미국은 그 주에 끝난 전국 조사 평균으로 채점.', disasterHint: '확률 0~100%. 눈금은 기준 모델, 숫자는 AI 평균.', votes: (n) => `사람 ${n}표`, voteFail: '투표하지 못했음. 잠시 뒤 다시 시도해 주세요.', voteClosed: '투표가 끝났음.', humansNone: (m) => `사람 투표: 경기마다 ${m}표 이상 모이면 AI와 나란히 채점함. 점수에는 들어가지 않음.`, humans: (n, v, p, best) => `사람 투표(점수 미포함): ${n}경기 ${v}표, 기준 모델 대비 ${p}. 같은 경기에서 AI는 ${best}.` }
+    : { fail: 'Could not load the data. Please try again later.', updated: 'Updated', noRound: 'No open round yet', roundStart: (n) => `until round ${n} starts`, roundEnd: (n) => `until round ${n} ends`, scoring: 'Scoring', done: 'questions settled', firstScore: 'first scores expected', nextForecast: 'next forecast', provisional: 'Provisional · small sample', final: 'Past the sample threshold', nolead: 'No clear leader', lead: (a) => `${a} clearly first`, beat: 'Chance of beating the baseline', baseline: 'Baseline', stock: 'Stock', sports: 'Sports', disaster: 'Disaster', stockMore: 'Stock has its own page', stockHint: 'Each AI paper-trades US stocks with $20,000. The big number is the return since its start; below, against SPY from its own start.', vsSpy: 'vs SPY', waitTrade: 'Awaiting first trade', idle: (s) => `No games this round: ${s}. Out of season, or the matchups are not out yet`, arenaRounds: 'Rounds finished', noQ: 'No questions in this arena yet.', easy: 'Easy', medium: 'Medium', hard: 'Hard', void: 'Void', missed: 'Missed', home: 'Home', draw: 'Draw', away: 'Away', yes: 'Yes', no: 'No', roundN: (n) => `Round ${n}`, none: 'None yet', strategy: 'Strategy · machine-translated from Korean', journal: 'Latest review · machine-translated from Korean', hyp: 'This week’s hypotheses (in Korean)', seeAi: 'Each AI’s forecast and reasons', x: 'Intelligence index', y: 'Oracle Score', noIndex: 'No index score', verdictWait: 'Not known yet.', verdictN: (n, p) => `With ${n} models, even a perfect order cannot support a conclusion (smallest possible p value ${p.toFixed(2)}). More models are needed.`, verdictData: 'More results are needed.', verdictRho: (r, p) => `So far the rank correlation is ${r.toFixed(2)}, with a ${Math.round(p * 100)}% chance that it is positive.`, idx: (s, d) => `Intelligence index: ${s}, read ${d}. It is an outside measure, not ours: each model's best published score at any effort. The models run at lower effort here because of the budget.`, check: (u, r) => `Same order? Without difficulty weights: ${u}. By mean rank per round: ${r}. If these differ, the order should not be trusted.`, ledgerText: (n, h, v) => `${n} records, latest hash ${h}, chain ${v ? 'valid' : 'BROKEN'}. Questions, forecasts and results can be downloaded and recomputed: `, cover: 'Coverage', sportsHint: 'Numbers and bar are the four AIs’ average chance. Tap a side to cast your pick. Times are KST.', byAi: 'By AI', chance: 'Chance', pts: 'Points', politics: 'Politics', up: 'Up', same: 'Same', down: 'Down', politicsHint: 'Numbers and bar are the four AIs’ average chance. Korea is settled by Gallup Korea’s Friday release, the US by the mean of national polls ending that week.', disasterHint: 'Chance from 0 to 100%. The tick is the baseline, the number is the AI average.', votes: (n) => `${n} human votes`, voteFail: 'The vote did not go through. Please try again.', voteClosed: 'Voting has closed.', humansNone: (m) => `Human votes: a match is scored beside the AIs once it has ${m} votes. They are not part of the score.`, humans: (n, v, p, best) => `Human votes (not in the score): ${n} matches, ${v} votes, ${p} against the baseline. On the same matches the AIs got ${best}.` };
   const COL = { fable: '#0f8b8d', opus: 'var(--pen)', sol: 'var(--accent)', argon: '#7b4fc9', baseline: '#8d989e' };
   const $ = (q) => root.querySelector(q);
   const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -292,7 +294,7 @@ const limits = [
 
   function arenas(d) {
     const copy = { stock: '<a hr' + `ef="${esc(root.dataset.duel)}">${T.stockMore} →</a>` };
-    $('[data-or-arenas]').innerHTML = ['stock', 'sports'].map((a) => {
+    $('[data-or-arenas]').innerHTML = ['stock', 'sports', 'politics'].map((a) => {
       const rows = [...d.table].sort((p, q) => q.arenas[a].score - p.arenas[a].score);
       return `<article><h3>${T[a]}</h3><p class="or-sub">${T.arenaRounds} ${d.arena_rounds[a] || 0}</p><ul>${rows.map((r) => `<li style="--c:${COL[r.id]}"><i></i><span>${SHORT[r.id]}</span><b>${d.arena_rounds[a] ? num(r.arenas[a].score) : '–'}</b><small>${d.arena_rounds[a] ? `[${num(r.arenas[a].ci[0], 0)}, ${num(r.arenas[a].ci[1], 0)}]` : ''}</small></li>`).join('')}</ul>${copy[a] ? `<p class="or-link">${copy[a]}</p>` : ''}</article>`;
     }).join('');
@@ -355,6 +357,7 @@ const limits = [
     // The stage in brackets at the end of a title ("(Worlds 2026 Main Event, Semifinals)") goes next to the time.
     const stageOf = (q) => tx(q.title).match(/\(([^()]+)\)\s*$/)?.[1] || '';
     const sportsItem = (q) => `<div class="or-item or-match"><div class="or-match-top"><small class="or-when">${kst(q.start)}${stageOf(q) ? ` · ${stageOf(q)}` : ''}</small>${q.status === 'void' ? `<em>${T.void}</em>` : ''}<button type="button" class="or-tog" ${chev(q)}>${esc(T.byAi)}<i class="or-chev"></i></button></div>${voteBox(q, c.round, ids)}${panel(q, 'sports')}</div>`;
+    const pollItem = (q) => `<div class="or-item or-match"><div class="or-match-top"><strong class="or-qt">${qTitle(q)}</strong>${q.status === 'void' ? `<em>${T.void}</em>` : ''}<button type="button" class="or-tog" ${chev(q)}>${esc(T.byAi)}<i class="or-chev"></i></button></div>${voteBox(q, c.round, ids)}${q.detail ? `<small class="or-when">${esc(q.detail)}</small>` : ''}${panel(q, 'politics')}</div>`;
     const chanceItem = (q) => {
       const m = aiMean(q, ids, 'yes');
       const done = q.status === 'resolved' ? `<em class="is-done">✓ ${esc(optName(q, q.outcome))}</em>` : q.status === 'void' ? `<em>${T.void}</em>` : '';
@@ -365,9 +368,9 @@ const limits = [
       if (arena === 'stock') { $('[data-or-hint]').innerHTML = esc(T.stockHint); stockCards(); return; }
       const qs = c.questions.filter((q) => q.arena === arena);
       const groups = [...new Set(qs.map((q) => q.category))];
-      $('[data-or-hint]').innerHTML = arena === 'sports' ? esc(T.sportsHint) : esc(T.disasterHint) + legend(d);
+      $('[data-or-hint]').innerHTML = arena === 'sports' ? esc(T.sportsHint) : arena === 'politics' ? esc(T.politicsHint) : esc(T.disasterHint) + legend(d);
       const idle = arena === 'sports' ? ['epl', 'mlb', 'kbo', 'lol'].filter((k) => !groups.includes(k)).map((k) => tx(d.categories?.[k]) || k) : [];
-      $('[data-or-questions]').innerHTML = (idle.length ? `<p class="or-idle">${T.idle(idle.join(' · '))}</p>` : '') + (!qs.length ? `<p class="or-sub">${T.noQ}</p>` : groups.map((cat) => `<h3 class="or-cat">${tx(d.categories?.[cat]) || esc(cat)}</h3><div class="or-qlist is-${arena}">${qs.filter((q) => q.category === cat).map(arena === 'sports' ? sportsItem : chanceItem).join('')}</div>`).join(''));
+      $('[data-or-questions]').innerHTML = (idle.length ? `<p class="or-idle">${T.idle(idle.join(' · '))}</p>` : '') + (!qs.length ? `<p class="or-sub">${T.noQ}</p>` : groups.map((cat) => `<h3 class="or-cat">${tx(d.categories?.[cat]) || esc(cat)}</h3><div class="or-qlist is-${arena}">${qs.filter((q) => q.category === cat).map(arena === 'sports' ? sportsItem : arena === 'politics' ? pollItem : chanceItem).join('')}</div>`).join(''));
       bindVotes(c, () => show(active));
     };
     $('[data-or-questions]').addEventListener('click', (e) => {
@@ -379,7 +382,7 @@ const limits = [
       b.closest('.or-item').querySelector('.or-panel').hidden = !on;
     });
     const count = (a) => c.questions.filter((q) => q.arena === a).length;
-    const items = [['sports', `${T.sports} ${count('sports')}`], ['disaster', `${T.disaster} ${count('disaster')}`]].filter(([a]) => count(a)).concat([['stock', T.stock]]);
+    const items = [['sports', `${T.sports} ${count('sports')}`], ['politics', `${T.politics} ${count('politics')}`], ['disaster', `${T.disaster} ${count('disaster')}`]].filter(([a]) => count(a)).concat([['stock', T.stock]]);
     tabs($('[data-or-tabs]'), items, show);
   }
 
@@ -414,7 +417,7 @@ const limits = [
     if (!any) return;
     const ids = d.table.map((r) => r.id);
     const cell = (a, id) => (a.value?.[id] == null ? '–' : (a.from ? `${num(a.value[id] * 100, 1)}%` : num(a.value[id], 3)));
-    const body = [...d.rounds].reverse().slice(0, 6).flatMap((r) => ['stock', 'sports'].filter((k) => r.arenas[k]?.value).map((k) => `<tr><td>${r.round}</td><td>${T[k]}${r.arenas[k].final ? '' : ' *'}</td>${ids.map((id) => `<td class="${r.arenas[k].value[id] > 0 ? 'is-up' : r.arenas[k].value[id] < 0 ? 'is-down' : ''}">${cell(r.arenas[k], id)}</td>`).join('')}</tr>`)).join('');
+    const body = [...d.rounds].reverse().slice(0, 6).flatMap((r) => ['stock', 'sports', 'politics'].filter((k) => r.arenas[k]?.value).map((k) => `<tr><td>${r.round}</td><td>${T[k]}${r.arenas[k].final ? '' : ' *'}</td>${ids.map((id) => `<td class="${r.arenas[k].value[id] > 0 ? 'is-up' : r.arenas[k].value[id] < 0 ? 'is-down' : ''}">${cell(r.arenas[k], id)}</td>`).join('')}</tr>`)).join('');
     $('[data-or-rounds]').innerHTML = `<div class="or-table or-scroll"><table><thead><tr><th>#</th><th></th>${ids.map((id) => `<th>${SHORT[id]}</th>`).join('')}</tr></thead><tbody>${body}</tbody></table></div>`;
   }
 
@@ -434,7 +437,7 @@ const limits = [
   }
 
   function docs(d) {
-    tabs($('[data-or-doc-tabs]'), [['sports', T.sports]], (arena) => {
+    tabs($('[data-or-doc-tabs]'), [['sports', T.sports], ['politics', T.politics]], (arena) => {
       $('[data-or-docs]').innerHTML = d.table.map((r) => {
         const x = d.docs[r.id]?.[arena] || {};
         const box = (title, text) => `<h4>${title}</h4><div class="or-md">${text ? md(text) : `<p>${T.none}</p>`}</div>`;
@@ -564,15 +567,17 @@ const limits = [
 .or-opts button b { flex: none; color: var(--muted); font-size: 1rem; font-weight: 820; font-variant-numeric: tabular-nums; }
 .or-opts button.is-top b { color: var(--ink); }
 .or-opts .is-away { flex-direction: row-reverse; text-align: right; }
-.or-opts .is-draw { justify-content: center; color: var(--muted); }
+.or-opts .is-draw, .or-opts .is-same { justify-content: center; color: var(--muted); }
+.or-opts .is-down { flex-direction: row-reverse; text-align: right; }
+.or-qt { font-size: .92rem; font-weight: 750; line-height: 1.4; word-break: keep-all; }
 .or-opts button:hover:not(:disabled) { border-color: var(--ink); }
 .or-opts button:disabled { cursor: default; }
 .or-opts button[aria-pressed="true"] { border-color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent); }
 .or-opts button.is-hit { border-color: var(--ink); box-shadow: inset 0 0 0 1px var(--ink); }
 .or-pbar { display: flex; gap: 2px; height: 5px; margin-top: 5px; }
 .or-pbar i { display: block; border-radius: 2px; background: var(--ink); }
-.or-pbar .is-draw { background: var(--line); }
-.or-pbar .is-away { background: color-mix(in srgb, var(--ink) 45%, var(--surface)); }
+.or-pbar .is-draw, .or-pbar .is-same { background: var(--line); }
+.or-pbar .is-away, .or-pbar .is-down { background: color-mix(in srgb, var(--ink) 45%, var(--surface)); }
 .or-tog { display: inline-flex; flex: none; align-items: center; gap: .4rem; margin-left: auto; padding: .1rem 0; border: 0; background: none; color: var(--muted); font: inherit; font-size: .76rem; font-weight: 750; cursor: pointer; }
 .or-tog:hover { color: var(--ink); }
 .or-qlist.is-sports { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 430px), 1fr)); column-gap: 2.2rem; }
@@ -632,8 +637,8 @@ const limits = [
   .or-row { grid-template-columns: minmax(0, 1fr) 3rem .6rem; gap: .2rem .6rem; }
   .or-row-t { grid-column: 1 / -1; }
   .or-opts button { flex-direction: column; align-items: flex-start; gap: .1rem; padding: .45rem .55rem; font-size: .82rem; }
-  .or-opts .is-away { flex-direction: column; align-items: flex-end; }
-  .or-opts .is-draw { align-items: center; }
+  .or-opts .is-away, .or-opts .is-down { flex-direction: column; align-items: flex-end; }
+  .or-opts .is-draw, .or-opts .is-same { align-items: center; }
   .or-opts button span { white-space: normal; overflow-wrap: anywhere; }
   .or-teaser { display: none; }
   .or-doc summary strong { flex: 1; }
