@@ -18,24 +18,6 @@ export const labSections = [
   { id: 'portfolio', name: 'Portfolio', nameKo: '포트폴리오', path: '/portfolio/' },
 ] as const;
 
-// Projects taken private: no listing, no search, no sitemap, and their pages are not built (the page folders are
-// prefixed with _). Their components keep reading them from here so they can come back unchanged.
-// ai-oracle-benchmark: private since 2026-11-07, while the question design is reworked.
-export const hiddenProjects = [
-  {
-    id: 'ai-oracle-benchmark',
-    addedAt: '2026-11-05',
-    tagline: 'Does a smarter AI predict the future better? Reality marks it',
-    taglineKo: '더 지능적인 AI가 미래도 더 잘 맞힐까? 현실이 채점함',
-    name: 'HSLab AI Oracle Benchmark',
-    nameKo: 'HSLab AI Oracle Benchmark',
-    summary: 'Does a more intelligent AI also predict the real future more accurately? Claude Fable, Claude Opus, GPT Sol and Gemini Argon forecast real stocks, matches and natural events every week, and reality marks them on one score that accounts for question difficulty and statistical uncertainty.',
-    summaryKo: '더 지능적인 AI가 실제 미래도 더 정확하게 예측할까? Claude Fable, Claude Opus, GPT Sol, Gemini Argon이 매주 실제 주식·경기·자연현상을 예측하고, 문제 난이도와 통계적 불확실성을 반영한 하나의 점수로 현실이 채점하는 벤치마크.',
-    cta: 'See the score',
-    ctaKo: '점수 보기',
-  },
-] as const;
-
 // Lab projects with their own pages under /projects/<id>/. Their development stories live in the stories
 // collection (src/content/stories/<lang>/<slug>.md) with a matching `project` field.
 // addedAt is when a project went public; the lab home lists the newest ones first.
@@ -63,6 +45,18 @@ export const projects = [
     summaryKo: 'GPT-6.1 Sol, Claude Opus 5.5, Gemini 4 Argon, Claude Fable 5.1이 같은 프롬프트로 각자 2만 달러 미국 주식 모의 포트폴리오를 운용하고, 매주 스스로 전략을 고쳐 가며 S&P 500·나스닥100, 그리고 서로와 겨루는 프로젝트.',
     cta: 'See the scoreboard',
     ctaKo: '현재 순위 보기',
+  },
+  {
+    id: 'ai-oracle-benchmark',
+    addedAt: '2026-11-05',
+    tagline: 'Does a smarter AI predict the future better? Reality marks it',
+    taglineKo: '더 지능적인 AI가 미래도 더 잘 맞힐까? 현실이 채점함',
+    name: 'HSLab AI Oracle Arena',
+    nameKo: 'HSLab AI Oracle Arena',
+    summary: 'Does a more intelligent AI also predict the real future more accurately? Claude Fable, Claude Opus, GPT Sol and Gemini Argon forecast real stocks, matches and natural events every week, and reality marks them on one score that accounts for question difficulty and statistical uncertainty.',
+    summaryKo: '더 지능적인 AI가 실제 미래도 더 정확하게 예측할까? Claude Fable, Claude Opus, GPT Sol, Gemini Argon이 매주 실제 주식·경기·자연현상을 예측하고, 문제 난이도와 통계적 불확실성을 반영한 하나의 점수로 현실이 채점하는 벤치마크.',
+    cta: 'See the score',
+    ctaKo: '점수 보기',
   },
   {
     id: 'ai-mafia',
