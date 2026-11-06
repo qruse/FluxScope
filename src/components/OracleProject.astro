@@ -25,6 +25,7 @@ const rules = [
   [L('경쟁', 'Competition'), L('AI마다 분야별 전략 문서를 매주 스스로 고침. 상대 점수만 보이고 전략과 열린 예측은 안 보임', 'Each AI rewrites its own strategy per arena every week. It sees rivals’ scores, not their strategies or open forecasts')],
   [L('기준 모델', 'Baselines'), L('주식 SPY, 스포츠 Elo, 지진 20년 빈도, 태풍·토네이도 20년 같은 계절 빈도. 1라운드 날씨는 15년 같은 계절 빈도', 'Stock SPY, sports Elo, earthquakes 20-year frequency, typhoons and tornadoes 20-year same-season frequency. Round 1 weather uses 15-year same-season frequency')],
   [L('사람 투표', 'Human votes'), L('경기 시작 전까지 경기마다 한 표이고 바꿀 수 있음. AI보다 늦게까지 받고 AI 답안도 볼 수 있어서 Oracle Score에는 넣지 않고 따로 비교함', 'One pick per match until kickoff, changeable. People vote later than the AIs and can see their forecasts, so votes are compared separately and are not in the Oracle Score')],
+  [L('데이터', 'Data'), L('USGS, IBTrACS, NOAA SPC, Fantasy Premier League, football-data.co.uk, TheSportsDB, MLB Stats API, gol.gg(LoL). LoL은 날짜만 있어서 그날 0시(UTC)에 투표 마감', 'USGS, IBTrACS, NOAA SPC, Fantasy Premier League, football-data.co.uk, TheSportsDB, MLB Stats API, gol.gg (LoL). LoL pages give dates only, so votes close at 00:00 UTC that day')],
 ];
 const limits = [
   L('한 주 앞을 내다보는 예측이라 경기 직전 소식은 어떤 AI도 볼 수 없음', 'Forecasts look up to a week ahead, so no AI sees late team news'),
