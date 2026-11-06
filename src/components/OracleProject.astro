@@ -3,7 +3,7 @@
 // to /api/oracle/ every day at 05:00 KST; the page draws the score, the core question and the open round from them.
 // The stock arena's detail lives on /projects/ai-duel/, and the page links there instead of repeating it.
 import BaseLayout from '../layouts/BaseLayout.astro';
-import { projects, projectPath } from '../lib/site';
+import { hiddenProjects as projects, projectPath } from '../lib/site';
 import type { Lang } from '../i18n/ui';
 
 interface Props { lang: Lang; }
