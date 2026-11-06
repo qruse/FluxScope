@@ -45,6 +45,13 @@ const limits = [
   </header>
 
   <div class="shell or-body" data-or data-lang={lang} data-duel={projectPath('ai-duel', lang)}>
+    <section class="or-q" aria-label={L('핵심 질문', 'The core question')}>
+      <p class="or-q-label">{L('핵심 질문', 'The core question')}</p>
+      <h2>{L('더 지능적인 AI가 실제 미래도 더 정확하게 예측하는가?', 'Does a more intelligent AI also predict the real future more accurately?')}</h2>
+      <p class="or-verdict" data-or-verdict>{L('불러오는 중…', 'Loading…')}</p>
+      <div data-or-scatter></div>
+    </section>
+
     <section class="or-status" data-or-status></section>
 
     <section class="or-sec" data-or-score-sec hidden>
@@ -71,13 +78,6 @@ const limits = [
     </section>
 
     <div data-ad></div>
-
-    <section class="or-q" aria-label={L('핵심 질문', 'The core question')}>
-      <p class="or-q-label">{L('핵심 질문', 'The core question')}</p>
-      <h2>{L('더 지능적인 AI가 실제 미래도 더 정확하게 예측하는가?', 'Does a more intelligent AI also predict the real future more accurately?')}</h2>
-      <p class="or-verdict" data-or-verdict>{L('불러오는 중…', 'Loading…')}</p>
-      <div data-or-scatter></div>
-    </section>
 
     <section class="or-sec" data-or-rounds-sec hidden>
       <div class="or-head"><h2>{L('라운드 기록', 'Round history')}</h2><p class="or-sub">{L('기준 모델 대비 점수, 주식은 SPY 대비 수익률', 'Points against the baseline; stock is return against SPY')}</p></div>
