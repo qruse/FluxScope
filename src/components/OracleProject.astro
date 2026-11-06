@@ -70,6 +70,15 @@ const limits = [
 
     <div data-ad></div>
 
+    <section class="or-sec or-next" data-or-next>
+      <div class="or-head"><h2>{L('2라운드부터 바뀌는 문제', 'Questions from round 2')}</h2><p class="or-sub">{L('11/14 05:00 KST 예측부터, 1라운드는 잠긴 그대로', 'From the 11/14 forecast; round 1 stays as locked')}</p></div>
+      <div class="or-next-rows">
+        <div><b>{L('스포츠', 'Sports')}</b><span>{L('프리미어리그', 'Premier League')}</span><span class="on">KBO</span><span class="on">MLB</span><span class="on">LoL</span><s>KBL</s></div>
+        <div><b>{L('재난', 'Disaster')}</b><span>{L('지진', 'Earthquake')}</span><span class="on">{L('태풍', 'Typhoon')}</span><span class="on">{L('토네이도', 'Tornado')}</span><s>{L('강수', 'Rain')}</s><s>{L('기온', 'Temperature')}</s></div>
+      </div>
+      <p class="or-hint">{L('KBO·MLB는 시즌 중에만 문제가 나옴. LoL은 LCK·Worlds·MSI 경기, 이번엔 11/15 Worlds 결승 예정', 'KBO and MLB appear only in season. LoL covers LCK, Worlds and MSI; the Worlds final on 11/15 KST is next')}</p>
+    </section>
+
     <section class="or-sec">
       <div class="or-head"><h2 data-or-round-title>{L('이번 라운드', 'This round')}</h2><p class="or-sub" data-or-round-meta></p></div>
       <div class="or-tabbar"><div class="or-tabs" role="tablist" data-or-tabs></div><p class="or-link" data-or-stock></p></div>
@@ -325,6 +334,7 @@ const limits = [
     const opened = new Set();
     $('[data-or-round-title]').textContent = T.roundN(c.round);
     $('[data-or-round-meta]').textContent = `${kst(c.start)} ~ ${kst(c.end)} KST`;
+    $('[data-or-next]').hidden = c.round >= 2;
     $('[data-or-stock]').innerHTML = '<a hr' + `ef="${esc(root.dataset.duel)}">${T.stockMore} →</a>`;
     fetch(`/api/oracle/votes?round=${c.round}`, { cache: 'no-store' }).then((r) => (r.ok ? r.json() : null)).then((v) => { if (v?.tally) { tally = v.tally; show(active); } }).catch(() => {});
     let active = 'sports';
@@ -474,6 +484,12 @@ const limits = [
 .or-tabs { display: flex; gap: .4rem; margin-bottom: 1rem; }
 .or-tabs button { padding: .4rem .9rem; border: 1px solid var(--line); border-radius: 999px; background: none; color: var(--muted); font: inherit; font-size: .84rem; font-weight: 750; font-variant-numeric: tabular-nums; cursor: pointer; }
 .or-tabs button[aria-selected="true"] { border-color: var(--ink); background: var(--ink); color: var(--surface); }
+.or-next-rows { display: grid; gap: .55rem; }
+.or-next-rows div { display: flex; flex-wrap: wrap; align-items: center; gap: .4rem; }
+.or-next-rows b { width: 4.2rem; font-size: .85rem; }
+.or-next-rows span, .or-next-rows s { padding: .22rem .65rem; border: 1px solid var(--line); border-radius: 999px; font-size: .82rem; }
+.or-next-rows .on { border-color: var(--accent); color: var(--accent); font-weight: 600; }
+.or-next-rows s { color: var(--muted); opacity: .7; }
 .or-hint { margin: .8rem 0 0; color: var(--muted); font-size: .8rem; line-height: 1.6; word-break: keep-all; }
 .or-legend { display: flex; flex-wrap: wrap; gap: .25rem .9rem; margin: .4rem 0 0; color: var(--ink); font-size: .78rem; font-weight: 700; }
 .or-legend span { display: inline-flex; align-items: center; gap: .35rem; }
