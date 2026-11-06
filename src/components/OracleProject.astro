@@ -15,7 +15,7 @@ const steps = [
   [L('문제 점수', 'Question score'), L('확률과 실제 결과의 차이(Brier)를 기준 모델과 비교함. 믿는 확률을 그대로 쓸 때 기대 점수가 가장 높은 채점 방식임.', 'The gap between stated chance and what happened (Brier), compared with the baseline. Stating your true belief has the best expected score.')],
   [L('난이도', 'Difficulty'), L('기준 모델이 결과를 알기 어려워하는 문제일수록 가중치가 큼(0.5~1.5배). 답안을 받기 전에 정해지므로 예측이나 결과에 따라 달라지지 않음.', 'The more open a question looks to the baseline, the more it counts (0.5 to 1.5 times). This is fixed before any forecast, so it cannot depend on a forecast or a result.')],
   [L('표본', 'Sample size'), L('문제가 적은 라운드는 적게 반영함. 처음엔 모두 기준 모델 점수(0)에서 시작하고, 기록이 쌓일수록 자기 값에 가까워짐. 운 좋은 한 주로는 크게 오르지 않음.', 'Rounds with few questions count less. Everyone starts at the baseline (0) and moves toward their own value as the record grows, so one lucky week moves little.')],
-  [L('통합', 'One score'), L('분야마다 단위가 달라서, 각 분야의 라운드별 변동 폭을 단위로 환산한 뒤 세 분야를 같은 비중으로 평균 냄. +25는 평균적으로 변동 폭의 4분의 1만큼 기준 모델을 앞선다는 뜻임.', 'Arenas have different units, so each is expressed in its own round-to-round noise, then the three are averaged with equal weight. +25 means a quarter of that noise above the baseline on average.')],
+  [L('통합', 'One score'), L('분야마다 단위가 달라서, 각 분야의 라운드별 변동 폭을 단위로 환산한 뒤 두 분야를 같은 비중으로 평균 냄. +25는 평균적으로 변동 폭의 4분의 1만큼 기준 모델을 앞선다는 뜻임.', 'Arenas have different units, so each is expressed in its own round-to-round noise, then the two are averaged with equal weight. +25 means a quarter of that noise above the baseline on average.')],
 ];
 const rules = [
   [L('주기', 'Rhythm'), L('매주 토요일 05:00 KST에 예측, 09:00에 잠금. 매일 05:00에 결과 확인과 재채점', 'Forecasts on Saturdays at 05:00 KST, locked at 09:00. Results checked and rescored daily at 05:00')],
@@ -23,14 +23,14 @@ const rules = [
   [L('미제출', 'Missed'), L('모든 선택지 같은 확률로 채점하고 제출률을 공개함', 'Scored as an equal chance for every option, with coverage shown')],
   [L('무효', 'Void'), L('예정일부터 7일 안에 열리지 않은 경기는 모두에게 무효', 'A match not played within 7 days of its date is void for everyone')],
   [L('경쟁', 'Competition'), L('AI마다 분야별 전략 문서를 매주 스스로 고침. 상대 점수만 보이고 전략과 열린 예측은 안 보임', 'Each AI rewrites its own strategy per arena every week. It sees rivals’ scores, not their strategies or open forecasts')],
-  [L('기준 모델', 'Baselines'), L('주식 SPY, 스포츠 Elo, 지진 20년 빈도, 태풍·토네이도 20년 같은 계절 빈도', 'Stock SPY, sports Elo, earthquakes 20-year frequency, typhoons and tornadoes 20-year same-season frequency')],
+  [L('기준 모델', 'Baselines'), L('주식 SPY, 프리미어리그 시장 배당(2라운드부터, 배당이 없으면 Elo), 다른 리그 Elo', 'Stock SPY, Premier League market price (from round 2, Elo where none is out), other leagues Elo')],
   [L('사람 투표', 'Human votes'), L('경기 시작 전까지 경기마다 한 표이고 바꿀 수 있음. AI보다 늦게까지 받고 AI 답안도 볼 수 있어서 Oracle Score에는 넣지 않고 따로 비교함', 'One pick per match until kickoff, changeable. People vote later than the AIs and can see their forecasts, so votes are compared separately and are not in the Oracle Score')],
-  [L('데이터', 'Data'), L('USGS, IBTrACS, NOAA SPC, Fantasy Premier League, football-data.co.uk, TheSportsDB, MLB Stats API, gol.gg(LoL). LoL은 날짜만 있어서 그날 0시(UTC)에 투표 마감', 'USGS, IBTrACS, NOAA SPC, Fantasy Premier League, football-data.co.uk, TheSportsDB, MLB Stats API, gol.gg (LoL). LoL pages give dates only, so votes close at 00:00 UTC that day')],
+  [L('데이터', 'Data'), L('Fantasy Premier League, football-data.co.uk(결과·배당), TheSportsDB, MLB Stats API, gol.gg(LoL). LoL은 날짜만 있어서 그날 0시(UTC)에 투표 마감', 'Fantasy Premier League, football-data.co.uk (results and prices), TheSportsDB, MLB Stats API, gol.gg (LoL). LoL pages give dates only, so votes close at 00:00 UTC that day')],
 ];
 const limits = [
   L('한 주 앞을 내다보는 예측이라 경기 직전 소식은 어떤 AI도 볼 수 없음', 'Forecasts look up to a week ahead, so no AI sees late team news'),
   L('네 AI의 웹 검색 도구가 달라서, 점수는 모델 혼자가 아니라 도구를 포함한 모델의 점수임', 'The four AIs have different web search tools, so a score belongs to the model with its tools'),
-  L('지진 단기 예측은 과학적으로 확립되지 않았음. 이 분야는 지진을 예측할 수 있다는 증명이 아니라, 확률이 과거 빈도보다 나은지 재는 실험임', 'Short-term earthquake prediction is not established science. This arena tests whether stated chances beat history, not whether earthquakes can be predicted'),
+  L('재난(지진·태풍·토네이도)은 1라운드 시작 전에 뺐음. 공개 자료만으로는 AI가 과거 빈도나 공식 예보를 거의 그대로 따라 해서, 별도 예측 모델이나 시뮬레이션이 있어야 공정한 시험이 됨', 'Disaster (earthquakes, typhoons, tornadoes) was taken out before round 1 started. With public data alone the AIs mostly repeat history or official outlooks, so a fair test needs its own forecasting model or simulation'),
   L('소비자용 CLI로 돌려서 숨은 시스템 설정이 모델마다 다를 수 있음', 'Models run through consumer CLIs, so hidden system settings can differ'),
 ];
 ---
@@ -39,7 +39,7 @@ const limits = [
     <div class="shell">
       <div class="section-kicker">{L('프로젝트', 'Project')}</div>
       <h1>{project.name}</h1>
-      <p class="or-lede">{L('네 AI가 매주 주식·경기·자연현상을 예측하고, 현실이 채점함.', 'Four AIs forecast stocks, matches and nature every week. Reality keeps score.')}</p>
+      <p class="or-lede">{L('네 AI가 매주 주식과 경기 결과를 예측하고, 현실이 채점함.', 'Four AIs forecast stocks and matches every week. Reality keeps score.')}</p>
     </div>
   </header>
 
@@ -52,13 +52,13 @@ const limits = [
     </section>
 
     <section class="or-sec" data-or-arena-sec hidden>
-      <div class="or-head"><h2>{L('세 분야', 'Three arenas')}</h2><p class="or-sub">{L('0이 기준 모델, 괄호는 95% 구간', '0 is the baseline; brackets are the 95% interval')}</p></div>
+      <div class="or-head"><h2>{L('두 분야', 'Two arenas')}</h2><p class="or-sub">{L('0이 기준 모델, 괄호는 95% 구간', '0 is the baseline; brackets are the 95% interval')}</p></div>
       <div class="or-arenas" data-or-arenas></div>
     </section>
 
     <section class="or-sec or-round">
       <div class="or-head"><h2 data-or-round-title>{L('이번 라운드', 'This round')}</h2><p class="or-sub" data-or-round-meta></p></div>
-      <p class="or-base"><b>{L('기준 모델 = 0점', 'Baseline = 0 points')}</b>{L('AI 없이 과거 기록만으로 낸 확률. 스포츠는 Elo, 지진은 20년 빈도, 태풍·토네이도는 20년 같은 계절 빈도, 주식은 SPY. AI는 이걸 이겨야 점수가 오름', 'Chances from past records alone, no AI: Elo for sports, 20-year frequency for earthquakes, 20-year same-season frequency for typhoons and tornadoes, SPY for stock. An AI scores only by beating it')}</p>
+      <p class="or-base"><b>{L('기준 모델 = 0점', 'Baseline = 0 points')}</b>{L('AI 없이 낸 확률. 프리미어리그는 2라운드부터 베팅 시장 평균 배당, 나머지 리그는 과거 전적 Elo, 주식은 SPY. AI는 이걸 이겨야 점수가 오름', 'Chances made without AI: from round 2 the betting market’s average price for the Premier League, Elo from past results for other leagues, SPY for stock. An AI scores only by beating it')}</p>
       <div class="or-tabs" role="tablist" data-or-tabs></div>
       <p class="or-hint" data-or-hint></p>
       <div data-or-questions></div>
@@ -93,10 +93,9 @@ const limits = [
       <summary class="or-head"><h2>{L('문제 구성·점수 계산·규칙', 'Questions, scoring and rules')}</h2><i class="or-chev"></i></summary>
       <div class="or-next-rows">
         <div><b>{L('스포츠', 'Sports')}</b><span>{L('프리미어리그', 'Premier League')}</span><span>{L('메이저리그', 'MLB')}</span><span>{L('한국프로야구', 'KBO')}</span><span>{L('e스포츠 (LoL)', 'Esports (LoL)')}</span></div>
-        <div><b>{L('재난', 'Disaster')}</b><span>{L('지진', 'Earthquake')}</span><span>{L('태풍', 'Typhoon')}</span><span>{L('토네이도', 'Tornado')}</span></div>
         <div><b>{L('주식', 'Stock')}</b><span>{L('AI 주식 대결 수익률', 'AI stock duel returns')}</span></div>
       </div>
-      <p class="or-small">{L('메이저리그·한국프로야구는 시즌 중에만 문제가 나옴(봄부터). e스포츠는 LCK·Worlds·MSI 경기. 11/6 변경, 1라운드에도 시작 전에 반영', 'MLB and KBO appear only in season, from spring. Esports covers LCK, Worlds and MSI. Changed 11/6, applied to round 1 before it started')}</p>
+      <p class="or-small">{L('메이저리그·한국프로야구는 시즌 중에만 문제가 나옴(봄부터). e스포츠는 LCK·Worlds·MSI 경기. 재난 분야는 11/7 1라운드 시작 전에 뺐음', 'MLB and KBO appear only in season, from spring. Esports covers LCK, Worlds and MSI. The disaster arena was taken out on 11/7, before round 1 started')}</p>
       <h3>{L('점수 계산', 'Scoring')}</h3>
       <ol class="or-steps">{steps.map(([k, v]) => <li><b>{k}</b><span>{v}</span></li>)}</ol>
       <p class="or-small" data-or-check></p>
@@ -109,7 +108,7 @@ const limits = [
       <p class="or-small" data-or-ledger></p>
     </details>
 
-    <p class="or-disclaimer">{L('본 서비스는 AI 모델의 예측 성능을 비교하는 연구 및 교육 목적의 플랫폼입니다. 제공되는 AI 예측은 공식 재난 예보나 경보가 아니며, 안전·대피 판단에는 기상청과 관계 당국의 공식 정보를 확인해야 합니다. 스포츠 예측은 베팅 권유가 아니고, 주식 분야는 모의투자이며 투자 권유가 아닙니다.', 'This service is a research and education platform comparing the forecasting performance of AI models. AI forecasts here are not official disaster forecasts or warnings; for safety and evacuation decisions, check the official information from your weather agency and authorities. Sports forecasts are not betting advice, and the stock arena is paper trading, not investment advice.')}</p>
+    <p class="or-disclaimer">{L('본 서비스는 AI 모델의 예측 성능을 비교하는 연구 및 교육 목적의 플랫폼입니다. 스포츠 예측은 베팅 권유가 아니고, 주식 분야는 모의투자이며 투자 권유가 아닙니다.', 'This service is a research and education platform comparing the forecasting performance of AI models. Sports forecasts are not betting advice, and the stock arena is paper trading, not investment advice.')}</p>
     <section class="comments" id="comments" data-comments data-lang={lang} data-page={projectPath('ai-oracle-benchmark', lang)}
       data-intro={L('방법론 비판 환영', 'Criticism of the method is welcome')}></section>
   </div>
@@ -293,7 +292,7 @@ const limits = [
 
   function arenas(d) {
     const copy = { stock: '<a hr' + `ef="${esc(root.dataset.duel)}">${T.stockMore} →</a>` };
-    $('[data-or-arenas]').innerHTML = ['stock', 'sports', 'disaster'].map((a) => {
+    $('[data-or-arenas]').innerHTML = ['stock', 'sports'].map((a) => {
       const rows = [...d.table].sort((p, q) => q.arenas[a].score - p.arenas[a].score);
       return `<article><h3>${T[a]}</h3><p class="or-sub">${T.arenaRounds} ${d.arena_rounds[a] || 0}</p><ul>${rows.map((r) => `<li style="--c:${COL[r.id]}"><i></i><span>${SHORT[r.id]}</span><b>${d.arena_rounds[a] ? num(r.arenas[a].score) : '–'}</b><small>${d.arena_rounds[a] ? `[${num(r.arenas[a].ci[0], 0)}, ${num(r.arenas[a].ci[1], 0)}]` : ''}</small></li>`).join('')}</ul>${copy[a] ? `<p class="or-link">${copy[a]}</p>` : ''}</article>`;
     }).join('');
@@ -321,6 +320,7 @@ const limits = [
   }
 
   function tabs(el, items, onPick) {
+    el.hidden = items.length < 2;
     el.innerHTML = items.map(([id, label], i) => `<button type="button" role="tab" aria-selected="${i === 0}" data-id="${id}">${esc(label)}</button>`).join('');
     el.querySelectorAll('button').forEach((b) => b.addEventListener('click', () => {
       el.querySelectorAll('button').forEach((x) => x.setAttribute('aria-selected', x === b));
@@ -414,7 +414,7 @@ const limits = [
     if (!any) return;
     const ids = d.table.map((r) => r.id);
     const cell = (a, id) => (a.value?.[id] == null ? '–' : (a.from ? `${num(a.value[id] * 100, 1)}%` : num(a.value[id], 3)));
-    const body = [...d.rounds].reverse().slice(0, 6).flatMap((r) => ['stock', 'sports', 'disaster'].filter((k) => r.arenas[k]?.value).map((k) => `<tr><td>${r.round}</td><td>${T[k]}${r.arenas[k].final ? '' : ' *'}</td>${ids.map((id) => `<td class="${r.arenas[k].value[id] > 0 ? 'is-up' : r.arenas[k].value[id] < 0 ? 'is-down' : ''}">${cell(r.arenas[k], id)}</td>`).join('')}</tr>`)).join('');
+    const body = [...d.rounds].reverse().slice(0, 6).flatMap((r) => ['stock', 'sports'].filter((k) => r.arenas[k]?.value).map((k) => `<tr><td>${r.round}</td><td>${T[k]}${r.arenas[k].final ? '' : ' *'}</td>${ids.map((id) => `<td class="${r.arenas[k].value[id] > 0 ? 'is-up' : r.arenas[k].value[id] < 0 ? 'is-down' : ''}">${cell(r.arenas[k], id)}</td>`).join('')}</tr>`)).join('');
     $('[data-or-rounds]').innerHTML = `<div class="or-table or-scroll"><table><thead><tr><th>#</th><th></th>${ids.map((id) => `<th>${SHORT[id]}</th>`).join('')}</tr></thead><tbody>${body}</tbody></table></div>`;
   }
 
@@ -434,7 +434,7 @@ const limits = [
   }
 
   function docs(d) {
-    tabs($('[data-or-doc-tabs]'), [['sports', T.sports], ['disaster', T.disaster]], (arena) => {
+    tabs($('[data-or-doc-tabs]'), [['sports', T.sports]], (arena) => {
       $('[data-or-docs]').innerHTML = d.table.map((r) => {
         const x = d.docs[r.id]?.[arena] || {};
         const box = (title, text) => `<h4>${title}</h4><div class="or-md">${text ? md(text) : `<p>${T.none}</p>`}</div>`;
@@ -502,7 +502,7 @@ const limits = [
 .or-bar .ci { top: 50%; height: 3px; margin-top: -1.5px; border-radius: 2px; background: var(--c); }
 .or-bar .dot { top: 50%; width: 12px; height: 12px; margin: -6px 0 0 -6px; border-radius: 50%; background: var(--c); box-shadow: 0 0 0 2px var(--surface); }
 .or-ci { grid-area: ci; color: var(--muted); font-size: .72rem; font-weight: 600; font-variant-numeric: tabular-nums; word-break: keep-all; }
-.or-arenas { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr)); gap: 1.6rem; }
+.or-arenas { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); gap: 1.6rem; }
 .or-arenas h3 { margin: 0; font-size: 1.1rem; font-weight: 820; }
 .or-arenas ul { margin: .7rem 0 0; padding: 0; list-style: none; }
 .or-arenas li { display: grid; grid-template-columns: .7rem 1fr auto 4.6rem; gap: .5rem; align-items: baseline; padding: .4rem 0; border-bottom: 1px solid var(--line); font-size: .9rem; font-variant-numeric: tabular-nums; }
