@@ -45,6 +45,12 @@ const limits = [
   </header>
 
   <div class="shell or-body" data-or data-lang={lang} data-duel={projectPath('ai-duel', lang)}>
+    <section class="or-q" aria-label={L('프로젝트 종료 안내', 'Project closed')}>
+      <p class="or-q-label">{L('종료된 프로젝트', 'Closed project')}</p>
+      <p>{L('2026년 11월 10일 프로젝트를 종료함. 1라운드 도중 멈춰서 아래 점수는 그날 기준 잠정치이고, 지능과 예측력의 관계는 결론을 내지 못함.', 'This project closed on November 10, 2026. It stopped during round 1, so the scores below are provisional as of that day and no conclusion was reached on intelligence and forecasting.')}</p>
+      <p>{L('답안은 모두 Fable 5.1이 냈고, 표의 Fable 5.2 이름과 지능 지수 65는 2라운드부터 쓰려던 값임. 사람 투표도 닫음. ', 'Every forecast came from Fable 5.1; the Fable 5.2 name and the intelligence score of 65 in the tables were meant for round 2 onward. Human voting is closed too. ')}<a href={projectPath('ai-duel', lang)}>{L('주식 대결은 계속됨 →', 'The stock duel continues →')}</a></p>
+    </section>
+
     <section class="or-q" aria-label={L('핵심 질문', 'The core question')}>
       <p class="or-q-label">{L('핵심 질문', 'The core question')}</p>
       <h2>{L('더 지능적인 AI가 실제 미래도 더 정확하게 예측하는가?', 'Does a more intelligent AI also predict the real future more accurately?')}</h2>
@@ -186,7 +192,7 @@ const limits = [
   const aiMean = (q, ids, o) => { const got = ids.map((id) => q.forecasts?.[id]).filter(Boolean); return got.length ? got.reduce((t, p) => t + p[o], 0) / got.length : null; };
   // One cell per outcome, as wide as the AIs' average chance. A cell is also the vote button while the match is open.
   function voteBox(q, round, ids) {
-    const open = q.status === 'open' && Date.now() < Date.parse(q.start);
+    const open = false;   // the project closed on 2026-11-10, and votes are no longer read back
     const counts = tally[q.id] || q.crowd?.counts || {};
     const total = q.options.reduce((t, o) => t + (counts[o] || 0), 0);
     const mine = store.get(pickKey(round, q.id));
