@@ -195,7 +195,7 @@ const rules = [
   function weightsOf(a) {
     if (a.holdings?.length) {
       const nav = a.history?.length ? a.history[a.history.length - 1].nav : a.capital_usd;
-      return { rows: a.holdings.map((h) => [h.symbol, h.weight ?? (h.value != null ? h.value / nav : 0)]), cash: a.cash / nav, live: true };
+      return { rows: a.holdings.map((h) => [h.symbol, h.weight ?? (h.value != null ? h.value / nav : 0), h.price]), cash: a.cash / nav, live: true };
     }
     if (a.pending) {
       const rows = Object.entries(a.pending.targets).map(([s, w]) => [s, w]);
@@ -212,7 +212,9 @@ const rules = [
     const colors = Object.fromEntries(rows.map(([s]) => [s, etf(s) ? ETF_COL : PAL[n++ % PAL.length]]));
     const bar = rows.map(([s, w]) => `<span style="flex:${w};background:${colors[s]}" title="${esc(s)} ${(w * 100).toFixed(1)}%">${w >= 0.07 ? esc(s) : ''}</span>`).join('') + (cash > 0.002 ? `<span class="is-cash" style="flex:${cash}"></span>` : '');
     const max = Math.max(...rows.map((r) => r[1]), cash, 0.01);
-    const list = rows.map(([s, w]) => `<li><span class="du-sym"><i style="background:${colors[s]}"></i>${esc(s)}${d.leverage?.[s] ? `<small>${d.leverage[s]}x</small>` : etf(s) ? '<small>ETF</small>' : d.kinds?.[s] === 'DEPOSITARY_RECEIPT' ? '<small>ADR</small>' : ''}</span><span class="du-nm">${esc(d.desc?.[s]?.[ko ? 'ko' : 'en'] || (d.names?.[s] !== s ? d.names?.[s] : '') || '')}</span><span class="du-w"><span style="width:${(w / max) * 100}%;background:${colors[s]}"></span></span><b>${(w * 100).toFixed(1)}%</b></li>`).join('')
+    // each holding's price from the latest valuation, under its weight (user 11/16 "기본적으로 가격이 다 나오게")
+    const px = (p) => (p == null ? '' : `<small>$${p.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</small>`);
+    const list = rows.map(([s, w, p]) => `<li><span class="du-sym"><i style="background:${colors[s]}"></i>${esc(s)}${d.leverage?.[s] ? `<small>${d.leverage[s]}x</small>` : etf(s) ? '<small>ETF</small>' : d.kinds?.[s] === 'DEPOSITARY_RECEIPT' ? '<small>ADR</small>' : ''}</span><span class="du-nm">${esc(d.desc?.[s]?.[ko ? 'ko' : 'en'] || (d.names?.[s] !== s ? d.names?.[s] : '') || '')}</span><span class="du-w"><span style="width:${(w / max) * 100}%;background:${colors[s]}"></span></span><b>${(w * 100).toFixed(1)}%${px(p)}</b></li>`).join('')
       + `<li class="is-cash"><span class="du-sym"><i></i>${T.cash}</span><span class="du-nm">${live ? usd(a.cash) : ''}</span><span class="du-w"><span style="width:${(cash / max) * 100}%"></span></span><b>${(cash * 100).toFixed(1)}%</b></li>`;
     return `<article class="du-book" style="--c:${COL[a.id]}"><h3><i></i>${esc(a.name)}<small>${live ? T.holdings : T.pending}</small></h3><div class="du-stack">${bar}</div><ul class="du-list">${list}</ul></article>`;
   }
@@ -358,7 +360,7 @@ const rules = [
 .du-stack span { display: grid; place-items: center; min-width: 0; overflow: hidden; border-right: 2px solid var(--surface); color: #fff; font-size: .72rem; font-weight: 800; white-space: nowrap; }
 .du-stack .is-cash { background: repeating-linear-gradient(45deg, var(--soft), var(--soft) 5px, var(--line) 5px, var(--line) 6px); border-right: 0; }
 .du-list { margin: 1rem 0 0; padding: 0; list-style: none; }
-.du-list li { display: grid; grid-template-columns: 5.8rem minmax(0, 1fr) minmax(0, 3.5rem) 3.4rem; gap: .8rem; align-items: center; padding: .55rem 0; border-bottom: 1px solid var(--line); font-size: .88rem; }
+.du-list li { display: grid; grid-template-columns: 5.8rem minmax(0, 1fr) minmax(0, 3.5rem) 4.6rem; gap: .8rem; align-items: center; padding: .55rem 0; border-bottom: 1px solid var(--line); font-size: .88rem; }
 .du-sym { display: inline-flex; align-items: center; gap: .45rem; font-weight: 800; }
 .du-sym i { width: .6rem; height: .6rem; border-radius: 2px; flex: none; }
 .du-sym small { padding: .05rem .3rem; border-radius: 3px; background: var(--ink); color: var(--bg); font-size: .6rem; font-weight: 800; }
@@ -366,6 +368,7 @@ const rules = [
 .du-w { height: .45rem; border-radius: 3px; background: var(--soft); overflow: hidden; }
 .du-w span { display: block; height: 100%; border-radius: 3px; }
 .du-list b { text-align: right; font-variant-numeric: tabular-nums; }
+.du-list b small { display: block; margin-top: .1rem; color: var(--muted); font-size: .74rem; font-weight: 700; }
 .du-list .is-cash { color: var(--muted); }
 .du-list .is-cash i, .du-list .is-cash .du-w span { background: var(--line); }
 .du-week { display: grid; grid-template-columns: 4.5rem repeat(var(--n, 3), minmax(0, 1fr)); gap: 1.4rem; padding: 1.2rem 0; border-bottom: 1px solid var(--line); }
@@ -416,7 +419,7 @@ const rules = [
   .du-vs { grid-template-columns: 1fr; gap: .8rem; }
   .du-about { grid-template-columns: 1fr; }
   .du-week { grid-template-columns: 1fr; gap: .8rem; }
-  .du-list li { grid-template-columns: 5.6rem minmax(0, 1fr) 3.4rem; }
+  .du-list li { grid-template-columns: 5.6rem minmax(0, 1fr) 4.6rem; }
   .du-w { display: none; }
 }
 @media (max-width: 520px) {
