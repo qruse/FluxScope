@@ -1,6 +1,6 @@
 ---
 import { getStories } from '../lib/stories';
-import { blogPath, categories, categoryPath, labSectionPath, labSections, projectPath, projects, projectThumb, storyPath, storyThumb, youtubeChannel, type Category } from '../lib/site';
+import { blogPath, categories, categoryPath, labSectionPath, labSections, projectPath, projects, projectThumb, storyPath, topProjects, storyThumb, youtubeChannel, type Category } from '../lib/site';
 import { useTranslations, type Lang } from '../i18n/ui';
 import LabMark from './LabMark.astro';
 import LabFace from './LabFace.astro';
@@ -25,7 +25,7 @@ const columnSection = labSections.find((section) => section.id === 'column')!;
 const stories = (await getStories((entry) => entry.data.lang === lang)).sort((a, b) => a.data.part - b.data.part);
 // Sections 01 to 05 each list their five newest entries (user instruction, 2026-11-05); the full lists are on their own pages.
 const homeLimit = 5;
-const latestProjects = [...projects].sort((a, b) => b.addedAt.localeCompare(a.addedAt)).slice(0, homeLimit);
+const latestProjects = [...topProjects].sort((a, b) => b.addedAt.localeCompare(a.addedAt)).slice(0, homeLimit);
 const latestStories = [...stories].sort((a, b) => b.data.publishedAt.getTime() - a.data.publishedAt.getTime() || b.data.part - a.data.part).slice(0, homeLimit);
 const projectName = (id: string) => { const p = projects.find((x) => x.id === id); return isKo ? p?.nameKo : p?.name; };
 // The channel's five newest uploads, newest first, updated by hand from its feed. The first three are pinned up with a frame.
@@ -68,7 +68,7 @@ const casesHref = casesPath(lang);
             <li><a class="lab-project-link" href={projectPath(project.id, lang)}><img src={projectThumb(project.id)} width="720" height="480" loading="lazy" decoding="async" alt="" /><span class="lab-parts-copy">{isKo ? project.nameKo : project.name}<small>{isKo ? project.taglineKo : project.tagline}</small></span></a></li>
           ))}
         </ol>
-        <a class="lab-cta" href={labSectionPath(labSections[0], lang)}>{isKo ? `프로젝트 전체 보기 · ${projects.length}개` : `All ${projects.length} projects`}<span aria-hidden="true">→</span></a>
+        <a class="lab-cta" href={labSectionPath(labSections[0], lang)}>{isKo ? `프로젝트 전체 보기 · ${topProjects.length}개` : `All ${topProjects.length} projects`}<span aria-hidden="true">→</span></a>
       </div>
       <!-- The newest projects' pages, pinned up like the stories' charts; each one opens its project. -->
       <div class="lab-pins">

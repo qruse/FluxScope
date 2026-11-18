@@ -82,8 +82,36 @@ export const projects = [
     cta: 'Hear the examples',
     ctaKo: '예시 듣기',
   },
+  // A group page (user instruction, 2026-11-18): the RL simulations sit under it, and only the group is listed
+  // among the projects. Its children carry `parent`; their own pages stay at /projects/<id>/.
+  {
+    id: 'rl-simulation',
+    addedAt: '2026-11-18',
+    tagline: 'AIs that learn by failing over and over: island survival and parking',
+    taglineKo: 'AI가 수없이 실패하며 스스로 배우는 시뮬레이션: 무인도 생존, 주차',
+    name: 'Reinforcement learning simulations',
+    nameKo: '강화학습 시뮬레이션',
+    summary: 'Nobody tells the AI the answer: it fails, tries again thousands of times and works it out by itself. Peppo lasting 30 days on a desert island and Peppo learning to park like a human driver are up now.',
+    summaryKo: 'AI한테 정답을 알려 주지 않고, 수없이 실패하고 다시 하면서 스스로 배우게 하는 시뮬레이션 모음. 무인도에서 30일 버티는 Peppo와 사람처럼 운전해서 주차를 배우는 Peppo를 볼 수 있음.',
+    cta: 'See the simulations',
+    ctaKo: '시뮬레이션 보기',
+  },
+  {
+    id: 'hslab-parking',
+    parent: 'rl-simulation',
+    addedAt: '2026-11-18',
+    tagline: 'Peppo learns to park in 8 stages, from an empty lot to a busy supermarket',
+    taglineKo: '빈 주차장부터 붐비는 마트까지, 8단계로 주차를 배우는 Peppo',
+    name: 'Practicing parking with AI',
+    nameKo: 'AI로 주차 연습하기',
+    summary: 'Peppo from the desert island takes the wheel. Working the brake, accelerator, steering wheel and gear lever one at a time like a human driver, Peppo learns eight stages in order, from front-in parking in an empty lot to backing into a space at a supermarket full of shoppers.',
+    summaryKo: '무인도의 Peppo가 이번엔 운전대를 잡음. 브레이크·액셀·핸들·기어를 사람처럼 하나씩 조작하면서, 빈 주차장 전면 주차부터 사람이 오가는 마트 후진 주차까지 8단계를 차례로 배움.',
+    cta: 'Watch the video',
+    ctaKo: '영상 보기',
+  },
   {
     id: 'hslab-island',
+    parent: 'rl-simulation',
     addedAt: '2026-11-05',
     tagline: 'An AI learns to last 30 days by dying and retrying. Try it yourself',
     taglineKo: '죽고 다시 하며 30일 생존을 배우는 AI, 직접 플레이 가능',
@@ -95,6 +123,14 @@ export const projects = [
     ctaKo: '보고 직접 해 보기',
   },
 ] as const;
+export type Project = (typeof projects)[number];
+// Projects listed on their own (the projects page, the lab home); grouped ones are listed on their group's page.
+export const topProjects = projects.filter((p) => !('parent' in p));
+export const childProjects = (id: string) => projects.filter((p) => 'parent' in p && p.parent === id);
+export const parentProject = (id: string) => {
+  const p = projects.find((x) => x.id === id);
+  return p && 'parent' in p ? projects.find((x) => x.id === p.parent) : undefined;
+};
 
 // The blog's about page is the author page every BlogPosting points to (author.url); it declares that author.
 // The author is only ever "HSL": never the owner's real name, photo or employer.

@@ -1,0 +1,46 @@
+---
+// Group page for the reinforcement learning simulations (user instruction, 2026-11-18): the projects page lists only
+// this group; its children (`parent: 'rl-simulation'` in src/lib/site.ts) keep their own pages and are listed here.
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { getStories } from '../lib/stories';
+import { childProjects, labSectionPath, labSections, projectPath, projects, projectThumb } from '../lib/site';
+import type { Lang } from '../i18n/ui';
+
+interface Props { lang: Lang; }
+const { lang } = Astro.props;
+const isKo = lang === 'ko';
+const L = (ko: string, en: string) => (isKo ? ko : en);
+const id = 'rl-simulation';
+const project = projects.find((p) => p.id === id)!;
+const title = isKo ? project.nameKo : project.name;
+const summary = isKo ? project.summaryKo : project.summary;
+const children = [...childProjects(id)].sort((a, b) => b.addedAt.localeCompare(a.addedAt));
+const stories = await getStories((e) => e.data.lang === lang);
+---
+<BaseLayout lang={lang} title={title} description={summary}>
+  <header class="page-top">
+    <div class="shell">
+      <div class="section-kicker"><a href={labSectionPath(labSections[0], lang)}>{L('프로젝트', 'Projects')}</a></div>
+      <h1>{title}</h1>
+      <p>{summary}</p>
+    </div>
+  </header>
+  <section class="listing"><div class="shell"><div class="post-grid">
+    {children.map((child) => {
+      const name = isKo ? child.nameKo : child.name;
+      const parts = stories.filter((s) => s.data.project === child.id).length;
+      return (
+        <article class="post-card">
+          <a class="card-link" href={projectPath(child.id, lang)}>
+            <div class="card-media taped"><img class="card-visual" src={projectThumb(child.id)} width="720" height="480" loading="lazy" decoding="async" alt={isKo ? `${name} 화면` : `${name} page`} /></div>
+            <div class="card-copy">
+              <div class="eyebrow"><span class="category-pip"></span>{isKo ? child.ctaKo : child.cta}{parts > 0 && <><span class="eyebrow-sep">/</span>{isKo ? `스토리 ${parts}편` : `${parts} story parts`}</>}</div>
+              <h2 class="pen-under">{name}</h2>
+              <p>{isKo ? child.taglineKo : child.tagline}</p>
+            </div>
+          </a>
+        </article>
+      );
+    })}
+  </div></div></section>
+</BaseLayout>

@@ -17,6 +17,8 @@ PROJECTS = {
     "beat-kma": "images/projects/beat-kma-forecast.webp",
     "my-voice-tts": "images/stories/my-voice-tts/part1-live-page.webp",
     "hslab-island": "images/stories/hslab-island/part5-cast.webp",
+    "hslab-parking": "images/projects/hslab-parking-thumb.webp",  # the video's English thumbnail
+    "rl-simulation": "images/projects/rl-simulation-pair.webp",   # island cast | parking thumbnail, side by side
 }
 
 

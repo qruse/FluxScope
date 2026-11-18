@@ -6,7 +6,7 @@
 // Styles are inline: the shared CSS bundle is at its performance budget. Colors come only from the theme tokens.
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { getStories } from '../lib/stories';
-import { projectPath, projects, storyPath, withBase } from '../lib/site';
+import { labSectionPath, labSections, parentProject, projectPath, projects, storyPath, withBase } from '../lib/site';
 import type { Lang } from '../i18n/ui';
 
 interface Props { lang: Lang; }
@@ -15,6 +15,7 @@ const isKo = lang === 'ko';
 const L = (ko: string, en: string) => (isKo ? ko : en);
 const id = 'hslab-island';
 const project = projects.find((p) => p.id === id)!;
+const group = parentProject(id)!;
 const title = isKo ? project.nameKo : project.name;
 const summary = isKo ? project.summaryKo : project.summary;
 const videoId = 'RBsO2v9PNL4';
@@ -50,7 +51,7 @@ const keys = isKo
 <BaseLayout lang={lang} title={title} description={summary}>
   <header class="page-top">
     <div class="shell">
-      <div class="section-kicker">{L('프로젝트', 'Project')}</div>
+      <div class="section-kicker"><a href={labSectionPath(labSections[0], lang)}>{L('프로젝트', 'Projects')}</a> / <a href={projectPath(group.id, lang)}>{isKo ? group.nameKo : group.name}</a></div>
       <h1>{title}</h1>
       <p>{summary}</p>
     </div>

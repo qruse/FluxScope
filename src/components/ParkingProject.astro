@@ -1,0 +1,142 @@
+---
+// Parking RL project page (hslab_parking repository: sim/ batched GPU simulator, train/ brains, viewer/ Three.js).
+// Like the island page it presents Peppo as a learner driver: no brain or reward talk here; the technology
+// belongs to the project stories. Stage names are the video's stage cards (hslab_parking/viewer/main.js STAGE_KO/EN).
+// Styles are inline: the shared CSS bundle is at its performance budget. Colors come only from the theme tokens.
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { getStories } from '../lib/stories';
+import { labSectionPath, labSections, parentProject, projectPath, projects, storyPath } from '../lib/site';
+import type { Lang } from '../i18n/ui';
+
+interface Props { lang: Lang; }
+const { lang } = Astro.props;
+const isKo = lang === 'ko';
+const L = (ko: string, en: string) => (isKo ? ko : en);
+const id = 'hslab-parking';
+const project = projects.find((p) => p.id === id)!;
+const group = parentProject(id)!;
+const title = isKo ? project.nameKo : project.name;
+const summary = isKo ? project.summaryKo : project.summary;
+const videoId = 'A5k7VSaIRkU';
+const videoTitle = 'AI로 주차 연습하기';      // the video's real title on YouTube
+const stories = (await getStories((e) => e.data.lang === lang && e.data.project === id))
+  .sort((a, b) => a.data.part - b.data.part);
+const driving = isKo
+  ? ['오른발 하나로 액셀과 브레이크를 오감. 페달을 옮겨 밟는 데 시간이 걸림', '핸들은 한 번에 휙 돌아가지 않고 천천히 꺾임', '기어(P·R·D)는 브레이크를 밟고 차가 멈췄을 때만 바꿀 수 있음', '보고 반응하기까지 0.2초 늦음', '주차 성공은 칸 안에, 반듯하게 넣고 P까지 걸어야 인정']
+  : ['One right foot moves between the accelerator and the brake, and switching pedals takes time', 'The steering wheel turns gradually, not in one snap', 'The gear lever (P, R, D) moves only with the brake down and the car stopped', 'Every reaction comes 0.2 seconds late', 'A park counts only inside the space, straight, and in P'];
+const stages = [
+  [L('빈 주차장 전면 주차', 'Front-in, empty lot'), L('아무도 없는 주차장. 칸에 앞으로 넣기', 'Nobody else around. Drive nose-first into a space')],
+  [L('좁은 칸 전면 주차', 'Front-in, narrow slot'), L('다른 칸에 차가 서 있음. 긁지 않고 앞으로 넣기', 'Other cars in the next spaces. Nose in without scraping them')],
+  [L('좁은 칸 후진 주차', 'Back-in, narrow slot'), L('같은 좁은 칸에 이번엔 뒤로 넣기', 'The same narrow space, this time in reverse')],
+  [L('비뚤게 선 차 사이 후진 주차', 'Back-in between crooked cars'), L('양옆 차가 우리 칸 쪽으로 비뚤게 서 있음', 'Both neighbours are parked crooked, leaning into our space')],
+  [L('넓은 자리 평행 주차', 'Parallel, roomy gap'), L('앞뒤 차 사이 여유 있는 자리에 평행 주차', 'Parallel parking into a comfortable gap')],
+  [L('좁은 자리 평행 주차', 'Parallel, tight gap'), L('5단계보다 1m 넘게 짧은 자리에 평행 주차', 'Parallel parking into a gap over a metre shorter than in stage 5')],
+  [L('지하 주차장 후진 주차', 'Back-in, underground'), L('칸 입구에 기둥이 버티고 있는 지하 주차장', 'An underground car park with pillars at the space entrances')],
+  [L('붐비는 마트 후진 주차', 'Back-in, busy supermarket'), L('거의 꽉 찬 마트. 카트를 민 사람들이 통로를 건너고, 비켜 주지 않음', 'A nearly full supermarket where shoppers with carts cross the lane and do not step aside')],
+];
+---
+<BaseLayout lang={lang} title={title} description={summary}>
+  <header class="page-top">
+    <div class="shell">
+      <div class="section-kicker"><a href={labSectionPath(labSections[0], lang)}>{L('프로젝트', 'Projects')}</a> / <a href={projectPath(group.id, lang)}>{isKo ? group.nameKo : group.name}</a></div>
+      <h1>{title}</h1>
+      <p>{summary}</p>
+    </div>
+  </header>
+
+  <div class="shell pk-body">
+    <section class="pk-sec">
+      <h2>{L('영상', 'The video')}</h2>
+      <a class="pk-video" href={`https://www.youtube.com/watch?v=${videoId}`} data-pk-yt={videoId} data-title={videoTitle} target="_blank" rel="noopener">
+        <img src={`https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`} alt={videoTitle} width="480" height="360" loading="lazy" decoding="async" />
+        <span aria-hidden="true"></span>
+      </a>
+    </section>
+
+    <section class="pk-sec">
+      <h2>{L('Peppo는 사람처럼 운전함', 'Peppo drives like a person')}</h2>
+      <p>{L('게임처럼 차를 순간이동시키지 않음. 운전을 처음 배우는 사람과 같은 조작으로만 움직임.', 'No video-game shortcuts. The car moves only through the same controls a new driver has.')}</p>
+      <ul>{driving.map((d) => <li>{d}</li>)}</ul>
+    </section>
+
+    <section class="pk-sec">
+      <h2>{L('8단계 주차 코스', 'The 8-stage parking course')}</h2>
+      <p>{L('한 단계를 해내야 다음 단계로 넘어감.', 'Each stage has to be passed before the next one opens.')}</p>
+      <ol class="pk-stages">
+        {stages.map(([name, text], i) => (
+          <li><b>{L(`${i + 1}단계`, `Stage ${i + 1}`)}</b><strong>{name}</strong><span>{text}</span></li>
+        ))}
+      </ol>
+    </section>
+
+    <section class="pk-sec">
+      <h2>{L('주차를 배우기까지', 'What learning to park cost')}</h2>
+      <div class="pk-count">
+        <div><strong>155,804</strong><span>{L('번 차와 충돌', 'collisions with cars')}</span></div>
+        <div><strong>63,309</strong><span>{L('번 사람과 충돌', 'collisions with people')}</span></div>
+      </div>
+      <p class="pk-note">{L('사람처럼 조작하는 Peppo가 8단계를 배우는 동안 시뮬레이션 안에서 부딪힌 횟수의 합. 실제 사람은 다치지 않았음.', 'Every bump Peppo made inside the simulation while learning the eight stages with human-style controls. No real person was harmed.')}</p>
+    </section>
+
+    {stories.length > 0 && (
+      <section class="pk-sec">
+        <h2>{L('프로젝트 스토리', 'Project stories')}</h2>
+        <ol class="pk-stories">{stories.map((s) => <li><a href={storyPath(s.id.split('/').pop()!, lang)}><span>{isKo ? `${s.data.part}편` : `Part ${s.data.part}`}</span><strong>{s.data.title}</strong><em>{s.data.description}</em></a></li>)}</ol>
+      </section>
+    )}
+
+    <div data-ad></div>
+
+    <section class="comments" id="comments" data-comments data-lang={lang} data-page={projectPath(id, lang)}
+      data-intro={L('Peppo 운전 실력, 훈수 환영', 'Backseat driving welcome')}></section>
+  </div>
+  <script is:inline src="/comments.js" defer></script>
+
+<style is:inline>
+.pk-body { padding: 2rem 0 4rem; }
+.pk-body > * { max-width: 50rem; }
+.pk-sec { margin: 0 0 2.6rem; }
+.pk-sec h2 { margin: 0 0 .8rem; font-size: 1.35rem; font-weight: 800; letter-spacing: -.02em; }
+.pk-sec p { line-height: 1.7; word-break: keep-all; }
+.pk-sec ul { margin: 0; padding-left: 1.2rem; list-style: disc; line-height: 1.65; }
+.pk-sec ul li { margin: .35rem 0; word-break: keep-all; }
+.pk-sec ul li::marker { color: var(--accent); }
+.pk-video, .pk-sec iframe { position: relative; display: block; width: 100%; aspect-ratio: 16 / 9; border: 0; border-radius: 10px; overflow: hidden; background: #000; }
+.pk-video img { width: 100%; height: 100%; object-fit: cover; opacity: .9; }
+.pk-video span { position: absolute; inset: 50% auto auto 50%; width: 68px; height: 48px; margin: -24px 0 0 -34px; border-radius: 12px; background: #e00; }
+.pk-video span::after { content: ''; position: absolute; left: 27px; top: 14px; border: 10px solid transparent; border-left: 17px solid #fff; }
+.pk-stages { display: grid; grid-template-columns: repeat(2, 1fr); gap: .6rem; margin: 1rem 0 0; padding: 0; list-style: none; }
+.pk-stages li { display: grid; gap: .25rem; margin: 0; padding: .8rem .9rem; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); }
+.pk-stages b { color: var(--accent); font-size: .8rem; font-weight: 850; }
+.pk-stages strong { font-size: .98rem; letter-spacing: -.01em; word-break: keep-all; }
+.pk-stages span { color: var(--muted); font-size: .84rem; line-height: 1.5; word-break: keep-all; }
+.pk-count { display: grid; grid-template-columns: repeat(2, 1fr); gap: .8rem; margin: 1rem 0 .4rem; }
+.pk-count div { display: grid; gap: .2rem; padding: 1rem 1.1rem; border-top: 4px solid var(--accent); border-radius: 10px; background: var(--surface); box-shadow: 0 1px 2px rgba(0, 0, 0, .08); }
+.pk-count strong { font-size: 1.9rem; letter-spacing: -.03em; font-variant-numeric: tabular-nums; }
+.pk-count span { color: var(--muted); font-size: .9rem; }
+.pk-note { color: var(--muted); font-size: .86rem; }
+.pk-stories { display: grid; gap: .8rem; margin: 1rem 0 0; padding: 0; list-style: none; }
+.pk-stories a { display: grid; gap: .25rem; padding: 1rem 1.1rem; background: var(--surface); box-shadow: 0 1px 2px rgba(0, 0, 0, .08); }
+.pk-stories span { color: var(--accent); font-size: .74rem; font-weight: 850; }
+.pk-stories strong { font-size: 1rem; letter-spacing: -.02em; word-break: keep-all; }
+.pk-stories em { color: var(--muted); font-size: .84rem; font-style: normal; line-height: 1.55; word-break: keep-all; }
+@media (max-width: 640px) {
+  .pk-stages, .pk-count { grid-template-columns: 1fr; }
+}
+</style>
+
+<script is:inline>
+// Only the thumbnail loads with the page; the youtube-nocookie player replaces it on click.
+document.addEventListener('click', (e) => {
+  const a = e.target.closest && e.target.closest('a[data-pk-yt]');
+  if (!a) return;
+  e.preventDefault();
+  const f = document.createElement('iframe');
+  f.src = `https://www.youtube-nocookie.com/embed/${a.dataset.pkYt}?autoplay=1`;
+  f.title = a.dataset.title;
+  f.allow = 'autoplay; encrypted-media; picture-in-picture; fullscreen';
+  f.allowFullscreen = true;
+  a.replaceWith(f);
+});
+</script>
+</BaseLayout>
