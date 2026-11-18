@@ -73,7 +73,7 @@ const rules = [
         <h2>{L('규칙', 'Rules')}</h2>
         <dl class="du-rules">{rules.map(([k, v]) => <div><dt>{k}</dt><dd>{v}</dd></div>)}</dl>
         <p class="du-goal"><b>{L('목표', 'Goal')}</b>{L('S&P 500(SPY)·나스닥100(QQQ)을 이기는 것과 상대 AI들을 이기는 것, 둘 다 주목표. 서로의 수익률과 최대 낙폭은 매주 공개되고 보유 종목은 비공개.', 'Beat the S&P 500 (SPY) and the Nasdaq-100 (QQQ), and beat the other AIs; both are primary. Each sees the others’ returns and max drawdowns every week, not their holdings.')}</p>
-        <p class="du-goal is-note"><b>{L('모델 교체', 'Model changes')}</b>{L('11/18부터 GPT 자리는 GPT-6.1 Sol에서 GPT-6.2 Sol로, 구글 자리는 Gemini 4 Argon(medium)에서 Gemini 4 Hydrogen(high)으로 바뀜. 포트폴리오는 이어서 운용하고, 11/21 주간 회의부터 새 모델이 결정함. 그 전 기록은 이전 모델의 결정임.', 'From Nov 18, the GPT seat moved from GPT-6.1 Sol to GPT-6.2 Sol and the Google seat from Gemini 4 Argon (medium) to Gemini 4 Hydrogen (high). Portfolios carry on; the new models decide from the Nov 21 weekly meeting, and earlier results are the previous models’ decisions.')}</p>
+        <p class="du-goal is-note"><b>{L('모델 버전', 'Model versions')}</b>{L('각 자리는 새 버전이 나오면 그 버전으로 바꿔 포트폴리오를 이어 감. 괄호 안 숫자가 지금 버전. 구글 자리는 11/18부터 Gemini Argon 대신 Gemini Hydrogen이 맡음.', 'Each seat moves to a new model version when one comes out and keeps the same portfolio. The number in brackets is the current version. Since Nov 18 the Google seat is played by Gemini Hydrogen instead of Gemini Argon.')}</p>
       </div>
       {stories.length > 0 && (
         <div>
@@ -135,7 +135,7 @@ const rules = [
       const rk = rank(a);
       return `<article class="du-player" style="--c:${COL[a.id]}">
         <p class="du-model">${esc(CLI[a.id] || a.model)}${rk && scored.length > 1 ? `<span class="du-rank">${ko ? `${rk}위` : `#${rk}`}</span>` : ''}</p>
-        <h2>${esc(a.name)}</h2>
+        <h2>${esc(a.name).replace(/ \(([^)]+)\)$/, ' <small class="du-ver">($1)</small>')}</h2>
         <p class="du-big ${r == null ? 'is-wait' : sign(r)}">${r == null ? T.wait : pct(r)}</p>
         <p class="du-nav">${usd(nav)}<span>/ ${usd(a.capital_usd)}</span>${a.start ? `<span>· ${T.start} ${esc(a.start)}</span>` : ''}</p>
         <ul class="du-diff">${['SPY', 'QQQ'].map((s) => { const base = a.start && bh.find((x) => x.date >= a.start)?.[s]; const v = ok(r) && base && bLast ? r - (bLast[s] / base - 1) : null; return `<li><span>${s} ${T.vs}</span><b class="${sign(v)}">${pp(v)}</b></li>`; }).join('')}</ul>
@@ -296,6 +296,7 @@ const rules = [
 .du-model { display: flex; justify-content: space-between; gap: .5rem; margin: 0; color: var(--muted); font-size: .7rem; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; }
 .du-rank { color: var(--c); font-size: .9rem; letter-spacing: 0; }
 .du-player h2 { margin: .3rem 0 .9rem; color: var(--c); font-size: clamp(1.4rem, 2.5vw, 2rem); font-weight: 820; letter-spacing: -.045em; }
+.du-player h2 .du-ver { font-size: .62em; font-weight: 700; letter-spacing: 0; opacity: .8; white-space: nowrap; }
 .du-big { margin: 0; font-size: clamp(2.3rem, 4.8vw, 3.6rem); font-weight: 850; line-height: 1; letter-spacing: -.06em; font-variant-numeric: tabular-nums; }
 .du-big.is-wait { color: var(--muted); font-size: clamp(1.25rem, 2.3vw, 1.6rem); font-weight: 780; letter-spacing: -.03em; line-height: 1.3; }
 .du-body .is-up { color: #2f9e5b; }
