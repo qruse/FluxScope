@@ -111,14 +111,17 @@ const { lang } = Astro.props;
 
   function tile(tool: typeof TOOLS[number], t: any) {
     const ls = limits(t);
-    const top = ls.reduce((a: any, b: any) => (!a || b.used > a.used ? b : a), null);
+    // Main gauge is the overall weekly limit for every tool (user 11/22): Claude "주간 · 전체", Codex "주간",
+    // Antigravity its first weekly row (Gemini); 5-hour and per-model rows stay in the card below.
+    const wk = ls.filter((l: any) => String(l.label).startsWith('주간'));
+    const top = wk.find((l: any) => l.label === '주간 · 전체' || l.label === '주간') || wk[0] || null;
     const p = top ? top.used : 0, C = 2 * Math.PI * 28;
     const g = level(p) === 'hot' ? 'var(--hot)' : level(p) === 'warn' ? 'var(--warn)' : tool.color;
     return `<div class="us-tile" style="--c:${tool.color};--g:${g}">
       <div class="us-gauge"><svg viewBox="0 0 68 68"><circle class="bg" cx="34" cy="34" r="28"></circle>
         <circle class="fg" cx="34" cy="34" r="28" stroke-dasharray="${C}" stroke-dashoffset="${C * (1 - Math.min(p, 100) / 100)}"></circle></svg>
         <b>${top ? p + '%' : '–'}</b></div>
-      <div><h2>${tool.name}</h2><p>${top ? `${esc(top.label)} 한도가 가장 빠듯함<br>${left(top.resets_at)} 초기화` : esc(t.limits_note || '한도 정보 없음')}</p></div>
+      <div><h2>${tool.name}</h2><p>${top ? `${esc(top.label)} 사용량<br>${left(top.resets_at)} 초기화` : esc(t.limits_note || '한도 정보 없음')}</p></div>
     </div>`;
   }
 
